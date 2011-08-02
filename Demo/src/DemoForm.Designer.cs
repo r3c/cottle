@@ -1,0 +1,200 @@
+﻿namespace Demo
+{
+    partial class DemoForm
+    {
+        /// <summary>
+        /// Variable nécessaire au concepteur.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Nettoyage des ressources utilisées.
+        /// </summary>
+        /// <param name="disposing">true si les ressources managées doivent être supprimées ; sinon, false.</param>
+        protected override void Dispose (bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose ();
+            }
+            base.Dispose (disposing);
+        }
+
+        #region Code généré par le Concepteur Windows Form
+
+        /// <summary>
+        /// Méthode requise pour la prise en charge du concepteur - ne modifiez pas
+        /// le contenu de cette méthode avec l'éditeur de code.
+        /// </summary>
+        private void InitializeComponent ()
+        {
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.textBoxResult = new System.Windows.Forms.TextBox();
+            this.buttonDemo = new System.Windows.Forms.Button();
+            this.textBoxInput = new System.Windows.Forms.TextBox();
+            this.splitContainerOutput = new System.Windows.Forms.SplitContainer();
+            this.groupBoxDebug = new System.Windows.Forms.GroupBox();
+            this.textBoxDebug = new System.Windows.Forms.TextBox();
+            this.groupBoxPrint = new System.Windows.Forms.GroupBox();
+            this.textBoxPrint = new System.Windows.Forms.TextBox();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
+            this.splitContainerOutput.Panel1.SuspendLayout();
+            this.splitContainerOutput.Panel2.SuspendLayout();
+            this.splitContainerOutput.SuspendLayout();
+            this.groupBoxDebug.SuspendLayout();
+            this.groupBoxPrint.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // splitContainer
+            // 
+            this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel1
+            // 
+            this.splitContainer.Panel1.Controls.Add(this.textBoxResult);
+            this.splitContainer.Panel1.Controls.Add(this.buttonDemo);
+            this.splitContainer.Panel1.Controls.Add(this.textBoxInput);
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Controls.Add(this.splitContainerOutput);
+            this.splitContainer.Size = new System.Drawing.Size(784, 565);
+            this.splitContainer.SplitterDistance = 390;
+            this.splitContainer.TabIndex = 1;
+            // 
+            // textBoxResult
+            // 
+            this.textBoxResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxResult.Location = new System.Drawing.Point(78, 532);
+            this.textBoxResult.Name = "textBoxResult";
+            this.textBoxResult.Size = new System.Drawing.Size(309, 20);
+            this.textBoxResult.TabIndex = 2;
+            // 
+            // buttonDemo
+            // 
+            this.buttonDemo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.buttonDemo.Location = new System.Drawing.Point(12, 530);
+            this.buttonDemo.Name = "buttonDemo";
+            this.buttonDemo.Size = new System.Drawing.Size(60, 23);
+            this.buttonDemo.TabIndex = 1;
+            this.buttonDemo.Text = "OK";
+            this.buttonDemo.UseVisualStyleBackColor = true;
+            this.buttonDemo.Click += new System.EventHandler(this.buttonDemo_Click);
+            // 
+            // textBoxInput
+            // 
+            this.textBoxInput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxInput.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxInput.Location = new System.Drawing.Point(12, 12);
+            this.textBoxInput.Multiline = true;
+            this.textBoxInput.Name = "textBoxInput";
+            this.textBoxInput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxInput.Size = new System.Drawing.Size(375, 512);
+            this.textBoxInput.TabIndex = 0;
+            // 
+            // splitContainerOutput
+            // 
+            this.splitContainerOutput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerOutput.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerOutput.Name = "splitContainerOutput";
+            this.splitContainerOutput.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainerOutput.Panel1
+            // 
+            this.splitContainerOutput.Panel1.Controls.Add(this.groupBoxDebug);
+            // 
+            // splitContainerOutput.Panel2
+            // 
+            this.splitContainerOutput.Panel2.Controls.Add(this.groupBoxPrint);
+            this.splitContainerOutput.Size = new System.Drawing.Size(390, 565);
+            this.splitContainerOutput.SplitterDistance = 282;
+            this.splitContainerOutput.TabIndex = 4;
+            // 
+            // groupBoxDebug
+            // 
+            this.groupBoxDebug.Controls.Add(this.textBoxDebug);
+            this.groupBoxDebug.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxDebug.Location = new System.Drawing.Point(0, 0);
+            this.groupBoxDebug.Name = "groupBoxDebug";
+            this.groupBoxDebug.Size = new System.Drawing.Size(390, 282);
+            this.groupBoxDebug.TabIndex = 2;
+            this.groupBoxDebug.TabStop = false;
+            this.groupBoxDebug.Text = "Debug:";
+            // 
+            // textBoxDebug
+            // 
+            this.textBoxDebug.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxDebug.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxDebug.Location = new System.Drawing.Point(3, 16);
+            this.textBoxDebug.Multiline = true;
+            this.textBoxDebug.Name = "textBoxDebug";
+            this.textBoxDebug.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxDebug.Size = new System.Drawing.Size(384, 263);
+            this.textBoxDebug.TabIndex = 1;
+            // 
+            // groupBoxPrint
+            // 
+            this.groupBoxPrint.Controls.Add(this.textBoxPrint);
+            this.groupBoxPrint.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxPrint.Location = new System.Drawing.Point(0, 0);
+            this.groupBoxPrint.Name = "groupBoxPrint";
+            this.groupBoxPrint.Size = new System.Drawing.Size(390, 279);
+            this.groupBoxPrint.TabIndex = 4;
+            this.groupBoxPrint.TabStop = false;
+            this.groupBoxPrint.Text = "Print:";
+            // 
+            // textBoxPrint
+            // 
+            this.textBoxPrint.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxPrint.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBoxPrint.Location = new System.Drawing.Point(3, 16);
+            this.textBoxPrint.Multiline = true;
+            this.textBoxPrint.Name = "textBoxPrint";
+            this.textBoxPrint.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxPrint.Size = new System.Drawing.Size(384, 260);
+            this.textBoxPrint.TabIndex = 3;
+            // 
+            // DemoForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(784, 565);
+            this.Controls.Add(this.splitContainer);
+            this.Name = "DemoForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Coddle Demo";
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel1.PerformLayout();
+            this.splitContainer.Panel2.ResumeLayout(false);
+            this.splitContainer.ResumeLayout(false);
+            this.splitContainerOutput.Panel1.ResumeLayout(false);
+            this.splitContainerOutput.Panel2.ResumeLayout(false);
+            this.splitContainerOutput.ResumeLayout(false);
+            this.groupBoxDebug.ResumeLayout(false);
+            this.groupBoxDebug.PerformLayout();
+            this.groupBoxPrint.ResumeLayout(false);
+            this.groupBoxPrint.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.SplitContainer splitContainer;
+        private System.Windows.Forms.TextBox textBoxInput;
+        private System.Windows.Forms.TextBox textBoxDebug;
+        private System.Windows.Forms.Button buttonDemo;
+        private System.Windows.Forms.TextBox textBoxResult;
+        private System.Windows.Forms.TextBox textBoxPrint;
+        private System.Windows.Forms.SplitContainer splitContainerOutput;
+        private System.Windows.Forms.GroupBox groupBoxDebug;
+        private System.Windows.Forms.GroupBox groupBoxPrint;
+    }
+}
