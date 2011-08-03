@@ -10,8 +10,6 @@ namespace   Cottle.Expressions
     {
         #region Attributes
 
-        private static readonly IValue      empty = new DefaultValue ();
-
         private IEnumerable<VarExpression>  fields;
 
         #endregion
@@ -39,7 +37,7 @@ namespace   Cottle.Expressions
                     value = field.Evaluate (scope);
             }
 
-            return value != null ? value : AccessExpression.empty;
+            return value != null ? value : UndefinedValue.Instance;
         }
 
         public override string  ToString ()
@@ -50,11 +48,11 @@ namespace   Cottle.Expressions
             foreach (VarExpression field in this.fields)
             {
                 if (dot)
-                    builder.Append ('.');
+                    builder.Append ('/');
                 else
                     dot = true;
 
-                builder.Append (field.ToString ());
+                builder.Append (field);
             }
 
             return builder.ToString ();

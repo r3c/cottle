@@ -6,7 +6,7 @@ using Cottle.Lexers;
 
 namespace   Cottle.Exceptions
 {
-    class   UnexpectedException : Exception
+    public class    UnexpectedException : Exception
     {
         #region Properties
 
@@ -58,7 +58,7 @@ namespace   Cottle.Exceptions
 
         #region Constructors
 
-        public  UnexpectedException (Lexer lexer, string expected) :
+        internal    UnexpectedException (Lexer lexer, string expected) :
             base (string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Value, expected, lexer.Line, lexer.Column))
         {
             this.column = lexer.Column;

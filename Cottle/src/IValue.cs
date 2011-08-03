@@ -5,26 +5,33 @@ using System.Text;
 
 namespace   Cottle
 {
+    using   ChildList = List<KeyValuePair<IValue, IValue>>;
+
     public interface    IValue
     {
         #region Properties
 
-        bool                        AsBoolean
+        bool        AsBoolean
         {
             get;
         }
 
-        decimal                     AsNumber
+        Function    AsFunction
         {
             get;
         }
 
-        string                      AsString
+        decimal     AsNumber
         {
             get;
         }
 
-        IDictionary<string, IValue> Children
+        string      AsString
+        {
+            get;
+        }
+
+        ChildList   Children
         {
             get;
         }
@@ -33,7 +40,9 @@ namespace   Cottle
 
         #region Methods
 
-        string  ToString ();
+        bool    Find (string name, out IValue child);
+
+        bool    Has (string name);
 
         #endregion
     }

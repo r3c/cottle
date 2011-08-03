@@ -26,15 +26,19 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Cottle</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Argument.cs" />
     <Compile Include="src\DebugWriter.cs" />
     <Compile Include="src\Document.cs" />
-    <Compile Include="src\Exceptions\LexerException.cs" />
+    <Compile Include="src\Exceptions\UnknownException.cs" />
     <Compile Include="src\Exceptions\UnexpectedException.cs" />
     <Compile Include="src\Expressions\AccessExpression.cs" />
     <Compile Include="src\Expressions\FunctionExpression.cs" />
@@ -54,12 +58,14 @@
     <Compile Include="src\Nodes\IfNode.cs" />
     <Compile Include="src\Nodes\RawNode.cs" />
     <Compile Include="src\Nodes\SetNode.cs" />
+    <Compile Include="src\Nodes\WhileNode.cs" />
     <Compile Include="src\Parser.cs" />
     <Compile Include="src\Scope.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
-    <Compile Include="src\Values\DefaultValue.cs" />
-    <Compile Include="src\Values\DictionaryValue.cs" />
-    <Compile Include="src\Values\Generics\EmptyValue.cs" />
+    <Compile Include="src\Values\UndefinedValue.cs" />
+    <Compile Include="src\Values\ArrayValue.cs" />
+    <Compile Include="src\Values\FunctionValue.cs" />
+    <Compile Include="src\Values\Generics\Value.cs" />
     <Compile Include="src\Values\Generics\ScalarValue.cs" />
     <Compile Include="src\Values\NumberValue.cs" />
     <Compile Include="src\Values\StringValue.cs" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle;
+using Cottle.Exceptions;
 using Cottle.Values;
 
 namespace   Cottle.Expressions
@@ -11,9 +11,7 @@ namespace   Cottle.Expressions
     {
         #region Attributes
 
-        private static readonly IValue  empty = new DefaultValue ();
-
-        private string                  name;
+        private string  name;
 
         #endregion
 
@@ -32,10 +30,10 @@ namespace   Cottle.Expressions
         {
             IValue  child;
 
-            if (value.Children.TryGetValue (this.name, out child))
+            if (value.Find (this.name, out child))
                 return child;
 
-            return VarExpression.empty;
+            return UndefinedValue.Instance;
         }
 
         public IValue   Evaluate (Scope scope)
@@ -45,12 +43,12 @@ namespace   Cottle.Expressions
             if (scope.Get (name, out value))
                 return value;
 
-            return VarExpression.empty;
+            return UndefinedValue.Instance;
         }
 
-        public void Set (Scope scope, IValue value)
+        public bool Set (Scope scope, IValue value, Scope.SetMode mode)
         {
-            scope.Set (this.name, value);
+            return scope.Set (this.name, value, mode);
         }
 
         public override string  ToString ()

@@ -18,5 +18,14 @@ namespace   Cottle.Expressions
         }
 
         #endregion
+
+        #region Methods
+
+        public override string  ToString ()
+        {
+            return string.Format ("\"{0}\"", this.value.AsString);
+        }
+
+        #endregion
     }
 }

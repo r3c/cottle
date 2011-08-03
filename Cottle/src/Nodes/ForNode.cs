@@ -55,7 +55,7 @@ namespace   Cottle.Nodes
 
             if (this.empty != null)
             {
-                writer.Write ("|else:");
+                writer.Write ("|empty:");
                 writer.Increase ();
 
                 this.empty.Debug (writer);
@@ -68,24 +68,24 @@ namespace   Cottle.Nodes
 
         public override void    Print (Scope scope, TextWriter writer)
         {
-            IDictionary<string, IValue> children = this.from.Evaluate (scope).Children;
+            ICollection<KeyValuePair<IValue, IValue>>   collection = this.from.Evaluate (scope).Children;
 
-            if (children.Count > 0)
+            if (collection.Count > 0)
             {
-                scope.Enter ();
-
-                foreach (KeyValuePair<string, IValue> pair in children)
+                foreach (KeyValuePair<IValue, IValue> pair in collection)
                 {
+                    scope.Enter ();
+
                     if (this.key != null)
-                        this.key.Set (scope, new StringValue (pair.Key));
+                        this.key.Set (scope, pair.Key, Scope.SetMode.DECLARE);
 
                     if (this.value != null)
-                        this.value.Set (scope, pair.Value);
+                        this.value.Set (scope, pair.Value, Scope.SetMode.DECLARE);
 
                     this.body.Print (scope, writer);
-                }
 
-                scope.Leave ();
+                    scope.Leave ();
+                }
             }
             else if (this.empty != null)
                 this.empty.Print (scope, writer);

@@ -117,4 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBoxInput.Text" xml:space="preserve">
+    <value>You've got {count(messages)} new message{if greater(count(messages), 1):s}:
+
+{for i, message in messages:
+
+    Message #{i}:
+    Subject: {message/subject}
+    Contents: {message/contents}
+
+|empty:
+    No messages to display!
+}</value>
+  </data>
 </root>

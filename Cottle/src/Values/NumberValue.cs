@@ -11,7 +11,7 @@ namespace   Cottle.Values
     {
         #region Properties
 
-        public override bool    AsBoolean
+        public override bool        AsBoolean
         {
             get
             {
@@ -19,7 +19,15 @@ namespace   Cottle.Values
             }
         }
 
-        public override decimal AsNumber
+        public override Function    AsFunction
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public override decimal     AsNumber
         {
             get
             {
@@ -27,7 +35,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override string  AsString
+        public override string      AsString
         {
             get
             {
@@ -42,15 +50,6 @@ namespace   Cottle.Values
         public  NumberValue (decimal value) :
             base (value)
         {
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override string  ToString ()
-        {
-            return this.AsString;
         }
 
         #endregion

@@ -4,5 +4,5 @@ using System.Text;
 
 namespace   Cottle
 {
-    public delegate IValue  Function (Argument[] arguments);
+    public delegate IValue  Argument ();
 }

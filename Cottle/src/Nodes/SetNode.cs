@@ -14,18 +14,15 @@ namespace   Cottle.Nodes
 
         private VarExpression   alias;
 
-        private INode           body;
-
         private IExpression     value;
 
         #endregion
 
         #region Constructors
 
-        public  SetNode (VarExpression alias, IExpression value, INode body)
+        public  SetNode (VarExpression alias, IExpression value)
         {
             this.alias = alias;
-            this.body = body;
             this.value = value;
         }
 
@@ -35,23 +32,12 @@ namespace   Cottle.Nodes
 
         public override void    Debug (DebugWriter writer)
         {
-            writer.Write (string.Format ("{{set {0} to {1}:", this.alias, this.value));
-            writer.Increase ();
-
-            this.body.Debug (writer);
-
-            writer.Decrease ();
-            writer.Write ("}");
+            writer.Write (string.Format ("{{set {0} to {1}}}", this.alias, this.value));
         }
 
         public override void    Print (Scope scope, TextWriter writer)
         {
-            scope.Enter ();
-
-            this.alias.Set (scope, this.value.Evaluate (scope));
-            this.body.Print (scope, writer);
-
-            scope.Leave ();
+            this.alias.Set (scope, this.value.Evaluate (scope), Scope.SetMode.DECLARE_OR_REPLACE);
         }
 
         #endregion

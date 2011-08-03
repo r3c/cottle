@@ -6,23 +6,15 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    public sealed class BooleanValue : ScalarValue<bool>
+    public sealed class FunctionValue : Value
     {
-        #region Constants
-
-        public static readonly BooleanValue False = new BooleanValue (false);
-
-        public static readonly BooleanValue True = new BooleanValue (true);
-
-        #endregion
-
         #region Properties
 
         public override bool        AsBoolean
         {
             get
             {
-                return this.value;
+                return false;
             }
         }
 
@@ -30,7 +22,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return null;
+                return this.function;
             }
         }
 
@@ -38,7 +30,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return this.value ? 1 : 0;
+                return 0;
             }
         }
 
@@ -46,17 +38,29 @@ namespace   Cottle.Values
         {
             get
             {
-                return this.value ? "true" : "false";
+                return "<function>";
             }
         }
 
         #endregion
 
+        #region Attributes
+
+        private Function    function;
+
+        #endregion
+
         #region Constructors
 
-        public  BooleanValue (bool value) :
-            base (value)
+        public  FunctionValue (Function function, ICollection<KeyValuePair<IValue, IValue>> collection) :
+            base (collection)
         {
+            this.function = function;
+        }
+
+        public  FunctionValue (Function function)
+        {
+            this.function = function;
         }
 
         #endregion

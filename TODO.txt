@@ -1,2 +1,5 @@
-- Move function registration to Document class: make parser aware of functions without known list, update FunctionExpression
-- Use IValue as keys for IValue.Children (should be optimized for both numeric and string values)
+X Move function registration to Document class: make parser aware of functions without known list, update FunctionExpression
+X Handle "elif" keyword
+X Replace strings by IValues as keys in IValue.Children (should be optimized for both numeric and string values)
+X Change IValue.Children structure to allow children ordering function (like "sort")
+X Handle "while" keyword

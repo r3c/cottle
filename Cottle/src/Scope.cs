@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Cottle.Values;
+
 namespace   Cottle
 {
-    public class    Scope
+    class   Scope
     {
         #region Attributes
 
@@ -60,7 +62,7 @@ namespace   Cottle
             }
         }
 
-        public void Set (string name, IValue value)
+        public bool Set (string name, IValue value, SetMode mode)
         {
             HashSet<string> level;
             Stack<IValue>   stack;
@@ -74,12 +76,43 @@ namespace   Cottle
 
             level = this.levels.Peek ();
 
-            if (level.Contains (name))
-                stack.Pop ();
-            else
-                level.Add (name);
+            switch (mode)
+            {
+                case SetMode.DECLARE:
+                    if (!level.Add (name))
+                        return false;
+
+                    break;
+
+                case SetMode.DECLARE_OR_REPLACE:
+                    if (!level.Add (name))
+                        stack.Pop ();
+
+                    break;
+
+                case SetMode.REPLACE:
+                    if (!level.Contains (name))
+                        return false;
+
+                    stack.Pop ();
+
+                    break;
+            }
 
             stack.Push (value);
+
+            return true;
+        }
+
+        #endregion
+
+        #region Types
+
+        public enum SetMode
+        {
+            DECLARE,
+            DECLARE_OR_REPLACE,
+            REPLACE
         }
 
         #endregion

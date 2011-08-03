@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using Cottle;
@@ -25,34 +21,18 @@ namespace   Demo
         {
             Document    document;
             Parser      parser;
-            TextWriter  writer;
 
             parser = new Parser ();
-            parser.Functions["count"] = this.ParseFunctionCount;
-            parser.Functions["equal"] = this.ParseFunctionEqual;
-            parser.Functions["greater"] = this.ParseFunctionGreater;
-            parser.Functions["greaterequal"] = this.ParseFunctionGreaterEqual;
-            parser.Functions["lower"] = this.ParseFunctionLower;
-            parser.Functions["lowerequal"] = this.ParseFunctionLowerEqual;
-            parser.Functions["match"] = this.ParseFunctionMatch;
 
             try
             {
                 document = parser.Parse (new StringReader (this.textBoxInput.Text));
-                
+
+                this.FillFunctions (document.Values);
                 this.FillValues (document.Values);
 
-                writer = new StringWriter ();
-
-                document.Debug (writer);
-
-                this.textBoxDebug.Text = writer.ToString ();
-
-                writer = new StringWriter ();
-
-                document.Print (writer);
-
-                this.textBoxPrint.Text = writer.ToString ();
+                this.textBoxDebug.Text = document.Debug ();
+                this.textBoxPrint.Text = document.Print ();
 
                 this.textBoxResult.BackColor = Color.LightGreen;
                 this.textBoxResult.Text = "OK";
@@ -64,116 +44,62 @@ namespace   Demo
             }
         }
 
+        private void    FillFunctions (IDictionary<string, IValue> values)
+        {
+            values.Add ("add", new FunctionValue (Callbacks.Add));
+            values.Add ("contains", new FunctionValue (Callbacks.Contains));
+            values.Add ("count", new FunctionValue (Callbacks.Count));
+            values.Add ("div", new FunctionValue (Callbacks.Div));
+            values.Add ("equal", new FunctionValue (Callbacks.Equal));
+            values.Add ("gequal", new FunctionValue (Callbacks.GreaterEqual));
+            values.Add ("greater", new FunctionValue (Callbacks.Greater));
+            values.Add ("lequal", new FunctionValue (Callbacks.LowerEqual));
+            values.Add ("lower", new FunctionValue (Callbacks.Lower));
+            values.Add ("match", new FunctionValue (Callbacks.Match));
+            values.Add ("mod", new FunctionValue (Callbacks.Mod));
+            values.Add ("mul", new FunctionValue (Callbacks.Mul));
+            values.Add ("slice", new FunctionValue (Callbacks.Slice));
+            values.Add ("sub", new FunctionValue (Callbacks.Sub));
+        }
+
         private void    FillValues (IDictionary<string, IValue> values)
         {
-            Dictionary<string, IValue>  alertMessages = new Dictionary<string, IValue> ();
-            Dictionary<string, IValue>  alertParams = new Dictionary<string, IValue> ();
-            Dictionary<string, IValue>  alertTags = new Dictionary<string, IValue> ();
+            Dictionary<IValue, IValue>  alertMessages = new Dictionary<IValue, IValue> ();
+            Dictionary<IValue, IValue>  alertParams = new Dictionary<IValue, IValue> ();
+            Dictionary<IValue, IValue>  alertTags = new Dictionary<IValue, IValue> ();
             string                      dateTime = DateTime.Now.ToString (CultureInfo.InvariantCulture);
             Random                      random = new Random ();
 
             for (int i = 0; i < 10; ++i)
             {
-                alertMessages.Add (i.ToString (), new DictionaryValue (new Dictionary<string, IValue>
+                alertMessages.Add (new NumberValue (i), new ArrayValue (new Dictionary<IValue, IValue>
                 {
-                    {"contents",    new StringValue ("Contents for sample message #" + i)},
-                    {"date_create", new StringValue (dateTime)},
-                    {"date_gather", new StringValue (dateTime)},
-                    {"origin",      new StringValue ("Sender")},
-                    {"subject",     new StringValue ("Subject for sample message #" + i)}
+                    {new StringValue ("contents"),     new StringValue ("Contents for sample message #" + i)},
+                    {new StringValue ("date_create"),  new StringValue (dateTime)},
+                    {new StringValue ("date_gather"),  new StringValue (dateTime)},
+                    {new StringValue ("origin"),       new StringValue ("Sender")},
+                    {new StringValue ("subject"),      new StringValue ("Subject for sample message #" + i)}
                 }));
             }
 
             for (int i = 0; i < 5; ++i)
             {
-                alertParams.Add ("param" + i, new DictionaryValue (new Dictionary<string, IValue>
+                alertParams.Add (new StringValue ("param #" + i), new ArrayValue (new Dictionary<IValue, IValue>
                 {
-                    {"value" + i + ".1",    new NumberValue (random.Next ())},
-                    {"value" + i + ".2",    new NumberValue (random.Next ())},
-                    {"value" + i + ".3",    new NumberValue (random.Next ())}
+                    {new StringValue ("value" + i + ".1"), new NumberValue (random.Next ())},
+                    {new StringValue ("value" + i + ".2"), new NumberValue (random.Next ())},
+                    {new StringValue ("value" + i + ".3"), new NumberValue (random.Next ())}
                 }));
             }
 
             for (int i = 0; i < 5; ++i)
             {
-                alertTags.Add (i.ToString (), new StringValue ("tag" + i));
+                alertTags.Add (new StringValue ("tag #" + i), new NumberValue (i));
             }
 
-            values.Add ("messages", new DictionaryValue (alertMessages));
-            values.Add ("params", new DictionaryValue (alertParams));
-            values.Add ("tags", new DictionaryValue (alertTags));
-        }
-
-        private IValue  ParseFunctionCount (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 1)
-                return new NumberValue (0);
-
-            return new NumberValue (arguments[0].Children.Count);
-        }
-
-        private IValue  ParseFunctionEqual (Scope scope, IList<IValue> arguments)
-        {
-            string  compare;
-            int     i;
-
-            if (arguments.Count < 1)
-                return new BooleanValue (false);
-
-            compare = arguments[0].AsString;
-
-            for (i = 1; i < arguments.Count; ++i)
-                if (string.Compare (arguments[i].AsString, compare) != 0)
-                    return new BooleanValue (false);
-
-            return new BooleanValue (true);
-        }
-
-        private IValue  ParseFunctionGreater (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 2)
-                return new BooleanValue (false);
-
-            return new BooleanValue (arguments[0].AsNumber > arguments[1].AsNumber);
-        }
-
-        private IValue  ParseFunctionGreaterEqual (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 2)
-                return new BooleanValue (false);
-
-            return new BooleanValue (arguments[0].AsNumber >= arguments[1].AsNumber);
-        }
-
-        private IValue  ParseFunctionLower (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 2)
-                return new BooleanValue (false);
-
-            return new BooleanValue (arguments[0].AsNumber < arguments[1].AsNumber);
-        }
-
-        private IValue  ParseFunctionLowerEqual (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 2)
-                return new BooleanValue (false);
-
-            return new BooleanValue (arguments[0].AsNumber <= arguments[1].AsNumber);
-        }
-
-        private IValue  ParseFunctionMatch (Scope scope, IList<IValue> arguments)
-        {
-            if (arguments.Count < 2)
-                return new BooleanValue (false);
-
-            try
-            {
-                return new BooleanValue (Regex.IsMatch (arguments[0].AsString, arguments[1].AsString));
-            }
-            catch
-            {
-                return new BooleanValue (false);
-            }
+            values.Add ("messages", new ArrayValue (alertMessages));
+            values.Add ("params", new ArrayValue (alertParams));
+            values.Add ("tags", new ArrayValue (alertTags));
         }
     }
 }

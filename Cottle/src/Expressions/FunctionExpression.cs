@@ -2,24 +2,26 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Cottle.Values;
+
 namespace   Cottle.Expressions
 {
     class   FunctionExpression : IExpression
     {
         #region Attributes
 
-        private IEnumerable<IExpression>    arguments;
+        private List<IExpression>   arguments;
 
-        private Function                    function;
+        private VarExpression       caller;
 
         #endregion
 
         #region Constructors
 
-        public  FunctionExpression (Function function, IEnumerable<IExpression> arguments)
+        public  FunctionExpression (VarExpression caller, IEnumerable<IExpression> arguments)
         {
-            this.arguments = arguments;
-            this.function = function;
+            this.arguments = new List<IExpression> (arguments);
+            this.caller = caller;
         }
 
         #endregion
@@ -28,12 +30,27 @@ namespace   Cottle.Expressions
 
         public IValue   Evaluate (Scope scope)
         {
-            List<IValue>    values = new List<IValue> ();
+            Argument[]  arguments;
+            IValue      value;
+            int         i;
 
-            foreach (IExpression argument in this.arguments)
-                values.Add (argument.Evaluate (scope));
+            value = this.caller.Evaluate (scope);
 
-            return this.function (scope, values);
+            if (value.AsFunction != null)
+            {
+                arguments = new Argument[this.arguments.Count];
+
+                for (i = this.arguments.Count; i-- > 0; )
+                {
+                    IExpression expression = this.arguments[i];
+
+                    arguments[i] = () => expression.Evaluate (scope);
+                }
+
+                return value.AsFunction (arguments);
+            }
+
+            return UndefinedValue.Instance;
         }
 
         public override string  ToString ()
@@ -41,7 +58,8 @@ namespace   Cottle.Expressions
             StringBuilder   builder = new StringBuilder ();
             bool            dot = false;
 
-            builder.Append ("<fun> (");
+            builder.Append (this.caller);
+            builder.Append (" (");
 
             foreach (IExpression argument in this.arguments)
             {
@@ -50,7 +68,7 @@ namespace   Cottle.Expressions
                 else
                     dot = true;
 
-                builder.Append (argument.ToString ());
+                builder.Append (argument);
             }
 
             builder.Append (")");

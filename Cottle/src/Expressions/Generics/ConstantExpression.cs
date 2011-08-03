@@ -29,10 +29,7 @@ namespace   Cottle.Expressions.Generics
             return this.value;
         }
 
-        public override string  ToString ()
-        {
-            return this.value.ToString ();
-        }
+        public abstract override string ToString ();
 
         #endregion
     }

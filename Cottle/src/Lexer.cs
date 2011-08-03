@@ -99,11 +99,6 @@ namespace   Cottle.Lexers
             this.next ();
         }
 
-        private Exception   Fail (string message, params object[] args)
-        {
-            return new LexerException (this.line, this.column, string.Format (message, args));
-        }
-
         private void    NextBlock ()
         {
             StringBuilder   builder;
@@ -264,16 +259,11 @@ namespace   Cottle.Lexers
                         do
                         {
                             if (this.last == '.')
-                            {
-                                if (dot)
-                                    throw this.Fail ("Invalid decimal constant");
-                                else
-                                    dot = true;
-                            }
+                                dot = true;
 
                             builder.Append (this.last);
                         }
-                        while (this.Read () && ((this.last >= '0' && this.last <= '9') || this.last == '.'));
+                        while (this.Read () && ((this.last >= '0' && this.last <= '9') || (this.last == '.' && !dot)));
 
                         this.type = LexemType.NUMBER;
                         this.value = builder.ToString ();
@@ -292,7 +282,7 @@ namespace   Cottle.Lexers
                         }
 
                         if (this.eof)
-                            throw this.Fail ("Unfinished string constant, expected end string character ('{0}')", end);
+                            throw new UnknownException (this, "unfinished string");
 
                         this.Read ();
 
@@ -302,9 +292,7 @@ namespace   Cottle.Lexers
                         return;
 
                     default:
-
-
-                        return;
+                        throw new UnknownException (this, "unknown character");
                 }
             }
         }
@@ -360,11 +348,11 @@ namespace   Cottle.Lexers
                     }
 
                     if (this.eof)
-                        throw this.Fail ("Unfinished string constant, expected end string character ('{0}')", end);
+                        throw new UnknownException (this, "unfinished string");
 
                     this.Read ();
 
-                    this.type = LexemType.LITERAL;
+                    this.type = LexemType.STRING;
                     this.value = builder.ToString ();
 
                     return;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace   Cottle.Values.Generics
 {
-    public abstract class   ScalarValue<T> : EmptyValue
+    public abstract class   ScalarValue<T> : Value
     {
         #region Attributes
 

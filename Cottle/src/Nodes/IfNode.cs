@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-using Cottle.Expressions;
 using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
@@ -12,21 +9,18 @@ namespace   Cottle.Nodes
     {
         #region Attributes
 
-        private INode       bodyElse;
+        private IEnumerable<Branch> branches;
 
-        private INode       bodyIf;
-
-        private IExpression test;
+        private INode               fallback;
 
         #endregion
 
         #region Constructors
 
-        public  IfNode (IExpression test, INode bodyIf, INode bodyElse)
+        public  IfNode (IEnumerable<Branch> branches, INode fallback)
         {
-            this.bodyElse = bodyElse;
-            this.bodyIf = bodyIf;
-            this.test = test;
+            this.branches = branches;
+            this.fallback = fallback;
         }
 
         #endregion
@@ -35,19 +29,26 @@ namespace   Cottle.Nodes
 
         public override void    Debug (DebugWriter writer)
         {
-            writer.Write (string.Format ("{{if {0}:", this.test.ToString ()));
-            writer.Increase ();
+            bool    first = true;
 
-            this.bodyIf.Debug (writer);
+            foreach (Branch branch in this.branches)
+            {
+                writer.Write (string.Format (first ? "{{if {0}:" : "|elif {0}:", branch.Test));
+                writer.Increase ();
 
-            writer.Decrease ();
+                branch.Body.Debug (writer);
 
-            if (this.bodyElse != null)
+                writer.Decrease ();
+
+                first = false;
+            }
+
+            if (this.fallback != null)
             {
                 writer.Write ("|else:");
                 writer.Increase ();
 
-                this.bodyElse.Debug (writer);
+                this.fallback.Debug (writer);
 
                 writer.Decrease ();
             }
@@ -57,10 +58,63 @@ namespace   Cottle.Nodes
 
         public override void    Print (Scope scope, TextWriter writer)
         {
-            if (this.test.Evaluate (scope).AsBoolean)
-                this.bodyIf.Print (scope, writer);
-            else if (this.bodyElse != null)
-                this.bodyElse.Print (scope, writer);
+            foreach (Branch branch in this.branches)
+            {
+                if (branch.Test.Evaluate (scope).AsBoolean)
+                {
+                    branch.Body.Print (scope, writer);
+
+                    return;
+                }
+            }
+
+            if (this.fallback != null)
+                this.fallback.Print (scope, writer);
+        }
+
+        #endregion
+
+        #region Types
+
+        public class    Branch
+        {
+            #region Properties
+
+            public INode        Body
+            {
+                get
+                {
+                    return this.body;
+                }
+            }
+
+            public IExpression  Test
+            {
+                get
+                {
+                    return this.test;
+                }
+            }
+
+            #endregion
+
+            #region Attributes
+
+            private INode       body;
+
+            private IExpression test;
+
+            #endregion
+
+            #region Constructors
+
+            public  Branch (IExpression test, INode body)
+            {
+                this.body = body;
+                this.test = test;
+            }
+
+            #endregion
         }
 
         #endregion
