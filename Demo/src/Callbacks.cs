@@ -8,28 +8,20 @@ using Cottle.Values;
 
 namespace   Demo
 {
-	static class    Callbacks
-	{
+    static class    Callbacks
+    {
         public static IValue    Add (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            return new NumberValue (arguments[0] ().AsNumber + arguments[1] ().AsNumber);
+            return new NumberValue (arguments[0].Value.AsNumber + arguments[1].Value.AsNumber);
         }
 
         public static IValue    Contains (Argument[] arguments)
         {
-            IValue  value;
+            IValue  value = arguments[0].Value;
             int     i;
 
-            if (arguments.Length < 1)
-                return UndefinedValue.Instance;
-
-            value = arguments[0] ();
-
             for (i = 1; i < arguments.Length; ++i)
-                if (!value.Has (arguments[i] ().AsString))
+                if (!value.Has (arguments[i].Value.AsString))
                     return BooleanValue.False;
 
             return BooleanValue.True;
@@ -37,39 +29,26 @@ namespace   Demo
 
         public static IValue    Count (Argument[] arguments)
         {
-            if (arguments.Length != 1)
-                return UndefinedValue.Instance;
-
-            return new NumberValue (arguments[0] ().Children.Count);
+            return new NumberValue (arguments[0].Value.Children.Count);
         }
 
         public static IValue    Div (Argument[] arguments)
         {
-            decimal denominator;
-
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            denominator = arguments[1] ().AsNumber;
+            decimal denominator = arguments[1].Value.AsNumber;
 
             if (denominator == 0)
                 return UndefinedValue.Instance;
 
-            return new NumberValue (arguments[0] ().AsNumber / denominator);
+            return new NumberValue (arguments[0].Value.AsNumber / denominator);
         }
 
         public static IValue    Equal (Argument[] arguments)
         {
-            string  compare;
+            string  compare = arguments[0].Value.AsString;
             int     i;
 
-            if (arguments.Length < 1)
-                return BooleanValue.False;
-
-            compare = arguments[0] ().AsString;
-
             for (i = 1; i < arguments.Length; ++i)
-                if (string.Compare (arguments[i] ().AsString, compare) != 0)
+                if (string.Compare (arguments[i].Value.AsString, compare) != 0)
                     return BooleanValue.False;
 
             return BooleanValue.True;
@@ -77,44 +56,29 @@ namespace   Demo
 
         public static IValue    Greater (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return BooleanValue.False;
-
-            return new BooleanValue (arguments[0] ().AsNumber > arguments[1] ().AsNumber);
+            return new BooleanValue (arguments[0].Value.AsNumber > arguments[1].Value.AsNumber);
         }
 
         public static IValue    GreaterEqual (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return BooleanValue.False;
-
-            return new BooleanValue (arguments[0] ().AsNumber >= arguments[1] ().AsNumber);
+            return new BooleanValue (arguments[0].Value.AsNumber >= arguments[1].Value.AsNumber);
         }
 
         public static IValue    Lower (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            return new BooleanValue (arguments[0] ().AsNumber < arguments[1] ().AsNumber);
+            return new BooleanValue (arguments[0].Value.AsNumber < arguments[1].Value.AsNumber);
         }
 
         public static IValue    LowerEqual (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            return new BooleanValue (arguments[0] ().AsNumber <= arguments[1] ().AsNumber);
+            return new BooleanValue (arguments[0].Value.AsNumber <= arguments[1].Value.AsNumber);
         }
 
         public static IValue    Match (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
             try
             {
-                return new BooleanValue (Regex.IsMatch (arguments[0] ().AsString, arguments[1] ().AsString));
+                return new BooleanValue (Regex.IsMatch (arguments[0].Value.AsString, arguments[1].Value.AsString));
             }
             catch
             {
@@ -124,42 +88,29 @@ namespace   Demo
 
         public static IValue    Mod (Argument[] arguments)
         {
-            decimal denominator;
-
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            denominator = arguments[1] ().AsNumber;
+            decimal denominator = arguments[1].Value.AsNumber;
 
             if (denominator == 0)
                 return UndefinedValue.Instance;
 
-            return new NumberValue (arguments[0] ().AsNumber % denominator);
+            return new NumberValue (arguments[0].Value.AsNumber % denominator);
         }
 
         public static IValue    Mul (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            return new NumberValue (arguments[0] ().AsNumber * arguments[1] ().AsNumber);
+            return new NumberValue (arguments[0].Value.AsNumber * arguments[1].Value.AsNumber);
         }
 
         public static IValue    Slice (Argument[] arguments)
         {
-            IList<KeyValuePair<IValue, IValue>> array;
+            IList<KeyValuePair<IValue, IValue>> array = arguments[0].Value.Children;
             int                                 count;
             int                                 index;
             IList<KeyValuePair<IValue, IValue>> slice;
             int                                 start;
 
-            if (arguments.Length < 2 || arguments.Length > 3)
-                return UndefinedValue.Instance;
-
-            array = arguments[0] ().Children;
-
-            start = Math.Min ((int)arguments[1] ().AsNumber, array.Count);
-            count = arguments.Length > 2 ? Math.Min ((int)arguments[2] ().AsNumber, array.Count - start) : array.Count - start;
+            start = Math.Min ((int)arguments[1].Value.AsNumber, array.Count);
+            count = arguments.Length > 2 ? Math.Min ((int)arguments[2].Value.AsNumber, array.Count - start) : array.Count - start;
 
             slice = new KeyValuePair<IValue, IValue>[count];
 
@@ -171,10 +122,7 @@ namespace   Demo
 
         public static IValue    Sub (Argument[] arguments)
         {
-            if (arguments.Length != 2)
-                return UndefinedValue.Instance;
-
-            return new NumberValue (arguments[0] ().AsNumber - arguments[1] ().AsNumber);
+            return new NumberValue (arguments[0].Value.AsNumber - arguments[1].Value.AsNumber);
         }
-	}
+    }
 }

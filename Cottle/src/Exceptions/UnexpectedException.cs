@@ -18,13 +18,21 @@ namespace   Cottle.Exceptions
             }
         }
 
-		public string   Expected
-		{
-			get
-			{
-				return this.expected;
-			}
-		}
+        public string   Expected
+        {
+            get
+            {
+                return this.expected;
+            }
+        }
+
+        public int      Index
+        {
+            get
+            {
+                return this.index;
+            }
+        }
 
         public int  	Line
         {
@@ -34,13 +42,13 @@ namespace   Cottle.Exceptions
             }
         }
 
-		public string	Value
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+        public string	Value
+        {
+            get
+            {
+                return this.value;
+            }
+        }
 
         #endregion
 
@@ -48,11 +56,13 @@ namespace   Cottle.Exceptions
 
         private int 	column;
 
-		private string	expected;
+        private string	expected;
+
+        private int     index;
 
         private int 	line;
 
-		private string	value;
+        private string	value;
 
         #endregion
 
@@ -62,9 +72,10 @@ namespace   Cottle.Exceptions
             base (string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Value, expected, lexer.Line, lexer.Column))
         {
             this.column = lexer.Column;
-			this.expected = expected;
+            this.expected = expected;
+            this.index = lexer.Index;
             this.line = lexer.Line;
-			this.value = lexer.Value;
+            this.value = lexer.Value;
         }
 
         #endregion

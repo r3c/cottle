@@ -127,6 +127,7 @@
             this.textBoxInput.Size = new System.Drawing.Size (371, 474);
             this.textBoxInput.TabIndex = 0;
             this.textBoxInput.Text = resources.GetString ("textBoxInput.Text");
+            this.textBoxInput.WordWrap = false;
             // 
             // splitContainerOutput
             // 
@@ -168,6 +169,7 @@
             this.textBoxDebug.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxDebug.Size = new System.Drawing.Size (371, 250);
             this.textBoxDebug.TabIndex = 1;
+            this.textBoxDebug.WordWrap = false;
             // 
             // groupBoxPrint
             // 
@@ -191,6 +193,7 @@
             this.textBoxPrint.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBoxPrint.Size = new System.Drawing.Size (371, 247);
             this.textBoxPrint.TabIndex = 3;
+            this.textBoxPrint.WordWrap = false;
             // 
             // DemoForm
             // 

@@ -32,7 +32,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return null;
+                return Function.Undefined;
             }
         }
 

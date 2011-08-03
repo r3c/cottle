@@ -31,23 +31,21 @@ namespace   Cottle.Expressions
         public IValue   Evaluate (Scope scope)
         {
             Argument[]  arguments;
-            IValue      value;
+            Function    function;
             int         i;
 
-            value = this.caller.Evaluate (scope);
+            function = this.caller.Evaluate (scope).AsFunction;
 
-            if (value.AsFunction != null)
+            if ((function.Callback != null) &&
+                (function.Min <= this.arguments.Count) &&
+                (function.Max < 0 || function.Max >= this.arguments.Count))
             {
                 arguments = new Argument[this.arguments.Count];
 
                 for (i = this.arguments.Count; i-- > 0; )
-                {
-                    IExpression expression = this.arguments[i];
+                    arguments[i] = new Argument (scope, this.arguments[i]);
 
-                    arguments[i] = () => expression.Evaluate (scope);
-                }
-
-                return value.AsFunction (arguments);
+                return function.Callback (arguments);
             }
 
             return UndefinedValue.Instance;

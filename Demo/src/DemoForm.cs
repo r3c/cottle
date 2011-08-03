@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using Cottle;
+using Cottle.Exceptions;
 using Cottle.Values;
 
 namespace   Demo
@@ -26,16 +27,35 @@ namespace   Demo
 
             try
             {
-                document = parser.Parse (new StringReader (this.textBoxInput.Text));
+                try
+                {
+                    document = parser.Parse (new StringReader (this.textBoxInput.Text));
 
-                this.FillFunctions (document.Values);
-                this.FillValues (document.Values);
+                    this.FillFunctions (document.Values);
+                    this.FillValues (document.Values);
 
-                this.textBoxDebug.Text = document.Debug ();
-                this.textBoxPrint.Text = document.Print ();
+                    this.textBoxDebug.Text = document.Debug ();
+                    this.textBoxPrint.Text = document.Print ();
 
-                this.textBoxResult.BackColor = Color.LightGreen;
-                this.textBoxResult.Text = "OK";
+                    this.textBoxResult.BackColor = Color.LightGreen;
+                    this.textBoxResult.Text = "OK";
+                }
+                catch (UnexpectedException ex)
+                {
+                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - ex.Value.Length - 1, 0);
+                    this.textBoxInput.SelectionLength = ex.Value.Length;
+                    this.textBoxInput.Focus ();
+
+                    throw;
+                }
+                catch (UnknownException ex)
+                {
+                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - 1, 0);
+                    this.textBoxInput.SelectionLength = 1;
+                    this.textBoxInput.Focus ();
+
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -46,20 +66,20 @@ namespace   Demo
 
         private void    FillFunctions (IDictionary<string, IValue> values)
         {
-            values.Add ("add", new FunctionValue (Callbacks.Add));
-            values.Add ("contains", new FunctionValue (Callbacks.Contains));
-            values.Add ("count", new FunctionValue (Callbacks.Count));
-            values.Add ("div", new FunctionValue (Callbacks.Div));
-            values.Add ("equal", new FunctionValue (Callbacks.Equal));
-            values.Add ("gequal", new FunctionValue (Callbacks.GreaterEqual));
-            values.Add ("greater", new FunctionValue (Callbacks.Greater));
-            values.Add ("lequal", new FunctionValue (Callbacks.LowerEqual));
-            values.Add ("lower", new FunctionValue (Callbacks.Lower));
-            values.Add ("match", new FunctionValue (Callbacks.Match));
-            values.Add ("mod", new FunctionValue (Callbacks.Mod));
-            values.Add ("mul", new FunctionValue (Callbacks.Mul));
-            values.Add ("slice", new FunctionValue (Callbacks.Slice));
-            values.Add ("sub", new FunctionValue (Callbacks.Sub));
+            values.Add ("add", new FunctionValue (new Function (Callbacks.Add, 2)));
+            values.Add ("contains", new FunctionValue (new Function (Callbacks.Contains, 1, -1)));
+            values.Add ("count", new FunctionValue (new Function (Callbacks.Count, 1)));
+            values.Add ("div", new FunctionValue (new Function (Callbacks.Div, 2)));
+            values.Add ("equal", new FunctionValue (new Function (Callbacks.Equal, 1, -1)));
+            values.Add ("gequal", new FunctionValue (new Function (Callbacks.GreaterEqual, 2)));
+            values.Add ("greater", new FunctionValue (new Function (Callbacks.Greater, 2)));
+            values.Add ("lequal", new FunctionValue (new Function (Callbacks.LowerEqual, 2)));
+            values.Add ("lower", new FunctionValue (new Function (Callbacks.Lower, 2)));
+            values.Add ("match", new FunctionValue (new Function (Callbacks.Match, 2)));
+            values.Add ("mod", new FunctionValue (new Function (Callbacks.Mod, 2)));
+            values.Add ("mul", new FunctionValue (new Function (Callbacks.Mul, 2)));
+            values.Add ("slice", new FunctionValue (new Function (Callbacks.Slice, 2, 3)));
+            values.Add ("sub", new FunctionValue (new Function (Callbacks.Sub, 2)));
         }
 
         private void    FillValues (IDictionary<string, IValue> values)

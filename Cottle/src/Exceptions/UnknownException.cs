@@ -18,6 +18,14 @@ namespace   Cottle.Exceptions
             }
         }
 
+        public int      Index
+        {
+            get
+            {
+                return this.index;
+            }
+        }
+
         public int      Line
         {
             get
@@ -40,6 +48,8 @@ namespace   Cottle.Exceptions
 
         private int     column;
 
+        private int     index;
+
         private int     line;
 
         private string  unknown;
@@ -52,6 +62,7 @@ namespace   Cottle.Exceptions
             base (string.Format ("Found '{0}' at line {1}, column {2}", unknown, lexer.Line, lexer.Column))
         {
             this.column = lexer.Column;
+            this.index = lexer.Index;
             this.line = lexer.Line;
             this.unknown = unknown;
         }

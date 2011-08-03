@@ -19,6 +19,14 @@ namespace   Cottle.Lexers
             }
         }
 
+        public int          Index
+        {
+            get
+            {
+                return this.index;
+            }
+        }
+
         public int          Line
         {
             get
@@ -51,6 +59,8 @@ namespace   Cottle.Lexers
 
         private bool        eof;
 
+        private int         index;
+
         private char        last;
 
         private int         line;
@@ -71,6 +81,7 @@ namespace   Cottle.Lexers
         {
             this.column = 1;
             this.eof = false;
+            this.index = 0;
             this.last = '\0';
             this.line = 1;
             this.reader = reader;
@@ -134,7 +145,6 @@ namespace   Cottle.Lexers
 
                         return;
 
-                    #warning used?
                     case '}':
                         this.type = LexemType.BLOCK_END;
                         this.value = this.last.ToString ();
@@ -292,7 +302,7 @@ namespace   Cottle.Lexers
                         return;
 
                     default:
-                        throw new UnknownException (this, "unknown character");
+                        throw new UnknownException (this, "unexpected character");
                 }
             }
         }
@@ -390,6 +400,8 @@ namespace   Cottle.Lexers
                 }
                 else
                     ++this.column;
+
+                ++this.index;
             }
             else
                 this.eof = true;
