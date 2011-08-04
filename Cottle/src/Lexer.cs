@@ -137,8 +137,16 @@ namespace   Cottle.Lexers
 
                         break;
 
+                    case ',':
+                        this.type = LexemType.COMMA;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
                     case ':':
-                        this.type = LexemType.BLOCK_BODY;
+                        this.type = LexemType.COLON;
                         this.value = this.last.ToString ();
 
                         this.Read ();
@@ -146,7 +154,23 @@ namespace   Cottle.Lexers
                         return;
 
                     case '}':
-                        this.type = LexemType.BLOCK_END;
+                        this.type = LexemType.BRACE_END;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
+                    case '[':
+                        this.type = LexemType.BRACKET_BEGIN;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
+                    case ']':
+                        this.type = LexemType.BRACKET_END;
                         this.value = this.last.ToString ();
 
                         this.Read ();
@@ -154,15 +178,7 @@ namespace   Cottle.Lexers
                         return;
 
                     case '(':
-                        this.type = LexemType.ARGUMENT_BEGIN;
-                        this.value = this.last.ToString ();
-
-                        this.Read ();
-
-                        return;
-
-                    case ',':
-                        this.type = LexemType.ARGUMENT_NEXT;
+                        this.type = LexemType.PARENTHESIS_BEGIN;
                         this.value = this.last.ToString ();
 
                         this.Read ();
@@ -170,7 +186,7 @@ namespace   Cottle.Lexers
                         return;
 
                     case ')':
-                        this.type = LexemType.ARGUMENT_END;
+                        this.type = LexemType.PARENTHESIS_END;
                         this.value = this.last.ToString ();
 
                         this.Read ();
@@ -323,15 +339,7 @@ namespace   Cottle.Lexers
             switch (this.last)
             {
                 case '{':
-                    this.type = LexemType.BLOCK_BEGIN;
-                    this.value = this.last.ToString ();
-
-                    this.Read ();
-
-                    return;
-
-                case '|':
-                    this.type = LexemType.BLOCK_NEXT;
+                    this.type = LexemType.BRACE_BEGIN;
                     this.value = this.last.ToString ();
 
                     this.Read ();
@@ -339,7 +347,15 @@ namespace   Cottle.Lexers
                     return;
 
                 case '}':
-                    this.type = LexemType.BLOCK_END;
+                    this.type = LexemType.BRACE_END;
+                    this.value = this.last.ToString ();
+
+                    this.Read ();
+
+                    return;
+
+                case '|':
+                    this.type = LexemType.PIPE;
                     this.value = this.last.ToString ();
 
                     this.Read ();
@@ -416,16 +432,18 @@ namespace   Cottle.Lexers
         public enum LexemType
         {
             EOF,
-            ARGUMENT_BEGIN,
-            ARGUMENT_END,
-            ARGUMENT_NEXT,
-            BLOCK_BEGIN,
-            BLOCK_BODY,
-            BLOCK_END,
-            BLOCK_NEXT,
+            BRACE_BEGIN,
+            BRACE_END,
+            BRACKET_BEGIN,
+            BRACKET_END,
+            COMMA,
+            COLON,
             FIELD,
             LITERAL,
             NUMBER,
+            PIPE,
+            PARENTHESIS_BEGIN,
+            PARENTHESIS_END,
             STRING
         }
 

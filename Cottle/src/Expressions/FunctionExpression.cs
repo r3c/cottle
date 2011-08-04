@@ -2,23 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Cottle.Expressions.Generics;
 using Cottle.Values;
 
 namespace   Cottle.Expressions
 {
-    class   FunctionExpression : IExpression
+    sealed class    FunctionExpression : Expression
     {
         #region Attributes
 
         private List<IExpression>   arguments;
 
-        private VarExpression       caller;
+        private NameExpression       caller;
 
         #endregion
 
         #region Constructors
 
-        public  FunctionExpression (VarExpression caller, IEnumerable<IExpression> arguments)
+        public  FunctionExpression (NameExpression caller, IEnumerable<IExpression> arguments)
         {
             this.arguments = new List<IExpression> (arguments);
             this.caller = caller;
@@ -28,7 +29,7 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public IValue   Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope)
         {
             Argument[]  arguments;
             Function    function;

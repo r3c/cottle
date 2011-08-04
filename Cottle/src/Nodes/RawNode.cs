@@ -26,9 +26,9 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
-            writer.Write (this.text.Trim ());
+            writer.Write (this.text);
         }
 
         public override void    Print (Scope scope, TextWriter writer)

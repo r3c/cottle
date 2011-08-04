@@ -19,15 +19,15 @@ namespace   Cottle.Nodes
 
         private IExpression     from;
 
-        private VarExpression   key;
+        private NameExpression   key;
 
-        private VarExpression   value;
+        private NameExpression   value;
 
         #endregion
 
         #region Constructors
 
-        public  ForNode (IExpression from, VarExpression key, VarExpression value, INode body, INode empty)
+        public  ForNode (IExpression from, NameExpression key, NameExpression value, INode body, INode empty)
         {
             this.body = body;
             this.empty = empty;
@@ -40,27 +40,20 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             if (this.key != null)
                 writer.Write (string.Format ("{{for {0}, {1} in {2}:", this.key, this.value, this.from));
             else
                 writer.Write (string.Format ("{{for {0} in {1}:", this.value, this.from));
 
-            writer.Increase ();
-
             this.body.Debug (writer);
-
-            writer.Decrease ();
 
             if (this.empty != null)
             {
                 writer.Write ("|empty:");
-                writer.Increase ();
 
                 this.empty.Debug (writer);
-
-                writer.Decrease ();
             }
 
             writer.Write ("}");
@@ -77,10 +70,10 @@ namespace   Cottle.Nodes
                     scope.Enter ();
 
                     if (this.key != null)
-                        this.key.Set (scope, pair.Key, Scope.SetMode.DECLARE);
+                        this.key.Set (scope, pair.Key, Scope.SetMode.LOCAL);
 
                     if (this.value != null)
-                        this.value.Set (scope, pair.Value, Scope.SetMode.DECLARE);
+                        this.value.Set (scope, pair.Value, Scope.SetMode.LOCAL);
 
                     this.body.Print (scope, writer);
 

@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
-namespace   Cottle.Expressions.Generics
+using Cottle.Expressions.Generics;
+
+namespace   Cottle.Expressions
 {
-    abstract class  ConstantExpression<T> : IExpression
+    sealed class    ConstantExpression : Expression
     {
         #region Attributes
 
-        protected IValue    value;
+        private IValue  value;
 
         #endregion
 
@@ -24,12 +25,15 @@ namespace   Cottle.Expressions.Generics
 
         #region Methods
 
-        public IValue   Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope)
         {
             return this.value;
         }
 
-        public abstract override string ToString ();
+        public override string  ToString ()
+        {
+            return this.value.ToString ();
+        }
 
         #endregion
     }

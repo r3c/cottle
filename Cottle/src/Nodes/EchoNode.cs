@@ -26,7 +26,7 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             writer.Write (string.Format ("{{echo {0}}}", this.expression));
         }

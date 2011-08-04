@@ -76,6 +76,11 @@ namespace   Cottle.Values
             return false;
         }
 
+        public override string  ToString ()
+        {
+            return "<undefined>";
+        }
+
         #endregion
     }
 }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Cottle;
 using Cottle.Exceptions;
 using Cottle.Values;
+using Cottle.Commons;
 
 namespace   Demo
 {
@@ -31,8 +32,9 @@ namespace   Demo
                 {
                     document = parser.Parse (new StringReader (this.textBoxInput.Text));
 
-                    this.FillFunctions (document.Values);
-                    this.FillValues (document.Values);
+                    CommonFunctions.Assign (document);
+
+                    this.FillDocument (document.Values);
 
                     this.textBoxDebug.Text = document.Debug ();
                     this.textBoxPrint.Text = document.Print ();
@@ -64,25 +66,7 @@ namespace   Demo
             }
         }
 
-        private void    FillFunctions (IDictionary<string, IValue> values)
-        {
-            values.Add ("add", new FunctionValue (new Function (Callbacks.Add, 2)));
-            values.Add ("contains", new FunctionValue (new Function (Callbacks.Contains, 1, -1)));
-            values.Add ("count", new FunctionValue (new Function (Callbacks.Count, 1)));
-            values.Add ("div", new FunctionValue (new Function (Callbacks.Div, 2)));
-            values.Add ("equal", new FunctionValue (new Function (Callbacks.Equal, 1, -1)));
-            values.Add ("gequal", new FunctionValue (new Function (Callbacks.GreaterEqual, 2)));
-            values.Add ("greater", new FunctionValue (new Function (Callbacks.Greater, 2)));
-            values.Add ("lequal", new FunctionValue (new Function (Callbacks.LowerEqual, 2)));
-            values.Add ("lower", new FunctionValue (new Function (Callbacks.Lower, 2)));
-            values.Add ("match", new FunctionValue (new Function (Callbacks.Match, 2)));
-            values.Add ("mod", new FunctionValue (new Function (Callbacks.Mod, 2)));
-            values.Add ("mul", new FunctionValue (new Function (Callbacks.Mul, 2)));
-            values.Add ("slice", new FunctionValue (new Function (Callbacks.Slice, 2, 3)));
-            values.Add ("sub", new FunctionValue (new Function (Callbacks.Sub, 2)));
-        }
-
-        private void    FillValues (IDictionary<string, IValue> values)
+        private void    FillDocument (IDictionary<string, IValue> values)
         {
             Dictionary<IValue, IValue>  alertMessages = new Dictionary<IValue, IValue> ();
             Dictionary<IValue, IValue>  alertParams = new Dictionary<IValue, IValue> ();

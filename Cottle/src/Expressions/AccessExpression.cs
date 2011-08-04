@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Cottle.Expressions.Generics;
 using Cottle.Values;
 
 namespace   Cottle.Expressions
 {
-    class   AccessExpression : IExpression
+    class   AccessExpression : Expression
     {
         #region Attributes
 
-        private IEnumerable<VarExpression>  fields;
+        private IEnumerable<NameExpression>  fields;
 
         #endregion
 
         #region Constructors
 
-        public  AccessExpression (IEnumerable<VarExpression> fields)
+        public  AccessExpression (IEnumerable<NameExpression> fields)
         {
             this.fields = fields;
         }
@@ -25,11 +26,11 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public IValue   Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope)
         {
             IValue  value = null;
 
-            foreach (VarExpression field in this.fields)
+            foreach (NameExpression field in this.fields)
             {
                 if (value != null)
                     value = field.Dereference (value);
@@ -45,7 +46,7 @@ namespace   Cottle.Expressions
             StringBuilder   builder = new StringBuilder ();
             bool            dot = false;
 
-            foreach (VarExpression field in this.fields)
+            foreach (NameExpression field in this.fields)
             {
                 if (dot)
                     builder.Append ('/');

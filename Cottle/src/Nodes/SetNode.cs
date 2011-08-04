@@ -12,7 +12,7 @@ namespace   Cottle.Nodes
     {
         #region Atttributes
 
-        private VarExpression   alias;
+        private NameExpression   alias;
 
         private IExpression     value;
 
@@ -20,7 +20,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  SetNode (VarExpression alias, IExpression value)
+        public  SetNode (NameExpression alias, IExpression value)
         {
             this.alias = alias;
             this.value = value;
@@ -30,14 +30,14 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             writer.Write (string.Format ("{{set {0} to {1}}}", this.alias, this.value));
         }
 
         public override void    Print (Scope scope, TextWriter writer)
         {
-            this.alias.Set (scope, this.value.Evaluate (scope), Scope.SetMode.DECLARE_OR_REPLACE);
+            this.alias.Set (scope, this.value.Evaluate (scope), Scope.SetMode.ANYWHERE);
         }
 
         #endregion

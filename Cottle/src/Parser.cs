@@ -7,6 +7,7 @@ using Cottle.Exceptions;
 using Cottle.Expressions;
 using Cottle.Lexers;
 using Cottle.Nodes;
+using Cottle.Values;
 
 namespace   Cottle
 {
@@ -54,17 +55,14 @@ namespace   Cottle
             Keyword keyword;
             INode   node;
 
-            if (this.lexer.Type != Lexer.LexemType.LITERAL)
-                throw new UnexpectedException (this.lexer, "keyword");
-
-            if (Parser.KEYWORDS.TryGetValue (this.lexer.Value, out keyword))
+            if (this.lexer.Type == Lexer.LexemType.LITERAL && Parser.KEYWORDS.TryGetValue (this.lexer.Value, out keyword))
                 this.lexer.Next ();
             else
                 keyword = p => p.ParseKeywordEcho ();
 
             node = keyword (this);
 
-            if (this.lexer.Type != Lexer.LexemType.BLOCK_END)
+            if (this.lexer.Type != Lexer.LexemType.BRACE_END)
                 throw new UnexpectedException (this.lexer, "end block character ('}')");
 
             this.lexer.Mode (Lexer.LexerMode.RAW);
@@ -75,7 +73,7 @@ namespace   Cottle
 
         private INode   ParseBody ()
         {
-            if (this.lexer.Type != Lexer.LexemType.BLOCK_BODY)
+            if (this.lexer.Type != Lexer.LexemType.COLON)
                 throw new UnexpectedException (this.lexer, "body separator (':')");
 
             this.lexer.Mode (Lexer.LexerMode.RAW);
@@ -87,74 +85,51 @@ namespace   Cottle
         private IExpression ParseExpression ()
         {
             List<IExpression>   arguments;
-            IExpression         evaluable;
-            List<VarExpression> fields;
-            decimal             number;
-            VarExpression       variable;
+            List<NameExpression> fields;
+            NameExpression       variable;
 
             switch (this.lexer.Type)
             {
+                case Lexer.LexemType.BRACKET_BEGIN:
+                case Lexer.LexemType.NUMBER:
+                case Lexer.LexemType.STRING:
+                    return new ConstantExpression (this.ParseValue ());
+
                 case Lexer.LexemType.LITERAL:
-                    variable = this.ParseVariable ();
+                    variable = this.ParseName ();
 
-                    switch (this.lexer.Type)
+                    if (this.lexer.Type == Lexer.LexemType.PARENTHESIS_BEGIN)
                     {
-                        case Lexer.LexemType.ARGUMENT_BEGIN:
-                            this.lexer.Next ();
+                        arguments = new List<IExpression> ();
 
-                            arguments = new List<IExpression> ();
+                        for (this.lexer.Next (); this.lexer.Type != Lexer.LexemType.PARENTHESIS_END; )
+                        {
+                            arguments.Add (this.ParseExpression ());
 
-                            while (this.lexer.Type != Lexer.LexemType.ARGUMENT_END)
-                            {
-                                arguments.Add (this.ParseExpression ());
-
-                                if (this.lexer.Type == Lexer.LexemType.ARGUMENT_NEXT)
-                                    this.lexer.Next ();
-                            }
-
-                            this.lexer.Next ();
-
-                            evaluable = new FunctionExpression (variable, arguments);
-
-                            break;
-
-                        default:
-                            fields = new List<VarExpression> ();
-                            fields.Add (variable);
-
-                            while (this.lexer.Type == Lexer.LexemType.FIELD)
-                            {
+                            if (this.lexer.Type == Lexer.LexemType.COMMA)
                                 this.lexer.Next ();
+                        }
 
-                                fields.Add (this.ParseVariable ());
-                            }
+                        this.lexer.Next ();
 
-                            evaluable = new AccessExpression (fields);
-
-                            break;
+                        return new FunctionExpression (variable, arguments);
                     }
 
-                    break;
+                    fields = new List<NameExpression> ();
+                    fields.Add (variable);
 
-                case Lexer.LexemType.NUMBER:
-                    evaluable = new NumberExpression (decimal.TryParse (this.lexer.Value, out number) ? number : default (decimal));
+                    while (this.lexer.Type == Lexer.LexemType.FIELD)
+                    {
+                        this.lexer.Next ();
 
-                    this.lexer.Next ();
+                        fields.Add (this.ParseName ());
+                    }
 
-                    break;
-
-                case Lexer.LexemType.STRING:
-                    evaluable = new StringExpression (this.lexer.Value);
-
-                    this.lexer.Next ();
-
-                    break;
+                    return new AccessExpression (fields);
 
                 default:
                     throw new UnexpectedException (this.lexer, "expression");
             }
-
-            return evaluable;
         }
 
         private INode   ParseKeywordEcho ()
@@ -166,19 +141,19 @@ namespace   Cottle
         {
             INode           body;
             INode           empty;
-            VarExpression   first;
+            NameExpression   first;
             IExpression     from;
-            VarExpression   key;
-            VarExpression   value;
+            NameExpression   key;
+            NameExpression   value;
 
-            first = this.ParseVariable ();
+            first = this.ParseName ();
 
-            if (this.lexer.Type == Lexer.LexemType.ARGUMENT_NEXT)
+            if (this.lexer.Type == Lexer.LexemType.COMMA)
             {
                 this.lexer.Next ();
 
                 key = first;
-                value = this.ParseVariable ();
+                value = this.ParseName ();
             }
             else
             {
@@ -191,7 +166,7 @@ namespace   Cottle
             from = this.ParseExpression ();
             body = this.ParseBody ();
 
-            if (this.lexer.Type == Lexer.LexemType.BLOCK_NEXT)
+            if (this.lexer.Type == Lexer.LexemType.PIPE)
             {
                 this.lexer.Next ();
 
@@ -215,7 +190,7 @@ namespace   Cottle
 
             branches.Add (new IfNode.Branch (test, this.ParseBody ()));
 
-            while (fallback == null && this.lexer.Type == Lexer.LexemType.BLOCK_NEXT)
+            while (fallback == null && this.lexer.Type == Lexer.LexemType.PIPE)
             {
                 this.lexer.Next ();
 
@@ -247,10 +222,10 @@ namespace   Cottle
 
         private INode   ParseKeywordSet ()
         {
-            VarExpression   alias;
+            NameExpression   alias;
             IExpression     value;
 
-            alias = this.ParseVariable ();
+            alias = this.ParseName ();
 
             this.ParseUnused (Lexer.LexemType.LITERAL, "to", "'to' keyword");
 
@@ -268,6 +243,25 @@ namespace   Cottle
             return new WhileNode (test, this.ParseBody ());
         }
 
+        private NameExpression  ParseName ()
+        {
+            NameExpression  name;
+
+            switch (this.lexer.Type)
+            {
+                case Lexer.LexemType.LITERAL:
+                case Lexer.LexemType.NUMBER:
+                    name = new NameExpression (this.lexer.Value);
+
+                    this.lexer.Next ();
+
+                    return name;
+
+                default:
+                    throw new UnexpectedException (this.lexer, "variable name");
+            }
+        }
+
         private INode   ParseRaw ()
         {
             bool        first;
@@ -281,14 +275,14 @@ namespace   Cottle
             {
                 switch (this.lexer.Type)
                 {
-                    case Lexer.LexemType.BLOCK_END:
-                    case Lexer.LexemType.BLOCK_NEXT:
+                    case Lexer.LexemType.BRACE_END:
+                    case Lexer.LexemType.PIPE:
                     case Lexer.LexemType.EOF:
                         this.lexer.Mode (Lexer.LexerMode.BLOCK);
 
                         return nodes.Count != 1 ? new CompositeNode (nodes) : nodes[0];
 
-                    case Lexer.LexemType.BLOCK_BEGIN:
+                    case Lexer.LexemType.BRACE_BEGIN:
                         this.lexer.Mode (Lexer.LexerMode.BLOCK);
                         this.lexer.Next ();
 
@@ -325,22 +319,59 @@ namespace   Cottle
             this.lexer.Next ();
         }
 
-        private VarExpression   ParseVariable ()
+        private IValue  ParseValue ()
         {
-            VarExpression   assignable;
+            List<KeyValuePair<IValue, IValue>>  collection;
+            int                                 index;
+            KeyValuePair<IValue, IValue>        item;
+            decimal                             number;
+            IValue                              value;
 
             switch (this.lexer.Type)
             {
-                case Lexer.LexemType.LITERAL:
-                case Lexer.LexemType.NUMBER:
-                    assignable = new VarExpression (this.lexer.Value);
+                case Lexer.LexemType.BRACKET_BEGIN:
+                    collection = new List<KeyValuePair<IValue, IValue>> ();
+                    index = 0;
+
+                    for (this.lexer.Next (); this.lexer.Type != Lexer.LexemType.BRACKET_END; )
+                    {
+                        value = this.ParseValue ();
+
+                        if (this.lexer.Type == Lexer.LexemType.COLON)
+                        {
+                            this.lexer.Next ();
+
+                            item = new KeyValuePair<IValue, IValue> (value, this.ParseValue ());
+                        }
+                        else
+                            item = new KeyValuePair<IValue, IValue> (new NumberValue (index++), value);
+
+                        collection.Add (item);
+
+                        if (this.lexer.Type == Lexer.LexemType.COMMA)
+                            this.lexer.Next ();
+                    }
 
                     this.lexer.Next ();
 
-                    return assignable;
+                    return new ArrayValue (collection);
+
+                case Lexer.LexemType.NUMBER:
+                    value = new NumberValue (decimal.TryParse (this.lexer.Value, out number) ? number : default (decimal));
+
+                    this.lexer.Next ();
+
+                    return value;
+
+                case Lexer.LexemType.STRING:
+                    value = new StringValue (this.lexer.Value);
+
+                    this.lexer.Next ();
+
+                    return value;
 
                 default:
-                    throw new UnexpectedException (this.lexer, "variable name");
+                    throw new UnexpectedException (this.lexer, "constant expression");
             }
         }
 

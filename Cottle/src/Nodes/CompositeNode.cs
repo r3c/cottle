@@ -26,7 +26,7 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             foreach (INode node in this.nodes)
                 node.Debug (writer);

@@ -44,28 +44,18 @@ namespace   Cottle
 
         #region Methods
 
-        public void Debug (TextWriter writer, string indent)
-        {
-            this.root.Debug (new DebugWriter (writer, indent));
-        }
-
         public void Debug (TextWriter writer)
         {
-            this.Debug (writer, Document.DEFAULT_INDENT);
-        }
-
-        public string   Debug (string indent)
-        {
-            StringWriter    writer = new StringWriter ();
-
-            this.Debug (writer, indent);
-
-            return writer.ToString ();
+            this.root.Debug (writer);
         }
 
         public string   Debug ()
         {
-            return this.Debug (Document.DEFAULT_INDENT);
+            StringWriter    writer = new StringWriter ();
+
+            this.Debug (writer);
+
+            return writer.ToString ();
         }
 
         public void Print (TextWriter writer)
@@ -73,7 +63,7 @@ namespace   Cottle
             Scope   scope = new Scope ();
 
             foreach (KeyValuePair<string, IValue> pair in this.values)
-                scope.Set (pair.Key, pair.Value, Scope.SetMode.DECLARE);
+                scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
 
             this.root.Print (scope, writer);
         }

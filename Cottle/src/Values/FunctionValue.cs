@@ -64,5 +64,14 @@ namespace   Cottle.Values
         }
 
         #endregion
+
+        #region Methods
+
+        public override string  ToString ()
+        {
+            return "<function>";
+        }
+
+        #endregion
     }
 }

@@ -29,14 +29,12 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             writer.Write (string.Format ("{{while {0}:", this.test));
-            writer.Increase ();
 
             this.body.Debug (writer);
 
-            writer.Decrease ();
             writer.Write ("}");
         }
 

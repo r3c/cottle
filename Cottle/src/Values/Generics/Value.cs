@@ -88,6 +88,8 @@ namespace   Cottle.Values.Generics
             return this.dictionary.ContainsKey (name);
         }
 
+        public abstract override string ToString ();
+
         #endregion
     }
 }

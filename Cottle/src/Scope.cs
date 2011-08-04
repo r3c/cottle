@@ -78,23 +78,17 @@ namespace   Cottle
 
             switch (mode)
             {
-                case SetMode.DECLARE:
-                    if (!level.Add (name))
-                        return false;
-
-                    break;
-
-                case SetMode.DECLARE_OR_REPLACE:
-                    if (!level.Add (name))
+                case SetMode.ANYWHERE:
+                    if (stack.Count == 0)
+                        level.Add (name);
+                    else
                         stack.Pop ();
 
                     break;
 
-                case SetMode.REPLACE:
-                    if (!level.Contains (name))
-                        return false;
-
-                    stack.Pop ();
+                case SetMode.LOCAL:
+                    if (!level.Add (name))
+                        stack.Pop ();
 
                     break;
             }
@@ -110,9 +104,8 @@ namespace   Cottle
 
         public enum SetMode
         {
-            DECLARE,
-            DECLARE_OR_REPLACE,
-            REPLACE
+            ANYWHERE,
+            LOCAL
         }
 
         #endregion

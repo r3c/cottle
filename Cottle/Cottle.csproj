@@ -36,16 +36,15 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Argument.cs" />
-    <Compile Include="src\DebugWriter.cs" />
+    <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Document.cs" />
     <Compile Include="src\Exceptions\UnknownException.cs" />
     <Compile Include="src\Exceptions\UnexpectedException.cs" />
     <Compile Include="src\Expressions\AccessExpression.cs" />
+    <Compile Include="src\Expressions\ConstantExpression.cs" />
     <Compile Include="src\Expressions\FunctionExpression.cs" />
-    <Compile Include="src\Expressions\Generics\ConstantExpression.cs" />
-    <Compile Include="src\Expressions\NumberExpression.cs" />
-    <Compile Include="src\Expressions\StringExpression.cs" />
-    <Compile Include="src\Expressions\VarExpression.cs" />
+    <Compile Include="src\Expressions\Generics\Expression.cs" />
+    <Compile Include="src\Expressions\NameExpression.cs" />
     <Compile Include="src\Function.cs" />
     <Compile Include="src\IExpression.cs" />
     <Compile Include="src\INode.cs" />
@@ -70,6 +69,7 @@
     <Compile Include="src\Values\NumberValue.cs" />
     <Compile Include="src\Values\StringValue.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

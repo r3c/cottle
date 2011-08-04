@@ -144,7 +144,7 @@
             // 
             this.splitContainerOutput.Panel2.Controls.Add (this.groupBoxPrint);
             this.splitContainerOutput.Size = new System.Drawing.Size (385, 555);
-            this.splitContainerOutput.SplitterDistance = 277;
+            this.splitContainerOutput.SplitterDistance = 150;
             this.splitContainerOutput.TabIndex = 4;
             // 
             // groupBoxDebug
@@ -154,7 +154,7 @@
             this.groupBoxDebug.Location = new System.Drawing.Point (0, 0);
             this.groupBoxDebug.Name = "groupBoxDebug";
             this.groupBoxDebug.Padding = new System.Windows.Forms.Padding (7);
-            this.groupBoxDebug.Size = new System.Drawing.Size (385, 277);
+            this.groupBoxDebug.Size = new System.Drawing.Size (385, 150);
             this.groupBoxDebug.TabIndex = 2;
             this.groupBoxDebug.TabStop = false;
             this.groupBoxDebug.Text = "Debug output:";
@@ -167,7 +167,7 @@
             this.textBoxDebug.Multiline = true;
             this.textBoxDebug.Name = "textBoxDebug";
             this.textBoxDebug.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxDebug.Size = new System.Drawing.Size (371, 250);
+            this.textBoxDebug.Size = new System.Drawing.Size (371, 123);
             this.textBoxDebug.TabIndex = 1;
             this.textBoxDebug.WordWrap = false;
             // 
@@ -178,7 +178,7 @@
             this.groupBoxPrint.Location = new System.Drawing.Point (0, 0);
             this.groupBoxPrint.Name = "groupBoxPrint";
             this.groupBoxPrint.Padding = new System.Windows.Forms.Padding (7);
-            this.groupBoxPrint.Size = new System.Drawing.Size (385, 274);
+            this.groupBoxPrint.Size = new System.Drawing.Size (385, 401);
             this.groupBoxPrint.TabIndex = 4;
             this.groupBoxPrint.TabStop = false;
             this.groupBoxPrint.Text = "Evaluation output:";
@@ -191,7 +191,7 @@
             this.textBoxPrint.Multiline = true;
             this.textBoxPrint.Name = "textBoxPrint";
             this.textBoxPrint.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxPrint.Size = new System.Drawing.Size (371, 247);
+            this.textBoxPrint.Size = new System.Drawing.Size (371, 374);
             this.textBoxPrint.TabIndex = 3;
             this.textBoxPrint.WordWrap = false;
             // 

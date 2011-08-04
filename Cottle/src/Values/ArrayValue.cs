@@ -56,5 +56,33 @@ namespace   Cottle.Values
         }
 
         #endregion
+
+        #region Methods
+
+        public override string  ToString ()
+        {
+            StringBuilder   builder = new StringBuilder ();
+            bool            separator = false;
+
+            builder.Append ('[');
+
+            foreach (KeyValuePair<IValue, IValue> item in this.list)
+            {
+                if (separator)
+                    builder.Append (", ");
+                else
+                    separator = true;
+
+                builder.Append (item.Key);
+                builder.Append (": ");
+                builder.Append (item.Value);
+            }
+
+            builder.Append (']');
+
+            return builder.ToString ();
+        }
+
+        #endregion
     }
 }

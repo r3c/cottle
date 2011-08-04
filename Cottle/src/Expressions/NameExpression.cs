@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle.Exceptions;
+using Cottle.Expressions.Generics;
 using Cottle.Values;
 
 namespace   Cottle.Expressions
-{
-    class   VarExpression : IExpression
+{  
+    sealed class    NameExpression : Expression
     {
         #region Attributes
 
@@ -17,7 +17,7 @@ namespace   Cottle.Expressions
 
         #region Constructors
 
-        public  VarExpression (string name)
+        public  NameExpression (string name)
         {
             this.name = name;
         }
@@ -36,7 +36,7 @@ namespace   Cottle.Expressions
             return UndefinedValue.Instance;
         }
 
-        public IValue   Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope)
         {
             IValue  value;
 

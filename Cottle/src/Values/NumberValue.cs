@@ -53,5 +53,14 @@ namespace   Cottle.Values
         }
 
         #endregion
+
+        #region Methods
+
+        public override string  ToString ()
+        {
+            return this.value.ToString (CultureInfo.InvariantCulture);
+        }
+
+        #endregion
     }
 }

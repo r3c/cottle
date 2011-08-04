@@ -9,7 +9,7 @@ namespace   Cottle
     {
         #region Methods
 
-        void    Debug (DebugWriter writer);
+        void    Debug (TextWriter writer);
 
         void    Print (Scope scope, TextWriter writer);
 

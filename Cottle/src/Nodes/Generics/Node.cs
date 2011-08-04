@@ -9,7 +9,7 @@ namespace   Cottle.Nodes.Generics
     {
         #region Methods
 
-        public abstract void    Debug (DebugWriter writer);
+        public abstract void    Debug (TextWriter writer);
 
         public abstract void    Print (Scope scope, TextWriter writer);
 

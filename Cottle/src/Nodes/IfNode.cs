@@ -27,18 +27,15 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (DebugWriter writer)
+        public override void    Debug (TextWriter writer)
         {
             bool    first = true;
 
             foreach (Branch branch in this.branches)
             {
                 writer.Write (string.Format (first ? "{{if {0}:" : "|elif {0}:", branch.Test));
-                writer.Increase ();
 
                 branch.Body.Debug (writer);
-
-                writer.Decrease ();
 
                 first = false;
             }
@@ -46,11 +43,8 @@ namespace   Cottle.Nodes
             if (this.fallback != null)
             {
                 writer.Write ("|else:");
-                writer.Increase ();
 
                 this.fallback.Debug (writer);
-
-                writer.Decrease ();
             }
 
             writer.Write ("}");
