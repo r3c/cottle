@@ -65,7 +65,7 @@ namespace   Cottle
             foreach (KeyValuePair<string, IValue> pair in this.values)
                 scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
 
-            this.root.Print (scope, writer);
+            this.root.Apply (scope, writer);
         }
 
         public string   Print ()

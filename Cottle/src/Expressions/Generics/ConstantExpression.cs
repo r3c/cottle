@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace   Cottle.Expressions.Generics
@@ -23,7 +24,7 @@ namespace   Cottle.Expressions.Generics
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope, TextWriter output)
         {
             return this.value;
         }

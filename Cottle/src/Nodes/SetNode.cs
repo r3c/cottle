@@ -8,11 +8,11 @@ using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
 {
-    class   SetNode : Node
+    sealed class    SetNode : Node
     {
         #region Atttributes
 
-        private NameExpression   alias;
+        private NameExpression  name;
 
         private IExpression     value;
 
@@ -20,9 +20,9 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  SetNode (NameExpression alias, IExpression value)
+        public  SetNode (NameExpression name, IExpression value)
         {
-            this.alias = alias;
+            this.name = name;
             this.value = value;
         }
 
@@ -30,14 +30,20 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (TextWriter writer)
+        public override IValue  Apply (Scope scope, TextWriter output)
         {
-            writer.Write (string.Format ("{{set {0} to {1}}}", this.alias, this.value));
+            this.name.Set (scope, this.value.Evaluate (scope, output), Scope.SetMode.ANYWHERE);
+
+            return null;
         }
 
-        public override void    Print (Scope scope, TextWriter writer)
+        public override void    Debug (TextWriter output)
         {
-            this.alias.Set (scope, this.value.Evaluate (scope), Scope.SetMode.ANYWHERE);
+            output.Write ("{set ");
+            output.Write (this.name);
+            output.Write (" to ");
+            output.Write (this.value);
+            output.Write ('}');
         }
 
         #endregion

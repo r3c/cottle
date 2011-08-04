@@ -5,7 +5,7 @@ using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
 {
-    class   IfNode : Node
+    sealed class    IfNode : Node
     {
         #region Attributes
 
@@ -27,43 +27,43 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (TextWriter writer)
+        public override IValue  Apply (Scope scope, TextWriter output)
+        {
+            foreach (Branch branch in this.branches)
+            {
+                if (branch.Test.Evaluate (scope, output).AsBoolean)
+                    return branch.Body.Apply (scope, output);
+            }
+
+            if (this.fallback != null)
+                return this.fallback.Apply (scope, output);
+
+            return null;
+        }
+
+        public override void    Debug (TextWriter output)
         {
             bool    first = true;
 
             foreach (Branch branch in this.branches)
             {
-                writer.Write (string.Format (first ? "{{if {0}:" : "|elif {0}:", branch.Test));
+                output.Write (first ? "{if " : "|elif");
+                output.Write (branch.Test);
+                output.Write (": ");
 
-                branch.Body.Debug (writer);
+                branch.Body.Debug (output);
 
                 first = false;
             }
 
             if (this.fallback != null)
             {
-                writer.Write ("|else:");
+                output.Write ("|else:");
 
-                this.fallback.Debug (writer);
+                this.fallback.Debug (output);
             }
 
-            writer.Write ("}");
-        }
-
-        public override void    Print (Scope scope, TextWriter writer)
-        {
-            foreach (Branch branch in this.branches)
-            {
-                if (branch.Test.Evaluate (scope).AsBoolean)
-                {
-                    branch.Body.Print (scope, writer);
-
-                    return;
-                }
-            }
-
-            if (this.fallback != null)
-                this.fallback.Print (scope, writer);
+            output.Write ('}');
         }
 
         #endregion

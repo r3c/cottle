@@ -9,7 +9,7 @@ using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    class   ForNode : Node
+    sealed class    ForNode : Node
     {
         #region Attributes
 
@@ -40,28 +40,10 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (TextWriter writer)
+        public override IValue  Apply (Scope scope, TextWriter output)
         {
-            if (this.key != null)
-                writer.Write (string.Format ("{{for {0}, {1} in {2}:", this.key, this.value, this.from));
-            else
-                writer.Write (string.Format ("{{for {0} in {1}:", this.value, this.from));
-
-            this.body.Debug (writer);
-
-            if (this.empty != null)
-            {
-                writer.Write ("|empty:");
-
-                this.empty.Debug (writer);
-            }
-
-            writer.Write ("}");
-        }
-
-        public override void    Print (Scope scope, TextWriter writer)
-        {
-            ICollection<KeyValuePair<IValue, IValue>>   collection = this.from.Evaluate (scope).Children;
+            ICollection<KeyValuePair<IValue, IValue>>   collection = this.from.Evaluate (scope, output).Children;
+            IValue                                      result;
 
             if (collection.Count > 0)
             {
@@ -75,13 +57,45 @@ namespace   Cottle.Nodes
                     if (this.value != null)
                         this.value.Set (scope, pair.Value, Scope.SetMode.LOCAL);
 
-                    this.body.Print (scope, writer);
+                    result = this.body.Apply (scope, output);
 
                     scope.Leave ();
+
+                    if (result != null)
+                        return result;
                 }
             }
             else if (this.empty != null)
-                this.empty.Print (scope, writer);
+                return this.empty.Apply (scope, output);
+
+            return null;
+        }
+
+        public override void    Debug (TextWriter output)
+        {
+            output.Write ("{for ");
+
+            if (this.key != null)
+            {
+                output.Write (this.key);
+                output.Write (", ");
+            }
+
+            output.Write (this.value);
+            output.Write (" in ");
+            output.Write (this.from);
+            output.Write (": ");
+
+            this.body.Debug (output);
+
+            if (this.empty != null)
+            {
+                output.Write ("|empty:");
+
+                this.empty.Debug (output);
+            }
+
+            output.Write ('}');
         }
 
         #endregion

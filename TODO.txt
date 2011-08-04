@@ -4,4 +4,4 @@ X Replace strings by IValues as keys in IValue.Children (should be optimized for
 X Change IValue.Children structure to allow children ordering function (like "sort")
 X Handle "while" keyword
 X Implement IValue GetHashCode method to allow IValue-based lookups (no more cast to strings)
-- Implement function declarations?
+X Implement function declarations

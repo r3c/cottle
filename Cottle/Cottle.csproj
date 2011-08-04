@@ -54,11 +54,13 @@
     <Compile Include="src\IValue.cs" />
     <Compile Include="src\Lexer.cs" />
     <Compile Include="src\Nodes\CompositeNode.cs" />
+    <Compile Include="src\Nodes\DefineNode.cs" />
     <Compile Include="src\Nodes\EchoNode.cs" />
     <Compile Include="src\Nodes\ForNode.cs" />
     <Compile Include="src\Nodes\Generics\Node.cs" />
     <Compile Include="src\Nodes\IfNode.cs" />
     <Compile Include="src\Nodes\RawNode.cs" />
+    <Compile Include="src\Nodes\ReturnNode.cs" />
     <Compile Include="src\Nodes\SetNode.cs" />
     <Compile Include="src\Nodes\WhileNode.cs" />
     <Compile Include="src\Parser.cs" />

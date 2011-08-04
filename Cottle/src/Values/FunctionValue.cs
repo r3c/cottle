@@ -73,7 +73,7 @@ namespace   Cottle.Values
 
         public override bool    Equals (IValue other)
         {
-            return this.function.Callback == other.AsFunction.Callback;
+            return false;
         }
 
         public override bool    Find (IValue key, out IValue value)
@@ -85,7 +85,7 @@ namespace   Cottle.Values
 
         public override int GetHashCode ()
         {
-            return this.function.Callback != null ? this.function.Callback.GetHashCode () : 0;
+            return this.function.GetHashCode ();
         }
 
         public override bool    Has (IValue key)

@@ -7,7 +7,7 @@ using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
 {
-    class   WhileNode : Node
+    sealed class    WhileNode : Node
     {
         #region Attributes
 
@@ -29,19 +29,30 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (TextWriter writer)
+        public override IValue  Apply (Scope scope, TextWriter output)
         {
-            writer.Write (string.Format ("{{while {0}:", this.test));
+            IValue  result;
 
-            this.body.Debug (writer);
+            while (this.test.Evaluate (scope, output).AsBoolean)
+            {
+                result = this.body.Apply (scope, output);
 
-            writer.Write ("}");
+                if (result != null)
+                    return result;
+            }
+
+            return null;
         }
 
-        public override void    Print (Scope scope, TextWriter writer)
+        public override void    Debug (TextWriter output)
         {
-            while (this.test.Evaluate (scope).AsBoolean)
-                this.body.Print (scope, writer);
+            output.Write ("{while ");
+            output.Write (this.test);
+            output.Write (": ");
+
+            this.body.Debug (output);
+
+            output.Write ("}");
         }
 
         #endregion

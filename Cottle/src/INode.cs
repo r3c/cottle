@@ -9,9 +9,9 @@ namespace   Cottle
     {
         #region Methods
 
-        void    Debug (TextWriter writer);
+        IValue  Apply (Scope scope, TextWriter output);
 
-        void    Print (Scope scope, TextWriter writer);
+        void    Debug (TextWriter output);
 
         #endregion
     }

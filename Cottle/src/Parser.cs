@@ -17,9 +17,11 @@ namespace   Cottle
 
         private static readonly Dictionary<string, Keyword> KEYWORDS = new Dictionary<string, Keyword>
         {
+            {"def",     p => p.ParseKeywordDefine ()},
             {"echo",    p => p.ParseKeywordEcho ()},
             {"for",     p => p.ParseKeywordFor ()},
             {"if",      p => p.ParseKeywordIf ()},
+            {"return",  p => p.ParseKeywordReturn ()},
             {"set",     p => p.ParseKeywordSet ()},
             {"while",   p => p.ParseKeywordWhile ()}
         };
@@ -159,6 +161,29 @@ namespace   Cottle
             }
         }
 
+        private INode   ParseKeywordDefine ()
+        {
+            List<NameExpression>    arguments;
+            NameExpression          name = this.ParseName ();
+
+            if (this.lexer.Type != Lexer.LexemType.PARENTHESIS_BEGIN)
+                throw new UnexpectedException (this.lexer, "arguments begin ('(')");
+
+            arguments = new List<NameExpression> ();
+
+            for (this.lexer.Next (); this.lexer.Type != Lexer.LexemType.PARENTHESIS_END; )
+            {
+                arguments.Add (this.ParseName ());
+
+                if (this.lexer.Type == Lexer.LexemType.COMMA)
+                    this.lexer.Next ();
+            }
+
+            this.lexer.Next ();
+
+            return new DefineNode (name, arguments, this.ParseBody ());
+        }
+
         private INode   ParseKeywordEcho ()
         {
             return new EchoNode (this.ParseExpression ());
@@ -245,13 +270,18 @@ namespace   Cottle
             return new IfNode (branches, fallback);
         }
 
+        private INode   ParseKeywordReturn ()
+        {
+            return new ReturnNode (this.ParseExpression ());
+        }
+
         private INode   ParseKeywordSet ()
         {
-            NameExpression  alias = this.ParseName ();
+            NameExpression  name = this.ParseName ();
 
             this.ParseUnused (Lexer.LexemType.NAME, "to", "'to' keyword");
 
-            return new SetNode (alias, this.ParseExpression ());
+            return new SetNode (name, this.ParseExpression ());
         }
 
         private INode   ParseKeywordWhile ()

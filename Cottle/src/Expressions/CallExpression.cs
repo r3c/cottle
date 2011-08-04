@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using Cottle.Expressions.Generics;
@@ -29,25 +30,12 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope)
+        public override IValue  Evaluate (Scope scope, TextWriter output)
         {
-            Argument[]  arguments;
-            Function    function;
-            int         i;
+            IValue  result = this.caller.Evaluate (scope, output).AsFunction.Execute (scope, this.arguments, output);
 
-            function = this.caller.Evaluate (scope).AsFunction;
-
-            if ((function.Callback != null) &&
-                (function.Min <= this.arguments.Count) &&
-                (function.Max < 0 || function.Max >= this.arguments.Count))
-            {
-                arguments = new Argument[this.arguments.Count];
-
-                for (i = this.arguments.Count; i-- > 0; )
-                    arguments[i] = new Argument (scope, this.arguments[i]);
-
-                return function.Callback (arguments);
-            }
+            if (result != null)
+                return result;
 
             return UndefinedValue.Instance;
         }
@@ -58,7 +46,7 @@ namespace   Cottle.Expressions
             bool            dot = false;
 
             builder.Append (this.caller);
-            builder.Append (" (");
+            builder.Append ('(');
 
             foreach (IExpression argument in this.arguments)
             {
@@ -70,7 +58,7 @@ namespace   Cottle.Expressions
                 builder.Append (argument);
             }
 
-            builder.Append (")");
+            builder.Append (')');
 
             return builder.ToString ();
         }

@@ -7,7 +7,7 @@ using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
 {
-    class   CompositeNode : Node
+    sealed class    CompositeNode : Node
     {
         #region Attributes
 
@@ -26,16 +26,25 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override void    Debug (TextWriter writer)
+        public override IValue  Apply (Scope scope, TextWriter output)
         {
+            IValue  result;
+
             foreach (INode node in this.nodes)
-                node.Debug (writer);
+            {
+                result = node.Apply (scope, output);
+
+                if (result != null)
+                    return result;
+            }
+
+            return null;
         }
 
-        public override void    Print (Scope scope, TextWriter writer)
+        public override void    Debug (TextWriter output)
         {
             foreach (INode node in this.nodes)
-                node.Print (scope, writer);
+                node.Debug (output);
         }
 
         #endregion

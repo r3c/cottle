@@ -7,7 +7,7 @@ using Cottle.Nodes.Generics;
 
 namespace   Cottle.Nodes
 {
-    sealed class    EchoNode : Node
+    sealed class    ReturnNode : Node
     {
         #region Attributes
 
@@ -17,7 +17,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  EchoNode (IExpression expression)
+        public  ReturnNode (IExpression expression)
         {
             this.expression = expression;
         }
@@ -28,14 +28,12 @@ namespace   Cottle.Nodes
 
         public override IValue  Apply (Scope scope, TextWriter output)
         {
-            output.Write (this.expression.Evaluate (scope, output).AsString);
-
-            return null;
+            return this.expression.Evaluate (scope, output);
         }
 
         public override void    Debug (TextWriter output)
         {
-            output.Write ("{echo ");
+            output.Write ("{return ");
             output.Write (this.expression);
             output.Write ('}');
         }

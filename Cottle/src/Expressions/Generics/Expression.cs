@@ -9,7 +9,7 @@ namespace   Cottle.Expressions.Generics
     {
         #region Methods
 
-        public abstract IValue          Evaluate (Scope scope);
+        public abstract IValue          Evaluate (Scope scope, TextWriter output);
 
         public abstract override string ToString ();
 
