@@ -69,7 +69,7 @@ namespace   Cottle.Commons
             int     i;
 
             for (i = 1; i < arguments.Length; ++i)
-                if (!value.Has (arguments[i].Value.AsString))
+                if (!value.Has (arguments[i].Value))
                     return BooleanValue.False;
 
             return BooleanValue.True;
@@ -122,6 +122,24 @@ namespace   Cottle.Commons
             return new NumberValue (arguments[0].Value.AsNumber * arguments[1].Value.AsNumber);
         }, 2);
 
+        public static readonly Function FunctionRandom = new Function (delegate (Argument[] arguments)
+        {
+            if (CommonFunctions.random == null)
+                CommonFunctions.random = new Random ();
+
+            switch (arguments.Length)
+            {
+                case 0:
+                    return new NumberValue (CommonFunctions.random.Next ());
+
+                case 1:
+                    return new NumberValue (CommonFunctions.random.Next ((int)arguments[0].Value.AsNumber));
+
+                default:
+                    return new NumberValue (CommonFunctions.random.Next ((int)arguments[0].Value.AsNumber, (int)arguments[1].Value.AsNumber));
+            }
+        }, 0, 2);
+
         public static readonly Function FunctionSlice = new Function (delegate (Argument[] arguments)
         {
             IList<KeyValuePair<IValue, IValue>> array = arguments[0].Value.Children;
@@ -148,6 +166,13 @@ namespace   Cottle.Commons
 
         #endregion
 
+        #region Attributes
+
+        [ThreadStatic]
+        private static Random   random = null;
+
+        #endregion
+
         #region Methods
 
         public static void  Assign (Document document)
@@ -166,6 +191,7 @@ namespace   Cottle.Commons
             document.Values["match"] = new FunctionValue (CommonFunctions.FunctionMatch);
             document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
             document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);
+            document.Values["rand"] = new FunctionValue (CommonFunctions.FunctionRandom);
             document.Values["slice"] = new FunctionValue (CommonFunctions.FunctionSlice);
             document.Values["sub"] = new FunctionValue (CommonFunctions.FunctionSub);
         }

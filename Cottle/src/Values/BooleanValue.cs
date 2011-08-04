@@ -63,6 +63,11 @@ namespace   Cottle.Values
 
         #region Methods
 
+        public override bool    Equals (IValue other)
+        {
+            return this.value == other.AsBoolean;
+        }
+
         public override string  ToString ()
         {
             return "<boolean>";

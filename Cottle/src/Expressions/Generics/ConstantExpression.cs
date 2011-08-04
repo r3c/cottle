@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle.Expressions.Generics;
-
-namespace   Cottle.Expressions
+namespace   Cottle.Expressions.Generics
 {
-    sealed class    ConstantExpression : Expression
+    abstract class  ConstantExpression<T> : Expression
     {
         #region Attributes
 
@@ -16,7 +14,7 @@ namespace   Cottle.Expressions
 
         #region Constructors
 
-        public  ConstantExpression (IValue value)
+        protected  ConstantExpression (IValue value)
         {
             this.value = value;
         }

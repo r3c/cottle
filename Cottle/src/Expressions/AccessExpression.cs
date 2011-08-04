@@ -11,15 +11,18 @@ namespace   Cottle.Expressions
     {
         #region Attributes
 
-        private IEnumerable<NameExpression>  fields;
+        private IExpression array;
+
+        private IExpression index;
 
         #endregion
 
         #region Constructors
 
-        public  AccessExpression (IEnumerable<NameExpression> fields)
+        public  AccessExpression (IExpression array, IExpression index)
         {
-            this.fields = fields;
+            this.array = array;
+            this.index = index;
         }
 
         #endregion
@@ -28,33 +31,22 @@ namespace   Cottle.Expressions
 
         public override IValue  Evaluate (Scope scope)
         {
-            IValue  value = null;
+            IValue  value;
 
-            foreach (NameExpression field in this.fields)
-            {
-                if (value != null)
-                    value = field.Dereference (value);
-                else
-                    value = field.Evaluate (scope);
-            }
+            if (this.array.Evaluate (scope).Find (this.index.Evaluate (scope), out value))
+                return value;
 
-            return value != null ? value : UndefinedValue.Instance;
+            return UndefinedValue.Instance;
         }
 
         public override string  ToString ()
         {
             StringBuilder   builder = new StringBuilder ();
-            bool            dot = false;
 
-            foreach (NameExpression field in this.fields)
-            {
-                if (dot)
-                    builder.Append ('/');
-                else
-                    dot = true;
-
-                builder.Append (field);
-            }
+            builder.Append (this.array);
+            builder.Append ('[');
+            builder.Append (this.index);
+            builder.Append (']');
 
             return builder.ToString ();
         }

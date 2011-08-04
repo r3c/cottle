@@ -8,11 +8,9 @@ namespace   Cottle.Values
 {
     using   ChildList = List<KeyValuePair<IValue, IValue>>;
 
-    public sealed class UndefinedValue : IValue
+    public sealed class UndefinedValue : Value
     {
         #region Constants
-
-        private static readonly ChildList       EmptyList = new List<KeyValuePair<IValue, IValue>> ();
 
         public static readonly UndefinedValue   Instance = new UndefinedValue ();
 
@@ -20,7 +18,7 @@ namespace   Cottle.Values
 
         #region Properties
 
-        public bool         AsBoolean
+        public override bool        AsBoolean
         {
             get
             {
@@ -28,7 +26,7 @@ namespace   Cottle.Values
             }
         }
 
-        public Function     AsFunction
+        public override Function    AsFunction
         {
             get
             {
@@ -36,7 +34,7 @@ namespace   Cottle.Values
             }
         }
 
-        public decimal      AsNumber
+        public override decimal     AsNumber
         {
             get
             {
@@ -44,7 +42,7 @@ namespace   Cottle.Values
             }
         }
 
-        public string       AsString
+        public override string      AsString
         {
             get
             {
@@ -52,11 +50,11 @@ namespace   Cottle.Values
             }
         }
 
-        public ChildList    Children
+        public override ChildList   Children
         {
             get
             {
-                return UndefinedValue.EmptyList;
+                return Value.EmptyChildren;
             }
         }
 
@@ -64,14 +62,24 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public bool Find (string name, out IValue child)
+        public override bool    Equals (IValue other)
         {
-            child = null;
+            return false;
+        }
+
+        public override bool    Find (IValue key, out IValue value)
+        {
+            value = UndefinedValue.Instance;
 
             return false;
         }
 
-        public bool Has (string name)
+        public override int GetHashCode ()
+        {
+            return 0;
+        }
+
+        public override bool    Has (IValue key)
         {
             return false;
         }

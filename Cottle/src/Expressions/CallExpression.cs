@@ -7,19 +7,19 @@ using Cottle.Values;
 
 namespace   Cottle.Expressions
 {
-    sealed class    FunctionExpression : Expression
+    sealed class    CallExpression : Expression
     {
         #region Attributes
 
         private List<IExpression>   arguments;
 
-        private NameExpression       caller;
+        private IExpression         caller;
 
         #endregion
 
         #region Constructors
 
-        public  FunctionExpression (NameExpression caller, IEnumerable<IExpression> arguments)
+        public  CallExpression (IExpression caller, IEnumerable<IExpression> arguments)
         {
             this.arguments = new List<IExpression> (arguments);
             this.caller = caller;

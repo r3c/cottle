@@ -56,6 +56,11 @@ namespace   Cottle.Values
 
         #region Methods
 
+        public override bool    Equals (IValue other)
+        {
+            return this.value == other.AsNumber;
+        }
+
         public override string  ToString ()
         {
             return this.value.ToString (CultureInfo.InvariantCulture);

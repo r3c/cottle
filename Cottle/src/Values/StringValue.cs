@@ -58,6 +58,11 @@ namespace   Cottle.Values
 
         #region Methods
 
+        public override bool    Equals (IValue other)
+        {
+            return this.value == other.AsString;
+        }
+
         public override string  ToString ()
         {
             return string.Format ("\"{0}\"", this.value.Replace ("\\", "\\\\").Replace ("\"", "\\\""));

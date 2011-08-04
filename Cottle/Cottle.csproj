@@ -41,8 +41,11 @@
     <Compile Include="src\Exceptions\UnknownException.cs" />
     <Compile Include="src\Exceptions\UnexpectedException.cs" />
     <Compile Include="src\Expressions\AccessExpression.cs" />
-    <Compile Include="src\Expressions\ConstantExpression.cs" />
-    <Compile Include="src\Expressions\FunctionExpression.cs" />
+    <Compile Include="src\Expressions\ArrayExpression.cs" />
+    <Compile Include="src\Expressions\NumberExpression.cs" />
+    <Compile Include="src\Expressions\Generics\ConstantExpression.cs" />
+    <Compile Include="src\Expressions\StringExpression.cs" />
+    <Compile Include="src\Expressions\CallExpression.cs" />
     <Compile Include="src\Expressions\Generics\Expression.cs" />
     <Compile Include="src\Expressions\NameExpression.cs" />
     <Compile Include="src\Function.cs" />

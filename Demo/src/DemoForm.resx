@@ -123,8 +123,8 @@
 {for i, message in messages:
 
     Message #{i}:
-    Subject: {message/subject}
-    Contents: {message/contents}
+    Subject: {message.subject}
+    Contents: {message.contents}
 
 |empty:
     No messages to display!

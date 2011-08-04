@@ -137,22 +137,6 @@ namespace   Cottle.Lexers
 
                         break;
 
-                    case ',':
-                        this.type = LexemType.COMMA;
-                        this.value = this.last.ToString ();
-
-                        this.Read ();
-
-                        return;
-
-                    case ':':
-                        this.type = LexemType.COLON;
-                        this.value = this.last.ToString ();
-
-                        this.Read ();
-
-                        return;
-
                     case '}':
                         this.type = LexemType.BRACE_END;
                         this.value = this.last.ToString ();
@@ -177,6 +161,30 @@ namespace   Cottle.Lexers
 
                         return;
 
+                    case ',':
+                        this.type = LexemType.COMMA;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
+                    case ':':
+                        this.type = LexemType.COLON;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
+                    case '.':
+                        this.type = LexemType.DOT;
+                        this.value = this.last.ToString ();
+
+                        this.Read ();
+
+                        return;
+
                     case '(':
                         this.type = LexemType.PARENTHESIS_BEGIN;
                         this.value = this.last.ToString ();
@@ -187,14 +195,6 @@ namespace   Cottle.Lexers
 
                     case ')':
                         this.type = LexemType.PARENTHESIS_END;
-                        this.value = this.last.ToString ();
-
-                        this.Read ();
-
-                        return;
-
-                    case '/':
-                        this.type = LexemType.FIELD;
                         this.value = this.last.ToString ();
 
                         this.Read ();
@@ -265,7 +265,7 @@ namespace   Cottle.Lexers
                                                 (this.last >= 'a' && this.last <= 'z') ||
                                                 (this.last == '_')));
 
-                        this.type = LexemType.LITERAL;
+                        this.type = LexemType.NAME;
                         this.value = builder.ToString ();
 
                         return;
@@ -278,7 +278,6 @@ namespace   Cottle.Lexers
                     case '5':
                     case '6':
                     case '9':
-                    case '.':
                         builder = new StringBuilder ();
                         dot = false;
 
@@ -394,7 +393,7 @@ namespace   Cottle.Lexers
                         this.Read ();
                     }
 
-                    this.type = LexemType.LITERAL;
+                    this.type = LexemType.NAME;
                     this.value = builder.ToString ();
 
                     return;
@@ -438,8 +437,8 @@ namespace   Cottle.Lexers
             BRACKET_END,
             COMMA,
             COLON,
-            FIELD,
-            LITERAL,
+            DOT,
+            NAME,
             NUMBER,
             PIPE,
             PARENTHESIS_BEGIN,

@@ -6,6 +6,8 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
+    using   ChildList = List<KeyValuePair<IValue, IValue>>;
+
     public sealed class FunctionValue : Value
     {
         #region Properties
@@ -42,6 +44,14 @@ namespace   Cottle.Values
             }
         }
 
+        public override ChildList   Children
+        {
+            get
+            {
+                return Value.EmptyChildren;
+            }
+        }
+
         #endregion
 
         #region Attributes
@@ -52,12 +62,6 @@ namespace   Cottle.Values
 
         #region Constructors
 
-        public  FunctionValue (Function function, ICollection<KeyValuePair<IValue, IValue>> collection) :
-            base (collection)
-        {
-            this.function = function;
-        }
-
         public  FunctionValue (Function function)
         {
             this.function = function;
@@ -66,6 +70,28 @@ namespace   Cottle.Values
         #endregion
 
         #region Methods
+
+        public override bool    Equals (IValue other)
+        {
+            return this.function.Callback == other.AsFunction.Callback;
+        }
+
+        public override bool    Find (IValue key, out IValue value)
+        {
+            value = UndefinedValue.Instance;
+
+            return false;
+        }
+
+        public override int GetHashCode ()
+        {
+            return this.function.Callback != null ? this.function.Callback.GetHashCode () : 0;
+        }
+
+        public override bool    Has (IValue key)
+        {
+            return false;
+        }
 
         public override string  ToString ()
         {

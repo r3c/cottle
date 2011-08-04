@@ -40,9 +40,13 @@ namespace   Cottle
 
         #region Methods
 
-        bool    Find (string name, out IValue child);
+        bool    Equals (IValue other);
 
-        bool    Has (string name);
+        bool    Find (IValue key, out IValue value);
+
+        int     GetHashCode ();
+
+        bool    Has (IValue key);
 
         #endregion
     }

@@ -26,21 +26,11 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public IValue   Dereference (IValue value)
-        {
-            IValue  child;
-
-            if (value.Find (this.name, out child))
-                return child;
-
-            return UndefinedValue.Instance;
-        }
-
         public override IValue  Evaluate (Scope scope)
         {
             IValue  value;
 
-            if (scope.Get (name, out value))
+            if (scope.Get (this.name, out value))
                 return value;
 
             return UndefinedValue.Instance;
