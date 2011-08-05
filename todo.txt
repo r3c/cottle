@@ -5,3 +5,6 @@ X Change IValue.Children structure to allow children ordering function (like "so
 X Handle "while" keyword
 X Implement IValue GetHashCode method to allow IValue-based lookups (no more cast to strings)
 X Implement function declarations
+- Support for comments?
+- XML to Value generator?
+- Value serializer using attributes?
