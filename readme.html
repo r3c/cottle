@@ -1,0 +1,356 @@
+<html>
+	<head>
+		<style type="text/css">
+			body {
+				font:	normal normal normal 0.9em tahoma;
+			}
+
+			div.code {
+				padding:	0px 4px 1px 4px;
+				margin:		16px 8px;
+				background:	#D0D0D0;
+				border:		1px solid #A0A0A0;
+			}
+
+			div.code code {
+				font:			normal normal normal 1.1em monospace;
+				white-space:	pre;
+			}
+
+			div.code legend {
+				position:	relative;
+				top:		-6px;
+			}
+
+			div.code legend span {
+				padding:	0px 4px 2px 4px;
+				background:	#E0E0E0;
+				border:		1px solid #C0C0C0;
+				font:		normal normal bold 0.7em tahoma;
+			}
+
+			div.s1 {
+				margin:		8px 0px 48px 0px;
+			}
+
+			div.s2 {
+				margin:		8px 0px 32px 0px;
+			}
+
+			div.s3 {
+				margin:		8px 0px 24px 0px;
+			}
+
+			h1 {
+				padding:	0px;
+				margin:		24px 8px;
+				text-align:	center;				
+				font-size:	1.8em;
+			}
+
+			h2 {
+				padding:	0px;
+				margin:		8px 16px;
+				font-size:	1.4em;
+			}
+
+			h3 {
+				padding:	0px;
+				margin:		8px 24px;
+				font-size:	1.0em;
+			}
+
+			p {
+				margin:	12px 8px;
+			}
+
+			p code {
+				background:	#E0E0E0;
+				font:		normal normal normal 1.1em monospace;
+			}
+
+			ul {
+				padding:	4px 32px;
+				margin:		8px 0px;
+				list-style:	circle;
+			}
+		</style>
+		<title>Cottle Documentation</title>
+	</head>
+	<body>
+		<h1>Cottle Documentation</h1>
+
+		<h2>1. Cottle overview</h2>
+		<div class="s2">
+			<h3>1.1. What is Cottle, and what does it looks like?</h3>
+			<div class="s3">
+				<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
+				<u>T</u>ext <u>T</u>ransform <u>L</u>anguag<u>e</u>" is a
+				lightweight template engine in .NET 3.5. It allows you to
+				transform structured data into any text-based format output,
+				using a simple yet highly extensible template language, thus
+				enabling clean separation of document content (data structure)
+				and document presentation.</p>
+				<p>A simple Cottle template printing how many messages are in
+				your mailbox could look like this:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>Hello {name}, you have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!</code>
+				</div>
+				<p>Cottle supports most common template engine features, such
+				as:</p>
+				<ul>
+					<li>Text substitutions through variables,</li>
+					<li>Builtin and used-defined functions,</li>
+					<li>Variable & function declaration and assignments,</li>
+					<li>Conditional statements (if),</li>
+					<li>Loops (for, while)</li>
+				</ul>
+				<p>Source code is available, and contributions will be highly
+				welcomed!</p>
+			</div>
+
+			<h3>1.2. About this documentation</h3>
+			<div class="s3">
+				<p>This document intent to explain how Cottle works, how to
+				write templates and how to use them in your code. Some features
+				are introduced with a code sample, and some guidelines have
+				been followed to ease readability.</p>
+				<p>Using Cottle requires an input template, which could be
+				streamed from any source compatible with
+				<code>System.IO.TextReader</code> class (text file, memory
+				buffer, network socket...), and an executable code that must
+				use <code>Cottle.Parser</code> to parse the template into a
+				<code>Cottle.Document</code> instance, define values, and
+				print the result. These three parts will be shown in examples
+				as follows:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>Text contents of the template file 'template.ctl'.</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>Document   document;
+Parser     parser = new Parser();
+FileStream template = new FileStream("template.ctl", FileMode.Open);
+
+using (StreamReader stream = new StreamReader(template, Encoding.UTF8))
+{
+    document = parser.Parse(stream);
+}
+
+/* insert values assignments here */
+
+document.Print(Console.Out);</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Text contents of the template file 'template.ctl'.</code>
+				</div>
+				<p>Since the sample C# codes used in example is quite redundant
+				only the specific parts for each one will appear in examples,
+				and should be inserted where indicated by a comment in the
+				sample above. Common parts of the code won't be shown anymore.
+				</p>
+			</div>
+		</div>
+		
+		<h2>2. Template language basics</h2>
+		<div class="s2">
+			<h3>2.1. Simple raw text output</h3>
+			<div class="s3">
+				<p>Everything you type into a Cottle template will be printed
+				"as is" in the result document, except for some special
+				characters. That means raw text will appear exactly as you
+				entered it in your template, as shown in this example:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>Hello, world!</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Hello, world!</code>
+				</div>
+			</div>
+
+			<h3>2.2. Sending variables to template</h3>
+			<div class="s3">
+				<p>To send variables to parsed document so that you can use
+				their values in your template, use the <code>Value</code>
+				property of <code>Document</code> object. This property is a
+				<code>Dictionary&lt;string,Value&gt;</code> in which you can
+				create variables by adding their name and value. Implicit
+				constructors from some native .NET types are provided so most
+				of the time you won't have to explicitly build
+				<code>Value</code> objects yourself, but you can check in
+				<code>Cottle.Values</code> namespace for available types.</p>
+
+				<p>Once assigned, variables can be used in the template, for
+				example by using the "echo" command that print the value of its
+				argument: </p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>Hello {echo name}, you have no new message.</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>document.Values["name"] = "John";</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Hello John, you have no new message.</code>
+				</div>
+				<p>As "echo" is the default command, you can omit the "echo"
+				keyword if the name of the variable you want to print doesn't
+				conflict with another command: "{echo name}" is equivalent to
+				"{name}" in this example. This shorter form will be used in all
+				incoming samples.</p>
+			</div>
+
+			<h3>2.3. Escaping special characters</h3>
+			<div class="s3">
+				<p>There are five special characters that won't be printed
+				unless you escape them, since they're used by template parser
+				to trigger special behaviours. Special characters are:</p>
+				<ul>
+					<li>{ and }  (opening and closing braces)</li>
+					<li>| (pipe)</li>
+					<li>" (quote)</li>
+					<li>\ (backslash)</li>
+				</ul>
+				<p>If you need to print one of these in your template, you must
+				preceed them with a backslash character:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>\| Special \"characters\" must \\ be \{escaped\} \|</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>| Special "characters" must \ be {escaped} |</code>
+				</div>
+				<p>You can also enclose your text between quotes to ignore all
+				special characters except " and \:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>"Quoted {text} doesn't |need| escaping, except for other \"quote\" characters."</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Quoted {text} doesn't |need| escaping, except for other "quote" characters.</code>
+				</div>
+			</div>
+
+			<h3>2.4. Using complex values</h3>
+			<div class="s3">
+				<p>Complex values can contain multiple scalar values, or even
+				other nested complex values. To access content of a complex
+				value, you can use either dotted or array notation:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>You can use either {complex.f1} or {complex["f2"]} notations for complex values.</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>document.Values["complex"] = new Dictionary&lt;Value, Value&gt;
+{
+    {"f1", "dotted"},
+    {"f2", "array"}
+};</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>You can use either dotted or array notations for complex values.</code>
+				</div>
+				<p>Please node the quotes used in array notation. Trying to
+				access value of <code>{complex[f2]}</code> will result in a
+				very different behavior, since it will use the value of
+				<code>f2</code> (which hasn't be defined) as a lookup key for
+				<code>complex</code> value, leading to an undefined result.</p>
+			</div>
+
+			<h3>2.5. Calling functions</h3>
+			<div class="s3">
+				FIXME
+			</div>
+		</div>
+
+		<h2>3. Flow control</h2>
+		<div class="s2">
+			<h3>Element enumeration</h3>
+			<div class="s3">
+				<p>Evaluate body for each element in map "params", alias keys to "name" and values to "param":</p>
+				<code>{for name, param in alert.params: ...}</code>
+			</div>
+			<h3>Conditional blocks</h3>
+			<div class="s3">
+				<p>Evaluate body if map "message" has a "subject" element:</p>
+				<code>{if message.subject: ...}</code>
+				<p>Evaluate body if map "message" has a "subject" element with value 'Nagios':</p>
+				<code>{if equal (message.subject, 'Nagios'): ...}</code>
+			</div>
+			<h3>Element definition</h3>
+			<div class="s3">
+				<p>Evaluate body with "message" as an alias for element "0" in map "messages":</p>
+				<code>{set message to alert.messages.0: ...}</code>
+				<p>Evaluate body with "messages_count" as an alias for the number of elements in map "messages":</p>
+				<code>{set messages_count to count (alert.messages): ...}</code>
+			</div>
+			<h3>Value printing</h3>
+			<div class="s3">
+				<p>Print value of element "sql" in map "tags" (i.e. number of times the tag 'sql' has been set):</p>
+				<code>{alert.tags.sql}</code>
+				<p>Print number of elements in map "tags" (i.e. number of different tags set):</p>
+				<code>{count (alert.tags.sql)}</code>
+			</div>
+		</div>
+
+		<h2>Examples</h2>
+		<div class="s2">
+			<p>Example #1: mail subject with hosts list:</p>
+			<code>[MK]{for host in params.host: [{host}]} Connexion failed on SQL DB</code>
+			<p>Example #2: mail contents with tags and messages:</p>
+			<div class="code">
+<code>&lt;html&gt;
+	&lt;body&gt;
+		&lt;h2&gt;Extracted parameters&lt;/h2&gt;
+		&lt;table&gt;
+			&lt;tr&gt;
+				&lt;th&gt;#&lt;/th&gt;
+				&lt;th&gt;Parameter names&lt;/th&gt;
+				&lt;th&gt;Values&lt;/th&gt;
+			&lt;/tr&gt;
+			{for name, param in params:
+				&lt;tr&gt;
+					&lt;td&gt;{for.iteration}&lt;/td&gt;
+					&lt;td&gt;{name}&lt;/td&gt;
+					&lt;td&gt;{for value, count in param.values: &lt;strong&gt;{value}&lt;/strong&gt; ({count})}&lt;/td&gt;
+				&lt;/tr&gt;
+			}
+		&lt;/table&gt;
+
+		&lt;h2&gt;Original messages&lt;/h2&gt;
+		{for message in messages:
+			&lt;table&gt;
+				&lt;tr&gt;
+					&lt;th&gt;Subject&lt;/th&gt;
+					&lt;td&gt;{message.subject}&lt;/td&gt;
+				&lt;/tr&gt;
+				&lt;tr&gt;
+					&lt;th&gt;Origin&lt;/th&gt;
+					&lt;td&gt;{message.origin}&lt;/td&gt;
+				&lt;/tr&gt;
+				&lt;tr&gt;
+					&lt;th&gt;Contents&lt;/th&gt;
+					&lt;td&gt;{message.contents}&lt;/td&gt;
+				&lt;/tr&gt;
+			&lt;/table&gt;
+		}
+	&lt;/body&gt;
+&lt;/html&gt;</code>
+			</div>
+		</div>
+	</body>
+</html>
+<!--
+<?xml version="1.0"?> <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">  <xsl:template match="/">    <html>    <head>     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />     <style type="text/css">      body      {       padding : 0px;       margin : 8px;      }       h1      {       padding  : 0px;       margin  : 12px 0px;       font  : normal small-caps bold 24px tahoma;       text-align : center;      }       h2      {       padding  : 0px;       margin  : 8px 0px;       font  : normal normal normal 18px tahoma;      }       table      {       width   : 100%;       margin   : 8px 0px;       border-collapse : collapse;       border   : 1px solid gray;       color   : #FFFFFF;       font   : normal normal normal 12px tahoma;      }       tr.even:hover, tr.odd:hover      {       background : #99BCBF;       border  : 1px solid #03476F;       color  : #000000;      }       tr.even td, tr.odd td      {       padding   : 4px 6px;       border-bottom : 1px dotted gray;       border-top  : 1px dotted gray;       color   : #363636;      }            tr.even td      {       background : #D3E4E5;      }       tr.odd td      {       background : #FFFFFF;      }       tr.even th, tr.odd th      {       width   : 100px;       padding   : 4px 8px;       background  : #C2D3D4;       border-bottom : 1px dotted gray;       border-top  : 1px dotted gray;       color   : #363636;       text-align  : left;       vertical-align : top;      }       tr.head th      {       padding   : 4px 6px;       background  : #5C443A;       color   : #FFFFFF;       text-align  : center;       text-transform : uppercase;       vertical-align : top;      }     </style>    </head>    <body>     <xsl:apply-templates />    </body>   </html>  </xsl:template>   <xsl:template match="/context">   <h1><xsl:value-of select="@subject"/></h1>   <h2>An alert has been raised with following information:</h2>   <xsl:apply-templates select="/context/variables" />   <h2>Original messages:</h2>   <xsl:apply-templates select="/context/messages" />  </xsl:template>   <xsl:template match="/context/variables">   <table>    <tr class="head">     <th>Name</th>     <th>Values</th>    </tr>    <xsl:for-each select="variable">     <tr>      <xsl:choose>       <xsl:when test="(position() mod 2) &gt; 0">        <xsl:attribute name="class">even</xsl:attribute>       </xsl:when>       <xsl:otherwise>        <xsl:attribute name="class">odd</xsl:attribute>       </xsl:otherwise>      </xsl:choose>      <th>       <xsl:value-of select="@name"/>      </th>      <td>       <xsl:for-each select="instance">        <xsl:if test="position() &gt; 1">, </xsl:if>        <strong><xsl:value-of select="@value"/></strong> (<xsl:value-of select="@count"/>)       </xsl:for-each>      </td>     </tr>    </xsl:for-each>   </table>  </xsl:template>   <xsl:template match="/context/messages">   <xsl:for-each select="message">    <table>     <tr class="head">      <th>#<xsl:value-of select="position()"/></th>      <th><xsl:value-of select="@subject"/></th>     </tr>     <tr class="even">      <th>Timestamp:</th>      <td>Created on <xsl:value-of select="@date_create" />, received on <xsl:value-of select="@date_gather" /></td>     </tr>     <tr class="odd">      <th>Origin:</th>      <td><xsl:value-of select="@origin"/></td>     </tr>     <tr class="even">      <th>Text:</th>      <td><xsl:value-of select="."/></td>     </tr>    </table>   </xsl:for-each>  </xsl:template> </xsl:stylesheet>
+-->
