@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Cottle.Nodes.Generics;
+using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    WhileNode : Node
+    sealed class    WhileNode : INode
     {
         #region Attributes
 
@@ -29,22 +29,20 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            IValue  result;
-
             while (this.test.Evaluate (scope, output).AsBoolean)
             {
-                result = this.body.Apply (scope, output);
-
-                if (result != null)
-                    return result;
+                if (this.body.Apply (scope, output, out result))
+                    return true;
             }
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             output.Write ("{while ");
             output.Write (this.test);

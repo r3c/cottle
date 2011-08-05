@@ -9,7 +9,7 @@ namespace   Cottle
     {
         #region Methods
 
-        IValue  Apply (Scope scope, TextWriter output);
+        bool    Apply (Scope scope, TextWriter output, out Value result);
 
         void    Debug (TextWriter output);
 

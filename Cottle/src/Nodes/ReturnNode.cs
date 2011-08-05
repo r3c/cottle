@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Cottle.Nodes.Generics;
-
 namespace   Cottle.Nodes
 {
-    sealed class    ReturnNode : Node
+    sealed class    ReturnNode : INode
     {
         #region Attributes
 
@@ -26,12 +24,14 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            return this.expression.Evaluate (scope, output);
+            result = this.expression.Evaluate (scope, output);
+
+            return true;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             output.Write ("{return ");
             output.Write (this.expression);

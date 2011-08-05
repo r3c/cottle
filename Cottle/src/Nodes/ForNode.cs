@@ -4,12 +4,11 @@ using System.IO;
 using System.Text;
 
 using Cottle.Expressions;
-using Cottle.Nodes.Generics;
 using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    ForNode : Node
+    sealed class    ForNode : INode
     {
         #region Attributes
 
@@ -40,14 +39,14 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            ICollection<KeyValuePair<IValue, IValue>>   collection = this.from.Evaluate (scope, output).Children;
-            IValue                                      result;
+            ICollection<KeyValuePair<Value, Value>>   collection = this.from.Evaluate (scope, output).Children;
+            bool                                        exit;
 
             if (collection.Count > 0)
             {
-                foreach (KeyValuePair<IValue, IValue> pair in collection)
+                foreach (KeyValuePair<Value, Value> pair in collection)
                 {
                     scope.Enter ();
 
@@ -57,21 +56,23 @@ namespace   Cottle.Nodes
                     if (this.value != null)
                         this.value.Set (scope, pair.Value, Scope.SetMode.LOCAL);
 
-                    result = this.body.Apply (scope, output);
+                    exit = this.body.Apply (scope, output, out result);
 
                     scope.Leave ();
 
-                    if (result != null)
-                        return result;
+                    if (exit)
+                        return true;
                 }
             }
             else if (this.empty != null)
-                return this.empty.Apply (scope, output);
+                return this.empty.Apply (scope, output, out result);
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             output.Write ("{for ");
 

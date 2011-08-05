@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Cottle.Nodes.Generics;
+using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    EchoNode : Node
+    sealed class    EchoNode : INode
     {
         #region Attributes
 
@@ -26,14 +26,16 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
             output.Write (this.expression.Evaluate (scope, output).AsString);
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             output.Write ("{echo ");
             output.Write (this.expression);

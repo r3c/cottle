@@ -9,7 +9,7 @@ namespace   Cottle
     {
         #region Methods
 
-        IValue  Evaluate (Scope scope, TextWriter output);
+        Value  Evaluate (Scope scope, TextWriter output);
 
         string  ToString ();
 

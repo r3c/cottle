@@ -15,7 +15,7 @@ namespace   Cottle
 
         #region Properties
 
-        public Dictionary<string, IValue>   Values
+        public Dictionary<string, Value>   Values
         {
             get
             {
@@ -29,7 +29,7 @@ namespace   Cottle
 
         private INode                       root;
 
-        private Dictionary<string, IValue>  values = new Dictionary<string, IValue> ();
+        private Dictionary<string, Value>  values = new Dictionary<string, Value> ();
 
         #endregion
 
@@ -58,14 +58,17 @@ namespace   Cottle
             return writer.ToString ();
         }
 
-        public void Print (TextWriter writer)
+        public Value   Print (TextWriter writer)
         {
+            Value  result;
             Scope   scope = new Scope ();
 
-            foreach (KeyValuePair<string, IValue> pair in this.values)
+            foreach (KeyValuePair<string, Value> pair in this.values)
                 scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
 
-            this.root.Apply (scope, writer);
+            this.root.Apply (scope, writer, out result);
+
+            return result;
         }
 
         public string   Print ()

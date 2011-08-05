@@ -6,8 +6,8 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    using   ChildDictionary = Dictionary<IValue, IValue>;
-    using   ChildList = List<KeyValuePair<IValue, IValue>>;
+    using   ChildDictionary = Dictionary<Value, Value>;
+    using   ChildList = List<KeyValuePair<Value, Value>>;
 
     public sealed class ArrayValue : Value
     {
@@ -31,7 +31,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return Function.Undefined;
+                return null;
             }
         }
 
@@ -71,12 +71,12 @@ namespace   Cottle.Values
 
         #region Constructors
 
-        public  ArrayValue (IEnumerable<KeyValuePair<IValue, IValue>> children)
+        public  ArrayValue (IEnumerable<KeyValuePair<Value, Value>> children)
         {
-            this.list = new List<KeyValuePair<IValue, IValue>> (children);
+            this.list = new List<KeyValuePair<Value, Value>> (children);
             this.dictionary = new ChildDictionary (this.list.Count, ArrayValue.ValueComparer);
 
-            foreach (KeyValuePair<IValue, IValue> pair in children)
+            foreach (KeyValuePair<Value, Value> pair in children)
                 this.dictionary[pair.Key] = pair.Value;
         }
 
@@ -88,11 +88,11 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override bool    Equals (IValue other)
+        public override bool    Equals (Value other)
         {
-            List<KeyValuePair<IValue, IValue>>  values = other.Children;
-            KeyValuePair<IValue, IValue>        x;
-            KeyValuePair<IValue, IValue>        y;
+            List<KeyValuePair<Value, Value>>  values = other.Children;
+            KeyValuePair<Value, Value>        x;
+            KeyValuePair<Value, Value>        y;
             int                                 i;
 
             if (this.list.Count != values.Count)
@@ -114,18 +114,18 @@ namespace   Cottle.Values
         {
             int hash = 0;
 
-            foreach (KeyValuePair<IValue, IValue> item in this.list)
+            foreach (KeyValuePair<Value, Value> item in this.list)
                 hash ^= item.Key.GetHashCode () ^ item.Value.GetHashCode ();
 
             return hash;
         }
 
-        public override bool    Find (IValue key, out IValue value)
+        public override bool    Find (Value key, out Value value)
         {
             return this.dictionary.TryGetValue (key, out value);
         }
 
-        public override bool    Has (IValue key)
+        public override bool    Has (Value key)
         {
             return this.dictionary.ContainsKey (key);
         }
@@ -137,7 +137,7 @@ namespace   Cottle.Values
 
             builder.Append ('[');
 
-            foreach (KeyValuePair<IValue, IValue> item in this.list)
+            foreach (KeyValuePair<Value, Value> item in this.list)
             {
                 if (separator)
                     builder.Append (", ");
@@ -158,14 +158,14 @@ namespace   Cottle.Values
 
         #region Types
 
-        private class   Comparer : IEqualityComparer<IValue>
+        private class   Comparer : IEqualityComparer<Value>
 	    {
-            public bool Equals (IValue x, IValue y)
+            public bool Equals (Value x, Value y)
             {
                 return x.Equals (y);
             }
 
-            public int  GetHashCode (IValue value)
+            public int  GetHashCode (Value value)
             {
                 return value.GetHashCode ();
             }

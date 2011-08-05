@@ -30,10 +30,10 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope, TextWriter output)
+        public override Value  Evaluate (Scope scope, TextWriter output)
         {
-            IValue  array = this.array.Evaluate (scope, output);
-            IValue  value;
+            Value  array = this.array.Evaluate (scope, output);
+            Value  value;
 
             if (array.Find (this.index.Evaluate (scope, output), out value))
                 return value;

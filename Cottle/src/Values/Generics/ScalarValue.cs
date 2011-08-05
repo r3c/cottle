@@ -4,7 +4,7 @@ using System.Text;
 
 namespace   Cottle.Values.Generics
 {
-    using   ChildList = List<KeyValuePair<IValue, IValue>>;
+    using   ChildList = List<KeyValuePair<Value, Value>>;
 
     public abstract class   ScalarValue<T> : Value
     {
@@ -37,7 +37,7 @@ namespace   Cottle.Values.Generics
 
         #region Methods
 
-        public override bool    Find (IValue key, out IValue value)
+        public override bool    Find (Value key, out Value value)
         {
             value = UndefinedValue.Instance;
 
@@ -49,7 +49,7 @@ namespace   Cottle.Values.Generics
             return this.value.GetHashCode ();
         }
 
-        public override bool    Has (IValue key)
+        public override bool    Has (Value key)
         {
             return false;
         }

@@ -12,7 +12,7 @@ namespace   Cottle
 
         private Stack<HashSet<string>>              levels = new Stack<HashSet<string>> ();
 
-        private Dictionary<string, Stack<IValue>>   stacks = new Dictionary<string, Stack<IValue>> ();
+        private Dictionary<string, Stack<Value>>   stacks = new Dictionary<string, Stack<Value>> ();
 
         #endregion
 
@@ -32,9 +32,9 @@ namespace   Cottle
             this.levels.Push (new HashSet<string> ());
         }
 
-        public bool Get (string name, out IValue value)
+        public bool Get (string name, out Value value)
         {
-            Stack<IValue>   stack;
+            Stack<Value>   stack;
 
             if (this.stacks.TryGetValue (name, out stack) && stack.Count > 0)
             {
@@ -50,7 +50,7 @@ namespace   Cottle
 
         public void Leave ()
         {
-            Stack<IValue>   stack;
+            Stack<Value>   stack;
 
             if (this.levels.Count > 1)
             {
@@ -62,14 +62,14 @@ namespace   Cottle
             }
         }
 
-        public bool Set (string name, IValue value, SetMode mode)
+        public bool Set (string name, Value value, SetMode mode)
         {
             HashSet<string> level;
-            Stack<IValue>   stack;
+            Stack<Value>    stack;
 
             if (!this.stacks.TryGetValue (name, out stack))
             {
-                stack = new Stack<IValue> ();
+                stack = new Stack<Value> ();
 
                 this.stacks[name] = stack;
             }

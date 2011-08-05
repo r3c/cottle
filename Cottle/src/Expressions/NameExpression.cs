@@ -27,9 +27,9 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope, TextWriter output)
+        public override Value  Evaluate (Scope scope, TextWriter output)
         {
-            IValue  value;
+            Value  value;
 
             if (scope.Get (this.name, out value))
                 return value;
@@ -37,7 +37,7 @@ namespace   Cottle.Expressions
             return UndefinedValue.Instance;
         }
 
-        public bool Set (Scope scope, IValue value, Scope.SetMode mode)
+        public bool Set (Scope scope, Value value, Scope.SetMode mode)
         {
             return scope.Set (this.name, value, mode);
         }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Cottle.Nodes.Generics;
+using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    CompositeNode : Node
+    sealed class    CompositeNode : INode
     {
         #region Attributes
 
@@ -26,22 +26,20 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            IValue  result;
-
             foreach (INode node in this.nodes)
             {
-                result = node.Apply (scope, output);
-
-                if (result != null)
-                    return result;
+                if (node.Apply (scope, output, out result))
+                    return true;
             }
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             foreach (INode node in this.nodes)
                 node.Debug (output);

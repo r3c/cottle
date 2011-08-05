@@ -278,10 +278,29 @@ namespace   Cottle
         private INode   ParseKeywordSet ()
         {
             NameExpression  name = this.ParseName ();
+            Scope.SetMode   mode;
 
-            this.ParseUnused (Lexer.LexemType.NAME, "to", "'to' keyword");
+            switch (this.lexer.Type == Lexer.LexemType.NAME ? this.lexer.Value : string.Empty)
+            {
+                case "as":
+                    this.lexer.Next ();
 
-            return new SetNode (name, this.ParseExpression ());
+                    mode = Scope.SetMode.LOCAL;
+
+                    break;
+
+                case "to":
+                    this.lexer.Next ();
+
+                    mode = Scope.SetMode.ANYWHERE;
+
+                    break;
+
+                default:
+                    throw new UnexpectedException (this.lexer, "'as' or 'to' keyword");
+            }
+
+            return new SetNode (name, this.ParseExpression (), mode);
         }
 
         private INode   ParseKeywordWhile ()

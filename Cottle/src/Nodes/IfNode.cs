@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
-using Cottle.Nodes.Generics;
+using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    IfNode : Node
+    sealed class    IfNode : INode
     {
         #region Attributes
 
@@ -27,21 +26,23 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
             foreach (Branch branch in this.branches)
             {
                 if (branch.Test.Evaluate (scope, output).AsBoolean)
-                    return branch.Body.Apply (scope, output);
+                    return branch.Body.Apply (scope, output, out result);
             }
 
             if (this.fallback != null)
-                return this.fallback.Apply (scope, output);
+                return this.fallback.Apply (scope, output, out result);
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             bool    first = true;
 

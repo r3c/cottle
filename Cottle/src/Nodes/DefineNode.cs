@@ -4,12 +4,12 @@ using System.IO;
 using System.Text;
 
 using Cottle.Expressions;
-using Cottle.Nodes.Generics;
+using Cottle.Functions;
 using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    DefineNode : Node
+    sealed class    DefineNode : INode
     {
         #region Attributes
 
@@ -34,14 +34,16 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            this.name.Set (scope, new FunctionValue (new Function (this.arguments, this.body)), Scope.SetMode.ANYWHERE);
+            this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), Scope.SetMode.ANYWHERE);
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             bool    comma = false;
 

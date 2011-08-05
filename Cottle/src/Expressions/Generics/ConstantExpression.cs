@@ -9,13 +9,13 @@ namespace   Cottle.Expressions.Generics
     {
         #region Attributes
 
-        private IValue  value;
+        private Value  value;
 
         #endregion
 
         #region Constructors
 
-        protected  ConstantExpression (IValue value)
+        protected  ConstantExpression (Value value)
         {
             this.value = value;
         }
@@ -24,7 +24,7 @@ namespace   Cottle.Expressions.Generics
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope, TextWriter output)
+        public override Value  Evaluate (Scope scope, TextWriter output)
         {
             return this.value;
         }

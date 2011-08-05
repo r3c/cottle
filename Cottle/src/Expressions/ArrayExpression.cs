@@ -27,14 +27,14 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override IValue  Evaluate (Scope scope, TextWriter writer)
+        public override Value  Evaluate (Scope scope, TextWriter writer)
         {
             return new ArrayValue (this.list.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
             {
-                IValue  key = item.Key.Evaluate (scope, writer);
-                IValue  value = item.Value.Evaluate (scope, writer);
+                Value  key = item.Key.Evaluate (scope, writer);
+                Value  value = item.Value.Evaluate (scope, writer);
 
-                return new KeyValuePair<IValue, IValue> (key, value);
+                return new KeyValuePair<Value, Value> (key, value);
             }));
         }
 

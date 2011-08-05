@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 using Cottle;
 using Cottle.Exceptions;
-using Cottle.Values;
 using Cottle.Commons;
 
 namespace   Demo
@@ -36,7 +35,6 @@ namespace   Demo
 
                     this.FillDocument (document.Values);
 
-                    this.textBoxDebug.Text = document.Debug ();
                     this.textBoxPrint.Text = document.Print ();
 
                     this.textBoxResult.BackColor = Color.LightGreen;
@@ -65,45 +63,50 @@ namespace   Demo
                 this.textBoxResult.Text = ex.Message;
             }
         }
-
-        private void    FillDocument (IDictionary<string, IValue> values)
+#if false
+        private void    FillTree ()
         {
-            Dictionary<IValue, IValue>  alertMessages = new Dictionary<IValue, IValue> ();
-            Dictionary<IValue, IValue>  alertParams = new Dictionary<IValue, IValue> ();
-            Dictionary<IValue, IValue>  alertTags = new Dictionary<IValue, IValue> ();
+            this.treeViewData.Nodes.Clear ();
+        }
+#endif
+        private void    FillDocument (IDictionary<string, Value> values)
+        {
+            Dictionary<Value, Value>    alertMessages = new Dictionary<Value, Value> ();
+            Dictionary<Value, Value>    alertParams = new Dictionary<Value, Value> ();
+            Dictionary<Value, Value>    alertTags = new Dictionary<Value, Value> ();
             string                      dateTime = DateTime.Now.ToString (CultureInfo.InvariantCulture);
             Random                      random = new Random ();
 
             for (int i = 0; i < 10; ++i)
             {
-                alertMessages.Add (new NumberValue (i), new ArrayValue (new Dictionary<IValue, IValue>
+                alertMessages.Add (i, new Dictionary<Value, Value>
                 {
-                    {new StringValue ("contents"),     new StringValue ("Contents for sample message #" + i)},
-                    {new StringValue ("date_create"),  new StringValue (dateTime)},
-                    {new StringValue ("date_gather"),  new StringValue (dateTime)},
-                    {new StringValue ("origin"),       new StringValue ("Sender")},
-                    {new StringValue ("subject"),      new StringValue ("Subject for sample message #" + i)}
-                }));
+                    {"contents",    "Contents for sample message #" + i},
+                    {"date_create", dateTime},
+                    {"date_gather", dateTime},
+                    {"origin",      "Sender"},
+                    {"subject",     "Subject for sample message #" + i}
+                });
             }
 
             for (int i = 0; i < 5; ++i)
             {
-                alertParams.Add (new StringValue ("param #" + i), new ArrayValue (new Dictionary<IValue, IValue>
+                alertParams.Add ("param #" + i, new Dictionary<Value, Value>
                 {
-                    {new StringValue ("value" + i + ".1"), new NumberValue (random.Next ())},
-                    {new StringValue ("value" + i + ".2"), new NumberValue (random.Next ())},
-                    {new StringValue ("value" + i + ".3"), new NumberValue (random.Next ())}
-                }));
+                    {"value" + i + ".1",    random.Next ()},
+                    {"value" + i + ".2",    random.Next ()},
+                    {"value" + i + ".3",    random.Next ()}
+                });
             }
 
             for (int i = 0; i < 5; ++i)
             {
-                alertTags.Add (new StringValue ("tag #" + i), new NumberValue (i));
+                alertTags.Add ("tag #" + i, i);
             }
 
-            values.Add ("messages", new ArrayValue (alertMessages));
-            values.Add ("params", new ArrayValue (alertParams));
-            values.Add ("tags", new ArrayValue (alertTags));
+            values.Add ("messages", alertMessages);
+            values.Add ("params", alertParams);
+            values.Add ("tags", alertTags);
         }
     }
 }

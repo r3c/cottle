@@ -23,7 +23,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return Function.Undefined;
+                return null;
             }
         }
 
@@ -58,7 +58,7 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override bool    Equals (IValue other)
+        public override bool    Equals (Value other)
         {
             return this.value == other.AsString;
         }

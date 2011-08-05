@@ -9,7 +9,7 @@ namespace   Cottle
     {
         #region Properties
         
-        public IValue   Value
+        public Value   Value
         {
             get
             {

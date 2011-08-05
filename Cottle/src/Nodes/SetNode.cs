@@ -4,45 +4,63 @@ using System.IO;
 using System.Text;
 
 using Cottle.Expressions;
-using Cottle.Nodes.Generics;
+using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    SetNode : Node
+    sealed class    SetNode : INode
     {
-        #region Atttributes
+        #region Attributes
+
+        private IExpression     expression;
+
+        private Scope.SetMode   mode;
 
         private NameExpression  name;
-
-        private IExpression     value;
 
         #endregion
 
         #region Constructors
 
-        public  SetNode (NameExpression name, IExpression value)
+        public  SetNode (NameExpression name, IExpression expression, Scope.SetMode mode)
         {
+            this.expression = expression;
+            this.mode = mode;
             this.name = name;
-            this.value = value;
         }
 
         #endregion
 
         #region Methods
 
-        public override IValue  Apply (Scope scope, TextWriter output)
+        public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            this.name.Set (scope, this.value.Evaluate (scope, output), Scope.SetMode.ANYWHERE);
+            this.name.Set (scope, this.expression.Evaluate (scope, output), this.mode);
 
-            return null;
+            result = UndefinedValue.Instance;
+
+            return false;
         }
 
-        public override void    Debug (TextWriter output)
+        public void Debug (TextWriter output)
         {
             output.Write ("{set ");
             output.Write (this.name);
-            output.Write (" to ");
-            output.Write (this.value);
+
+            switch (this.mode)
+            {
+                case Scope.SetMode.ANYWHERE:
+                    output.Write (" to ");
+
+                    break;
+
+                case Scope.SetMode.LOCAL:
+                    output.Write (" as ");
+
+                    break;
+            }
+
+            output.Write (this.expression);
             output.Write ('}');
         }
 
