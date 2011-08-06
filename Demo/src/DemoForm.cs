@@ -33,7 +33,7 @@ namespace   Demo
 
                     CommonFunctions.Assign (document);
 
-                    this.FillDocument (document.Values);
+                    this.SetValues (document);
 
                     this.textBoxPrint.Text = document.Print ();
 
@@ -69,7 +69,7 @@ namespace   Demo
             this.treeViewData.Nodes.Clear ();
         }
 #endif
-        private void    FillDocument (IDictionary<string, Value> values)
+        private void    SetValues (Document document)
         {
             Dictionary<Value, Value>    alertMessages = new Dictionary<Value, Value> ();
             Dictionary<Value, Value>    alertParams = new Dictionary<Value, Value> ();
@@ -104,9 +104,9 @@ namespace   Demo
                 alertTags.Add ("tag #" + i, i);
             }
 
-            values.Add ("messages", alertMessages);
-            values.Add ("params", alertParams);
-            values.Add ("tags", alertTags);
+            document.Values.Add ("messages", alertMessages);
+            document.Values.Add ("params", alertParams);
+            document.Values.Add ("tags", alertTags);
         }
     }
 }

@@ -6,8 +6,8 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    using   ChildDictionary = Dictionary<Value, Value>;
-    using   ChildList = List<KeyValuePair<Value, Value>>;
+    using   FieldList = List<KeyValuePair<Value, Value>>;
+    using   FieldMap = Dictionary<Value, Value>;
 
     public sealed class ArrayValue : Value
     {
@@ -51,7 +51,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override ChildList   Children
+        public override FieldList   Fields
         {
             get
             {
@@ -63,21 +63,38 @@ namespace   Cottle.Values
 
         #region Attributes
 
-        private ChildDictionary dictionary;
+        private FieldList   list;
 
-        private ChildList       list;
+        private FieldMap    map;
 
         #endregion
 
         #region Constructors
 
-        public  ArrayValue (IEnumerable<KeyValuePair<Value, Value>> children)
+        public  ArrayValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
         {
-            this.list = new List<KeyValuePair<Value, Value>> (children);
-            this.dictionary = new ChildDictionary (this.list.Count, ArrayValue.ValueComparer);
+            this.list = new FieldList (pairs);
+            this.map = new FieldMap (this.list.Count, ArrayValue.ValueComparer);
 
-            foreach (KeyValuePair<Value, Value> pair in children)
-                this.dictionary[pair.Key] = pair.Value;
+            foreach (KeyValuePair<Value, Value> pair in pairs)
+                this.map[pair.Key] = pair.Value;
+        }
+
+        public  ArrayValue (IEnumerable<Value> values)
+        {
+            Value   key;
+            int     i = 0;
+
+            this.list = new FieldList ();
+            this.map = new FieldMap (ArrayValue.ValueComparer);
+
+            foreach (Value value in values)
+            {
+                key = new NumberValue (i++);
+
+                this.map.Add (key, value);
+                this.list.Add (new KeyValuePair<Value, Value> (key, value));
+            }
         }
 
         public  ArrayValue ()
@@ -90,9 +107,9 @@ namespace   Cottle.Values
 
         public override bool    Equals (Value other)
         {
-            List<KeyValuePair<Value, Value>>  values = other.Children;
-            KeyValuePair<Value, Value>        x;
-            KeyValuePair<Value, Value>        y;
+            List<KeyValuePair<Value, Value>>    values = other.Fields;
+            KeyValuePair<Value, Value>          x;
+            KeyValuePair<Value, Value>          y;
             int                                 i;
 
             if (this.list.Count != values.Count)
@@ -122,12 +139,12 @@ namespace   Cottle.Values
 
         public override bool    Find (Value key, out Value value)
         {
-            return this.dictionary.TryGetValue (key, out value);
+            return this.map.TryGetValue (key, out value);
         }
 
         public override bool    Has (Value key)
         {
-            return this.dictionary.ContainsKey (key);
+            return this.map.ContainsKey (key);
         }
 
         public override string  ToString ()

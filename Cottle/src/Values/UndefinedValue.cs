@@ -6,7 +6,7 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    using   ChildList = List<KeyValuePair<Value, Value>>;
+    using   FieldList = List<KeyValuePair<Value, Value>>;
 
     public sealed class UndefinedValue : Value
     {
@@ -50,11 +50,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override ChildList   Children
+        public override FieldList   Fields
         {
             get
             {
-                return Value.EmptyChildren;
+                return Value.EmptyFields;
             }
         }
 

@@ -41,7 +41,7 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            ICollection<KeyValuePair<Value, Value>>   collection = this.from.Evaluate (scope, output).Children;
+            ICollection<KeyValuePair<Value, Value>>   collection = this.from.Evaluate (scope, output).Fields;
             bool                                        exit;
 
             if (collection.Count > 0)

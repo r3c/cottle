@@ -4,17 +4,17 @@ using System.Text;
 
 namespace   Cottle.Values.Generics
 {
-    using   ChildList = List<KeyValuePair<Value, Value>>;
+    using   FieldList = List<KeyValuePair<Value, Value>>;
 
     public abstract class   ScalarValue<T> : Value
     {
         #region Properties
 
-        public override ChildList   Children
+        public override FieldList   Fields
         {
             get
             {
-                return ScalarValue<T>.EmptyChildren;
+                return Value.EmptyFields;
             }
         }
 

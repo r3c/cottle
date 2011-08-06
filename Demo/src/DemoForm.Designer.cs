@@ -30,6 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager (typeof (DemoForm));
             this.splitContainer = new System.Windows.Forms.SplitContainer ();
+            this.splitContainerInput = new System.Windows.Forms.SplitContainer ();
+            this.groupBoxValue = new System.Windows.Forms.GroupBox ();
+            this.treeViewValue = new System.Windows.Forms.TreeView ();
             this.groupBoxResult = new System.Windows.Forms.GroupBox ();
             this.buttonDemo = new System.Windows.Forms.Button ();
             this.textBoxResult = new System.Windows.Forms.TextBox ();
@@ -37,19 +40,16 @@
             this.textBoxInput = new System.Windows.Forms.TextBox ();
             this.groupBoxOutput = new System.Windows.Forms.GroupBox ();
             this.textBoxPrint = new System.Windows.Forms.TextBox ();
-            this.groupBoxData = new System.Windows.Forms.GroupBox ();
-            this.splitContainerInput = new System.Windows.Forms.SplitContainer ();
-            this.treeViewData = new System.Windows.Forms.TreeView ();
             this.splitContainer.Panel1.SuspendLayout ();
             this.splitContainer.Panel2.SuspendLayout ();
             this.splitContainer.SuspendLayout ();
-            this.groupBoxResult.SuspendLayout ();
-            this.groupBoxInput.SuspendLayout ();
-            this.groupBoxOutput.SuspendLayout ();
-            this.groupBoxData.SuspendLayout ();
             this.splitContainerInput.Panel1.SuspendLayout ();
             this.splitContainerInput.Panel2.SuspendLayout ();
             this.splitContainerInput.SuspendLayout ();
+            this.groupBoxValue.SuspendLayout ();
+            this.groupBoxResult.SuspendLayout ();
+            this.groupBoxInput.SuspendLayout ();
+            this.groupBoxOutput.SuspendLayout ();
             this.SuspendLayout ();
             // 
             // splitContainer
@@ -69,6 +69,45 @@
             this.splitContainer.SplitterDistance = 385;
             this.splitContainer.TabIndex = 1;
             // 
+            // splitContainerInput
+            // 
+            this.splitContainerInput.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerInput.Location = new System.Drawing.Point (0, 0);
+            this.splitContainerInput.Name = "splitContainerInput";
+            this.splitContainerInput.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainerInput.Panel1
+            // 
+            this.splitContainerInput.Panel1.Controls.Add (this.groupBoxValue);
+            // 
+            // splitContainerInput.Panel2
+            // 
+            this.splitContainerInput.Panel2.Controls.Add (this.groupBoxResult);
+            this.splitContainerInput.Panel2.Controls.Add (this.groupBoxInput);
+            this.splitContainerInput.Size = new System.Drawing.Size (385, 555);
+            this.splitContainerInput.SplitterDistance = 150;
+            this.splitContainerInput.TabIndex = 0;
+            // 
+            // groupBoxValue
+            // 
+            this.groupBoxValue.Controls.Add (this.treeViewValue);
+            this.groupBoxValue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxValue.Location = new System.Drawing.Point (0, 0);
+            this.groupBoxValue.Name = "groupBoxValue";
+            this.groupBoxValue.Padding = new System.Windows.Forms.Padding (7);
+            this.groupBoxValue.Size = new System.Drawing.Size (385, 150);
+            this.groupBoxValue.TabIndex = 5;
+            this.groupBoxValue.TabStop = false;
+            this.groupBoxValue.Text = "Input values:";
+            // 
+            // treeViewValue
+            // 
+            this.treeViewValue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewValue.Location = new System.Drawing.Point (7, 20);
+            this.treeViewValue.Name = "treeViewValue";
+            this.treeViewValue.Size = new System.Drawing.Size (371, 123);
+            this.treeViewValue.TabIndex = 0;
+            // 
             // groupBoxResult
             // 
             this.groupBoxResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
@@ -80,7 +119,7 @@
             this.groupBoxResult.Size = new System.Drawing.Size (385, 48);
             this.groupBoxResult.TabIndex = 4;
             this.groupBoxResult.TabStop = false;
-            this.groupBoxResult.Text = "Parse && evaluate:";
+            this.groupBoxResult.Text = "Parse && print:";
             // 
             // buttonDemo
             // 
@@ -138,7 +177,7 @@
             this.groupBoxOutput.Size = new System.Drawing.Size (385, 555);
             this.groupBoxOutput.TabIndex = 4;
             this.groupBoxOutput.TabStop = false;
-            this.groupBoxOutput.Text = "Evaluation output:";
+            this.groupBoxOutput.Text = "Output:";
             // 
             // textBoxPrint
             // 
@@ -151,45 +190,6 @@
             this.textBoxPrint.Size = new System.Drawing.Size (371, 528);
             this.textBoxPrint.TabIndex = 3;
             this.textBoxPrint.WordWrap = false;
-            // 
-            // groupBoxData
-            // 
-            this.groupBoxData.Controls.Add (this.treeViewData);
-            this.groupBoxData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxData.Location = new System.Drawing.Point (0, 0);
-            this.groupBoxData.Name = "groupBoxData";
-            this.groupBoxData.Padding = new System.Windows.Forms.Padding (7);
-            this.groupBoxData.Size = new System.Drawing.Size (385, 150);
-            this.groupBoxData.TabIndex = 5;
-            this.groupBoxData.TabStop = false;
-            this.groupBoxData.Text = "Input data:";
-            // 
-            // splitContainerInput
-            // 
-            this.splitContainerInput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerInput.Location = new System.Drawing.Point (0, 0);
-            this.splitContainerInput.Name = "splitContainerInput";
-            this.splitContainerInput.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainerInput.Panel1
-            // 
-            this.splitContainerInput.Panel1.Controls.Add (this.groupBoxData);
-            // 
-            // splitContainerInput.Panel2
-            // 
-            this.splitContainerInput.Panel2.Controls.Add (this.groupBoxResult);
-            this.splitContainerInput.Panel2.Controls.Add (this.groupBoxInput);
-            this.splitContainerInput.Size = new System.Drawing.Size (385, 555);
-            this.splitContainerInput.SplitterDistance = 150;
-            this.splitContainerInput.TabIndex = 0;
-            // 
-            // treeViewData
-            // 
-            this.treeViewData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeViewData.Location = new System.Drawing.Point (7, 20);
-            this.treeViewData.Name = "treeViewData";
-            this.treeViewData.Size = new System.Drawing.Size (371, 123);
-            this.treeViewData.TabIndex = 0;
             // 
             // DemoForm
             // 
@@ -204,16 +204,16 @@
             this.splitContainer.Panel1.ResumeLayout (false);
             this.splitContainer.Panel2.ResumeLayout (false);
             this.splitContainer.ResumeLayout (false);
+            this.splitContainerInput.Panel1.ResumeLayout (false);
+            this.splitContainerInput.Panel2.ResumeLayout (false);
+            this.splitContainerInput.ResumeLayout (false);
+            this.groupBoxValue.ResumeLayout (false);
             this.groupBoxResult.ResumeLayout (false);
             this.groupBoxResult.PerformLayout ();
             this.groupBoxInput.ResumeLayout (false);
             this.groupBoxInput.PerformLayout ();
             this.groupBoxOutput.ResumeLayout (false);
             this.groupBoxOutput.PerformLayout ();
-            this.groupBoxData.ResumeLayout (false);
-            this.splitContainerInput.Panel1.ResumeLayout (false);
-            this.splitContainerInput.Panel2.ResumeLayout (false);
-            this.splitContainerInput.ResumeLayout (false);
             this.ResumeLayout (false);
 
         }
@@ -229,7 +229,7 @@
         private System.Windows.Forms.GroupBox groupBoxResult;
         private System.Windows.Forms.GroupBox groupBoxInput;
         private System.Windows.Forms.SplitContainer splitContainerInput;
-        private System.Windows.Forms.GroupBox groupBoxData;
-        private System.Windows.Forms.TreeView treeViewData;
+        private System.Windows.Forms.GroupBox groupBoxValue;
+        private System.Windows.Forms.TreeView treeViewValue;
     }
 }

@@ -29,7 +29,7 @@ namespace   Cottle.Commons
 
         public static readonly Function    FunctionCount = new CallbackFunction (delegate (Argument[] arguments)
         {
-            return arguments[0].Value.Children.Count;
+            return arguments[0].Value.Fields.Count;
         }, 1);
 
         public static readonly Function    FunctionDiv = new CallbackFunction (delegate (Argument[] arguments)
@@ -81,7 +81,7 @@ namespace   Cottle.Commons
             List<KeyValuePair<Value, Value>>    array = new List<KeyValuePair<Value, Value>> ();
 
             foreach (Argument argument in arguments)
-                array.AddRange (argument.Value.Children);
+                array.AddRange (argument.Value.Fields);
 
             return new ArrayValue (array);
         }, 1, -1);
@@ -143,7 +143,7 @@ namespace   Cottle.Commons
 
         public static readonly Function    FunctionSlice = new CallbackFunction (delegate (Argument[] arguments)
         {
-            IList<KeyValuePair<Value, Value>> array = arguments[0].Value.Children;
+            IList<KeyValuePair<Value, Value>> array = arguments[0].Value.Fields;
             int                                 count;
             int                                 index;
             IList<KeyValuePair<Value, Value>> slice;

@@ -13,7 +13,7 @@ namespace   Cottle
     {
         #region Constants
 
-        protected static readonly ChildList EmptyChildren = new List<KeyValuePair<Value, Value>> ();
+        protected static readonly ChildList EmptyFields = new List<KeyValuePair<Value, Value>> ();
 
         #endregion
 
@@ -39,7 +39,7 @@ namespace   Cottle
             get;
         }
 
-        public abstract ChildList   Children
+        public abstract ChildList   Fields
         {
             get;
         }
@@ -60,19 +60,29 @@ namespace   Cottle
 
         #region Operators
 
-        public static implicit operator Value (Dictionary<Value, Value> array)
+        public static implicit operator Value (Dictionary<Value, Value> pairs)
         {
-            return new ArrayValue (array);
+            return new ArrayValue (pairs);
         }
 
-        public static implicit operator Value (List<KeyValuePair<Value, Value>> array)
+        public static implicit operator Value (List<KeyValuePair<Value, Value>> pairs)
         {
-            return new ArrayValue (array);
+            return new ArrayValue (pairs);
         }
 
-        public static implicit operator Value (KeyValuePair<Value, Value>[] array)
+        public static implicit operator Value (KeyValuePair<Value, Value>[] pairs)
         {
-            return new ArrayValue (array);
+            return new ArrayValue (pairs);
+        }
+
+        public static implicit operator Value (List<Value> values)
+        {
+            return new ArrayValue (values);
+        }
+
+        public static implicit operator Value (Value[] values)
+        {
+            return new ArrayValue (values);
         }
 
         public static implicit operator Value (bool value)
