@@ -2,31 +2,42 @@
 	<head>
 		<style type="text/css">
 			body {
-				font:	normal normal normal 0.9em tahoma;
+				padding:	0px;
+				margin:		32px 64px;
+				font:		normal normal normal 0.9em 'Trebuchet MS', Helvetica, sans-serif;
 			}
 
 			div.code {
-				padding:	0px 4px 1px 4px;
-				margin:		16px 8px;
-				background:	#D0D0D0;
-				border:		1px solid #A0A0A0;
+				padding:		0px 6px 1px 6px;
+				margin:			12px 8px;
+				background:		#D0E0F0;
+				border-top:		1px solid #80A0B0;
+				border-right:	1px solid #A0C0D0;
+				border-bottom:	1px solid #A0C0D0;
+				border-left:	1px solid #80A0B0;
+				border-radius:	6px;
 			}
 
 			div.code code {
-				font:			normal normal normal 1.1em monospace;
+				font:			normal normal normal 1.0em monospace;
 				white-space:	pre;
 			}
 
 			div.code legend {
 				position:	relative;
-				top:		-6px;
+				top:		-4px;
 			}
 
 			div.code legend span {
-				padding:	0px 4px 2px 4px;
-				background:	#E0E0E0;
-				border:		1px solid #C0C0C0;
-				font:		normal normal bold 0.7em tahoma;
+				padding:		0px 4px 0px 5px;
+				background:		#B0C6E0;
+				border-top:		1px solid #C0D0F0;
+				border-right:	1px solid #A0B0C0;
+				border-bottom:	1px solid #A0B0C0;
+				border-left:	1px solid #C0D0F0;
+				border-radius:	6px;
+				font-size:		0.7em;
+				font-weight:	bold;
 			}
 
 			div.s1 {
@@ -45,19 +56,22 @@
 				padding:	0px;
 				margin:		24px 8px;
 				text-align:	center;				
-				font-size:	1.8em;
+				font-size:	2.0em;
+				color:		#4060A0;
 			}
 
 			h2 {
 				padding:	0px;
 				margin:		8px 16px;
 				font-size:	1.4em;
+				color:		#5070B0;
 			}
 
 			h3 {
 				padding:	0px;
 				margin:		8px 24px;
 				font-size:	1.0em;
+				color:		#6080C0;
 			}
 
 			p {
@@ -66,7 +80,7 @@
 
 			p code {
 				background:	#E0E0E0;
-				font:		normal normal normal 1.1em monospace;
+				font:		normal normal normal 1.0em monospace;
 			}
 
 			ul {
@@ -96,10 +110,19 @@
 				your mailbox could look like this:</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
-<code>Hello {name}, you have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!</code>
+<code>Hello, {name}!
+
+{if gt(count(messages),0):
+    You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
+|else:
+    You have no new message.
+}
+</code>
 				</div>
-				<p>Cottle supports most common template engine features, such
-				as:</p>
+				<p>As you can guess by looking at this code, a Cottle template
+				contains both "raw" text printed directly and special tags used
+				to control how text output is generated. Cottle supports most
+				common template engine features, such as:</p>
 				<ul>
 					<li>Text substitutions through variables,</li>
 					<li>Builtin and used-defined functions,</li>
@@ -254,7 +277,7 @@ document.Print(Console.Out);</code>
 				</div>
 				<div class="code">
 					<legend><span>C# code:</span></legend>
-<code>document.Values["myarray"] = new Dictionary&lt;Value, Value&gt;
+<code>document.Values["myarray"] = new Dictionary&lt;Value,Value&gt;
 {
     {"f1", "dotted"},
     {"f2", "subscript"}
@@ -286,9 +309,9 @@ document.Print(Console.Out);</code>
 				</div>
 				<div class="code">
 					<legend><span>C# code:</span></legend>
-<code>CommonFunctions.Assign (document);
+<code>CommonFunctions.Assign(document);
 
-document.Values["messages"] = new Dictionary&lt;Value, Value&gt;
+document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
     {0, "message #0"},
     {1, "message #1"},
@@ -315,15 +338,16 @@ document.Values["messages"] = new Dictionary&lt;Value, Value&gt;
 		</div>
 
 		<a name="3" />
-		<h2>3. Flow controlling</h2>
+		<h2>3. Flow control</h2>
 		<div class="s2">
-			<h3>3.1. Conditional expressions</h3>
+			<h3>3.1. Conditional statements</h3>
 			<div class="s3">
-				<p>Conditional expressions use the "if" command, which evaluate
-				the value of a variable (or the result of a function call) to
-				check if its body should be printed or not. The "if" command
-				also supports optional "elif" (else if) and "else" branches
-				that behave like in any programming language.</p>
+				<p>You can write conditional statements by using the "if"
+				command which evaluate the value of a variable (or the result
+				of a function call) to check if its body should be printed or
+				not. The "if" command also supports optional "elif" (else if)
+				and "else" blocks that behave like in any programming
+				language.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{if 1:
@@ -346,9 +370,9 @@ document.Values["messages"] = new Dictionary&lt;Value, Value&gt;
 				</div>
 				<div class="code">
 					<legend><span>C# code:</span></legend>
-<code>CommonFunctions.Assign (document);
+<code>CommonFunctions.Assign(document);
 
-document.Values["items"] = new Dictionary&lt;Value, Value&gt;
+document.Values["items"] = new Dictionary&lt;Value,Value&gt;
 {
     {0, "item #0"},
     {1, "item #1"},
@@ -370,16 +394,132 @@ X is negative.</code>
 				</div>
 			</div>
 
-			<h3>3.2. Array enumeration</h3>
+			<h3>3.2. Arrays enumeration</h3>
 			<div class="s3">
-				<p>FIXME</p>
-				<code>{for name, param in alert.params: ...}</code>
+				<p>Pairs contained within an array value can be enumerated
+				with the "for" command, that will print its body for each
+				key/value pair it found. An alternative syntax can be used if
+				you only want to iterate on values and don't care about keys.
+				The "for" command also supports an optional "empty" block
+				printed when the array you tried to enumerate doesn't contain
+				any key/value pair.</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{for index, text in messages:
+    Message n°{add(index, 1)}: {text}
+|empty:
+    No messages to display.
+}
+
+Tags: {for tag in tags:{tag} }</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>CommonFunctions.Assign(document);
+
+document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
+{
+    {0, "Hi, this is a sample message!"},
+    {1, "Hi, me again!"},
+    {2, "Hi, guess what?"}
+};
+
+document.Values["tags"] = new Value[]
+{
+    "action",
+    "horror",
+    "fantastic"
+};</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Message n°1: Hi, this is a sample message!
+Message n°2: Hi, me again!
+Message n°3: Hi, guess what?
+
+Tags: action horror fantastic</code>
+				</div>
 			</div>
 
-			<h3>3.3. Variable assignment</h3>
+			<h3>3.3. Variables assignment</h3>
 			<div class="s3">
-				<p>FIXME</p>
-				<code>{set messages to alert.messages}</code>
+				<p>You can assign variables while template is being rendered by
+				using the "set" command. Variable assignment allows you improve
+				performance by storing evaluation results (such as function
+				calls) that are going to be used several times, or code complex
+				template mechanism by combining the "if", "for" and "set"
+				commands.</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{set nb_msgs to count(messages)}
+
+{if gt(nb_msgs,0):
+    You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
+|else:
+    You have no new message.
+}
+
+{set nb_long to 0}
+
+{for message in messages:
+    {if gt(len(message), 20):
+        {set nb_long to add(nb_long, 1)}
+    }
+}
+
+{nb_long} message{if gt(nb_long, 1):s is|else:" "are} more than 20 characters long.</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>CommonFunctions.Assign(document);
+
+document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
+{
+    {0, "Hi, this is a sample message!"},
+    {1, "Hi, me again!"},
+    {2, "Hi, guess what?"}
+};</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>You have 3 new messages in your mailbox!
+
+1 message is more than 20 characters long.</code>
+				</div>
+				<p>You can assume that all variables are set in a global common
+				scope. More advanced use of variable assignments will be
+				explained later in this document.</p>
+			</div>
+
+			<h3>3.4. Loops</h3>
+			<div class="s3">
+				<p>The "while" command is the equivalent of the "while" keyword
+				in most programming languages. Be sure to check for a condition
+				that will end to become false, or rendering of your template
+				will never complete. When possible, prefer the use of the "for"
+				command over "while".</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{set password to ""}
+{set nb to rand(8, 16)}
+{set i to 0}
+
+{while lt(i, nb):
+    {set password to cat(password, asc(rand(97, 123)))}
+    {set i to add(i, 1)}
+}
+
+Your random password is: {password}.</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>CommonFunctions.Assign(document);</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Your random password is: enfpuwlrymnb.</code>
+				</div>
+				</div>
 			</div>
 		</div>
 
@@ -391,7 +531,7 @@ X is negative.</code>
 				<p>FIXME</p>
 			</div>
 
-			<h3>4.2. Variable scopes</h3>
+			<h3>4.2. Variables scopes</h3>
 			<div class="s3">
 				<p>FIXME</p>
 			</div>
