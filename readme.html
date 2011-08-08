@@ -211,8 +211,8 @@ document.Print(Console.Out);</code>
 				<code>Cottle.Values</code> namespace for available types.</p>
 
 				<p>Once assigned, variables can be used in the template, for
-				example by using the "echo" command that print the value of its
-				argument: </p>
+				example by using the <code>echo</code> command that print the
+				value of its argument: </p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>Hello {echo name}, you have no new message.</code>
@@ -225,10 +225,11 @@ document.Print(Console.Out);</code>
 					<legend><span>Result:</span></legend>
 <code>Hello John, you have no new message.</code>
 				</div>
-				<p>As "echo" is the default command, you can omit the "echo"
-				keyword if the name of the variable you want to print doesn't
-				conflict with another command: "{echo name}" is equivalent to
-				"{name}" in this example. This shorter form will be used in all
+				<p>As <code>echo</code> is the default command, you can omit
+				the "echo" keyword if the name of the variable you want to
+				print doesn't conflict with another command:
+				<code>{echo name}</code> is equivalent to <code>{name}</code>
+				in this example. This shorter form will be used in all
 				incoming samples.</p>
 			</div>
 
@@ -342,12 +343,12 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 		<div class="s2">
 			<h3>3.1. Conditional statements</h3>
 			<div class="s3">
-				<p>You can write conditional statements by using the "if"
-				command which evaluate the value of a variable (or the result
-				of a function call) to check if its body should be printed or
-				not. The "if" command also supports optional "elif" (else if)
-				and "else" blocks that behave like in any programming
-				language.</p>
+				<p>You can write conditional statements by using the
+				<code>if</code> command which evaluate the value of a variable
+				(or the result of a function call) to check if its body should
+				be printed or not. The <code>if</code> command also supports
+				optional <code>elif</code> (else if) and <code>else</code>
+				blocks that behave like in any programming language.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{if 1:
@@ -397,12 +398,12 @@ X is negative.</code>
 			<h3>3.2. Arrays enumeration</h3>
 			<div class="s3">
 				<p>Pairs contained within an array value can be enumerated
-				with the "for" command, that will print its body for each
-				key/value pair it found. An alternative syntax can be used if
-				you only want to iterate on values and don't care about keys.
-				The "for" command also supports an optional "empty" block
-				printed when the array you tried to enumerate doesn't contain
-				any key/value pair.</p>
+				with the <code>for</code> command, that will print its body for
+				each key/value pair it found. An alternative syntax can be used
+				if you only want to iterate on values and don't care about
+				keys. The <code>for</code> command also supports an optional
+				<code>empty</code> block printed when the array you tried to
+				enumerate doesn't contain any key/value pair.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{for index, text in messages:
@@ -444,11 +445,11 @@ Tags: action horror fantastic</code>
 			<h3>3.3. Variables assignment</h3>
 			<div class="s3">
 				<p>You can assign variables while template is being rendered by
-				using the "set" command. Variable assignment allows you improve
-				performance by storing evaluation results (such as function
-				calls) that are going to be used several times, or code complex
-				template mechanism by combining the "if", "for" and "set"
-				commands.</p>
+				using the <code>set</code> command. Variable assignment allows
+				you improve performance by storing evaluation results (such as
+				function calls) that are going to be used several times, or
+				code complex template mechanism by combining the <code>if</code>,
+				<code>for</code> and <code>set</code> commands.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{set nb_msgs to count(messages)}
@@ -493,11 +494,12 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 
 			<h3>3.4. Loops</h3>
 			<div class="s3">
-				<p>The "while" command is the equivalent of the "while" keyword
-				in most programming languages. Be sure to check for a condition
-				that will end to become false, or rendering of your template
-				will never complete. When possible, prefer the use of the "for"
-				command over "while".</p>
+				<p>The <code>while</code> command is the equivalent of the
+				"while" keyword in most programming languages. Be sure to check
+				for a condition that will end to become false, or rendering of
+				your template will never complete. When possible, prefer the
+				use of the <code>for</code> command over
+				<code>while</code>.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{set password to ""}
@@ -505,7 +507,7 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {set i to 0}
 
 {while lt(i, nb):
-    {set password to cat(password, asc(rand(97, 123)))}
+    {set password to cat(password, char(rand(97, 123)))}
     {set i to add(i, 1)}
 }
 
@@ -519,7 +521,6 @@ Your random password is: {password}.</code>
 					<legend><span>Result:</span></legend>
 <code>Your random password is: enfpuwlrymnb.</code>
 				</div>
-				</div>
 			</div>
 		</div>
 
@@ -528,7 +529,69 @@ Your random password is: {password}.</code>
 		<div class="s2">
 			<h3>4.1. Functions declaration</h3>
 			<div class="s3">
-				<p>FIXME</p>
+				<p>Cottle allows you to declare functions, that are callable
+				values you can use to factor code as you would do in a program.
+				To declare a function and assign it to a variable, the same
+				<code>set</code> command that for regular variable assignment
+				is used, but with a slightly different syntax. Function
+				arguments are specified between parenthesis right after the
+				variable name, and the <code>to</code> keyword must be followed
+				by function body declaration.</p>
+				<p>Functions can return a value that can be used in any
+				expression or stored in a variable. To make a function halt and
+				return a value, use the <code>return</code> command within its
+				body.</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{set factorial(n) to:
+    {if gt(n, 1):
+        {return mul(n, factorial(sub(n, 1)))}
+    |else:
+        {return 1}
+    }
+}
+
+Factorial 1 = {factorial(1)}
+Factorial 3 = {factorial(3)}
+Factorial 8 = {factorial(8)}
+
+{set hanoi_rec(n, from, by, to) to:
+    {set n to sub(n, 1)}
+
+    {if gt(n, 0): {FIXME hanoi_rec(n, from, to, by)}}
+Move one disk from peg {from} to {to}
+    {if gt(n, 0): {FIXME hanoi_rec(n, by, from, to)}}
+}
+
+{set hanoi(n) to:
+    {FIXME hanoi_rec(n, "A", "B", "C")}
+}
+
+{FIXME hanoi(3)}</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>CommonFunctions.Assign(document);</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>Factorial 1 = 1
+Factorial 3 = 6
+Factorial 8 = 40320
+
+FIXME</code>
+				</div>
+				<p>You can see in this example that returning a value and
+				printing text are two very different things. Raw text within
+				function body is printed each time the function is called, or
+				more precisely each time its enclosing block is executed (that
+				means it won't print if contained in an <code>if</code> command
+				that fails to pass, for example). The value returned by a
+				function is not printed, but remember that a command such as
+				<code>{factorial(8)}</code> uses the <code>echo</code> command
+				and therefore prints the result of the function call. If you
+				want to call a function and discard its result, use the
+				<code>FIXME</code> command like in previous example.</p>
 			</div>
 
 			<h3>4.2. Variables scopes</h3>

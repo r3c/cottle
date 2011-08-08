@@ -8,9 +8,12 @@ X Implement function declarations
 X Add new common functions: len, asc, ord
 - Allow function evaluation within callbacks?
 	- Add new common functions: pos, sort, map
-- Merge variable and function declarations
-	- Special "index" variable within "for" body
-- Clean text trimming
-- Support for comments?
-- XML to Value generator?
-- Value generator using attributes?
+- Merge variable and function declarations: {declare x, y, z}, {set x to 1}, {set x() to: dummy}
+	- Fix scope issues, remove unused scopes in "for" enumerations?
+	- Declare a special "index" variable within "for" body?
+- Implement better text trimming system
+- Add support for comments
+- Write deserializers?
+	- From .NET object with attributes
+	- From XML document
+	- From JSON string

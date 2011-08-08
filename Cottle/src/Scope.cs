@@ -12,7 +12,7 @@ namespace   Cottle
 
         private Stack<HashSet<string>>              levels = new Stack<HashSet<string>> ();
 
-        private Dictionary<string, Stack<Value>>   stacks = new Dictionary<string, Stack<Value>> ();
+        private Dictionary<string, Stack<Value>>    stacks = new Dictionary<string, Stack<Value>> ();
 
         #endregion
 
