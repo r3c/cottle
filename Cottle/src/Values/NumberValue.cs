@@ -56,9 +56,9 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override bool    Equals (Value other)
+        public override int CompareTo (Value other)
         {
-            return this.value == other.AsNumber;
+            return this.value.CompareTo (other.AsNumber);
         }
 
         public override string  ToString ()

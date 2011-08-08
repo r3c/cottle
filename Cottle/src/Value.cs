@@ -9,7 +9,7 @@ namespace   Cottle
 {
     using   ChildList = List<KeyValuePair<Value, Value>>;
 
-    public abstract class   Value
+    public abstract class   Value : IComparable<Value>
     {
         #region Constants
 
@@ -48,7 +48,7 @@ namespace   Cottle
 
         #region Methods
 
-        public abstract bool            Equals (Value other);
+        public abstract int             CompareTo (Value other);
 
         public abstract bool            Find (Value key, out Value value);
 

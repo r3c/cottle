@@ -5,9 +5,12 @@ X Change IValue.Children structure to allow children ordering function (like "so
 X Handle "while" keyword
 X Implement IValue GetHashCode method to allow IValue-based lookups (no more cast to strings)
 X Implement function declarations
-- Add new common functions: pos, len, sort, asc, ord, map...
-- Special "index" variable within "for" body
+X Add new common functions: len, asc, ord
+- Allow function evaluation within callbacks?
+	- Add new common functions: pos, sort, map
+- Merge variable and function declarations
+	- Special "index" variable within "for" body
 - Clean text trimming
 - Support for comments?
 - XML to Value generator?
-- Value serializer using attributes?
+- Value generator using attributes?

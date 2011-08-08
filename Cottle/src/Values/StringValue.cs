@@ -54,13 +54,18 @@ namespace   Cottle.Values
         {
         }
 
+        public  StringValue (char value) :
+            base (value.ToString ())
+        {
+        }
+
         #endregion
 
         #region Methods
 
-        public override bool    Equals (Value other)
+        public override int CompareTo (Value other)
         {
-            return this.value == other.AsString;
+            return this.value.CompareTo (other.AsString);
         }
 
         public override string  ToString ()

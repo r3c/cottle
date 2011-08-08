@@ -105,26 +105,26 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override bool    Equals (Value other)
+        public override int CompareTo (Value other)
         {
+            int                                 compare;
             List<KeyValuePair<Value, Value>>    values = other.Fields;
-            KeyValuePair<Value, Value>          x;
-            KeyValuePair<Value, Value>          y;
             int                                 i;
 
-            if (this.list.Count != values.Count)
-                return false;
+            if (this.list.Count < values.Count)
+                return -1;
+            else if (this.list.Count > values.Count)
+                return 1;
 
             for (i = this.list.Count; i-- > 0; )
             {
-                x = this.list[i];
-                y = values[i];
+                compare = this.list[i].Value.CompareTo (values[i].Value);
 
-                if (!x.Key.Equals (y.Key) || !x.Value.Equals (y.Key))
-                    return false;
+                if (compare != 0)
+                    return compare;
             }
 
-            return true;
+            return 0;
         }
 
         public override int GetHashCode ()
@@ -179,7 +179,7 @@ namespace   Cottle.Values
 	    {
             public bool Equals (Value x, Value y)
             {
-                return x.Equals (y);
+                return x.CompareTo (y) == 0;
             }
 
             public int  GetHashCode (Value value)

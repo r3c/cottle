@@ -62,9 +62,9 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override bool    Equals (Value other)
+        public override int CompareTo (Value other)
         {
-            return false;
+            return 0;
         }
 
         public override bool    Find (Value key, out Value value)

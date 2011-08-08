@@ -12,12 +12,12 @@ namespace   Cottle.Commons
     {
         #region Constants
 
-        public static readonly Function    FunctionAdd = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionAdd = new CallbackFunction (delegate (Argument[] arguments)
         {
             return new NumberValue (arguments[0].Value.AsNumber + arguments[1].Value.AsNumber);
         }, 2);
 
-        public static readonly Function    FunctionCat = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionCat = new CallbackFunction (delegate (Argument[] arguments)
         {
             StringBuilder   builder = new StringBuilder ();
 
@@ -27,12 +27,24 @@ namespace   Cottle.Commons
             return builder.ToString ();
         });
 
-        public static readonly Function    FunctionCount = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionChar = new CallbackFunction (delegate (Argument[] arguments)
+        {
+            try
+            {
+                return new StringValue ((char)arguments[0].Value.AsNumber);
+            }
+            catch
+            {
+                return new StringValue ('?');
+            }
+        }, 1);
+
+        public static readonly Function FunctionCount = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.Fields.Count;
         }, 1);
 
-        public static readonly Function    FunctionDiv = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionDiv = new CallbackFunction (delegate (Argument[] arguments)
         {
             decimal denominator = arguments[1].Value.AsNumber;
 
@@ -42,7 +54,7 @@ namespace   Cottle.Commons
             return arguments[0].Value.AsNumber / denominator;
         }, 2);
 
-        public static readonly Function    FunctionEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionEqual = new CallbackFunction (delegate (Argument[] arguments)
         {
             string  compare = arguments[0].Value.AsString;
             int     i;
@@ -54,17 +66,17 @@ namespace   Cottle.Commons
             return BooleanValue.True;
         }, 1, -1);
 
-        public static readonly Function    FunctionGreater = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionGreater = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber > arguments[1].Value.AsNumber;
         }, 2);
 
-        public static readonly Function    FunctionGreaterEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionGreaterEqual = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber >= arguments[1].Value.AsNumber;
         }, 2);
 
-        public static readonly Function    FunctionHas = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionHas = new CallbackFunction (delegate (Argument[] arguments)
         {
             Value  value = arguments[0].Value;
             int     i;
@@ -86,17 +98,22 @@ namespace   Cottle.Commons
             return new ArrayValue (array);
         }, 1, -1);
 
-        public static readonly Function    FunctionLower = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionLength = new CallbackFunction (delegate (Argument[] arguments)
+        {
+            return arguments[0].Value.AsString.Length;
+        }, 1);
+
+        public static readonly Function FunctionLower = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber < arguments[1].Value.AsNumber;
         }, 2);
 
-        public static readonly Function    FunctionLowerEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionLowerEqual = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber <= arguments[1].Value.AsNumber;
         }, 2);
 
-        public static readonly Function    FunctionMatch = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionMatch = new CallbackFunction (delegate (Argument[] arguments)
         {
             try
             {
@@ -108,7 +125,7 @@ namespace   Cottle.Commons
             }
         }, 2);
 
-        public static readonly Function    FunctionMod = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionMod = new CallbackFunction (delegate (Argument[] arguments)
         {
             decimal denominator = arguments[1].Value.AsNumber;
 
@@ -118,12 +135,22 @@ namespace   Cottle.Commons
             return arguments[0].Value.AsNumber % denominator;
         }, 2);
 
-        public static readonly Function    FunctionMul = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionMul = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber * arguments[1].Value.AsNumber;
         }, 2);
 
-        public static readonly Function    FunctionRandom = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionOrd = new CallbackFunction (delegate (Argument[] arguments)
+        {
+            string  chr = arguments[0].Value.AsString;
+
+            if (chr.Length > 0)
+                return new NumberValue ((decimal)(int)chr[0]);
+
+            return new NumberValue (0);
+        }, 1);
+
+        public static readonly Function FunctionRandom = new CallbackFunction (delegate (Argument[] arguments)
         {
             if (CommonFunctions.random == null)
                 CommonFunctions.random = new Random ();
@@ -141,12 +168,12 @@ namespace   Cottle.Commons
             }
         }, 0, 2);
 
-        public static readonly Function    FunctionSlice = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionSlice = new CallbackFunction (delegate (Argument[] arguments)
         {
-            IList<KeyValuePair<Value, Value>> array = arguments[0].Value.Fields;
+            List<KeyValuePair<Value, Value>>    array = arguments[0].Value.Fields;
             int                                 count;
             int                                 index;
-            IList<KeyValuePair<Value, Value>> slice;
+            KeyValuePair<Value, Value>[]        slice;
             int                                 start;
 
             start = Math.Min ((int)arguments[1].Value.AsNumber, array.Count);
@@ -160,7 +187,17 @@ namespace   Cottle.Commons
             return new ArrayValue (slice);
         }, 2, 3);
 
-        public static readonly Function    FunctionSub = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly Function FunctionSort = new CallbackFunction (delegate (Argument[] arguments)
+        {
+            List<KeyValuePair<Value, Value>>    source = arguments[0].Value.Fields;
+            List<KeyValuePair<Value, Value>>    sorted = new List<KeyValuePair<Value, Value>> (source);
+
+            sorted.Sort ((a, b) => a.Value.CompareTo (b.Value));
+
+            return new ArrayValue (sorted);
+        }, 1);
+
+        public static readonly Function FunctionSub = new CallbackFunction (delegate (Argument[] arguments)
         {
             return arguments[0].Value.AsNumber - arguments[1].Value.AsNumber;
         }, 2);
@@ -180,6 +217,7 @@ namespace   Cottle.Commons
         {
             document.Values["add"] = new FunctionValue (CommonFunctions.FunctionAdd);
             document.Values["cat"] = new FunctionValue (CommonFunctions.FunctionCat);
+            document.Values["char"] = new FunctionValue (CommonFunctions.FunctionChar);
             document.Values["count"] = new FunctionValue (CommonFunctions.FunctionCount);
             document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
             document.Values["equal"] = new FunctionValue (CommonFunctions.FunctionEqual);
@@ -188,12 +226,15 @@ namespace   Cottle.Commons
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
             document.Values["join"] = new FunctionValue (CommonFunctions.FunctionJoin);
             document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
+            document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);
             document.Values["lt"] = new FunctionValue (CommonFunctions.FunctionLower);
             document.Values["match"] = new FunctionValue (CommonFunctions.FunctionMatch);
             document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
             document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);
+            document.Values["ord"] = new FunctionValue (CommonFunctions.FunctionOrd);
             document.Values["rand"] = new FunctionValue (CommonFunctions.FunctionRandom);
             document.Values["slice"] = new FunctionValue (CommonFunctions.FunctionSlice);
+            document.Values["sort"] = new FunctionValue (CommonFunctions.FunctionSort);
             document.Values["sub"] = new FunctionValue (CommonFunctions.FunctionSub);
         }
 
