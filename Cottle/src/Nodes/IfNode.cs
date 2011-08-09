@@ -28,20 +28,19 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
+            bool    halt;
+
             foreach (Branch branch in this.branches)
             {
                 if (branch.Test.Evaluate (scope, output).AsBoolean)
                 {
                     scope.Enter ();
 
-                    if (branch.Body.Apply (scope, output, out result))
-                    {
-                        scope.Leave ();
-
-                        return true;
-                    }
+                    halt = branch.Body.Apply (scope, output, out result);
 
                     scope.Leave ();
+
+                    return halt;
                 }
             }
 
@@ -49,14 +48,11 @@ namespace   Cottle.Nodes
             {
                 scope.Enter ();
 
-                if (this.fallback.Apply (scope, output, out result))
-                {
-                    scope.Leave ();
-
-                    return true;
-                }
+                halt = this.fallback.Apply (scope, output, out result);
 
                 scope.Leave ();
+
+                return halt;
             }
 
             result = VoidValue.Instance;

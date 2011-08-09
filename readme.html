@@ -88,6 +88,11 @@
 				margin:		8px 0px;
 				list-style:	circle;
 			}
+
+			ul code {
+				background:	#E0E0E0;
+				font:		normal normal normal 1.0em monospace;
+			}
 		</style>
 		<title>Cottle Documentation</title>
 	</head>
@@ -97,6 +102,7 @@
 		<a name="1" />
 		<h2>1. Cottle overview</h2>
 		<div class="s2">
+			<a name="1.1" />
 			<h3>1.1. What is Cottle, and what does it looks like?</h3>
 			<div class="s3">
 				<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
@@ -134,6 +140,7 @@
 				welcomed!</p>
 			</div>
 
+			<a name="1.2" />
 			<h3>1.2. About this documentation</h3>
 			<div class="s3">
 				<p>This document intent to explain how Cottle works, how to
@@ -182,6 +189,7 @@ document.Print(Console.Out);</code>
 		<a name="2" />
 		<h2>2. Template language</h2>
 		<div class="s2">
+			<a name="2.1" />
 			<h3>2.1. Simple raw text output</h3>
 			<div class="s3">
 				<p>Everything you type into a Cottle template will be printed
@@ -198,6 +206,7 @@ document.Print(Console.Out);</code>
 				</div>
 			</div>
 
+			<a name="2.2" />
 			<h3>2.2. Sending variables to template</h3>
 			<div class="s3">
 				<p>To send variables to parsed document so that you can use
@@ -233,6 +242,7 @@ document.Print(Console.Out);</code>
 				incoming samples.</p>
 			</div>
 
+			<a name="2.3" />
 			<h3>2.3. Escaping special characters</h3>
 			<div class="s3">
 				<p>There are five special characters that won't be printed
@@ -266,6 +276,7 @@ document.Print(Console.Out);</code>
 				</div>
 			</div>
 
+			<a name="2.4" />
 			<h3>2.4. Using array values</h3>
 			<div class="s3">
 				<p>Array values contain multiple values stored as key/value
@@ -299,6 +310,7 @@ document.Print(Console.Out);</code>
 				see later.</p>
 			</div>
 
+			<a name="2.5" />
 			<h3>2.5. Calling functions</h3>
 			<div class="s3">
 				<p>Functions in Cottle are special values that can be called
@@ -334,13 +346,14 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 				functions without requiring you to implement them manually.</p>
 				<p>To get a description of each of the functions set
 				when using <code>CommonFunctions.Assign</code>, see paragraph
-				"<a href="#5">5. Common functions"</a></p>
+				"<a href="#5">5. Common functions</a>"</p>
 			</div>
 		</div>
 
 		<a name="3" />
 		<h2>3. Flow control</h2>
 		<div class="s2">
+			<a name="3.1" />
 			<h3>3.1. Conditional statements</h3>
 			<div class="s3">
 				<p>You can write conditional statements by using the
@@ -395,6 +408,7 @@ X is negative.</code>
 				</div>
 			</div>
 
+			<a name="3.2" />
 			<h3>3.2. Arrays enumeration</h3>
 			<div class="s3">
 				<p>Pairs contained within an array value can be enumerated
@@ -442,6 +456,7 @@ Tags: action horror fantastic</code>
 				</div>
 			</div>
 
+			<a name="3.3" />
 			<h3>3.3. Variables assignment</h3>
 			<div class="s3">
 				<p>You can assign variables while template is being rendered by
@@ -492,14 +507,15 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 				explained later in this document.</p>
 			</div>
 
+			<a name="3.4" />
 			<h3>3.4. Loops</h3>
 			<div class="s3">
 				<p>The <code>while</code> command is the equivalent of the
 				"while" keyword in most programming languages. Be sure to check
-				for a condition that will end to become false, or rendering of
-				your template will never complete. When possible, prefer the
-				use of the <code>for</code> command over
-				<code>while</code>.</p>
+				for a condition that will become false after a finite number of
+				iterations, or rendering of your template will never complete.
+				When possible, prefer the use of the <code>for</code> command
+				over <code>while</code>.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
 <code>{set password to ""}
@@ -507,7 +523,16 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {set i to 0}
 
 {while lt(i, nb):
-    {set password to cat(password, char(rand(97, 123)))}
+    {set ascii to rand(62)}
+
+    {if lt(ascii, 10):
+        {set password to cat(password, char(add(ascii, ord("0"))))}
+    |elif lt(ascii, 36):
+        {set password to cat(password, char(add(sub(ascii, 10), ord("A"))))}
+    |else:
+        {set password to cat(password, char(add(sub(ascii, 36), ord("a"))))}
+    }
+
     {set i to add(i, 1)}
 }
 
@@ -519,7 +544,7 @@ Your random password is: {password}.</code>
 				</div>
 				<div class="code">
 					<legend><span>Result:</span></legend>
-<code>Your random password is: enfpuwlrymnb.</code>
+<code>Your random password is: 2PIBnodftxz8jAX.</code>
 				</div>
 			</div>
 		</div>
@@ -527,23 +552,24 @@ Your random password is: {password}.</code>
 		<a name="4" />
 		<h2>4. Advanced topics</h2>
 		<div class="s2">
+			<a name="4.1" />
 			<h3>4.1. Functions declaration</h3>
 			<div class="s3">
 				<p>Cottle allows you to declare functions, that are callable
 				values you can use to factor code as you would do in a program.
-				To declare a function and assign it to a variable, the same
-				<code>set</code> command that for regular variable assignment
-				is used, but with a slightly different syntax. Function
-				arguments are specified between parenthesis right after the
-				variable name, and the <code>to</code> keyword must be followed
-				by function body declaration.</p>
+				To declare a function and assign it to a variable, use the
+				<code>def</code> command that works quite like <code>set</code>
+				but have a slightly different syntax. Function arguments are
+				specified between parenthesis right after the variable name
+				that should receive the function, followed by <code>as</code>
+				and function body declaration.</p>
 				<p>Functions can return a value that can be used in any
 				expression or stored in a variable. To make a function halt and
 				return a value, use the <code>return</code> command within its
 				body.</p>
 				<div class="code">
 					<legend><span>Template:</span></legend>
-<code>{set factorial(n) to:
+<code>{def factorial(n) as:
     {if gt(n, 1):
         {return mul(n, factorial(sub(n, 1)))}
     |else:
@@ -555,7 +581,7 @@ Factorial 1 = {factorial(1)}
 Factorial 3 = {factorial(3)}
 Factorial 8 = {factorial(8)}
 
-{set hanoi_rec(n, from, by, to) to:
+{def hanoi_rec(n, from, by, to) as:
     {set n to sub(n, 1)}
 
     {if gt(n, 0): {hanoi_rec(n, from, to, by)}}
@@ -563,7 +589,7 @@ Move one disk from {from} to {to}
     {if gt(n, 0): {hanoi_rec(n, by, from, to)}}
 }
 
-{set hanoi(n) to:
+{def hanoi(n) as:
     {hanoi_rec(n, "A", "B", "C")}
 }
 
@@ -579,26 +605,87 @@ Move one disk from {from} to {to}
 Factorial 3 = 6
 Factorial 8 = 40320
 
-FIXME</code>
+Move one disk from peg A to C
+Move one disk from peg A to B
+Move one disk from peg C to B
+Move one disk from peg A to C
+Move one disk from peg B to A
+Move one disk from peg B to C
+Move one disk from peg A to C</code>
 				</div>
 				<p>You can see in this example that returning a value and
 				printing text are two very different things. Raw text within
 				function body is printed each time the function is called, or
 				more precisely each time its enclosing block is executed (that
 				means it won't print if contained in an <code>if</code> command
-				that fails to pass, for example). The value returned by a
-				function is not printed, but remember that a command such as
-				<code>{factorial(8)}</code> uses the <code>echo</code> command
-				and therefore prints the result of the function call. If you
-				want to call a function and discard its result, use the
-				<code>FIXME</code> command like in previous example.</p>
+				that fails to pass, for example). The value returned by the
+				function won't be printed unless you explicitly require it by
+				using the <code>echo</code> command (e.g. something like
+				<code>{factorial(8)}</code>). If a function doesn't use any
+				<code>return</code> command, the value it returns is empty,
+				that's why the call to <code>{hanoi(3)}</code> in the sample
+				above does not print anything more than the raw text blocks it
+				contains.</p>
 			</div>
 
+			<a name="4.2" />
 			<h3>4.2. Variables scopes</h3>
 			<div class="s3">
+				<p>When writing complex templates using nested or recursive
+				functions, you may have to take care of variable scopes to
+				avoid potential issues. A scope is the local evaluation context
+				of any function or command that have a body. When assigning a
+				value to a variable as described in paragraph
+				"<a href="#3.3">3.3. Variables assignment</a>", all variables
+				belong to the same top-level scope. Consider this template:</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{def range(n) as:
+    {if gt(n, 0):
+        {set res to cat(range(sub(n, 1)), [n])}
+    |else:
+        {set res to []}
+    }
+
+    {return res}
+}
+
+{for v in range(10):
+    {v}
+}</code>
+				</div>
+				<p>The <code>range</code> function is expected to return an
+				array containing integers from 1 to <code>n</code>,
+				<code>n</code> being the argument passed to the function. Of
+				course it could be written in a much more efficient way without
+				using temporary variables, however this code should return a
+				valid result. If you try to execute it, you'll notice that it
+				always returns an empty array, no matter what value of
+				<code>n</code> you passed.</p>
+				<p>When using the <code>set</code> method to assign a value to
+				variable <code>res</code>, it always uses the same
+				<code>res</code> instance. The <code>range</code> function
+				recursively calls itself but overwrite the unique
+				<code>res</code> variable each time it tries to store a value
+				in it, ending with final <code>{set res to []}</code> that
+				always assign it an empty array. To solve this issue, the
+				<code>res</code> variable needs to be local <code>range</code>,
+				that means each call to <code>range</code> must use its own
+				<code>res</code> instance.</p>
+				<p>For that reason, the <code>set</code> command actually
+				supports two assignment modes:</p>
+				<ul>
+					<li>When using <code>{set x to 1}</code>, Cottle searches
+					for <code>x</code> in parent scopes bottom-up (from inner
+					to outer), or create it in global scope if not found.</li>
+					<li>When using <code>{set x as 1}</code>, Cottle searches
+					for <code>x</code> in current scope, or create it in
+					current scope if not found.</li>
+				</ul>
 				<p>FIXME</p>
 			</div>
 
+			<a name="4.3" />
 			<h3>4.3. Custom .NET functions</h3>
 			<div class="s3">
 				<p>FIXME</p>
@@ -623,7 +710,7 @@ FIXME</code>
     {item}
 }
 
-{def by_length(a, b):
+{def by_length(a, b) as:
     {return cmp(len(b), len(a))}
 }
 

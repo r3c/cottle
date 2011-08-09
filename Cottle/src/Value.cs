@@ -121,6 +121,11 @@ namespace   Cottle
             return new StringValue (value);
         }
 
+        public static implicit operator Value (char value)
+        {
+            return new StringValue (value);
+        }
+
         #endregion
 
         #region Types

@@ -12,7 +12,7 @@ namespace   Cottle.Values
     {
         #region Constants
 
-        public static readonly UndefinedValue   Instance = new UndefinedValue ();
+        public static readonly VoidValue    Instance = new VoidValue ();
 
         #endregion
 

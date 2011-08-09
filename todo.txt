@@ -6,14 +6,15 @@ X Handle "while" keyword
 X Implement IValue GetHashCode method to allow IValue-based lookups (no more cast to strings)
 X Implement function declarations
 X Add new common functions: len, asc, ord
-- Allow function evaluation within callbacks?
-	- Add new common functions: pos, sort, map
-- Merge variable and function declarations: {declare x, y, z}, {set x to 1}, {set x() to: dummy}
+X Allow function evaluation within callbacks
+	X Add new common functions: pos, sort, map
+X Merge variable and function declarations: {declare x, y, z}, {set x to 1}, {set x() to: dummy}
 	- Fix scope issues, remove unused scopes in "for" enumerations?
-	- Declare a special "index" variable within "for" body?
+	! Declare a special "index" variable within "for" body?
 - Implement better text trimming system
 - Add support for comments
 - Write deserializers?
 	- From .NET object with attributes
 	- From XML document
 	- From JSON string
+

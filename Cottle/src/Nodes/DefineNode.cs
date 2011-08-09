@@ -17,16 +17,19 @@ namespace   Cottle.Nodes
 
         private INode                   body;
 
+        private Scope.SetMode           mode;
+
         private NameExpression          name;
 
         #endregion
 
         #region Constructors
 
-        public  DefineNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body)
+        public  DefineNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, Scope.SetMode mode)
         {
             this.arguments = new List<NameExpression> (arguments);
             this.body = body;
+            this.mode = mode;
             this.name = name;
         }
 
@@ -36,7 +39,7 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), Scope.SetMode.ANYWHERE);
+            this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
 
             result = VoidValue.Instance;
 

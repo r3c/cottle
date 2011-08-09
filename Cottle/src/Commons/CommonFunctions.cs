@@ -77,15 +77,28 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            string  compare = values[0].AsString;
+            decimal compare = values[0].AsNumber;
             int     i;
 
             for (i = 1; i < values.Count; ++i)
-                if (string.Compare (values[i].AsString, compare) != 0)
+                if (values[i].AsNumber != compare)
                     return false;
 
             return true;
         }, 1, -1);
+
+        public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            int     index = values.Count > 2 ? (int)values[2].AsNumber : 0;
+            Value   source = values[0];
+            Value   value = values[1];
+            int     i;
+
+            if (source.Type == Value.DataType.ARRAY)
+                return source.Fields.FindIndex (index, p => p.Value.CompareTo (value) == 0);
+            else
+                return source.AsString.IndexOf (value.AsString, index);
+        }, 2, 3);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
@@ -252,6 +265,7 @@ namespace   Cottle.Commons
             document.Values["count"] = new FunctionValue (CommonFunctions.FunctionCount);
             document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
             document.Values["equal"] = new FunctionValue (CommonFunctions.FunctionEqual);
+            document.Values["find"] = new FunctionValue (CommonFunctions.FunctionFind);
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
