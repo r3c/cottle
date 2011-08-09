@@ -656,10 +656,10 @@ Move one disk from peg A to C</code>
 				</div>
 				<p>The <code>range</code> function is expected to return an
 				array containing integers from 1 to <code>n</code>,
-				<code>n</code> being the argument passed to the function. Of
-				course it could be written in a much more efficient way without
-				using temporary variables, however this code should return a
-				valid result. If you try to execute it, you'll notice that it
+				<code>n</code> being the value passed as an argument. Of course
+				it could be written in a much more efficient way without using
+				temporary variables, however we still want this code to return
+				a valid result. If you try to execute it, you'll notice that it
 				always returns an empty array, no matter what value of
 				<code>n</code> you passed.</p>
 				<p>When using the <code>set</code> method to assign a value to
@@ -682,7 +682,29 @@ Move one disk from peg A to C</code>
 					for <code>x</code> in current scope, or create it in
 					current scope if not found.</li>
 				</ul>
-				<p>FIXME</p>
+				<p>To fix our previous example, <code>set</code> must be used
+				with the <code>as</code> keyword before the if <code>if</code>
+				block, to initialize a new local <code>res</code> variable. For
+				next uses of <code>set</code>, the <code>to</code> keyword will
+				still be used since it will now resolve to local
+				<code>res</code>:</p>
+				<p>FIXME: code sample here</p>
+				<p>Two more comments about this code:</p>
+				<ul>
+					<li>We can't just replace the two <code>to</code> keywords
+					by <code>as</code> in original code, since it would create
+					local <code>res</code> instances within the <code>if</code>
+					statement, leaving them unknown to the <code>return</code>
+					command.</li>
+					<li>We can't either use <code>as</code> everywhere, because
+					it would create new local <code>res</code> instances for
+					every new scope where we want to use our function-level
+					instance of <code>res</code> within the <code>if</code>
+					branches (and that's the <code>to</code> keyword is doing).
+				</ul>
+				<p>Note that the <code>def</code> command also supports the two
+				keywords <code>as</code> and <code>to</code> for the same
+				reasons.</p>
 			</div>
 
 			<a name="4.3" />
