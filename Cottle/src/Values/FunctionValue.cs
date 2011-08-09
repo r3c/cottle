@@ -20,7 +20,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override Function    AsFunction
+        public override IFunction   AsFunction
         {
             get
             {
@@ -52,17 +52,25 @@ namespace   Cottle.Values
             }
         }
 
+        public override DataType    Type
+        {
+            get
+            {
+                return DataType.FUNCTION;
+            }
+        }
+
         #endregion
 
         #region Attributes
 
-        private Function   function;
+        private IFunction   function;
 
         #endregion
 
         #region Constructors
 
-        public  FunctionValue (Function function)
+        public  FunctionValue (IFunction function)
         {
             this.function = function;
         }

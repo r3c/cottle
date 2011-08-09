@@ -33,11 +33,19 @@ namespace   Cottle.Nodes
         {
             while (this.test.Evaluate (scope, output).AsBoolean)
             {
+                scope.Enter ();
+
                 if (this.body.Apply (scope, output, out result))
+                {
+                    scope.Leave ();
+
                     return true;
+                }
+
+                scope.Leave ();
             }
 
-            result = UndefinedValue.Instance;
+            result = VoidValue.Instance;
 
             return false;
         }

@@ -558,16 +558,16 @@ Factorial 8 = {factorial(8)}
 {set hanoi_rec(n, from, by, to) to:
     {set n to sub(n, 1)}
 
-    {if gt(n, 0): {FIXME hanoi_rec(n, from, to, by)}}
-Move one disk from peg {from} to {to}
-    {if gt(n, 0): {FIXME hanoi_rec(n, by, from, to)}}
+    {if gt(n, 0): {hanoi_rec(n, from, to, by)}}
+Move one disk from {from} to {to}
+    {if gt(n, 0): {hanoi_rec(n, by, from, to)}}
 }
 
 {set hanoi(n) to:
-    {FIXME hanoi_rec(n, "A", "B", "C")}
+    {hanoi_rec(n, "A", "B", "C")}
 }
 
-{FIXME hanoi(3)}</code>
+{hanoi(3)}</code>
 				</div>
 				<div class="code">
 					<legend><span>C# code:</span></legend>
@@ -611,6 +611,44 @@ FIXME</code>
 			<h3>5.1. Counting array pairs: count(array)</h3>
 			<div class="s3">
 				<p>FIXME</p>
+			</div>
+			<h3>5.x. Sorting array pairs: sort(array[, callback])</h3>
+			<div class="s3">
+				<p>FIXME</p>
+				<div class="code">
+					<legend><span>Template:</span></legend>
+<code>{set shuffled to ["in", "order", "elements" "natural"]}
+
+{for item in sort(shuffled):
+    {item}
+}
+
+{def by_length(a, b):
+    {return cmp(len(b), len(a))}
+}
+
+{set shuffled to ["by their", "are sorted", "length", "these strings"]}
+
+{for item in sort(shuffled, by_length):
+    {item}
+}</code>
+				</div>
+				<div class="code">
+					<legend><span>C# code:</span></legend>
+<code>CommonFunctions.Assign(document);</code>
+				</div>
+				<div class="code">
+					<legend><span>Result:</span></legend>
+<code>elements
+in
+natural
+order
+
+these strings
+are sorted
+by their
+length</code>
+				</div>
 			</div>
 		</div>
 

@@ -41,12 +41,11 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            ICollection<KeyValuePair<Value, Value>>   collection = this.from.Evaluate (scope, output).Fields;
-            bool                                        exit;
+            List<KeyValuePair<Value, Value>>    fields = this.from.Evaluate (scope, output).Fields;
 
-            if (collection.Count > 0)
+            if (fields.Count > 0)
             {
-                foreach (KeyValuePair<Value, Value> pair in collection)
+                foreach (KeyValuePair<Value, Value> pair in fields)
                 {
                     scope.Enter ();
 
@@ -56,19 +55,32 @@ namespace   Cottle.Nodes
                     if (this.value != null)
                         this.value.Set (scope, pair.Value, Scope.SetMode.LOCAL);
 
-                    exit = this.body.Apply (scope, output, out result);
+                    if (this.body.Apply (scope, output, out result))
+                    {
+                        scope.Leave ();
+
+                        return true;
+                    }
 
                     scope.Leave ();
-
-                    if (exit)
-                        return true;
                 }
             }
             else if (this.empty != null)
-                return this.empty.Apply (scope, output, out result);
+            {
+                scope.Enter ();
 
-            result = UndefinedValue.Instance;
+                if (this.empty.Apply (scope, output, out result))
+                {
+                    scope.Leave ();
 
+                    return true;
+                }
+
+                scope.Leave ();
+            }
+
+            result = VoidValue.Instance;
+            
             return false;
         }
 

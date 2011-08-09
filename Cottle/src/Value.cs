@@ -24,7 +24,7 @@ namespace   Cottle
             get;
         }
 
-        public abstract Function    AsFunction
+        public abstract IFunction   AsFunction
         {
             get;
         }
@@ -44,17 +44,23 @@ namespace   Cottle
             get;
         }
 
+        public abstract DataType    Type
+        {
+            get;
+        }
+
         #endregion
 
         #region Methods
 
-        public abstract int             CompareTo (Value other);
+        public virtual int  CompareTo (Value other)
+        {
+            return this.Type.CompareTo (other.Type);
+        }
 
-        public abstract bool            Find (Value key, out Value value);
+        public abstract bool    Find (Value key, out Value value);
 
-        public abstract override int    GetHashCode ();
-
-        public abstract bool            Has (Value key);
+        public abstract bool    Has (Value key);
 
         #endregion
 
@@ -113,6 +119,21 @@ namespace   Cottle
         public static implicit operator Value (string value)
         {
             return new StringValue (value);
+        }
+
+        #endregion
+
+        #region Types
+
+        public enum DataType
+        {
+            ARRAY,
+            BOOLEAN,
+            FUNCTION,
+            NUMBER,
+            STRING,
+            UNDEFINED,
+            VOID
         }
 
         #endregion

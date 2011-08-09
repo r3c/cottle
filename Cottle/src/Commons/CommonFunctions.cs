@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,112 +13,137 @@ namespace   Cottle.Commons
     {
         #region Constants
 
-        public static readonly Function FunctionAdd = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionAdd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return new NumberValue (arguments[0].Value.AsNumber + arguments[1].Value.AsNumber);
+            return new NumberValue (values[0].AsNumber + values[1].AsNumber);
         }, 2);
 
-        public static readonly Function FunctionCat = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            StringBuilder   builder = new StringBuilder ();
+            List<KeyValuePair<Value, Value>>    array;
+            StringBuilder                       builder;
 
-            foreach (Argument argument in arguments)
-                builder.Append (argument.Value.AsString);
+            if (values[0].Type == Value.DataType.ARRAY)
+            {
+                array = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count * 2 + 1);
 
-            return builder.ToString ();
-        });
+                foreach (Value value in values)
+                    array.AddRange (value.Fields);
 
-        public static readonly Function FunctionChar = new CallbackFunction (delegate (Argument[] arguments)
+                return array;
+            }
+            else
+            {
+                builder = new StringBuilder ();
+
+                foreach (Value value in values)
+                    builder.Append (value.AsString);
+
+                return builder.ToString ();
+            }
+        }, 1, -1);
+
+        public static readonly IFunction    FunctionChar = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             try
             {
-                return new StringValue ((char)arguments[0].Value.AsNumber);
+                return (char)values[0].AsNumber;
             }
             catch
             {
-                return new StringValue ('?');
+                return '?';
             }
         }, 1);
 
-        public static readonly Function FunctionCount = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionCompare = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.Fields.Count;
+            return values[0].CompareTo (values[1]);
+        }, 2);
+
+        public static readonly IFunction    FunctionCount = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return values[0].Fields.Count;
         }, 1);
 
-        public static readonly Function FunctionDiv = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionDiv = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            decimal denominator = arguments[1].Value.AsNumber;
+            decimal denominator = values[1].AsNumber;
 
             if (denominator == 0)
                 return UndefinedValue.Instance;
 
-            return arguments[0].Value.AsNumber / denominator;
+            return values[0].AsNumber / denominator;
         }, 2);
 
-        public static readonly Function FunctionEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            string  compare = arguments[0].Value.AsString;
+            string  compare = values[0].AsString;
             int     i;
 
-            for (i = 1; i < arguments.Length; ++i)
-                if (string.Compare (arguments[i].Value.AsString, compare) != 0)
-                    return BooleanValue.False;
+            for (i = 1; i < values.Count; ++i)
+                if (string.Compare (values[i].AsString, compare) != 0)
+                    return false;
 
-            return BooleanValue.True;
+            return true;
         }, 1, -1);
 
-        public static readonly Function FunctionGreater = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber > arguments[1].Value.AsNumber;
+            return values[0].AsNumber > values[1].AsNumber;
         }, 2);
 
-        public static readonly Function FunctionGreaterEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionGreaterEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber >= arguments[1].Value.AsNumber;
+            return values[0].AsNumber >= values[1].AsNumber;
         }, 2);
 
-        public static readonly Function FunctionHas = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionHas = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            Value  value = arguments[0].Value;
+            Value   value = values[0];
             int     i;
 
-            for (i = 1; i < arguments.Length; ++i)
-                if (!value.Has (arguments[i].Value))
-                    return BooleanValue.False;
+            for (i = 1; i < values.Count; ++i)
+                if (!value.Has (values[i]))
+                    return false;
 
-            return BooleanValue.True;
+            return true;
         }, 1, -1);
 
-        public static readonly Function     FunctionJoin = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<KeyValuePair<Value, Value>>    array = new List<KeyValuePair<Value, Value>> ();
-
-            foreach (Argument argument in arguments)
-                array.AddRange (argument.Value.Fields);
-
-            return new ArrayValue (array);
-        }, 1, -1);
-
-        public static readonly Function FunctionLength = new CallbackFunction (delegate (Argument[] arguments)
-        {
-            return arguments[0].Value.AsString.Length;
+            return values[0].AsString.Length;
         }, 1);
 
-        public static readonly Function FunctionLower = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionLower = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber < arguments[1].Value.AsNumber;
+            return values[0].AsNumber < values[1].AsNumber;
         }, 2);
 
-        public static readonly Function FunctionLowerEqual = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionLowerEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber <= arguments[1].Value.AsNumber;
+            return values[0].AsNumber <= values[1].AsNumber;
         }, 2);
 
-        public static readonly Function FunctionMatch = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            KeyValuePair<Value, Value>[]    array = new KeyValuePair<Value, Value>[values[0].Fields.Count];
+            IFunction                       callback = values[1].AsFunction;
+            int                             i = 0;
+
+            if (callback == null)
+                return UndefinedValue.Instance;
+
+            foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
+                array[i++] = new KeyValuePair<Value, Value> (pair.Key, callback.Execute (new Value[] {pair.Value}, scope, output));
+
+            return array;
+        }, 2);
+
+        public static readonly IFunction    FunctionMatch = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             try
             {
-                return new BooleanValue (Regex.IsMatch (arguments[0].Value.AsString, arguments[1].Value.AsString));
+                return Regex.IsMatch (values[0].AsString, values[1].AsString);
             }
             catch
             {
@@ -125,81 +151,85 @@ namespace   Cottle.Commons
             }
         }, 2);
 
-        public static readonly Function FunctionMod = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionMod = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            decimal denominator = arguments[1].Value.AsNumber;
+            decimal denominator = values[1].AsNumber;
 
             if (denominator == 0)
                 return UndefinedValue.Instance;
 
-            return arguments[0].Value.AsNumber % denominator;
+            return values[0].AsNumber % denominator;
         }, 2);
 
-        public static readonly Function FunctionMul = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionMul = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber * arguments[1].Value.AsNumber;
+            return values[0].AsNumber * values[1].AsNumber;
         }, 2);
 
-        public static readonly Function FunctionOrd = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionOrd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            string  chr = arguments[0].Value.AsString;
+            string  chr = values[0].AsString;
 
             if (chr.Length > 0)
-                return new NumberValue ((decimal)(int)chr[0]);
+                return (decimal)(int)chr[0];
 
-            return new NumberValue (0);
+            return 0;
         }, 1);
 
-        public static readonly Function FunctionRandom = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionRandom = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             if (CommonFunctions.random == null)
                 CommonFunctions.random = new Random ();
 
-            switch (arguments.Length)
+            switch (values.Count)
             {
                 case 0:
                     return CommonFunctions.random.Next ();
 
                 case 1:
-                    return CommonFunctions.random.Next ((int)arguments[0].Value.AsNumber);
+                    return CommonFunctions.random.Next ((int)values[0].AsNumber);
 
                 default:
-                    return CommonFunctions.random.Next ((int)arguments[0].Value.AsNumber, (int)arguments[1].Value.AsNumber);
+                    return CommonFunctions.random.Next ((int)values[0].AsNumber, (int)values[1].AsNumber);
             }
         }, 0, 2);
 
-        public static readonly Function FunctionSlice = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<KeyValuePair<Value, Value>>    array = arguments[0].Value.Fields;
+            List<KeyValuePair<Value, Value>>    array = values[0].Fields;
             int                                 count;
             int                                 index;
             KeyValuePair<Value, Value>[]        slice;
             int                                 start;
 
-            start = Math.Min ((int)arguments[1].Value.AsNumber, array.Count);
-            count = arguments.Length > 2 ? Math.Min ((int)arguments[2].Value.AsNumber, array.Count - start) : array.Count - start;
+            start = Math.Min ((int)values[1].AsNumber, array.Count);
+            count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, array.Count - start) : array.Count - start;
 
             slice = new KeyValuePair<Value, Value>[count];
 
             for (index = 0; index < count; ++index)
                 slice[index] = array[start + index];
 
-            return new ArrayValue (slice);
+            return slice;
         }, 2, 3);
 
-        public static readonly Function FunctionSort = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<KeyValuePair<Value, Value>>    source = arguments[0].Value.Fields;
+            IFunction                           callback = values.Count > 1 ? values[1].AsFunction : null;
+            List<KeyValuePair<Value, Value>>    source = values[0].Fields;
             List<KeyValuePair<Value, Value>>    sorted = new List<KeyValuePair<Value, Value>> (source);
 
-            sorted.Sort ((a, b) => a.Value.CompareTo (b.Value));
+            if (callback != null)
+                sorted.Sort ((a, b) => (int)callback.Execute (new Value[] {a.Value, b.Value}, scope, output).AsNumber);
+            else
+                sorted.Sort ((a, b) => a.Value.CompareTo (b.Value));
 
-            return new ArrayValue (sorted);
-        }, 1);
+            return sorted;
+        }, 1, 2);
 
-        public static readonly Function FunctionSub = new CallbackFunction (delegate (Argument[] arguments)
+        public static readonly IFunction    FunctionSub = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return arguments[0].Value.AsNumber - arguments[1].Value.AsNumber;
+            return values[0].AsNumber - values[1].AsNumber;
         }, 2);
 
         #endregion
@@ -218,16 +248,17 @@ namespace   Cottle.Commons
             document.Values["add"] = new FunctionValue (CommonFunctions.FunctionAdd);
             document.Values["cat"] = new FunctionValue (CommonFunctions.FunctionCat);
             document.Values["char"] = new FunctionValue (CommonFunctions.FunctionChar);
+            document.Values["cmp"] = new FunctionValue (CommonFunctions.FunctionCompare);
             document.Values["count"] = new FunctionValue (CommonFunctions.FunctionCount);
             document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
             document.Values["equal"] = new FunctionValue (CommonFunctions.FunctionEqual);
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
-            document.Values["join"] = new FunctionValue (CommonFunctions.FunctionJoin);
             document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
             document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);
             document.Values["lt"] = new FunctionValue (CommonFunctions.FunctionLower);
+            document.Values["map"] = new FunctionValue (CommonFunctions.FunctionMap);
             document.Values["match"] = new FunctionValue (CommonFunctions.FunctionMatch);
             document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
             document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);

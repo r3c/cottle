@@ -5,11 +5,11 @@ using System.Text;
 
 namespace   Cottle
 {
-    public abstract class   Function
+    public interface    IFunction
     {
         #region Methods
 
-        internal abstract Value    Execute (Scope scope, IList<IExpression> expressions, TextWriter output);
+        Value   Execute (IList<Value> arguments, Scope scope, TextWriter output);
 
         #endregion
     }

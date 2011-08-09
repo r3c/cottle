@@ -6,7 +6,7 @@ using Cottle.Values;
 
 namespace   Cottle
 {
-    class   Scope
+    public class    Scope
     {
         #region Attributes
 

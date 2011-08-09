@@ -30,12 +30,19 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override Value  Evaluate (Scope scope, TextWriter output)
+        public override Value   Evaluate (Scope scope, TextWriter output)
         {
-            Function   function = this.caller.Evaluate (scope, output).AsFunction;
+            IFunction   function = this.caller.Evaluate (scope, output).AsFunction;
+            Value[]     values = new Value[this.arguments.Count];
+            int         i = 0;
 
             if (function != null)
-                return function.Execute (scope, this.arguments, output);
+            {
+                foreach (IExpression argument in this.arguments)
+                    values[i++] = argument.Evaluate (scope, output);
+
+                return function.Execute (values, scope, output);
+            }
 
             return UndefinedValue.Instance;
         }

@@ -1,21 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    public sealed class NumberValue : ScalarValue<decimal>
+    using   FieldList = List<KeyValuePair<Value, Value>>;
+
+    public sealed class VoidValue : Value
     {
+        #region Constants
+
+        public static readonly UndefinedValue   Instance = new UndefinedValue ();
+
+        #endregion
+
         #region Properties
 
         public override bool        AsBoolean
         {
             get
             {
-                return this.value != 0;
+                return false;
             }
         }
 
@@ -31,7 +38,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return this.value;
+                return 0;
             }
         }
 
@@ -39,7 +46,15 @@ namespace   Cottle.Values
         {
             get
             {
-                return this.value.ToString (CultureInfo.InvariantCulture);
+                return string.Empty;
+            }
+        }
+
+        public override FieldList   Fields
+        {
+            get
+            {
+                return Value.EmptyFields;
             }
         }
 
@@ -47,31 +62,29 @@ namespace   Cottle.Values
         {
             get
             {
-                return DataType.NUMBER;
+                return DataType.VOID;
             }
-        }
-
-        #endregion
-
-        #region Constructors
-
-        public  NumberValue (decimal value) :
-            base (value)
-        {
         }
 
         #endregion
 
         #region Methods
 
-        public override int CompareTo (Value other)
+        public override bool    Find (Value key, out Value value)
         {
-            return this.value.CompareTo (other.AsNumber);
+            value = VoidValue.Instance;
+
+            return false;
+        }
+
+        public override bool    Has (Value key)
+        {
+            return false;
         }
 
         public override string  ToString ()
         {
-            return this.value.ToString (CultureInfo.InvariantCulture);
+            return "<void>";
         }
 
         #endregion

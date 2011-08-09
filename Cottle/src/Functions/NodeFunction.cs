@@ -8,7 +8,7 @@ using Cottle.Values;
 
 namespace   Cottle.Functions
 {
-    class   NodeFunction : Function
+    class   NodeFunction : IFunction
     {
         #region Attributes
 
@@ -30,19 +30,18 @@ namespace   Cottle.Functions
 
         #region Methods
 
-        internal override Value    Execute (Scope scope, IList<IExpression> expressions, TextWriter output)
+        public Value    Execute (IList<Value> values, Scope scope, TextWriter output)
         {
-            Value  result;
+            Value   result;
             int     i = 0;
 
             scope.Enter ();
 
             foreach (NameExpression argument in this.arguments)
             {
-                if (i < expressions.Count)
-                    argument.Set (scope, expressions[i++].Evaluate (scope, output), Scope.SetMode.LOCAL);
-                else
-                    argument.Set (scope, UndefinedValue.Instance, Scope.SetMode.LOCAL);
+                argument.Set (scope, i < values.Count ? values[i] : UndefinedValue.Instance, Scope.SetMode.LOCAL);
+
+                ++i;
             }
 
             this.body.Apply (scope, output, out result);

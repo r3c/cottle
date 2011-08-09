@@ -51,7 +51,7 @@
     <Compile Include="src\Functions\NodeFunction.cs" />
     <Compile Include="src\Functions\CallbackFunction.cs" />
     <Compile Include="src\IExpression.cs" />
-    <Compile Include="src\Function.cs" />
+    <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
     <Compile Include="src\Value.cs" />
     <Compile Include="src\Lexer.cs" />
@@ -67,6 +67,7 @@
     <Compile Include="src\Parser.cs" />
     <Compile Include="src\Scope.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
+    <Compile Include="src\Values\VoidValue.cs" />
     <Compile Include="src\Values\UndefinedValue.cs" />
     <Compile Include="src\Values\ArrayValue.cs" />
     <Compile Include="src\Values\FunctionValue.cs" />

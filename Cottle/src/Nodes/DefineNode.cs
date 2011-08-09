@@ -38,7 +38,7 @@ namespace   Cottle.Nodes
         {
             this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), Scope.SetMode.ANYWHERE);
 
-            result = UndefinedValue.Instance;
+            result = VoidValue.Instance;
 
             return false;
         }

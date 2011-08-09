@@ -26,7 +26,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override Function    AsFunction
+        public override IFunction   AsFunction
         {
             get
             {
@@ -47,6 +47,14 @@ namespace   Cottle.Values
             get
             {
                 return this.value ? "true" : "false";
+            }
+        }
+
+        public override DataType    Type
+        {
+            get
+            {
+                return DataType.BOOLEAN;
             }
         }
 

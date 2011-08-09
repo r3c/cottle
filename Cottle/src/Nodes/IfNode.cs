@@ -31,13 +31,35 @@ namespace   Cottle.Nodes
             foreach (Branch branch in this.branches)
             {
                 if (branch.Test.Evaluate (scope, output).AsBoolean)
-                    return branch.Body.Apply (scope, output, out result);
+                {
+                    scope.Enter ();
+
+                    if (branch.Body.Apply (scope, output, out result))
+                    {
+                        scope.Leave ();
+
+                        return true;
+                    }
+
+                    scope.Leave ();
+                }
             }
 
             if (this.fallback != null)
-                return this.fallback.Apply (scope, output, out result);
+            {
+                scope.Enter ();
 
-            result = UndefinedValue.Instance;
+                if (this.fallback.Apply (scope, output, out result))
+                {
+                    scope.Leave ();
+
+                    return true;
+                }
+
+                scope.Leave ();
+            }
+
+            result = VoidValue.Instance;
 
             return false;
         }

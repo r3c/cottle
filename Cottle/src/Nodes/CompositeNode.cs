@@ -34,7 +34,7 @@ namespace   Cottle.Nodes
                     return true;
             }
 
-            result = UndefinedValue.Instance;
+            result = VoidValue.Instance;
 
             return false;
         }

@@ -8,7 +8,7 @@ using Cottle.Values;
 
 namespace   Cottle.Functions
 {
-    class   CallbackFunction : Function
+    public class    CallbackFunction : IFunction
     {
         #region Attributes
 
@@ -43,27 +43,19 @@ namespace   Cottle.Functions
 
         #region Methods
 
-        internal override Value    Execute (Scope scope, IList<IExpression> expressions, TextWriter output)
+        public Value    Execute (IList<Value> values, Scope scope, TextWriter output)
         {
-            Argument[]  arguments;
-            int         i;
-
-            if (this.callback == null || this.min > expressions.Count || (this.max >= 0 && this.max < expressions.Count))
+            if (this.callback == null || this.min > values.Count || (this.max >= 0 && this.max < values.Count))
                 return UndefinedValue.Instance;
 
-            arguments = new Argument[expressions.Count];
-
-            for (i = expressions.Count; i-- > 0; )
-                arguments[i] = new Argument (scope, expressions[i], output);
-
-            return this.callback (arguments);
+            return this.callback (values, scope, output);
         }
 
         #endregion
 
         #region Types
 
-        public delegate Value  CallbackDelegate (Argument[] arguments);
+        public delegate Value   CallbackDelegate (IList<Value> values, Scope scope, TextWriter output);
 
         #endregion
     }
