@@ -12,10 +12,11 @@ X Merge variable and function declarations: {declare x, y, z}, {set x to 1}, {se
 	X Fix scope issues, remove unused scopes in "for" enumerations?
 	! Declare a special "index" variable within "for" body?
 X Merge "nth" and "slice" common functions
-- min and max should work on arrays
+- Common functions min and max should work on numeric arrays
 - Implement better text trimming system
 - Add support for comments
-- Write deserializers?
+- Write deserializers
 	- From .NET object with attributes
 	- From XML document
 	- From JSON string
+- Implement "dump" keyword

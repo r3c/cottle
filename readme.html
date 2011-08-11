@@ -142,9 +142,9 @@
 <code>Hello, {name}!
 
 {if gt(count(messages),0):
-	You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
+    You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
 |else:
-	You have no new message.
+    You have no new message.
 }
 </code>
 					</div>
@@ -191,7 +191,7 @@ FileStream template = new FileStream("template.ctl", FileMode.Open);
 
 using (StreamReader stream = new StreamReader(template, Encoding.UTF8))
 {
-	document = parser.Parse(stream);
+    document = parser.Parse(stream);
 }
 
 /* insert values assignments here */
@@ -315,8 +315,8 @@ document.Print(Console.Out);</code>
 						<blockquote><span>C# code:</span></blockquote>
 <code>document.Values["myarray"] = new Dictionary&lt;Value,Value&gt;
 {
-	{"f1", "dotted"},
-	{"f2", "subscript"}
+    {"f1", "dotted"},
+    {"f2", "subscript"}
 };</code>
 					</div>
 					<div class="code">
@@ -350,9 +350,9 @@ document.Print(Console.Out);</code>
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-	{0, "message #0"},
-	{1, "message #1"},
-	{2, "message #2"}
+    {0, "message #0"},
+    {1, "message #1"},
+    {2, "message #2"}
 };</code>
 					</div>
 					<div class="code">
@@ -391,21 +391,21 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{if 1:
-	A condition on a numerical value is true if the value is non-zero.
+    A condition on a numerical value is true if the value is non-zero.
 }
 
 {if test: Variable "test" is true! |else: Variable "test" is false! }
 
 {if gt(count(items), 2):
-	There are more than two items in array ({count(items)}, actually).
+    There are more than two items in array ({count(items)}, actually).
 }
 
 {if lt(x, 0):
-	X is negative.
+    X is negative.
 |elif gt(x, 0):
-	X is positive.
+    X is positive.
 |else:
-	X equals zero.
+    X equals zero.
 }</code>
 					</div>
 					<div class="code">
@@ -414,9 +414,9 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 
 document.Values["items"] = new Dictionary&lt;Value,Value&gt;
 {
-	{0, "item #0"},
-	{1, "item #1"},
-	{2, "item #2"}
+    {0, "item #0"},
+    {1, "item #1"},
+    {2, "item #2"}
 };
 
 document.Values["test"] = 42;
@@ -447,9 +447,9 @@ X is negative.</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{for index, text in messages:
-	Message #{add(index, 1)}: {text}
+    Message #{add(index, 1)}: {text}
 |empty:
-	No messages to display.
+    No messages to display.
 }
 
 Tags: {for tag in tags:{tag} }</code>
@@ -460,16 +460,16 @@ Tags: {for tag in tags:{tag} }</code>
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-	{0, "Hi, this is a sample message!"},
-	{1, "Hi, me again!"},
-	{2, "Hi, guess what?"}
+    {0, "Hi, this is a sample message!"},
+    {1, "Hi, me again!"},
+    {2, "Hi, guess what?"}
 };
 
 document.Values["tags"] = new Value[]
 {
-	"action",
-	"horror",
-	"fantastic"
+    "action",
+    "horror",
+    "fantastic"
 };</code>
 					</div>
 					<div class="code">
@@ -496,17 +496,17 @@ Tags: action horror fantastic</code>
 <code>{set nb_msgs to count(messages)}
 
 {if gt(nb_msgs,0):
-	You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
+    You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
 |else:
-	You have no new message.
+    You have no new message.
 }
 
 {set nb_long to 0}
 
 {for message in messages:
-	{if gt(len(message), 20):
-		{set nb_long to add(nb_long, 1)}
-	}
+    {if gt(len(message), 20):
+        {set nb_long to add(nb_long, 1)}
+    }
 }
 
 {nb_long} message{if gt(nb_long, 1):s is|else:" "are} more than 20 characters long.</code>
@@ -517,9 +517,9 @@ Tags: action horror fantastic</code>
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-	{0, "Hi, this is a sample message!"},
-	{1, "Hi, me again!"},
-	{2, "Hi, guess what?"}
+    {0, "Hi, this is a sample message!"},
+    {1, "Hi, me again!"},
+    {2, "Hi, guess what?"}
 };</code>
 					</div>
 					<div class="code">
@@ -548,17 +548,17 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {set i to 0}
 
 {while lt(i, nb):
-	{set ascii to rand(62)}
+    {set ascii to rand(62)}
 
-	{if lt(ascii, 10):
-		{set password to cat(password, char(add(ascii, ord("0"))))}
-	|elif lt(ascii, 36):
-		{set password to cat(password, char(add(sub(ascii, 10), ord("A"))))}
-	|else:
-		{set password to cat(password, char(add(sub(ascii, 36), ord("a"))))}
-	}
+    {if lt(ascii, 10):
+        {set password to cat(password, char(add(ascii, ord("0"))))}
+    |elif lt(ascii, 36):
+        {set password to cat(password, char(add(sub(ascii, 10), ord("A"))))}
+    |else:
+        {set password to cat(password, char(add(sub(ascii, 36), ord("a"))))}
+    }
 
-	{set i to add(i, 1)}
+    {set i to add(i, 1)}
 }
 
 Your random password is: {password}.</code>
@@ -594,11 +594,11 @@ Your random password is: {password}.</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{define factorial(n) as:
-	{if gt(n, 1):
-		{return mul(n, factorial(sub(n, 1)))}
-	|else:
-		{return 1}
-	}
+    {if gt(n, 1):
+        {return mul(n, factorial(sub(n, 1)))}
+    |else:
+        {return 1}
+    }
 }
 
 Factorial 1 = {factorial(1)}
@@ -606,15 +606,15 @@ Factorial 3 = {factorial(3)}
 Factorial 8 = {factorial(8)}
 
 {define hanoi_rec(n, from, by, to) as:
-	{set n to sub(n, 1)}
+    {set n to sub(n, 1)}
 
-	{if gt(n, 0): {hanoi_rec(n, from, to, by)}}
+    {if gt(n, 0): {hanoi_rec(n, from, to, by)}}
 Move one disk from {from} to {to}
-	{if gt(n, 0): {hanoi_rec(n, by, from, to)}}
+    {if gt(n, 0): {hanoi_rec(n, by, from, to)}}
 }
 
 {define hanoi(n) as:
-	{hanoi_rec(n, "A", "B", "C")}
+    {hanoi_rec(n, "A", "B", "C")}
 }
 
 {hanoi(3)}</code>
@@ -665,14 +665,14 @@ Move one disk from A to C</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{define depth(item) as:
-	{set res to 0}
+    {set res to 0}
 
-	{for child in item:
-		{set res_child to add(depth(child), 1)}
-		{set res to max(res, res_child)}
-	}
+    {for child in item:
+        {set res_child to add(depth(child), 1)}
+        {set res to max(res, res_child)}
+    }
 
-	{return res}
+    {return res}
 }
 
 {depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}</code>
@@ -718,14 +718,14 @@ Move one disk from A to C</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{define depth(item) as:
-	{set res <strong>as</strong> 0}
+    {set res <strong>as</strong> 0}
 
-	{for child in item:
-		{set res_child to add(depth(child), 1)}
-		{set res to max(res, res_child)}
-	}
+    {for child in item:
+        {set res_child to add(depth(child), 1)}
+        {set res to max(res, res_child)}
+    }
 
-	{return res}
+    {return res}
 }
 
 {depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}</code>
@@ -1077,7 +1077,7 @@ true</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>{8}</code>
+<code>8</code>
 					</div>
 				</div>
 				<h3>Get the minimum between 2 or more values: min(a, b[, c...])</h3>
@@ -1089,7 +1089,7 @@ true</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>{1}</code>
+<code>1</code>
 					</div>
 				</div>
 				<h3>Compute reminder of two values: mod(a, b)</h3>
