@@ -1,6 +1,18 @@
+<!DOCTYPE HTML>
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
 		<style type="text/css">
+			a {
+				color:				#5070B0;
+				text-decoration:	none;
+			}
+
+			a:hover {
+				color:				#6080C0;
+				text-decoration:	underline;
+			}
+
 			body {
 				padding:	0px;
 				margin:		32px 64px;
@@ -23,12 +35,19 @@
 				white-space:	pre;
 			}
 
-			div.code legend {
-				position:	relative;
-				top:		-4px;
+			div.code code strong {
+				background:		#D0C0B0;
+				font-weight:	bold;
 			}
 
-			div.code legend span {
+			div.code blockquote {
+				position:	relative;
+				top:		-4px;
+				padding:	0px;
+				margin:		0px;
+			}
+
+			div.code blockquote span {
 				padding:		0px 4px 0px 5px;
 				background:		#B0C6E0;
 				border-top:		1px solid #C0D0F0;
@@ -78,18 +97,18 @@
 				margin:	12px 8px;
 			}
 
-			p code {
-				background:	#E0E0E0;
-				font:		normal normal normal 1.0em monospace;
-			}
-
 			ul {
 				padding:	4px 32px;
 				margin:		8px 0px;
 				list-style:	circle;
 			}
 
-			ul code {
+			ul ul {
+				padding:	0px 32px;
+				margin:		0px;
+			}
+
+			p code, ul code {
 				background:	#E0E0E0;
 				font:		normal normal normal 1.0em monospace;
 			}
@@ -98,306 +117,313 @@
 	</head>
 	<body>
 		<h1>Cottle Documentation</h1>
+		<div class="s1" id="toc-from">
+			<h2>Table of contents</h2>
+			<div class="s2" id="toc-data">
+				<ul>
+				</ul>
+			</div>
 
-		<a name="1" />
-		<h2>1. Cottle overview</h2>
-		<div class="s2">
-			<a name="1.1" />
-			<h3>1.1. What is Cottle, and what does it looks like?</h3>
-			<div class="s3">
-				<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
-				<u>T</u>ext <u>T</u>ransform <u>L</u>anguag<u>e</u>" is a
-				lightweight template engine in .NET 3.5. It allows you to
-				transform structured data into any text-based format output,
-				using a simple yet highly extensible template language, thus
-				enabling clean separation of document content (data structure)
-				and document presentation.</p>
-				<p>A simple Cottle template printing how many messages are in
-				your mailbox could look like this:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+			<h2>Cottle overview</h2>
+			<div class="s2">
+				<h3>What is Cottle, and what does it looks like?</h3>
+				<div class="s3">
+					<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
+					<u>T</u>ext <u>T</u>ransform <u>L</u>anguag<u>e</u>" is a
+					lightweight template engine in .NET 3.5. It allows you to
+					transform structured data into any text-based format
+					output, using a simple yet highly extensible template
+					language, thus enabling clean separation of document
+					content (data structure) and document presentation.</p>
+					<p>A simple Cottle template printing how many messages are
+					in your mailbox could look like this:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>Hello, {name}!
 
 {if gt(count(messages),0):
-    You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
+	You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
 |else:
-    You have no new message.
+	You have no new message.
 }
 </code>
+					</div>
+					<p>As you can guess by looking at this code, a Cottle
+					template contains both "raw" text printed directly and
+					special tags used to control how text output is generated.
+					Cottle supports most common template engine features, such
+					as:</p>
+					<ul>
+						<li>Text substitutions through variables,</li>
+						<li>Builtin and used-defined functions,</li>
+						<li>Variable & function declaration and
+						assignments,</li>
+						<li>Conditional statements (if),</li>
+						<li>Loops (for, while).</li>
+					</ul>
+					<p>Source code is available, and contributions will be
+					highly welcomed!</p>
 				</div>
-				<p>As you can guess by looking at this code, a Cottle template
-				contains both "raw" text printed directly and special tags used
-				to control how text output is generated. Cottle supports most
-				common template engine features, such as:</p>
-				<ul>
-					<li>Text substitutions through variables,</li>
-					<li>Builtin and used-defined functions,</li>
-					<li>Variable & function declaration and assignments,</li>
-					<li>Conditional statements (if),</li>
-					<li>Loops (for, while)</li>
-				</ul>
-				<p>Source code is available, and contributions will be highly
-				welcomed!</p>
-			</div>
 
-			<a name="1.2" />
-			<h3>1.2. About this documentation</h3>
-			<div class="s3">
-				<p>This document intent to explain how Cottle works, how to
-				write templates and how to use them in your code. Some features
-				are introduced with a code sample, and some guidelines have
-				been followed to ease readability.</p>
-				<p>Using Cottle requires an input template, which could be
-				streamed from any source compatible with
-				<code>System.IO.TextReader</code> class (text file, memory
-				buffer, network socket...), and an executable code that must
-				use <code>Cottle.Parser</code> to parse the template into a
-				<code>Cottle.Document</code> instance, define values, and
-				print the result. These three parts will be shown in examples
-				as follows:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>About this documentation</h3>
+				<div class="s3">
+					<p>This document intent to explain how Cottle works, how to
+					write templates and how to use them in your code. Some
+					features are introduced with a code sample, and some
+					guidelines have been followed to ease readability.</p>
+					<p>Using Cottle requires an input template, which could be
+					streamed from any source compatible with
+					<code>System.IO.TextReader</code> class (text file, memory
+					buffer, network socket...), and an executable code that
+					must use <code>Cottle.Parser</code> to parse the template
+					into a <code>Cottle.Document</code> instance, define
+					values, and print the result. These three parts will be
+					shown in examples as follows:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>Text contents of the template file 'template.ctl'.</code>
 				</div>
 				<div class="code">
-					<legend><span>C# code:</span></legend>
+					<blockquote><span>C# code:</span></blockquote>
 <code>Document   document;
 Parser     parser = new Parser();
 FileStream template = new FileStream("template.ctl", FileMode.Open);
 
 using (StreamReader stream = new StreamReader(template, Encoding.UTF8))
 {
-    document = parser.Parse(stream);
+	document = parser.Parse(stream);
 }
 
 /* insert values assignments here */
 
 document.Print(Console.Out);</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>Text contents of the template file 'template.ctl'.</code>
-				</div>
-				<p>Since the sample C# codes used in example is quite redundant
-				only the specific parts for each one will appear in examples,
-				and should be inserted where indicated by a comment in the
-				sample above. Common parts of the code won't be shown anymore.
-				</p>
-			</div>
-		</div>
-		
-		<a name="2" />
-		<h2>2. Template language</h2>
-		<div class="s2">
-			<a name="2.1" />
-			<h3>2.1. Simple raw text output</h3>
-			<div class="s3">
-				<p>Everything you type into a Cottle template will be printed
-				"as is" in the result document, except for some special
-				characters. That means raw text will appear exactly as you
-				entered it in your template, as shown in this example:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
-<code>Hello, world!</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
-<code>Hello, world!</code>
+					</div>
+					<p>Since the sample C# codes used in example is quite
+					redundant only the specific parts for each one will appear
+					in examples, and should be inserted where indicated by a
+					comment in the sample above. Common parts of the code won't
+					be shown anymore.
+					</p>
 				</div>
 			</div>
+			
+			<h2>Template language</h2>
+			<div class="s2">
+				<h3>Simple raw text output</h3>
+				<div class="s3">
+					<p>Everything you type into a Cottle template will be
+					printed "as is" in the result document, except for some
+					special characters. That means raw text will appear exactly
+					as you entered it in your template, as shown in this
+					example:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>Hello, world!</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Hello, world!</code>
+					</div>
+				</div>
 
-			<a name="2.2" />
-			<h3>2.2. Sending variables to template</h3>
-			<div class="s3">
-				<p>To send variables to parsed document so that you can use
-				their values in your template, use the <code>Value</code>
-				property of <code>Document</code> object. This property is a
-				<code>Dictionary&lt;string,Value&gt;</code> in which you can
-				create variables by adding their name and value. Implicit
-				constructors from some native .NET types are provided so most
-				of the time you won't have to explicitly build
-				<code>Value</code> objects yourself, but you can check in
-				<code>Cottle.Values</code> namespace for available types.</p>
+				<h3>Sending variables to template</h3>
+				<div class="s3">
+					<p>To send variables to parsed document so that you can use
+					their values in your template, use the <code>Value</code>
+					property of <code>Document</code> object. This property is
+					a <code>Dictionary&lt;string,Value&gt;</code> in which you
+					can create variables by adding their name and value.
+					Implicit constructors from some native .NET types are
+					provided so most of the time you won't have to explicitly
+					build <code>Value</code> objects yourself, but you can
+					check in <code>Cottle.Values</code> namespace for available
+					types.</p>
 
-				<p>Once assigned, variables can be used in the template, for
-				example by using the <code>echo</code> command that print the
-				value of its argument: </p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+					<p>Once assigned, variables can be used in the template, for
+					example by using the <code>echo</code> command that print
+					the value of its argument: </p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>Hello {echo name}, you have no new message.</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>document.Values["name"] = "John";</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>Hello John, you have no new message.</code>
+					</div>
+					<p>As <code>echo</code> is the default command, you can
+					omit the "echo" keyword if the name of the variable you
+					want to print doesn't conflict with another command:
+					<code>{echo name}</code> is equivalent to
+					<code>{name}</code> in this example. This shorter form
+					will be used in all incoming samples.</p>
 				</div>
-				<p>As <code>echo</code> is the default command, you can omit
-				the "echo" keyword if the name of the variable you want to
-				print doesn't conflict with another command:
-				<code>{echo name}</code> is equivalent to <code>{name}</code>
-				in this example. This shorter form will be used in all
-				incoming samples.</p>
-			</div>
 
-			<a name="2.3" />
-			<h3>2.3. Escaping special characters</h3>
-			<div class="s3">
-				<p>There are five special characters that won't be printed
-				unless you escape them, since they're used by template parser
-				to trigger special behaviours. Special characters are:</p>
-				<ul>
-					<li>{ and }  (opening and closing braces)</li>
-					<li>| (pipe)</li>
-					<li>" (quote)</li>
-					<li>\ (backslash)</li>
-				</ul>
-				<p>If you need to print one of these in your template, you must
-				preceed them with a backslash character:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>Escaping special characters</h3>
+				<div class="s3">
+					<p>There are five special characters that won't be printed
+					unless you escape them, since they're used by template
+					parser to trigger special behaviours. Special characters
+					are:</p>
+					<ul>
+						<li>{ and }  (opening and closing braces),</li>
+						<li>| (pipe),</li>
+						<li>" (quote),</li>
+						<li>\ (backslash).</li>
+					</ul>
+					<p>If you need to print one of these in your template, you
+					must preceed them with a backslash character:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>\| Special \"characters\" must \\ be \{escaped\} \|</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>| Special "characters" must \ be {escaped} |</code>
-				</div>
-				<p>You can also enclose your text between quotes to ignore all
-				special characters except " and \:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+					</div>
+					<p>You can also enclose your text between quotes to ignore
+					all special characters except " and \:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>"Quoted {text} doesn't |need| escaping, except for other \"quote\" characters."</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>Quoted {text} doesn't |need| escaping, except for other "quote" characters.</code>
+					</div>
 				</div>
-			</div>
 
-			<a name="2.4" />
-			<h3>2.4. Using array values</h3>
-			<div class="s3">
-				<p>Array values contain multiple values stored as key/value
-				pairs. Keys and values can be scalar values, or other nested
-				array values. Values within an array value can be accessed by
-				their key, using either dotted or subscript notation:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>Using array values</h3>
+				<div class="s3">
+					<p>Array values contain multiple values stored as key/value
+					pairs. Keys and values can be scalar values, or other
+					nested array values. Values within an array value can be
+					accessed by their key, using either dotted or subscript
+					notation:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>You can use either {myarray.f1} or {myarray["f2"]} notations for array values.</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>document.Values["myarray"] = new Dictionary&lt;Value,Value&gt;
 {
-    {"f1", "dotted"},
-    {"f2", "subscript"}
+	{"f1", "dotted"},
+	{"f2", "subscript"}
 };</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>You can use either dotted or subscript notations for array values.</code>
+					</div>
+					<p>Please node the quotes used in subscript notation.
+					Trying to access value of <code>{myarray[f2]}</code> will
+					result in a very different behavior, since it will search
+					for the value whose key is the value of <code>f2</code>
+					(which hasn't be defined), leading to an undefined
+					result.</p>
+					<p>If the keys of two or more pairs are equal, only the
+					value of the last one can be accessed directly. However,
+					the other pairs can still be retrieved with different
+					methods as we'll see later.</p>
 				</div>
-				<p>Please node the quotes used in subscript notation. Trying to
-				access value of <code>{myarray[f2]}</code> will result in a
-				very different behavior, since it will search for the value
-				whose key is the value of <code>f2</code> (which hasn't be
-				defined), leading to an undefined result.</p>
-				<p>If the keys of two or more pairs are equal, only the value
-				of the last one can be accessed directly. However, the other
-				pairs can still be retrieved with different methods as we'll
-				see later.</p>
-			</div>
 
-			<a name="2.5" />
-			<h3>2.5. Calling functions</h3>
-			<div class="s3">
-				<p>Functions in Cottle are special values that can be called
-				just like functions in any programming language, using this
-				syntax:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>Calling functions</h3>
+				<div class="s3">
+					<p>Functions in Cottle are special values that can be
+					called just like functions in any programming language,
+					using this syntax:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>You have {count(messages)} new message(s) in your inbox.</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-    {0, "message #0"},
-    {1, "message #1"},
-    {2, "message #2"}
+	{0, "message #0"},
+	{1, "message #1"},
+	{2, "message #2"}
 };</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>You have 3 new message(s) in your inbox.</code>
+					</div>
+					<p>Please note the use of
+					<code>CommonFunctions.Assign</code> method. When a new
+					document is generated by Cottle parser, it does not contain
+					any value (thus any function, since functions are values).
+					While this gives you full control of which functions you
+					want to make available in your templates, you may want to
+					start with a set of common predefined functions, and that's
+					what <code>CommonFunctions.Assign</code> is made for: it
+					just fills <code>document.Value</code> with some useful
+					functions without requiring you to implement them
+					manually.</p>
+					<p>To get a description of each of the functions set
+					when using <code>CommonFunctions.Assign</code>, see
+					paragraph
+					"<a href="#common_functions">Common functions</a>"</p>
 				</div>
-				<p>Please note the use of <code>CommonFunctions.Assign</code>
-				method. When a new document is generated by Cottle parser, it
-				does not contain any value (thus any function, since functions
-				are values). While this gives you full control of which
-				functions you want to make available in your templates, you may
-				want to start with a set of common predefined functions, and
-				that's what <code>CommonFunctions.Assign</code> is made for: it
-				just fills <code>document.Value</code> with some useful
-				functions without requiring you to implement them manually.</p>
-				<p>To get a description of each of the functions set
-				when using <code>CommonFunctions.Assign</code>, see paragraph
-				"<a href="#5">5. Common functions</a>"</p>
 			</div>
-		</div>
 
-		<a name="3" />
-		<h2>3. Flow control</h2>
-		<div class="s2">
-			<a name="3.1" />
-			<h3>3.1. Conditional statements</h3>
-			<div class="s3">
-				<p>You can write conditional statements by using the
-				<code>if</code> command which evaluate the value of a variable
-				(or the result of a function call) to check if its body should
-				be printed or not. The <code>if</code> command also supports
-				optional <code>elif</code> (else if) and <code>else</code>
-				blocks that behave like in any programming language.</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+			<h2>Flow control</h2>
+			<div class="s2">
+				<h3>Conditional statements</h3>
+				<div class="s3">
+					<p>You can write conditional statements by using the
+					<code>if</code> command which evaluate the value of a
+					variable (or the result of a function call) to check if its
+					body should be printed or not. The <code>if</code> command
+					also supports optional <code>elif</code> (else if) and
+					<code>else</code> blocks that behave like in any
+					programming language.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>{if 1:
-    A condition on a numerical value is true if the value is non-zero.
+	A condition on a numerical value is true if the value is non-zero.
 }
 
 {if test: Variable "test" is true! |else: Variable "test" is false! }
 
 {if gt(count(items), 2):
-    There are more than two items in array ({count(items)}, actually).
+	There are more than two items in array ({count(items)}, actually).
 }
 
 {if lt(x, 0):
-    X is negative.
+	X is negative.
 |elif gt(x, 0):
-    X is positive.
+	X is positive.
 |else:
-    X equals zero.
+	X equals zero.
 }</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);
 
 document.Values["items"] = new Dictionary&lt;Value,Value&gt;
 {
-    {0, "item #0"},
-    {1, "item #1"},
-    {2, "item #2"}
+	{0, "item #0"},
+	{1, "item #1"},
+	{2, "item #2"}
 };
 
 document.Values["test"] = 42;
 document.Values["x"] = -3;</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>A condition on a numerical value is true if the value is non-zero.
 
 Variable "test" is true!
@@ -405,334 +431,764 @@ Variable "test" is true!
 There are more than two items in array (3, actually).
 
 X is negative.</code>
+					</div>
 				</div>
-			</div>
 
-			<a name="3.2" />
-			<h3>3.2. Arrays enumeration</h3>
-			<div class="s3">
-				<p>Pairs contained within an array value can be enumerated
-				with the <code>for</code> command, that will print its body for
-				each key/value pair it found. An alternative syntax can be used
-				if you only want to iterate on values and don't care about
-				keys. The <code>for</code> command also supports an optional
-				<code>empty</code> block printed when the array you tried to
-				enumerate doesn't contain any key/value pair.</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>Arrays enumeration</h3>
+				<div class="s3">
+					<p>Pairs contained within an array value can be enumerated
+					with the <code>for</code> command, that will print its body
+					for each key/value pair it found. An alternative syntax can
+					be used if you only want to iterate on values and don't
+					care about keys. The <code>for</code> command also supports
+					an optional <code>empty</code> block printed when the array
+					you tried to enumerate doesn't contain any key/value
+					pair.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>{for index, text in messages:
-    Message n°{add(index, 1)}: {text}
+	Message #{add(index, 1)}: {text}
 |empty:
-    No messages to display.
+	No messages to display.
 }
 
 Tags: {for tag in tags:{tag} }</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-    {0, "Hi, this is a sample message!"},
-    {1, "Hi, me again!"},
-    {2, "Hi, guess what?"}
+	{0, "Hi, this is a sample message!"},
+	{1, "Hi, me again!"},
+	{2, "Hi, guess what?"}
 };
 
 document.Values["tags"] = new Value[]
 {
-    "action",
-    "horror",
-    "fantastic"
+	"action",
+	"horror",
+	"fantastic"
 };</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
-<code>Message n°1: Hi, this is a sample message!
-Message n°2: Hi, me again!
-Message n°3: Hi, guess what?
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Message #1: Hi, this is a sample message!
+Message #2: Hi, me again!
+Message #3: Hi, guess what?
 
 Tags: action horror fantastic</code>
+					</div>
 				</div>
-			</div>
 
-			<a name="3.3" />
-			<h3>3.3. Variables assignment</h3>
-			<div class="s3">
-				<p>You can assign variables while template is being rendered by
-				using the <code>set</code> command. Variable assignment allows
-				you improve performance by storing evaluation results (such as
-				function calls) that are going to be used several times, or
-				code complex template mechanism by combining the <code>if</code>,
-				<code>for</code> and <code>set</code> commands.</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3 id="variables_assignment">Variables assignment</h3>
+				<div class="s3">
+					<p>You can assign variables while template is being
+					rendered by using the <code>set</code> command. Variable
+					assignment allows you improve performance by storing
+					evaluation results (such as function calls) that are going
+					to be used several times, or code complex template
+					mechanism by combining the <code>if</code>,
+					<code>for</code> and <code>set</code> commands.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>{set nb_msgs to count(messages)}
 
 {if gt(nb_msgs,0):
-    You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
+	You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
 |else:
-    You have no new message.
+	You have no new message.
 }
 
 {set nb_long to 0}
 
 {for message in messages:
-    {if gt(len(message), 20):
-        {set nb_long to add(nb_long, 1)}
-    }
+	{if gt(len(message), 20):
+		{set nb_long to add(nb_long, 1)}
+	}
 }
 
 {nb_long} message{if gt(nb_long, 1):s is|else:" "are} more than 20 characters long.</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);
 
 document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
-    {0, "Hi, this is a sample message!"},
-    {1, "Hi, me again!"},
-    {2, "Hi, guess what?"}
+	{0, "Hi, this is a sample message!"},
+	{1, "Hi, me again!"},
+	{2, "Hi, guess what?"}
 };</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>You have 3 new messages in your mailbox!
 
 1 message is more than 20 characters long.</code>
+					</div>
+					<p>You can assume that all variables are set in a global
+					common scope. More advanced use of variable assignments
+					will be explained later in this document.</p>
 				</div>
-				<p>You can assume that all variables are set in a global common
-				scope. More advanced use of variable assignments will be
-				explained later in this document.</p>
-			</div>
 
-			<a name="3.4" />
-			<h3>3.4. Loops</h3>
-			<div class="s3">
-				<p>The <code>while</code> command is the equivalent of the
-				"while" keyword in most programming languages. Be sure to check
-				for a condition that will become false after a finite number of
-				iterations, or rendering of your template will never complete.
-				When possible, prefer the use of the <code>for</code> command
-				over <code>while</code>.</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+				<h3>Loops</h3>
+				<div class="s3">
+					<p>The <code>while</code> command is the equivalent of the
+					"while" keyword in most programming languages. Be sure to
+					check for a condition that will become false after a finite
+					number of iterations, or rendering of your template will
+					never complete. When possible, prefer the use of the
+					<code>for</code> command over <code>while</code>.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>{set password to ""}
 {set nb to rand(8, 16)}
 {set i to 0}
 
 {while lt(i, nb):
-    {set ascii to rand(62)}
+	{set ascii to rand(62)}
 
-    {if lt(ascii, 10):
-        {set password to cat(password, char(add(ascii, ord("0"))))}
-    |elif lt(ascii, 36):
-        {set password to cat(password, char(add(sub(ascii, 10), ord("A"))))}
-    |else:
-        {set password to cat(password, char(add(sub(ascii, 36), ord("a"))))}
-    }
+	{if lt(ascii, 10):
+		{set password to cat(password, char(add(ascii, ord("0"))))}
+	|elif lt(ascii, 36):
+		{set password to cat(password, char(add(sub(ascii, 10), ord("A"))))}
+	|else:
+		{set password to cat(password, char(add(sub(ascii, 36), ord("a"))))}
+	}
 
-    {set i to add(i, 1)}
+	{set i to add(i, 1)}
 }
 
 Your random password is: {password}.</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>Your random password is: 2PIBnodftxz8jAX.</code>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<a name="4" />
-		<h2>4. Advanced topics</h2>
-		<div class="s2">
-			<a name="4.1" />
-			<h3>4.1. Functions declaration</h3>
-			<div class="s3">
-				<p>Cottle allows you to declare functions, that are callable
-				values you can use to factor code as you would do in a program.
-				To declare a function and assign it to a variable, use the
-				<code>def</code> command that works quite like <code>set</code>
-				but have a slightly different syntax. Function arguments are
-				specified between parenthesis right after the variable name
-				that should receive the function, followed by <code>as</code>
-				and function body declaration.</p>
-				<p>Functions can return a value that can be used in any
-				expression or stored in a variable. To make a function halt and
-				return a value, use the <code>return</code> command within its
-				body.</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
-<code>{def factorial(n) as:
-    {if gt(n, 1):
-        {return mul(n, factorial(sub(n, 1)))}
-    |else:
-        {return 1}
-    }
+			<h2>Advanced topics</h2>
+			<div class="s2">
+				<h3>Functions declaration</h3>
+				<div class="s3">
+					<p>Cottle allows you to declare functions, that are
+					callable values you can use to factor code as you would do
+					in a program. To declare a function and assign it to a
+					variable, use the <code>define</code> command that behaves
+					quite like <code>set</code> but have a slightly different
+					syntax. Function arguments are specified between
+					parenthesis right after the variable name that should
+					receive the function, followed by <code>as</code> and
+					function body declaration.</p>
+					<p>Functions can return a value that can be used in any
+					expression or stored in a variable. To make a function halt
+					and return a value, use the <code>return</code> command
+					within its body.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{define factorial(n) as:
+	{if gt(n, 1):
+		{return mul(n, factorial(sub(n, 1)))}
+	|else:
+		{return 1}
+	}
 }
 
 Factorial 1 = {factorial(1)}
 Factorial 3 = {factorial(3)}
 Factorial 8 = {factorial(8)}
 
-{def hanoi_rec(n, from, by, to) as:
-    {set n to sub(n, 1)}
+{define hanoi_rec(n, from, by, to) as:
+	{set n to sub(n, 1)}
 
-    {if gt(n, 0): {hanoi_rec(n, from, to, by)}}
+	{if gt(n, 0): {hanoi_rec(n, from, to, by)}}
 Move one disk from {from} to {to}
-    {if gt(n, 0): {hanoi_rec(n, by, from, to)}}
+	{if gt(n, 0): {hanoi_rec(n, by, from, to)}}
 }
 
-{def hanoi(n) as:
-    {hanoi_rec(n, "A", "B", "C")}
+{define hanoi(n) as:
+	{hanoi_rec(n, "A", "B", "C")}
 }
 
 {hanoi(3)}</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>Factorial 1 = 1
 Factorial 3 = 6
 Factorial 8 = 40320
 
-Move one disk from peg A to C
-Move one disk from peg A to B
-Move one disk from peg C to B
-Move one disk from peg A to C
-Move one disk from peg B to A
-Move one disk from peg B to C
-Move one disk from peg A to C</code>
+Move one disk from A to C
+Move one disk from A to B
+Move one disk from C to B
+Move one disk from A to C
+Move one disk from B to A
+Move one disk from B to C
+Move one disk from A to C</code>
+					</div>
+					<p>You can see in this example that returning a value and
+					printing text are two very different things. Raw text
+					within function body is printed each time the function is
+					called, or more precisely each time its enclosing block is
+					executed (that means it won't print if contained in an
+					<code>if</code> command that fails to pass, for example).
+					The value returned by the function won't be printed unless
+					you explicitly require it by using the <code>echo</code>
+					command (e.g. something like <code>{factorial(8)}</code>).
+					If a function doesn't use any <code>return</code> command,
+					the value it returns is empty, that's why the call to
+					<code>{hanoi(3)}</code> in the sample above does not print
+					anything more than the raw text blocks it contains.</p>
 				</div>
-				<p>You can see in this example that returning a value and
-				printing text are two very different things. Raw text within
-				function body is printed each time the function is called, or
-				more precisely each time its enclosing block is executed (that
-				means it won't print if contained in an <code>if</code> command
-				that fails to pass, for example). The value returned by the
-				function won't be printed unless you explicitly require it by
-				using the <code>echo</code> command (e.g. something like
-				<code>{factorial(8)}</code>). If a function doesn't use any
-				<code>return</code> command, the value it returns is empty,
-				that's why the call to <code>{hanoi(3)}</code> in the sample
-				above does not print anything more than the raw text blocks it
-				contains.</p>
-			</div>
 
-			<a name="4.2" />
-			<h3>4.2. Variables scopes</h3>
-			<div class="s3">
-				<p>When writing complex templates using nested or recursive
-				functions, you may have to take care of variable scopes to
-				avoid potential issues. A scope is the local evaluation context
-				of any function or command that have a body. When assigning a
-				value to a variable as described in paragraph
-				"<a href="#3.3">3.3. Variables assignment</a>", all variables
-				belong to the same top-level scope. Consider this template:</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
-<code>{def range(n) as:
-    {if gt(n, 0):
-        {set res to cat(range(sub(n, 1)), [n])}
-    |else:
-        {set res to []}
-    }
+				<h3>Variables scopes</h3>
+				<div class="s3">
+					<p>When writing complex templates using nested or recursive
+					functions, you may have to take care of variable scopes to
+					avoid potential issues. A scope is the local evaluation
+					context of any function or command that have a body. When
+					assigning a value to a variable as described in paragraph
+					"<a href="#variables_assignment">Variables assignment</a>",
+					all variables belong to the same top-level scope. Consider
+					this template:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{define depth(item) as:
+	{set res to 0}
 
-    {return res}
+	{for child in item:
+		{set res_child to add(depth(child), 1)}
+		{set res to max(res, res_child)}
+	}
+
+	{return res}
 }
 
-{for v in range(10):
-    {v}
-}</code>
+{depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}</code>
+					</div>
+					<p>The <code>depth</code> function is expected to return
+					the level of the deepest element in a value that contains
+					nested arrays. Of course it could be written in a much more
+					efficient way without using non necessary temporary
+					variables, but it would hide the problem we want to
+					illustrate. Anyway, we want this code to return a valid
+					result, and if you try to execute it you'll notice that it
+					returns <code>2</code> where <code>3</code> would have been
+					expected.</p>
+					<p>Here is the explanation: when using the <code>set</code>
+					method to assign a value to variable <code>res</code>, it
+					always uses the same <code>res</code> instance.
+					The <code>depth</code> function recursively calls itself
+					but overwrite the unique <code>res</code> variable each
+					time it tries to store a value in it, and therefore fails
+					to store the actual deepest level as it should. To solve
+					this issue, the <code>res</code> variable needs to be local
+					to function <code>depth</code>, that means each call to
+					<code>depth</code> must use its own <code>res</code>
+					instance.</p>
+					<p>For that reason, the <code>set</code> command actually
+					supports two assignment modes:</p>
+					<ul>
+						<li>When using <code>{set x to 1}</code>, Cottle
+						searches for <code>x</code> in parent scopes bottom-up
+						(from inner to outer), or create it in global scope if
+						not found.</li>
+						<li>When using <code>{set x as 1}</code>, Cottle
+						searches for <code>x</code> in current scope, or create
+						it in current scope if not found.</li>
+					</ul>
+					<p>To fix our previous example, <code>set</code> must be
+					used with the <code>as</code> keyword before the if
+					<code>for</code> block, to initialize a new local
+					<code>res</code> variable. For next uses of
+					<code>set</code>, the <code>to</code> keyword will still be
+					used since it will now resolve to local
+					<code>res</code>:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{define depth(item) as:
+	{set res <strong>as</strong> 0}
+
+	{for child in item:
+		{set res_child to add(depth(child), 1)}
+		{set res to max(res, res_child)}
+	}
+
+	{return res}
+}
+
+{depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}</code>
+					</div>
+					<p>We only replaced the first <code>to</code> keyword, not
+					the two others. By replacing all the <code>to</code>
+					keywords by <code>as</code>, we would have created a new
+					local <code>res</code> instance within the <code>for</code>
+					command, making our previous <code>res</code> instance
+					unused and always equal to its initial value of
+					<code>0</code>.</p>
+					<p>Note that the <code>define</code> command also supports
+					the two keywords <code>as</code> and <code>to</code> for
+					the same reasons.</p>
 				</div>
-				<p>The <code>range</code> function is expected to return an
-				array containing integers from 1 to <code>n</code>,
-				<code>n</code> being the value passed as an argument. Of course
-				it could be written in a much more efficient way without using
-				temporary variables, however we still want this code to return
-				a valid result. If you try to execute it, you'll notice that it
-				always returns an empty array, no matter what value of
-				<code>n</code> you passed.</p>
-				<p>When using the <code>set</code> method to assign a value to
-				variable <code>res</code>, it always uses the same
-				<code>res</code> instance. The <code>range</code> function
-				recursively calls itself but overwrite the unique
-				<code>res</code> variable each time it tries to store a value
-				in it, ending with final <code>{set res to []}</code> that
-				always assign it an empty array. To solve this issue, the
-				<code>res</code> variable needs to be local <code>range</code>,
-				that means each call to <code>range</code> must use its own
-				<code>res</code> instance.</p>
-				<p>For that reason, the <code>set</code> command actually
-				supports two assignment modes:</p>
-				<ul>
-					<li>When using <code>{set x to 1}</code>, Cottle searches
-					for <code>x</code> in parent scopes bottom-up (from inner
-					to outer), or create it in global scope if not found.</li>
-					<li>When using <code>{set x as 1}</code>, Cottle searches
-					for <code>x</code> in current scope, or create it in
-					current scope if not found.</li>
-				</ul>
-				<p>To fix our previous example, <code>set</code> must be used
-				with the <code>as</code> keyword before the if <code>if</code>
-				block, to initialize a new local <code>res</code> variable. For
-				next uses of <code>set</code>, the <code>to</code> keyword will
-				still be used since it will now resolve to local
-				<code>res</code>:</p>
-				<p>FIXME: code sample here</p>
-				<p>Two more comments about this code:</p>
-				<ul>
-					<li>We can't just replace the two <code>to</code> keywords
-					by <code>as</code> in original code, since it would create
-					local <code>res</code> instances within the <code>if</code>
-					statement, leaving them unknown to the <code>return</code>
-					command.</li>
-					<li>We can't either use <code>as</code> everywhere, because
-					it would create new local <code>res</code> instances for
-					every new scope where we want to use our function-level
-					instance of <code>res</code> within the <code>if</code>
-					branches (and that's the <code>to</code> keyword is doing).
-				</ul>
-				<p>Note that the <code>def</code> command also supports the two
-				keywords <code>as</code> and <code>to</code> for the same
-				reasons.</p>
+
+				<h3>Custom .NET methods</h3>
+				<div class="s3">
+					<p>If you need new features or improved performance, you
+					can assign your own .NET methods to template variables.
+					That's actually what Cottle does each time you call
+					<code>CommonFunctions.Assign</code>: a set of internal
+					.NET methods is assigned to predefined variables within
+					current document, you can have a look at source code to
+					see how these methods work.</p>
+					<p>To assign a method to a Cottle document, just wrap it
+					within a <code>CallbackFunction</code> object contained by
+					a <code>FunctionValue</code> object, then add it to the
+					<code>Value</code> property of your <code>Document</code>
+					instance, as you would do for any regular variable:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>Testing custom "repeat" function:
+
+{repeat("a", 15)}
+{repeat("hello! ", 3)}
+{repeat("-", 10)}</code>
+					</div>
+					<div class="code">
+					<blockquote><span>C# code:</span></blockquote>
+<code>document.Values["repeat"] = new FunctionValue (new CallbackFunction (delegate (IList&lt;Value&gt; values, Scope scope, TextWriter output)
+{
+    StringBuilder builder = new StringBuilder();
+    int           i;
+
+    for (i = 0; i &lt; values[1].AsNumber; ++i)
+        builder.Append(values[0].AsString);
+
+    return builder.ToString();
+}, 2));</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Testing custom "repeat" function:
+
+aaaaaaaaaaaaaaa
+hello! hello! hello! 
+----------</code>
+					</div>
+					<p>Your custom .NET method must take three arguments:</p>
+					<ul>
+						<li>The list of arguments passed to the function
+						(values),</li>
+						<li>Current evaluation context (scope),</li>
+						<li>Document text writer object (output).</li>
+					</ul>
+					<p>Arguments are instances of the <code>Value</code> class,
+					which can hold data of any type known by Cottle. You can
+					access their <code>AsBoolean</code>,
+					<code>AsFunction</code>, <code>AsNumber</code> and
+					<code>AsString</code> properties to get data of desired
+					type (automatic type conversion will be performed if
+					needed). You can also use the <code>Type</code> property to
+					know which data type a <code>Value</code> instance is
+					actually holding. The <code>Fields</code> property contains
+					all key/value pairs.</p>
+					<p>In most cases you won't use scope and output text
+					writer, but may need them if you want to run a function
+					evaluation within your code. The text writer instance can
+					however be used if you want your function to print
+					something.</p>
+					<p>The <code>CallbackFunction</code> objects also takes 2
+					more optional parameters, used to indicate how many
+					arguments are expected for your function. You can either
+					ignore those parameters (and check yourself how many
+					values your function received), specify an exact number of
+					expected arguments, or specify min/max boundaries (-1 as a
+					max boundary means "unlimited"). When specifying expected
+					arguments count, Cottle will perform this check for you
+					each time your function is invoked and ignore the call on
+					error.</p>
+					<p>Your custom function is expected to return a
+					<code>Value</code> object. Remember that implicit
+					constructors are available, so returning a compatible .NET
+					native type is valid too.</p>
+				</div>
 			</div>
 
-			<a name="4.3" />
-			<h3>4.3. Custom .NET functions</h3>
-			<div class="s3">
-				<p>FIXME</p>
-			</div>
-		</div>
-
-		<a name="5" />
-		<h2>5. Common functions</h2>
-		<div class="s2">
-			<h3>5.1. Counting array pairs: count(array)</h3>
-			<div class="s3">
-				<p>FIXME</p>
-			</div>
-			<h3>5.x. Sorting array pairs: sort(array[, callback])</h3>
-			<div class="s3">
-				<p>FIXME</p>
-				<div class="code">
-					<legend><span>Template:</span></legend>
+			<h2 id="common_functions">Common functions</h2>
+			<div class="s2">
+				<h3>Absolute value: abs(numeric)</h3>
+				<div class="s3">
+					<p>Return the absolute value of given numeric value.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{abs(-3)}
+{abs(5)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>3
+5</code>
+					</div>
+				</div>
+				<h3>Compute sum of two values: add(a, b)</h3>
+				<div class="s3">
+					<p>Return the sum of two numeric values.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{add(3, 7)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>10</code>
+					</div>
+				</div>
+				<h3>Concatenate values: cat(a, b, ...)</h3>
+				<div class="s3">
+					<p>Concatenate all input values into a single one. This
+					function works on string and arrays.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{cat("Hello, ", "World!")}
+{for v in cat([1, 2], [3]): {v}}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Hello, World!
+1 2 3</code>
+					</div>
+				</div>
+				<h3>Get character from unicode value: char(int)</h3>
+				<div class="s3">
+					<p>Get a 1-character string from its unicode value. See
+					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
+					Wikipedia</a> for details.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{char(97)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>a</code>
+					</div>
+				</div>
+				<h3>Compare two values: cmp(a, b)</h3>
+				<div class="s3">
+					<p>Compare value a against b, and return -1 if a is lower
+					than b, 0 if they're equal, or 1 else. When used on
+					numeric values, the <code>cmp</code> function uses
+					numerical order. When used on strings, it uses
+					alphabetical order. When used on arrays, it first compare
+					their lengths then compare their values two by two.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{cmp("abc", "bcd")}
+{cmp(9, 6)}
+{cmp([2, 4], [2, 4])}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>-1
+1
+0</code>
+					</div>
+				</div>
+				<h3>Count number of pairs in value: count(value)</h3>
+				<div class="s3">
+					<p>Return the number of key/value pairs contained in an
+					array value. If the input value is not an array, this
+					function returns 0.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{count([17, 22, 391, 44])}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>4</code>
+					</div>
+				</div>
+				<h3>Compute divide result of two values: div(a, b)</h3>
+				<div class="s3">
+					<p>Return the numeric value of a divided by b.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{div(5, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>2.5</code>
+					</div>
+				</div>
+				<h3>Test if two numeric values are equal: eq(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a equals b, false false.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{eq(7, 7)}
+{eq(1, 4)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false</code>
+					</div>
+				</div>
+				<h3>Find index of element in a value: find(value, token[, start])</h3>
+				<div class="s3">
+					<p>Find the 0-based index of given token in an array, or
+					sub-string in a string. Search starts at index 0 unless the
+					<code>start</code> parameter is specified.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{find([89, 3, 572, 35, 7], 35)}
+{find("hello, world!", "o", 5)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>3
+8</code>
+					</div>
+				</div>
+				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a is greater that b, false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{gt(7, 3)}
+{gt(2, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false</code>
+					</div>
+				</div>
+				<h3>Test if numeric value is greater or equal to another: ge(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a is greater or equal to b, false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{ge(7, 3)}
+{ge(2, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+true</code>
+					</div>
+				</div>
+				<h3>Check if an array value contains given key: has(array, key)</h3>
+				<div class="s3">
+					<p>Return true if given array has a value associated to
+					given key, or false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{has(["name": "Paul", "age": 37, "sex": "M"], "age")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
+					</div>
+				</div>
+				<h3>Get length of a string: len(string)</h3>
+				<div class="s3">
+					<p>Return the length (number of characters) in given string value.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{len("Hello!"}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>6</code>
+					</div>
+				</div>
+				<h3>Test if numeric value is lower than another: lt(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a is lower that b, false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{lt(3, 7)}
+{lt(2, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false</code>
+					</div>
+				</div>
+				<h3>Test if numeric value is lower or equal to another: le(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a is lower or equal to b, false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{le(3, 7)}
+{le(2, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+true</code>
+					</div>
+				</div>
+				<h3>Applying function to each value in an array: map(array, callback)</h3>
+				<div class="s3">
+					<p>Return an array where values are built by applying given
+					function to original array values. Keys are preserved.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{define square(x) as: {return mul(x, x)}}
+{for v in map([1, 2, 3, 4], square): {v}}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>1 4 9 16</code>
+					</div>
+				</div>
+				<h3>Test if a string matches a regular expression: match(string, pattern)</h3>
+				<div class="s3">
+					<p>Return true if a string matches given regular expression
+					pattern, or false else. See
+					<a href="http://msdn.microsoft.com/en-us/library/hs600312(v=vs.71).aspx">.NET
+					Framework Regular Expressions</a> for details.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{match("abc123", "^[a-z]+[0-9]+$")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
+					</div>
+				</div>
+				<h3>Get the maximum between 2 or more values: max(a, b[, c...])</h3>
+				<div class="s3">
+					<p>Return the highest numeric value from given ones.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{max(6, 8, 5, 7, 1, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>{8}</code>
+					</div>
+				</div>
+				<h3>Get the minimum between 2 or more values: min(a, b[, c...])</h3>
+				<div class="s3">
+					<p>Return the lowest numeric value from given ones.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{min(6, 8, 5, 7, 1, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>{1}</code>
+					</div>
+				</div>
+				<h3>Compute reminder of two values: mod(a, b)</h3>
+				<div class="s3">
+					<p>Return the value of the first numeric argument modulo the
+					second one.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{mod(7, 3)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>1</code>
+					</div>
+				</div>
+				<h3>Compute product of two values: mul(a, b)</h3>
+				<div class="s3">
+					<p>Return the numeric value of a times b.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{mul(3, 4)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>12</code>
+					</div>
+				</div>
+				<h3>Get unicode value from character: ord(char)</h3>
+				<div class="s3">
+					<p>Get the unicode value of the first character of given
+					string. See
+					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
+					Wikipedia</a> for details.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{ord("a")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>97</code>
+					</div>
+				</div>
+				<h3>Generate pseudo-random value: rand([a[, b]])</h3>
+				<div class="s3">
+					<p>Get a pseudo-random numeric value between 0 and
+					2.147.483.647 inclusive. If <code>a</code> is
+					specified, return a pseudo-random numeric value
+					between 0 and <code>a</code> exclusive. If both
+					<code>a</code> and <code>b</code> are specified,
+					return a pseudo-random numeric value between
+					<code>a</code> inclusive and <code>b</code>
+					exclusive.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{rand()}
+{rand(1, 7)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>542180393
+5</code>
+					</div>
+				</div>
+				<h3>Extract part of value: slice(value, index[, count])</h3>
+				<div class="s3">
+					<p>Extact slice from an array, or sub-string from a
+					string. <code>count</code> pairs or characters are
+					extracted from given 0-based <code>index</code>. If no
+					<code>count</code> parameter is specified, all elements
+					starting from given <code>index</code> are extracted.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{for v in slice([68, 657, 54, 3, 12, 9], 3, 2): {v}}
+{slice("abchello", 4)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>3 12
+hello</code>
+					</div>
+				</div>
+				<h3>Get sorted array: sort(array[, callback])</h3>
+				<div class="s3">
+					<p>Return a sorted copy of given array. First argument is
+					the input array, and will be sorted using natural order
+					(numerical or alphabetical, depending on value types) by
+					default. You can specify a second argument as
+					comparison delegate, that should accept two arguments and
+					return -1 if the first should be placed "before" the
+					second, 0 if they are equal, or 1 else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
 <code>{set shuffled to ["in", "order", "elements" "natural"]}
 
 {for item in sort(shuffled):
     {item}
 }
 
-{def by_length(a, b) as:
+{define by_length(a, b) as:
     {return cmp(len(b), len(a))}
 }
 
@@ -741,13 +1197,13 @@ Move one disk from peg A to C</code>
 {for item in sort(shuffled, by_length):
     {item}
 }</code>
-				</div>
-				<div class="code">
-					<legend><span>C# code:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
 <code>CommonFunctions.Assign(document);</code>
-				</div>
-				<div class="code">
-					<legend><span>Result:</span></legend>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
 <code>elements
 in
 natural
@@ -757,17 +1213,119 @@ these strings
 are sorted
 by their
 length</code>
+					</div>
 				</div>
+				<h3>Compute difference between two values: sub(a, b)</h3>
+				<div class="s3">
+					<p>Return the numeric value of a minus b.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{sub(3, 5)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>-2</code>
+					</div>
+				</div>
+			</div>
+
+			<h2>Contact</h2>
+			<div class="s2">
+				<p>Contact me by e-mail: cottle [at] mirari [dot] fr</p>
+				<p><a href="http://remi.caput.fr/">RCa</a>, 2011</p>
 			</div>
 		</div>
 
-		<a name="6" />
-		<h2>6. Contact</h2>
-		<div class="s2">
-			<h3>6.1. FIXME</h3>
-			<div class="s3">
-				<p>FIXME</p>
-			</div>
-		</div>
+		<script type="text/javascript">
+<!--
+(function (target, source, depth)
+{
+	var	anchor;
+	var child;
+	var current;
+	var	next;
+	var	node;
+	var parent;
+	var stack;
+	var unique;
+
+	stack =
+	[{
+		elements	: source.childNodes,
+		index		: 0,
+		num			: 0
+	}];
+
+	unique = 0;
+
+	while (stack.length > 0)
+	{
+		current = stack[stack.length - 1];
+
+		if (current.index < current.elements.length)
+		{
+			node = current.elements[current.index++];
+
+			if (node.tagName !== undefined && node.tagName.length == 2 && node.tagName[0] == 'H')
+			{
+				++current.num;
+
+				next = parseInt (node.tagName.substr (1));
+
+				for (; next < depth; --depth)
+					target = target.parentNode.parentNode;
+
+				node.innerHTML = ' ' + node.innerHTML;
+
+				for (var i = stack.length; i-- > 0; )
+					node.innerHTML = stack[i].num + '.' + node.innerHTML;
+
+				anchor = document.createElement ('a');
+				anchor.innerHTML = node.innerHTML;
+				anchor.href = '#toc' + unique;
+
+				child = document.createElement ('li');
+				child.appendChild (anchor);
+
+				node.id = 'toc' + unique;
+
+				++unique;
+
+				for (; next > depth; ++depth)
+				{
+					parent = undefined;
+
+					for (var j = 0; j < target.childNodes.length; ++j)
+					{
+						if (target.childNodes[j].tagName !== undefined)
+							parent = target.childNodes[j];
+					}
+
+					target = document.createElement ('ul');
+					target.appendChild (child);
+
+					if (parent !== undefined)
+						parent.appendChild (target);
+				}
+
+				target.appendChild (child);
+			}
+
+			if (node.childNodes !== undefined)
+			{
+				stack.push
+				({
+					elements	: node.childNodes,
+					index		: 0,
+					num			: 0
+				});
+			}
+		}
+		else
+			stack.pop ();
+	}
+}) (document.getElementById ('toc-data'), document.getElementById ('toc-from'), 1);
+-->
+		</script>
 	</body>
 </html>

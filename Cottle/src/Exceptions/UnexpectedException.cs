@@ -18,6 +18,14 @@ namespace   Cottle.Exceptions
             }
         }
 
+        public string	Data
+        {
+            get
+            {
+                return this.data;
+            }
+        }
+
         public string   Expected
         {
             get
@@ -42,19 +50,13 @@ namespace   Cottle.Exceptions
             }
         }
 
-        public string	Value
-        {
-            get
-            {
-                return this.value;
-            }
-        }
-
         #endregion
 
         #region Attributes
 
         private int 	column;
+
+        private string	data;
 
         private string	expected;
 
@@ -62,20 +64,18 @@ namespace   Cottle.Exceptions
 
         private int 	line;
 
-        private string	value;
-
         #endregion
 
         #region Constructors
 
         internal    UnexpectedException (Lexer lexer, string expected) :
-            base (string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Value, expected, lexer.Line, lexer.Column))
+            base (string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Current.Data, expected, lexer.Line, lexer.Column))
         {
             this.column = lexer.Column;
+            this.data = lexer.Current.Data;
             this.expected = expected;
             this.index = lexer.Index;
             this.line = lexer.Line;
-            this.value = lexer.Value;
         }
 
         #endregion

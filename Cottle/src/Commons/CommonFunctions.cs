@@ -13,9 +13,14 @@ namespace   Cottle.Commons
     {
         #region Constants
 
+        public static readonly IFunction    FunctionAbsolute = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return Math.Abs (values[0].AsNumber);
+        }, 1);
+
         public static readonly IFunction    FunctionAdd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return new NumberValue (values[0].AsNumber + values[1].AsNumber);
+            return values[0].AsNumber + values[1].AsNumber;
         }, 2);
 
         public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -90,14 +95,13 @@ namespace   Cottle.Commons
         public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int     index = values.Count > 2 ? (int)values[2].AsNumber : 0;
-            Value   source = values[0];
-            Value   value = values[1];
-            int     i;
+            Value   token = values[1];
+            Value   value = values[0];
 
-            if (source.Type == Value.DataType.ARRAY)
-                return source.Fields.FindIndex (index, p => p.Value.CompareTo (value) == 0);
+            if (value.Type == Value.DataType.ARRAY)
+                return value.Fields.FindIndex (index, p => p.Value.CompareTo (token) == 0);
             else
-                return source.AsString.IndexOf (value.AsString, index);
+                return value.AsString.IndexOf (token.AsString, index);
         }, 2, 3);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -164,6 +168,26 @@ namespace   Cottle.Commons
             }
         }, 2);
 
+        public static readonly IFunction    FunctionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            decimal max = values[0].AsNumber;
+
+            for (int i = 1; i < values.Count; ++i)
+                max = Math.Max (max, values[i].AsNumber);
+
+            return max;
+        }, 1, -1);
+
+        public static readonly IFunction    FunctionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            decimal min = values[0].AsNumber;
+
+            for (int i = 1; i < values.Count; ++i)
+                min = Math.Min (min, values[i].AsNumber);
+
+            return min;
+        }, 1, -1);
+
         public static readonly IFunction    FunctionMod = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal denominator = values[1].AsNumber;
@@ -209,21 +233,19 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<KeyValuePair<Value, Value>>    array = values[0].Fields;
-            int                                 count;
-            int                                 index;
-            KeyValuePair<Value, Value>[]        slice;
-            int                                 start;
+            int     count;
+            int     limit;
+            int     index;
+            Value   value = values[0];
 
-            start = Math.Min ((int)values[1].AsNumber, array.Count);
-            count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, array.Count - start) : array.Count - start;
+            limit = value.Type == Value.DataType.ARRAY ? value.Fields.Count : value.AsString.Length;
+            index = Math.Min ((int)values[1].AsNumber, limit);
+            count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, limit - index) : limit - index;
 
-            slice = new KeyValuePair<Value, Value>[count];
-
-            for (index = 0; index < count; ++index)
-                slice[index] = array[start + index];
-
-            return slice;
+            if (value.Type == Value.DataType.ARRAY)
+                return value.Fields.GetRange (index, count);
+            else
+                return value.AsString.Substring (index, count);
         }, 2, 3);
 
         public static readonly IFunction    FunctionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -258,13 +280,14 @@ namespace   Cottle.Commons
 
         public static void  Assign (Document document)
         {
+            document.Values["abs"] = new FunctionValue (CommonFunctions.FunctionAbsolute);
             document.Values["add"] = new FunctionValue (CommonFunctions.FunctionAdd);
             document.Values["cat"] = new FunctionValue (CommonFunctions.FunctionCat);
             document.Values["char"] = new FunctionValue (CommonFunctions.FunctionChar);
             document.Values["cmp"] = new FunctionValue (CommonFunctions.FunctionCompare);
             document.Values["count"] = new FunctionValue (CommonFunctions.FunctionCount);
             document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
-            document.Values["equal"] = new FunctionValue (CommonFunctions.FunctionEqual);
+            document.Values["eq"] = new FunctionValue (CommonFunctions.FunctionEqual);
             document.Values["find"] = new FunctionValue (CommonFunctions.FunctionFind);
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
@@ -274,6 +297,8 @@ namespace   Cottle.Commons
             document.Values["lt"] = new FunctionValue (CommonFunctions.FunctionLower);
             document.Values["map"] = new FunctionValue (CommonFunctions.FunctionMap);
             document.Values["match"] = new FunctionValue (CommonFunctions.FunctionMatch);
+            document.Values["max"] = new FunctionValue (CommonFunctions.FunctionMaximum);
+            document.Values["min"] = new FunctionValue (CommonFunctions.FunctionMinimum);
             document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
             document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);
             document.Values["ord"] = new FunctionValue (CommonFunctions.FunctionOrd);

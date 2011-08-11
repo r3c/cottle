@@ -42,8 +42,8 @@ namespace   Demo
                 }
                 catch (UnexpectedException ex)
                 {
-                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - ex.Value.Length - 1, 0);
-                    this.textBoxInput.SelectionLength = ex.Value.Length;
+                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - ex.Data.Length - 1, 0);
+                    this.textBoxInput.SelectionLength = ex.Data.Length;
                     this.textBoxInput.Focus ();
 
                     throw;

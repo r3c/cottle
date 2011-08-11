@@ -79,9 +79,7 @@ namespace   Cottle
             switch (mode)
             {
                 case SetMode.ANYWHERE:
-                    if (stack.Count == 0)
-                        level.Add (name);
-                    else
+                    if (stack.Count > 0)
                         stack.Pop ();
 
                     break;

@@ -12,15 +12,15 @@ namespace   Cottle.Expressions
     {
         #region Attributes
 
-        private List<KeyValuePair<IExpression, IExpression>>    list;
+        private List<KeyValuePair<IExpression, IExpression>>    elements;
 
         #endregion
 
         #region Constructors
 
-        public  ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> list)
+        public  ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
         {
-            this.list = new List<KeyValuePair<IExpression,IExpression>> (list);
+            this.elements = new List<KeyValuePair<IExpression,IExpression>> (elements);
         }
 
         #endregion
@@ -29,7 +29,7 @@ namespace   Cottle.Expressions
 
         public override Value  Evaluate (Scope scope, TextWriter writer)
         {
-            return new ArrayValue (this.list.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
+            return new ArrayValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
             {
                 Value  key = item.Key.Evaluate (scope, writer);
                 Value  value = item.Value.Evaluate (scope, writer);
@@ -45,16 +45,16 @@ namespace   Cottle.Expressions
 
             builder.Append ('[');
 
-            foreach (KeyValuePair<IExpression, IExpression> item in this.list)
+            foreach (KeyValuePair<IExpression, IExpression> element in this.elements)
             {
                 if (comma)
                     builder.Append (", ");
                 else
                     comma = true;
 
-                builder.Append (item.Key);
+                builder.Append (element.Key);
                 builder.Append (": ");
-                builder.Append (item.Value);
+                builder.Append (element.Value);
             }
 
             builder.Append (']');
