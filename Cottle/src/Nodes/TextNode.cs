@@ -7,7 +7,7 @@ using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    RawNode : INode
+    sealed class    TextNode : INode
     {
         #region Attributes
 
@@ -17,7 +17,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  RawNode (string text)
+        public  TextNode (string text)
         {
             this.text = text;
         }
@@ -30,7 +30,7 @@ namespace   Cottle.Nodes
         {
             output.Write (this.text);
 
-            result = VoidValue.Instance;
+            result = UndefinedValue.Instance;
 
             return false;
         }

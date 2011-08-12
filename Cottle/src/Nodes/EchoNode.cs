@@ -30,7 +30,7 @@ namespace   Cottle.Nodes
         {
             output.Write (this.expression.Evaluate (scope, output).AsString);
 
-            result = VoidValue.Instance;
+            result = UndefinedValue.Instance;
 
             return false;
         }

@@ -45,7 +45,7 @@ namespace   Cottle.Nodes
                 scope.Leave ();
             }
 
-            result = VoidValue.Instance;
+            result = UndefinedValue.Instance;
 
             return false;
         }

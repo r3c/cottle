@@ -46,7 +46,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return "<undefined>";
+                return string.Empty;
             }
         }
 

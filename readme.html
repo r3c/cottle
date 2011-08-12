@@ -20,7 +20,8 @@
 			}
 
 			div.code {
-				padding:		0px 6px 1px 6px;
+				position:		relative;
+				padding:		10px 6px 1px 6px;
 				margin:			12px 8px;
 				background:		#D0E0F0;
 				border-top:		1px solid #80A0B0;
@@ -42,7 +43,8 @@
 
 			div.code blockquote {
 				position:	relative;
-				top:		-4px;
+				top:		-18px;
+				height: 	0px;
 				padding:	0px;
 				margin:		0px;
 			}
@@ -130,23 +132,29 @@
 				<div class="s3">
 					<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
 					<u>T</u>ext <u>T</u>ransform <u>L</u>anguag<u>e</u>" is a
-					lightweight template engine in .NET 3.5. It allows you to
+					lightweight template engine in .NET 3.5 allowing you to
 					transform structured data into any text-based format
-					output, using a simple yet highly extensible template
-					language, thus enabling clean separation of document
-					content (data structure) and document presentation.</p>
-					<p>A simple Cottle template printing how many messages are
-					in your mailbox could look like this:</p>
+					output like plain text, HTML or XML. It uses a simple yet
+					highly extensible template language, thus enabling clean
+					separation of document content (data structure) and
+					document presentation.</p>
+					<p>A simple Cottle template printing an HTML document
+					showing how many messages are in your mailbox could look
+					like this:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>Hello, {name}!
-
-{if gt(count(messages),0):
-    You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
-|else:
-    You have no new message.
-}
-</code>
+<code>&lt;html&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello, {name}!&lt;/h1&gt;
+        &lt;p&gt;
+            {if gt(count(messages),0):
+                You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
+            |else:
+                You have no new message.
+            }
+        &lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code>
 					</div>
 					<p>As you can guess by looking at this code, a Cottle
 					template contains both "raw" text printed directly and
@@ -211,7 +219,7 @@ document.Print(Console.Out);</code>
 				</div>
 			</div>
 			
-			<h2>Template language</h2>
+			<h2>Template fundamentals</h2>
 			<div class="s2">
 				<h3>Simple raw text output</h3>
 				<div class="s3">
@@ -268,35 +276,24 @@ document.Print(Console.Out);</code>
 
 				<h3>Escaping special characters</h3>
 				<div class="s3">
-					<p>There are five special characters that won't be printed
+					<p>There are four special characters that won't be printed
 					unless you escape them, since they're used by template
 					parser to trigger special behaviours. Special characters
 					are:</p>
 					<ul>
 						<li>{ and }  (opening and closing braces),</li>
 						<li>| (pipe),</li>
-						<li>" (quote),</li>
 						<li>\ (backslash).</li>
 					</ul>
 					<p>If you need to print one of these in your template, you
 					must preceed them with a backslash character:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>\| Special \"characters\" must \\ be \{escaped\} \|</code>
+<code>Special characters \{, \}, \| and \\ must be escaped.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>| Special "characters" must \ be {escaped} |</code>
-					</div>
-					<p>You can also enclose your text between quotes to ignore
-					all special characters except " and \:</p>
-					<div class="code">
-						<blockquote><span>Template:</span></blockquote>
-<code>"Quoted {text} doesn't |need| escaping, except for other \"quote\" characters."</code>
-					</div>
-					<div class="code">
-						<blockquote><span>Result:</span></blockquote>
-<code>Quoted {text} doesn't |need| escaping, except for other "quote" characters.</code>
+<code>Special characters {, }, | and \ must be escaped.</code>
 					</div>
 				</div>
 
@@ -335,6 +332,25 @@ document.Print(Console.Out);</code>
 					methods as we'll see later.</p>
 				</div>
 
+				<h3>Literals and variables</h3>
+				<div class="s3">
+					<p>All commands in Cottle, like <code>echo</code>, must be
+					called with values as arguments. These arguments can be
+					names of variables you set through .NET code before
+					rendering the template, constant literals, or any
+					expression returning a value (this last case will be
+					explained in details later in this document).</p>
+					<p>Here is how to use literal values in your templates:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{17}
+{"Constant string value"}
+{["key1": "value1", "key2": "value2", 43: "value for key 43"]}
+{["constant", "array", "with", "auto-generated", "numeric", "keys"]}
+{[1: ["array", "with"], "mixed": "values"]}</code>
+					</div>
+				</div>
+
 				<h3>Calling functions</h3>
 				<div class="s3">
 					<p>Functions in Cottle are special values that can be
@@ -368,12 +384,31 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 					start with a set of common predefined functions, and that's
 					what <code>CommonFunctions.Assign</code> is made for: it
 					just fills <code>document.Value</code> with some useful
-					functions without requiring you to implement them
-					manually.</p>
+					functions, like <code>count</code> we used in previous
+					example.</p>
 					<p>To get a description of each of the functions set
 					when using <code>CommonFunctions.Assign</code>, see
 					paragraph
-					"<a href="#common_functions">Common functions</a>"</p>
+					"<a href="#common_functions">Common functions</a>". For all
+					following samples, we'll assume that common functions are
+					assigned before template is rendered.</p>
+				</div>
+
+				<h3>Commenting your templates</h3>
+				<div class="s3">
+					<p>You can use the <code>_</code> (underscore) command to
+					add comments to your template. This command should be
+					followed by a literal string (characters between quotes),
+					and won't print any result when template is rendered.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{_ "This is a comment that will be ignored when rendering the template"}
+Hello, World!</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Hello, World!</code>
+					</div>
 				</div>
 			</div>
 
@@ -432,6 +467,9 @@ There are more than two items in array (3, actually).
 
 X is negative.</code>
 					</div>
+					<p>Any undefined result, empty string, 0 or empty array
+					will be evaluated to "false" when used in conditional
+					statements. Other values will be considered as "true".</p>
 				</div>
 
 				<h3>Arrays enumeration</h3>
@@ -564,10 +602,6 @@ document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 Your random password is: {password}.</code>
 					</div>
 					<div class="code">
-						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);</code>
-					</div>
-					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>Your random password is: 2PIBnodftxz8jAX.</code>
 					</div>
@@ -576,6 +610,30 @@ Your random password is: {password}.</code>
 
 			<h2>Advanced topics</h2>
 			<div class="s2">
+				<h3>Debugging values</h3>
+				<div class="s3">
+					<p>When your template doesn't render as you would expect,
+					the <code>dump</code> command can help you identify issues
+					by showing value in a "printable" form. Undefined values,
+					for example, won't print anything when passed through the
+					<code>echo</code> command, but will appear as
+					<code>&lt;undefined&gt;</code> with <code>dump</code>.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{dump "string"}
+{dump 42}
+{dump unknown(3)}
+{dump [856, "hello", "x": 17]}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>"string"
+42
+&lt;undefined&gt;
+[0: 856, 1: "hello", "x": 17]</code>
+					</div>
+				</div>
+
 				<h3>Functions declaration</h3>
 				<div class="s3">
 					<p>Cottle allows you to declare functions, that are
@@ -618,10 +676,6 @@ Move one disk from {from} to {to}
 }
 
 {hanoi(3)}</code>
-					</div>
-					<div class="code">
-						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
@@ -840,6 +894,7 @@ hello! hello! hello!
 5</code>
 					</div>
 				</div>
+
 				<h3>Compute sum of two values: add(a, b)</h3>
 				<div class="s3">
 					<p>Return the sum of two numeric values.</p>
@@ -852,6 +907,7 @@ hello! hello! hello!
 <code>10</code>
 					</div>
 				</div>
+
 				<h3>Concatenate values: cat(a, b, ...)</h3>
 				<div class="s3">
 					<p>Concatenate all input values into a single one. This
@@ -867,6 +923,7 @@ hello! hello! hello!
 1 2 3</code>
 					</div>
 				</div>
+
 				<h3>Get character from unicode value: char(int)</h3>
 				<div class="s3">
 					<p>Get a 1-character string from its unicode value. See
@@ -881,6 +938,7 @@ hello! hello! hello!
 <code>a</code>
 					</div>
 				</div>
+
 				<h3>Compare two values: cmp(a, b)</h3>
 				<div class="s3">
 					<p>Compare value a against b, and return -1 if a is lower
@@ -902,6 +960,7 @@ hello! hello! hello!
 0</code>
 					</div>
 				</div>
+
 				<h3>Count number of pairs in value: count(value)</h3>
 				<div class="s3">
 					<p>Return the number of key/value pairs contained in an
@@ -916,6 +975,7 @@ hello! hello! hello!
 <code>4</code>
 					</div>
 				</div>
+
 				<h3>Compute divide result of two values: div(a, b)</h3>
 				<div class="s3">
 					<p>Return the numeric value of a divided by b.</p>
@@ -928,6 +988,7 @@ hello! hello! hello!
 <code>2.5</code>
 					</div>
 				</div>
+
 				<h3>Test if two numeric values are equal: eq(a, b)</h3>
 				<div class="s3">
 					<p>Return true if a equals b, false false.</p>
@@ -942,6 +1003,7 @@ hello! hello! hello!
 false</code>
 					</div>
 				</div>
+
 				<h3>Find index of element in a value: find(value, token[, start])</h3>
 				<div class="s3">
 					<p>Find the 0-based index of given token in an array, or
@@ -958,6 +1020,7 @@ false</code>
 8</code>
 					</div>
 				</div>
+
 				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
 				<div class="s3">
 					<p>Return true if a is greater that b, false else.</p>
@@ -972,6 +1035,7 @@ false</code>
 false</code>
 					</div>
 				</div>
+
 				<h3>Test if numeric value is greater or equal to another: ge(a, b)</h3>
 				<div class="s3">
 					<p>Return true if a is greater or equal to b, false else.</p>
@@ -986,6 +1050,7 @@ false</code>
 true</code>
 					</div>
 				</div>
+
 				<h3>Check if an array value contains given key: has(array, key)</h3>
 				<div class="s3">
 					<p>Return true if given array has a value associated to
@@ -999,6 +1064,20 @@ true</code>
 <code>true</code>
 					</div>
 				</div>
+
+				<h3>Convert string to lowercase: lcase(string)</h3>
+				<div class="s3">
+					<p>Return a lowercase conversion of given string value.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{lcase("Mixed Case String"}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>mixed case string</code>
+					</div>
+				</div>
+
 				<h3>Get length of a string: len(string)</h3>
 				<div class="s3">
 					<p>Return the length (number of characters) in given string value.</p>
@@ -1011,6 +1090,7 @@ true</code>
 <code>6</code>
 					</div>
 				</div>
+
 				<h3>Test if numeric value is lower than another: lt(a, b)</h3>
 				<div class="s3">
 					<p>Return true if a is lower that b, false else.</p>
@@ -1025,6 +1105,7 @@ true</code>
 false</code>
 					</div>
 				</div>
+
 				<h3>Test if numeric value is lower or equal to another: le(a, b)</h3>
 				<div class="s3">
 					<p>Return true if a is lower or equal to b, false else.</p>
@@ -1039,6 +1120,7 @@ false</code>
 true</code>
 					</div>
 				</div>
+
 				<h3>Applying function to each value in an array: map(array, callback)</h3>
 				<div class="s3">
 					<p>Return an array where values are built by applying given
@@ -1053,6 +1135,7 @@ true</code>
 <code>1 4 9 16</code>
 					</div>
 				</div>
+
 				<h3>Test if a string matches a regular expression: match(string, pattern)</h3>
 				<div class="s3">
 					<p>Return true if a string matches given regular expression
@@ -1068,30 +1151,41 @@ true</code>
 <code>true</code>
 					</div>
 				</div>
-				<h3>Get the maximum between 2 or more values: max(a, b[, c...])</h3>
+
+				<h3>Get the maximum between 2 or more values: max(a[, b[, c...]])</h3>
 				<div class="s3">
-					<p>Return the highest numeric value from given ones.</p>
+					<p>Return the highest numeric value among given ones. This
+					function also works on an array, and will return its
+					highest numeric value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{max(6, 8, 5, 7, 1, 2)}</code>
+<code>{max(6, 8, 5, 7, 1, 2)}
+{max([6, 8, 5, 7, 1, 2])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>8</code>
+<code>8
+8</code>
 					</div>
 				</div>
-				<h3>Get the minimum between 2 or more values: min(a, b[, c...])</h3>
+
+				<h3>Get the minimum between 2 or more values: min(a[, b[, c...]])</h3>
 				<div class="s3">
-					<p>Return the lowest numeric value from given ones.</p>
+					<p>Return the lowest numeric value among given ones. This
+					function also works on an array, and will return its
+					lowest numeric value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{min(6, 8, 5, 7, 1, 2)}</code>
+<code>{min(6, 8, 5, 7, 1, 2)}
+{min([6, 8, 5, 7, 1, 2])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>1</code>
+<code>1
+1</code>
 					</div>
 				</div>
+
 				<h3>Compute reminder of two values: mod(a, b)</h3>
 				<div class="s3">
 					<p>Return the value of the first numeric argument modulo the
@@ -1105,6 +1199,7 @@ true</code>
 <code>1</code>
 					</div>
 				</div>
+
 				<h3>Compute product of two values: mul(a, b)</h3>
 				<div class="s3">
 					<p>Return the numeric value of a times b.</p>
@@ -1117,6 +1212,7 @@ true</code>
 <code>12</code>
 					</div>
 				</div>
+
 				<h3>Get unicode value from character: ord(char)</h3>
 				<div class="s3">
 					<p>Get the unicode value of the first character of given
@@ -1132,6 +1228,7 @@ true</code>
 <code>97</code>
 					</div>
 				</div>
+
 				<h3>Generate pseudo-random value: rand([a[, b]])</h3>
 				<div class="s3">
 					<p>Get a pseudo-random numeric value between 0 and
@@ -1153,6 +1250,7 @@ true</code>
 5</code>
 					</div>
 				</div>
+
 				<h3>Extract part of value: slice(value, index[, count])</h3>
 				<div class="s3">
 					<p>Extact slice from an array, or sub-string from a
@@ -1171,6 +1269,7 @@ true</code>
 hello</code>
 					</div>
 				</div>
+
 				<h3>Get sorted array: sort(array[, callback])</h3>
 				<div class="s3">
 					<p>Return a sorted copy of given array. First argument is
@@ -1199,10 +1298,6 @@ hello</code>
 }</code>
 					</div>
 					<div class="code">
-						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);</code>
-					</div>
-					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>elements
 in
@@ -1215,6 +1310,7 @@ by their
 length</code>
 					</div>
 				</div>
+
 				<h3>Compute difference between two values: sub(a, b)</h3>
 				<div class="s3">
 					<p>Return the numeric value of a minus b.</p>
@@ -1225,6 +1321,19 @@ length</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>-2</code>
+					</div>
+				</div>
+
+				<h3>Convert string to uppercase: ucase(string)</h3>
+				<div class="s3">
+					<p>Return an uppercase conversion of given string value.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{ucase("Mixed Case String"}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>MIXED CASE STRING</code>
 					</div>
 				</div>
 			</div>

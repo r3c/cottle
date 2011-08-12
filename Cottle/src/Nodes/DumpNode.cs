@@ -7,19 +7,19 @@ using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    CompositeNode : INode
+    sealed class    DumpNode : INode
     {
         #region Attributes
 
-        private IEnumerable<INode>  nodes;
+        private IExpression expression;
 
         #endregion
 
         #region Constructors
 
-        public  CompositeNode (IEnumerable<INode> nodes)
+        public  DumpNode (IExpression expression)
         {
-            this.nodes = nodes;
+            this.expression = expression;
         }
 
         #endregion
@@ -28,11 +28,7 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            foreach (INode node in this.nodes)
-            {
-                if (node.Apply (scope, output, out result))
-                    return true;
-            }
+            output.Write (this.expression.Evaluate (scope, output).ToString ());
 
             result = UndefinedValue.Instance;
 
@@ -41,8 +37,9 @@ namespace   Cottle.Nodes
 
         public void Debug (TextWriter output)
         {
-            foreach (INode node in this.nodes)
-                node.Debug (output);
+            output.Write ("{dump ");
+            output.Write (this.expression);
+            output.Write ('}');
         }
 
         #endregion

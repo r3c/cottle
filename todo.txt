@@ -9,14 +9,13 @@ X Add new common functions: len, asc, ord
 X Allow function evaluation within callbacks
 	X Add new common functions: pos, sort, map
 X Merge variable and function declarations: {declare x, y, z}, {set x to 1}, {set x() to: dummy}
-	X Fix scope issues, remove unused scopes in "for" enumerations?
-	! Declare a special "index" variable within "for" body?
+	X Fix scope issues, remove unused scopes in "for" enumerations
 X Merge "nth" and "slice" common functions
-- Common functions min and max should work on numeric arrays
+X Implement "dump" keyword
+X Common functions min and max should work on numeric arrays
+X Add support for comments
 - Implement better text trimming system
-- Add support for comments
 - Write deserializers
 	- From .NET object with attributes
 	- From XML document
 	- From JSON string
-- Implement "dump" keyword

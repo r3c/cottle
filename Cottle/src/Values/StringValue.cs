@@ -78,7 +78,21 @@ namespace   Cottle.Values
 
         public override string  ToString ()
         {
-            return string.Format ("\"{0}\"", this.value.Replace ("\\", "\\\\").Replace ("\"", "\\\""));
+            StringBuilder   builder = new StringBuilder ();
+
+            builder.Append ('"');
+
+            foreach (char c in this.value)
+            {
+                if (c == '\\' || c == '"')
+                    builder.Append ('\\');
+
+                builder.Append (c);
+            }
+
+            builder.Append ('"');
+
+            return builder.ToString ();
         }
 
         #endregion

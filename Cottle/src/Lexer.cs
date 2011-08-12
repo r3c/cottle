@@ -348,25 +348,6 @@ namespace   Cottle.Lexers
 
                     return;
 
-                case '\'':
-                case '"':
-                    end = this.last;
-
-                    while (this.Read () && this.last != end)
-                    {
-                        if (this.last != '\\' || this.Read ())
-                            this.current.Push (this.last);
-                    }
-
-                    if (this.eof)
-                        throw new UnknownException (this, "unfinished string");
-
-                    this.Read ();
-
-                    this.current.Type = LexemType.STRING;
-
-                    return;
-
                 default:
 /*
                     if (this.last <= ' ')
@@ -388,7 +369,7 @@ namespace   Cottle.Lexers
                     }
 
 //                  this.current.Clean ();
-                    this.current.Type = LexemType.LITERAL;
+                    this.current.Type = LexemType.TEXT;
 
                     return;
             }
@@ -504,7 +485,8 @@ namespace   Cottle.Lexers
             PIPE,
             PARENTHESIS_BEGIN,
             PARENTHESIS_END,
-            STRING
+            STRING,
+            TEXT
         }
 
         public enum LexerMode

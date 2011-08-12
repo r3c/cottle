@@ -6,39 +6,23 @@ using Cottle.Lexers;
 
 namespace   Cottle.Exceptions
 {
-    public class    UnknownException : Exception
+    public class    UnknownException : LexemException
     {
         #region Properties
 
-        public int      Column
+        public string   Problem
         {
             get
             {
-                return this.column;
+                return this.problem;
             }
         }
 
-        public int      Index
+        public override string  Message
         {
             get
             {
-                return this.index;
-            }
-        }
-
-        public int      Line
-        {
-            get
-            {
-                return this.line;
-            }
-        }
-
-        public string   Unknown
-        {
-            get
-            {
-                return this.unknown;
+                return string.Format ("Found '{0}' at line {1}, column {2}", this.problem, this.line, this.column);
             }
         }
 
@@ -46,25 +30,16 @@ namespace   Cottle.Exceptions
 
         #region Attributes
 
-        private int     column;
-
-        private int     index;
-
-        private int     line;
-
-        private string  unknown;
+        private string  problem;
 
         #endregion
 
         #region Constructors
 
-        internal    UnknownException (Lexer lexer, string unknown) :
-            base (string.Format ("Found '{0}' at line {1}, column {2}", unknown, lexer.Line, lexer.Column))
+        internal    UnknownException (Lexer lexer, string problem) :
+            base (lexer)
         {
-            this.column = lexer.Column;
-            this.index = lexer.Index;
-            this.line = lexer.Line;
-            this.unknown = unknown;
+            this.problem = problem;
         }
 
         #endregion

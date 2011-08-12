@@ -78,7 +78,7 @@ namespace   Cottle.Values
 
         public override string  ToString ()
         {
-            return "<boolean>";
+            return this.value ? "1" : "0";
         }
 
         #endregion

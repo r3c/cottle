@@ -17,7 +17,9 @@ namespace   Cottle
 
         private static readonly Dictionary<string, Keyword> KEYWORDS = new Dictionary<string, Keyword>
         {
+            {"_",       p => p.ParseKeywordComment ()},
             {"define",  p => p.ParseKeywordDefine ()},
+            {"dump",    p => p.ParseKeywordDump ()},
             {"echo",    p => p.ParseKeywordEcho ()},
             {"for",     p => p.ParseKeywordFor ()},
             {"if",      p => p.ParseKeywordIf ()},
@@ -204,6 +206,13 @@ namespace   Cottle
             }
         }
 
+        private INode   ParseKeywordComment ()
+        {
+            this.ParseExpression ();
+
+            return null;
+        }
+
         private INode   ParseKeywordDefine ()
         {
             List<NameExpression>    arguments;
@@ -246,6 +255,11 @@ namespace   Cottle
             }
 
             return new DefineNode (name, arguments, this.ParseBody (), mode);
+        }
+
+        private INode   ParseKeywordDump ()
+        {
+            return new DumpNode (this.ParseExpression ());
         }
 
         private INode   ParseKeywordEcho ()
@@ -391,6 +405,7 @@ namespace   Cottle
         private INode   ParseRaw ()
         {
             List<INode> nodes = new List<INode> ();
+            INode       node;
 
             while (true)
             {
@@ -407,14 +422,16 @@ namespace   Cottle
                         this.lexer.Mode (Lexer.LexerMode.BLOCK);
                         this.lexer.Next ();
 
-                        nodes.Add (this.ParseBlock ());
+                        node = this.ParseBlock ();
+
+                        if (node != null)
+                            nodes.Add (node);
 
                         break;
 
-                    case Lexer.LexemType.LITERAL:
-                    case Lexer.LexemType.STRING:
+                    case Lexer.LexemType.TEXT:
                         if (!string.IsNullOrEmpty (this.lexer.Current.Data))
-                            nodes.Add (new RawNode (this.lexer.Current.Data));
+                            nodes.Add (new TextNode (this.lexer.Current.Data));
 
                         this.lexer.Next ();
 

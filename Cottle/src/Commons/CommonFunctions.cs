@@ -52,7 +52,7 @@ namespace   Cottle.Commons
         {
             try
             {
-                return (char)values[0].AsNumber;
+                return char.ConvertFromUtf32 ((int)values[0].AsNumber);
             }
             catch
             {
@@ -136,6 +136,11 @@ namespace   Cottle.Commons
             return values[0].AsNumber < values[1].AsNumber;
         }, 2);
 
+        public static readonly IFunction    FunctionLowerCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return values[0].AsString.ToLowerInvariant ();
+        }, 1);
+
         public static readonly IFunction    FunctionLowerEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber <= values[1].AsNumber;
@@ -170,20 +175,58 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            decimal max = values[0].AsNumber;
+            Value   array;
+            decimal max;
+            int     i;
 
-            for (int i = 1; i < values.Count; ++i)
-                max = Math.Max (max, values[i].AsNumber);
+            if (values[0].Type == Value.DataType.ARRAY)
+            {
+                array = values[0];
+
+                if (array.Fields.Count <= 0)
+                    return UndefinedValue.Instance;
+
+                max = array.Fields[0].Value.AsNumber;
+
+                for (i = 1; i < array.Fields.Count; ++i)
+                    max = Math.Max (max, array.Fields[i].Value.AsNumber);
+            }
+            else
+            {
+                max = values[0].AsNumber;
+
+                for (i = 1; i < values.Count; ++i)
+                    max = Math.Max (max, values[i].AsNumber);
+            }
 
             return max;
         }, 1, -1);
 
         public static readonly IFunction    FunctionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            decimal min = values[0].AsNumber;
+            Value   array;
+            decimal min;
+            int     i;
 
-            for (int i = 1; i < values.Count; ++i)
-                min = Math.Min (min, values[i].AsNumber);
+            if (values[0].Type == Value.DataType.ARRAY)
+            {
+                array = values[0];
+
+                if (array.Fields.Count <= 0)
+                    return UndefinedValue.Instance;
+
+                min = array.Fields[0].Value.AsNumber;
+
+                for (i = 1; i < array.Fields.Count; ++i)
+                    min = Math.Min (min, array.Fields[i].Value.AsNumber);
+            }
+            else
+            {
+                min = values[0].AsNumber;
+
+                for (i = 1; i < values.Count; ++i)
+                    min = Math.Min (min, values[i].AsNumber);
+            }
 
             return min;
         }, 1, -1);
@@ -205,12 +248,9 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionOrd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            string  chr = values[0].AsString;
+            string  str = values[0].AsString;
 
-            if (chr.Length > 0)
-                return (decimal)(int)chr[0];
-
-            return 0;
+            return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
         }, 1);
 
         public static readonly IFunction    FunctionRandom = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -267,6 +307,11 @@ namespace   Cottle.Commons
             return values[0].AsNumber - values[1].AsNumber;
         }, 2);
 
+        public static readonly IFunction    FunctionUpperCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return values[0].AsString.ToUpperInvariant ();
+        }, 1);
+
         #endregion
 
         #region Attributes
@@ -292,6 +337,7 @@ namespace   Cottle.Commons
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
+            document.Values["lcase"] = new FunctionValue (CommonFunctions.FunctionLowerCase);
             document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
             document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);
             document.Values["lt"] = new FunctionValue (CommonFunctions.FunctionLower);
@@ -306,6 +352,7 @@ namespace   Cottle.Commons
             document.Values["slice"] = new FunctionValue (CommonFunctions.FunctionSlice);
             document.Values["sort"] = new FunctionValue (CommonFunctions.FunctionSort);
             document.Values["sub"] = new FunctionValue (CommonFunctions.FunctionSub);
+            document.Values["ucase"] = new FunctionValue (CommonFunctions.FunctionUpperCase);
         }
 
         #endregion

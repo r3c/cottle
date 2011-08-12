@@ -66,9 +66,9 @@ namespace   Cottle
 
         #region Operators
 
-        public static implicit operator Value (Dictionary<Value, Value> pairs)
+        public static implicit operator Value (Dictionary<Value, Value> dictionary)
         {
-            return new ArrayValue (pairs);
+            return new ArrayValue (dictionary);
         }
 
         public static implicit operator Value (List<KeyValuePair<Value, Value>> pairs)
@@ -81,14 +81,14 @@ namespace   Cottle
             return new ArrayValue (pairs);
         }
 
-        public static implicit operator Value (List<Value> values)
+        public static implicit operator Value (List<Value> list)
         {
-            return new ArrayValue (values);
+            return new ArrayValue (list);
         }
 
-        public static implicit operator Value (Value[] values)
+        public static implicit operator Value (Value[] array)
         {
-            return new ArrayValue (values);
+            return new ArrayValue (array);
         }
 
         public static implicit operator Value (bool value)
@@ -137,8 +137,7 @@ namespace   Cottle
             FUNCTION,
             NUMBER,
             STRING,
-            UNDEFINED,
-            VOID
+            UNDEFINED
         }
 
         #endregion

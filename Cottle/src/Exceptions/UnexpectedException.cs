@@ -6,23 +6,15 @@ using Cottle.Lexers;
 
 namespace   Cottle.Exceptions
 {
-    public class    UnexpectedException : Exception
+    public class    UnexpectedException : LexemException
     {
         #region Properties
 
-        public int  	Column
+        public string	Current
         {
             get
             {
-                return this.column;
-            }
-        }
-
-        public string	Data
-        {
-            get
-            {
-                return this.data;
+                return this.current;
             }
         }
 
@@ -34,19 +26,11 @@ namespace   Cottle.Exceptions
             }
         }
 
-        public int      Index
+        public override string  Message
         {
             get
             {
-                return this.index;
-            }
-        }
-
-        public int  	Line
-        {
-            get
-            {
-                return this.line;
+                return string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", this.current, expected, this.line, this.column);
             }
         }
 
@@ -54,28 +38,19 @@ namespace   Cottle.Exceptions
 
         #region Attributes
 
-        private int 	column;
-
-        private string	data;
+        private string	current;
 
         private string	expected;
-
-        private int     index;
-
-        private int 	line;
 
         #endregion
 
         #region Constructors
 
         internal    UnexpectedException (Lexer lexer, string expected) :
-            base (string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Current.Data, expected, lexer.Line, lexer.Column))
+            base (lexer)
         {
-            this.column = lexer.Column;
-            this.data = lexer.Current.Data;
+            this.current = lexer.Current.Data;
             this.expected = expected;
-            this.index = lexer.Index;
-            this.line = lexer.Line;
         }
 
         #endregion
