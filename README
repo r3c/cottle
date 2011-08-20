@@ -1,0 +1,60 @@
+Cottle: Compact Object to Text Transform Language
+=================================================
+
+Overview
+--------
+
+Hi, and thank you for reading this.
+
+Cottle is an open-source (BSD) template engine I wrote because I needed
+something light and efficient at work, and was not pleased with other
+available libraries. If you never used a template engine before, here is a
+simple explanation about how it works:
+
+- A program of yours generated some structured data, for example a list of
+products with associated name, description, quantity and price for each of
+them.
+- You want to make out an invoice from this list, meaning you want to render
+them as a formatted text document like an HTML page, an XML file or a plain
+text file.
+- Cottle allows you to write a template, that is a file that describes how your
+data should be printed to produce the final invoice. Once the template is
+ready, it can be re-used with any products list as long as it keeps the same
+structure (in our example, products with names, descriptions, quantities and
+prices).
+
+Cottle can read template files written with its own syntax (as explained in the
+user manual), them transform data sources into rendered text documents.
+
+
+
+Installation
+------------
+
+This repository contains a Visual Studio 2010 C# solution with two projects:
+
+- Cottle, the library itself, which is the project you'll include in your own
+solution if you want to use it. It is compatible with .NET 3.5 and above.
+- Demo, a simple Windows Form test program that allows you to write templates
+directly in a text box and render them using predefined data.
+
+User manual (available as "manual.html" or at http://sub.mirari.fr/cottle/)
+explains how to use the library, and contains a lot of code examples.
+
+
+
+Licence
+-------
+
+This project is open-source, released under BSD licence. See "LICENSE" file for
+more information. Any contribution would be of course highly welcomed!
+
+
+
+Author
+------
+
+Rémi Caput (cottle [at] mirari [dot] fr)
+http://remi.caput.fr/
+
+If you use my library, please drop me a line!
