@@ -126,6 +126,54 @@ namespace   Cottle.Commons
             return true;
         }, 1, -1);
 
+        public static readonly IFunction    FunctionInclude = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            KeyValuePair<Document, DateTime>    compiled;
+            Document                            document;
+            DateTime                            modified;
+            Parser                              parser;
+            string                              path;
+            FileStream                          stream;
+            int                                 i;
+
+            path = Path.GetFullPath (values[0].AsString);
+
+            try
+            {
+                modified = File.GetLastWriteTime (path);
+
+                lock (CommonFunctions.includes)
+                {
+                    if (!CommonFunctions.includes.TryGetValue (path, out compiled) || compiled.Value < modified)
+                    {
+                        using (stream = File.OpenRead (path))
+                        {
+                            parser = new Parser ();
+
+                            compiled = new KeyValuePair<Document, DateTime> (parser.Parse (new StreamReader (stream)), modified);
+                        }
+
+                        CommonFunctions.includes[path] = compiled;
+                    }
+                }
+
+                document = compiled.Key;
+                document.Values.Clear ();
+
+                for (i = 1; i < values.Count; ++i)
+                {
+                    foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
+                        document.Values[pair.Key.AsString] = pair.Value;
+                }
+
+                return document.Print (output);
+            }
+            catch
+            {
+                return UndefinedValue.Instance;
+            }
+        }, 1, -1);
+
         public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsString.Length;
@@ -316,8 +364,10 @@ namespace   Cottle.Commons
 
         #region Attributes
 
+        private static Dictionary<string, KeyValuePair<Document, DateTime>> includes = new Dictionary<string, KeyValuePair<Document, DateTime>> ();
+
         [ThreadStatic]
-        private static Random   random = null;
+        private static Random                                               random = null;
 
         #endregion
 
@@ -337,6 +387,7 @@ namespace   Cottle.Commons
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
+            document.Values["include"] = new FunctionValue (CommonFunctions.FunctionInclude);
             document.Values["lcase"] = new FunctionValue (CommonFunctions.FunctionLowerCase);
             document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
             document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);

@@ -452,9 +452,7 @@ Hello, World!</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);
-
-document.Values["items"] = new Dictionary&lt;Value,Value&gt;
+<code>document.Values["items"] = new Dictionary&lt;Value,Value&gt;
 {
     {0, "item #0"},
     {1, "item #1"},
@@ -501,9 +499,7 @@ Tags: {for tag in tags:{tag} }</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);
-
-document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
+<code>document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
     {0, "Hi, this is a sample message!"},
     {1, "Hi, me again!"},
@@ -558,9 +554,7 @@ Tags: action horror fantastic</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(document);
-
-document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
+<code>document.Values["messages"] = new Dictionary&lt;Value,Value&gt;
 {
     {0, "Hi, this is a sample message!"},
     {1, "Hi, me again!"},
@@ -1070,6 +1064,62 @@ true</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>true</code>
 					</div>
+				</div>
+
+				<h3>Include and render template file: include(path[, vars[, vars...]])</h3>
+				<div class="s3">
+					<p>Parse document from a template file and render it with
+					given variables. Variables should be array values, their
+					keys will be used as assigned variable names.</p>
+					<p>For the next example, we will assume that a file named
+					"article.ctl" is available in current directory and
+					contains this template code:</p>
+					<div class="code">
+						<blockquote><span>Template "article.ctl":</span></blockquote>
+<code>&lt;div class="box"&gt;
+    &lt;div class="title"&gt;{a.title}&lt;/div&gt;
+    &lt;div class="text"&gt;{a.text}&lt;/div&gt;
+&lt;/div&gt;</code>
+					</div>
+					<p>Now, we want to include and render this template file in
+					our global rendering:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{for article in articles:
+    {include("article.ctl", ["a": article])}
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>document.Values["articles"] = new Value[]
+{
+    new Dictionary&lt;Value, Value&gt;
+    {
+        {"title", "First article"},
+        {"text", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+    },
+    new Dictionary&lt;Value, Value&gt;
+    {
+        {"title", "Second article"},
+        {"text", "Cras vitae erat dui, commodo gravida purus."}
+    }
+};</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>&lt;div class="box"&gt;
+    &lt;div class="title"&gt;First article&lt;/div&gt;
+    &lt;div class="text"&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="box"&gt;
+    &lt;div class="title"&gt;Second article&lt;/div&gt;
+    &lt;div class="text"&gt;Cras vitae erat dui, commodo gravida purus.&lt;/div&gt;
+&lt;/div&gt;</code>
+					</div>
+					<p>By using <code>return</code> keyword in your included
+					template, you can pass a value to the calling template (it
+					will be available as the result of the call to function
+					<code>include</code>).</p>
 				</div>
 
 				<h3>Convert string to lowercase: lcase(string)</h3>
