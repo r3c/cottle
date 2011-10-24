@@ -72,7 +72,7 @@ namespace   Demo
         private void    SetValues (Document document)
         {
             Dictionary<Value, Value>    alertMessages = new Dictionary<Value, Value> ();
-            Dictionary<Value, Value>    alertParams = new Dictionary<Value, Value> ();
+            Dictionary<Value, Value>    alertProps = new Dictionary<Value, Value> ();
             Dictionary<Value, Value>    alertTags = new Dictionary<Value, Value> ();
             string                      dateTime = DateTime.Now.ToString (CultureInfo.InvariantCulture);
             Random                      random = new Random ();
@@ -91,7 +91,7 @@ namespace   Demo
 
             for (int i = 0; i < 5; ++i)
             {
-                alertParams.Add ("param #" + i, new Dictionary<Value, Value>
+                alertProps.Add ("prop #" + i, new Dictionary<Value, Value>
                 {
                     {"value" + i + ".1",    random.Next ()},
                     {"value" + i + ".2",    random.Next ()},
@@ -105,7 +105,7 @@ namespace   Demo
             }
 
             document.Values.Add ("messages", alertMessages);
-            document.Values.Add ("params", alertParams);
+            document.Values.Add ("props", alertProps);
             document.Values.Add ("tags", alertTags);
         }
     }
