@@ -23,6 +23,17 @@ namespace   Cottle.Commons
             return values[0].AsNumber + values[1].AsNumber;
         }, 2);
 
+        public static readonly IFunction    FunctionAnd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            foreach (Value value in values)
+            {
+                if (!value.AsBoolean)
+                    return false;
+            }
+
+            return true;
+        });
+
         public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             List<KeyValuePair<Value, Value>>    array;
@@ -65,10 +76,32 @@ namespace   Cottle.Commons
             return values[0].CompareTo (values[1]);
         }, 2);
 
-        public static readonly IFunction    FunctionCount = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        public static readonly IFunction    FunctionCross = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].Fields.Count;
-        }, 1);
+            int                         i;
+            bool                        insert;
+            Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
+
+            foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
+            {
+                insert = true;
+
+                for (i = 1; i < values.Count; ++i)
+                {
+                    if (!values[i].Has (pair.Key))
+                    {
+                        insert = false;
+
+                        break;
+                    }
+                }
+
+                if (insert)
+                    result[pair.Key] = pair.Value;
+            }
+
+            return result;
+        }, 1, -1);
 
         public static readonly IFunction    FunctionDiv = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
@@ -92,6 +125,33 @@ namespace   Cottle.Commons
             return true;
         }, 1, -1);
 
+        public static readonly IFunction    FunctionExcept = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            int                         i;
+            bool                        insert;
+            Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
+
+            foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
+            {
+                insert = true;
+
+                for (i = 1; i < values.Count; ++i)
+                {
+                    if (values[i].Has (pair.Key))
+                    {
+                        insert = false;
+
+                        break;
+                    }
+                }
+
+                if (insert)
+                    result[pair.Key] = pair.Value;
+            }
+
+            return result;
+        }, 1, -1);
+
         public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int     index = values.Count > 2 ? (int)values[2].AsNumber : 0;
@@ -103,6 +163,11 @@ namespace   Cottle.Commons
             else
                 return value.AsString.IndexOf (token.AsString, index);
         }, 2, 3);
+
+        public static readonly IFunction    FunctionFlip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return values[0].Fields.ConvertAll (p => new KeyValuePair<Value, Value> (p.Value, p.Key));
+        }, 1);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
@@ -174,8 +239,35 @@ namespace   Cottle.Commons
             }
         }, 1, -1);
 
+        public static readonly IFunction    FunctionJoin = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            StringBuilder   builder = new StringBuilder ();
+            bool            first = true;
+            string          sep;
+
+            if (values.Count > 1)
+                sep = values[1].AsString;
+            else
+                sep = string.Empty;
+
+            foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
+            {
+                if (first)
+                    first = false;
+                else
+                    builder.Append (sep);
+
+                builder.Append (pair.Value.AsString);
+            }
+
+            return builder.ToString ();
+        }, 1, 2);
+
         public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
+            if (values[0].Type == Value.DataType.ARRAY)
+                return values[0].Fields.Count;
+
             return values[0].AsString.Length;
         }, 1);
 
@@ -294,6 +386,22 @@ namespace   Cottle.Commons
             return values[0].AsNumber * values[1].AsNumber;
         }, 2);
 
+        public static readonly IFunction    FunctionNot = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return !values[0].AsBoolean;
+        }, 1);
+
+        public static readonly IFunction    FunctionOr = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            foreach (Value value in values)
+            {
+                if (value.AsBoolean)
+                    return true;
+            }
+
+            return false;
+        });
+
         public static readonly IFunction    FunctionOrd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             string  str = values[0].AsString;
@@ -350,15 +458,46 @@ namespace   Cottle.Commons
             return sorted;
         }, 1, 2);
 
+        public static readonly IFunction    FunctionSplit = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return Array.ConvertAll (values[0].AsString.Split (new string[] {values[1].AsString}, StringSplitOptions.None), s => new StringValue (s));
+        }, 2);
+
         public static readonly IFunction    FunctionSub = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber - values[1].AsNumber;
         }, 2);
 
+        public static readonly IFunction    FunctionUnion = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
+
+            foreach (Value value in values)
+            {
+                foreach (KeyValuePair<Value, Value> pair in value.Fields)
+                    result[pair.Key] = pair.Value;
+            }
+
+            return result;
+        }, 0, -1);
+
         public static readonly IFunction    FunctionUpperCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsString.ToUpperInvariant ();
         }, 1);
+
+        public static readonly IFunction    FunctionXor = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            int count = 0;
+
+            foreach (Value value in values)
+            {
+                if (value.AsBoolean)
+                    ++count;
+            }
+
+            return count == 1;
+        });
 
         #endregion
 
@@ -377,17 +516,21 @@ namespace   Cottle.Commons
         {
             document.Values["abs"] = new FunctionValue (CommonFunctions.FunctionAbsolute);
             document.Values["add"] = new FunctionValue (CommonFunctions.FunctionAdd);
+            document.Values["and"] = new FunctionValue (CommonFunctions.FunctionAnd);
             document.Values["cat"] = new FunctionValue (CommonFunctions.FunctionCat);
             document.Values["char"] = new FunctionValue (CommonFunctions.FunctionChar);
             document.Values["cmp"] = new FunctionValue (CommonFunctions.FunctionCompare);
-            document.Values["count"] = new FunctionValue (CommonFunctions.FunctionCount);
+            document.Values["cross"] = new FunctionValue (CommonFunctions.FunctionCross);
             document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
             document.Values["eq"] = new FunctionValue (CommonFunctions.FunctionEqual);
+            document.Values["except"] = new FunctionValue (CommonFunctions.FunctionExcept);
             document.Values["find"] = new FunctionValue (CommonFunctions.FunctionFind);
+            document.Values["flip"] = new FunctionValue (CommonFunctions.FunctionFlip);
             document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
             document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
             document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
             document.Values["include"] = new FunctionValue (CommonFunctions.FunctionInclude);
+            document.Values["join"] = new FunctionValue (CommonFunctions.FunctionJoin);
             document.Values["lcase"] = new FunctionValue (CommonFunctions.FunctionLowerCase);
             document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
             document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);
@@ -398,12 +541,17 @@ namespace   Cottle.Commons
             document.Values["min"] = new FunctionValue (CommonFunctions.FunctionMinimum);
             document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
             document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);
+            document.Values["not"] = new FunctionValue (CommonFunctions.FunctionNot);
+            document.Values["or"] = new FunctionValue (CommonFunctions.FunctionOr);
             document.Values["ord"] = new FunctionValue (CommonFunctions.FunctionOrd);
             document.Values["rand"] = new FunctionValue (CommonFunctions.FunctionRandom);
             document.Values["slice"] = new FunctionValue (CommonFunctions.FunctionSlice);
             document.Values["sort"] = new FunctionValue (CommonFunctions.FunctionSort);
+            document.Values["split"] = new FunctionValue (CommonFunctions.FunctionSplit);
             document.Values["sub"] = new FunctionValue (CommonFunctions.FunctionSub);
             document.Values["ucase"] = new FunctionValue (CommonFunctions.FunctionUpperCase);
+            document.Values["union"] = new FunctionValue (CommonFunctions.FunctionUnion);
+            document.Values["xor"] = new FunctionValue (CommonFunctions.FunctionXor);
         }
 
         #endregion

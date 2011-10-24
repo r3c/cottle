@@ -909,6 +909,20 @@ hello! hello! hello!
 					</div>
 				</div>
 
+				<h3>Logical AND: and(a, b, ...)</h3>
+				<div class="s3">
+					<p>Perform logical "and" between given boolean values, i.e.
+					return "true" if every argument is true.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{and(lt(2, 3), gt(5, 1))}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
+					</div>
+				</div>
+
 				<h3>Concatenate values: cat(a, b, ...)</h3>
 				<div class="s3">
 					<p>Concatenate all input values into a single one. This
@@ -962,18 +976,19 @@ hello! hello! hello!
 					</div>
 				</div>
 
-				<h3>Count number of pairs in value: count(value)</h3>
+				<h3>Filter pairs in an array: cross(array1, array2, ...)</h3>
 				<div class="s3">
-					<p>Return the number of key/value pairs contained in an
-					array value. If the input value is not an array, this
-					function returns 0.</p>
+					<p>Return an array containing all pairs from
+					<code>array1</code> having a key that also exists in
+					<code>array2</code> and following arrays. Output pair
+					values will always be taken from <code>array1</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{count([17, 22, 391, 44])}</code>
+<code>{dump cross([1: "a", 2: "b", 3: "c"], [1: "x", 3: "y"])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>4</code>
+<code>[1: "a", 3: "c"]</code>
 					</div>
 				</div>
 
@@ -1005,6 +1020,22 @@ false</code>
 					</div>
 				</div>
 
+				<h3>Remove pairs from an array: except(array1, array2, ...)</h3>
+				<div class="s3">
+					<p>Return an array containing all pairs from
+					<code>array1</code> having a key that does not exist in
+					<code>array2</code> and following arrays. This function can
+					also be used to remove a single element from an array.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{dump except([1: "a", 2: "b", 3: "c"], [2: "x", 4: "y"])}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>[1: "a", 3: "c"]</code>
+					</div>
+				</div>
+
 				<h3>Find index of element in a value: find(value, token[, start])</h3>
 				<div class="s3">
 					<p>Find the 0-based index of given token in an array, or
@@ -1022,18 +1053,23 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
+				<h3>Swap keys and values in an array: flip(array)</h3>
 				<div class="s3">
-					<p>Return true if a is greater that b, false else.</p>
+					<p>Return an array were pairs are created by swapping each
+					key and value pair from input array. If two or more values
+					where equal in input array, then only the last one will be
+					accessed directly. Using resulting array with the
+					<code>for</code> command will still iterate through each
+					pair even if there was duplicates.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{gt(7, 3)}
-{gt(2, 2)}</code>
+<code>{dump flip([1: "hello,", 2: "world!"])}
+{dump flip(["a": 0, "b": 0])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>true
-false</code>
+<code>["hello,": 1, "world!": 2]
+[0: "a", 0: "b"]</code>
 					</div>
 				</div>
 
@@ -1049,6 +1085,21 @@ false</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>true
 true</code>
+					</div>
+				</div>
+
+				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
+				<div class="s3">
+					<p>Return true if a is greater that b, false else.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{gt(7, 3)}
+{gt(2, 2)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false</code>
 					</div>
 				</div>
 
@@ -1122,6 +1173,21 @@ true</code>
 					<code>include</code>).</p>
 				</div>
 
+				<h3>Join values from an array: join(array[, string])</h3>
+				<div class="s3">
+					<p>Concatenate all values from given array pairs, using
+					given string as a separator (or empty string if no
+					separator is provided).</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{join(["2011", "01", "01"], "/")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>2011/01/01</code>
+					</div>
+				</div>
+
 				<h3>Convert string to lowercase: lcase(string)</h3>
 				<div class="s3">
 					<p>Return a lowercase conversion of given string value.</p>
@@ -1135,16 +1201,20 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Get length of a string: len(string)</h3>
+				<h3>Get length of a value: len(a)</h3>
 				<div class="s3">
-					<p>Return the length (number of characters) in given string value.</p>
+					<p>Return the length or given value, that is number pairs
+					if value was an array, or number of characters if value
+					was a string.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{len("Hello!"}</code>
+<code>{len("Hello!")}
+{count([17, 22, 391, 44])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>6</code>
+<code>6
+4</code>
 					</div>
 				</div>
 
@@ -1270,6 +1340,34 @@ true</code>
 					</div>
 				</div>
 
+				<h3>Logical NOT: not(a)</h3>
+				<div class="s3">
+					<p>Perform logical "not" on given boolean value, i.e return
+					true if value was false or false if it was true.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{not(eq(1, 2))}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
+					</div>
+				</div>
+
+				<h3>Logical OR: or(a, b, ...)</h3>
+				<div class="s3">
+					<p>Perform logical "or" between given boolean values, i.e.
+					return "true" if at least one argument is true.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{or(eq(2, 3), gt(5, 1))}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
+					</div>
+				</div>
+
 				<h3>Get unicode value from character: ord(char)</h3>
 				<div class="s3">
 					<p>Get the unicode value of the first character of given
@@ -1368,6 +1466,21 @@ length</code>
 					</div>
 				</div>
 
+				<h3>Split string into array: split(a, b)</h3>
+				<div class="s3">
+					<p>Split string <code>a</code> according to given string
+					separator <code>b</code>. Result is an array where pair
+					values contain split sub-strings.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{dump split("2011/01/01", "/")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>[0: "2011", 1: "01", 2: "01"]</code>
+					</div>
+				</div>
+
 				<h3>Compute difference between two values: sub(a, b)</h3>
 				<div class="s3">
 					<p>Return the numeric value of a minus b.</p>
@@ -1391,6 +1504,37 @@ length</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>MIXED CASE STRING</code>
+					</div>
+				</div>
+
+				<h3>Get union of two arrays: union(array1, array2, ...)</h3>
+				<div class="s3">
+					<p>Return an array containing all pairs from input arrays,
+					but without duplicating any key. If a key exists in more
+					than one input array, only the first pair using it will be
+					added to result array.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{dump union([1: "a", 2: "b"], [2: "x", 3: "c"], [4: "d"])}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>[1: "a", 2: "b", 3: "c", 4: "d"]</code>
+					</div>
+				</div>
+
+				<h3>Logical exclusive OR: xor(a, b, ...)</h3>
+				<div class="s3">
+					<p>Perform logical "xor" between given boolean values, i.e.
+					return "true" if exactly one argument is true and all the
+					others are false.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{xor(lt(2, 3), eq(1, 2))}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true</code>
 					</div>
 				</div>
 			</div>
