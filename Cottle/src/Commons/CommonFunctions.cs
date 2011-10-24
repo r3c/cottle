@@ -288,30 +288,53 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
+            List<Value>                     arguments = new List<Value> (values.Count - 1);
             KeyValuePair<Value, Value>[]    array = new KeyValuePair<Value, Value>[values[0].Fields.Count];
             IFunction                       callback = values[1].AsFunction;
             int                             i = 0;
+            int                             j;
 
             if (callback == null)
                 return UndefinedValue.Instance;
 
             foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-                array[i++] = new KeyValuePair<Value, Value> (pair.Key, callback.Execute (new Value[] {pair.Value}, scope, output));
+            {
+                arguments.Clear ();
+                arguments.Add (pair.Value);
+
+                for (j = 2; j < values.Count; ++j)
+                    arguments.Add (values[j]);
+
+                array[i++] = new KeyValuePair<Value, Value> (pair.Key, callback.Execute (arguments, scope, output));
+            }
 
             return array;
-        }, 2);
+        }, 2, -1);
 
         public static readonly IFunction    FunctionMatch = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
+            List<Value> groups;
+            Match       match;
+
             try
             {
-                return Regex.IsMatch (values[0].AsString, values[1].AsString);
+                match = Regex.Match (values[0].AsString, values[1].AsString);
             }
             catch
             {
                 return UndefinedValue.Instance;
             }
-        }, 2);
+
+            if (!match.Success)
+                return UndefinedValue.Instance;
+
+            groups = new List<Value> (match.Groups.Count);
+
+            foreach (Group group in match.Groups)
+                groups.Add (group.Value);
+
+            return groups;
+        }, 2, 3);
 
         public static readonly IFunction    FunctionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
