@@ -107,6 +107,8 @@ namespace   Cottle.Values
 
         public  ArrayValue ()
         {
+            this.list = new FieldList ();
+            this.map = new FieldMap ();
         }
 
         #endregion

@@ -8,15 +8,31 @@ using System.Windows.Forms;
 using Cottle;
 using Cottle.Exceptions;
 using Cottle.Commons;
+using Cottle.Values;
 
 namespace   Demo
 {
     public partial class    DemoForm : Form
     {
+        #region Attributes
+
+        private TreeNode    root = new TreeNode ("Document", (int)Value.DataType.ARRAY, (int)Value.DataType.ARRAY);
+
+        #endregion
+
+        #region Constructors
+
         public  DemoForm ()
         {
             InitializeComponent ();
+
+            this.treeViewValue.Nodes.Add (this.root);
+            this.treeViewValue.ExpandAll ();
         }
+
+        #endregion
+
+        #region Methods / Listeners
 
         private void    buttonDemo_Click (object sender, EventArgs e)
         {
@@ -33,7 +49,8 @@ namespace   Demo
 
                     CommonFunctions.Assign (document);
 
-                    this.SetValues (document);
+                    foreach (KeyValuePair<Value, Value> pair in this.ReadValues (this.root.Nodes))
+                        document.Values[pair.Key.AsString] = pair.Value;
 
                     this.textBoxPrint.Text = document.Print ();
 
@@ -63,13 +80,112 @@ namespace   Demo
                 this.textBoxResult.Text = ex.Message;
             }
         }
-#if false
-        private void    FillTree ()
+
+        private void    toolStripMenuItemCreate_Click (object sender, EventArgs e)
         {
-            this.treeViewData.Nodes.Clear ();
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+
+            if (node == null)
+                return;
+
+            new NodeForm (delegate (TreeNode child)
+            {
+                node.Nodes.Add (child);
+                node.Expand ();
+            }).Show (this);
         }
-#endif
-        private void    SetValues (Document document)
+
+        private void    toolStripMenuItemDelete_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+
+            if (node != null && node != this.root)
+                node.Remove ();
+        }
+
+        private void    toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+            int         swapIndex;
+            TreeNode    swapNode;
+
+            if (node == null || node == this.root || node.NextNode == null)
+                return;
+throw new NotImplementedException ();
+            swapIndex = node.NextNode.Index;
+            swapNode = node.Parent.Nodes[node.Index];
+
+            node.Parent.Nodes[node.Index] = node.NextNode;
+            node.Parent.Nodes[swapIndex] = swapNode;
+
+        }
+
+        private void    toolStripMenuItemMoveUp_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+            int         swapIndex;
+            TreeNode    swapNode;
+
+            if (node == null || node == this.root || node.PrevNode == null)
+                return;
+throw new NotImplementedException ();
+            swapIndex = node.PrevNode.Index;
+            swapNode = node.Parent.Nodes[node.Index];
+
+            node.Parent.Nodes[node.Index] = node.PrevNode;
+            node.Parent.Nodes[swapIndex] = swapNode;
+        }
+
+        private void    treeViewValue_NodeMouseClick (object sender, TreeNodeMouseClickEventArgs e)
+        {
+            NodeData    data = e.Node.Tag as NodeData;
+
+            if (e.Button != MouseButtons.Right)
+                return;
+
+            this.toolStripMenuItemCreate.Enabled = e.Node == this.root || (data != null && data.Value.Type == Value.DataType.ARRAY);
+            this.toolStripMenuItemDelete.Enabled = e.Node != this.root;
+            this.toolStripMenuItemMoveDown.Enabled = e.Node != this.root && e.Node.NextNode != null;
+            this.toolStripMenuItemMoveUp.Enabled = e.Node != this.root && e.Node.PrevNode != null;
+
+            this.contextMenuStripTree.Tag = e.Node;
+            this.contextMenuStripTree.Show (this.treeViewValue, e.X, e.Y);
+        }
+
+        #endregion
+
+        #region Methods / Private
+
+        private KeyValuePair<Value, Value>[]    ReadValues (TreeNodeCollection nodes)
+        {
+            List<KeyValuePair<Value, Value>>    collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
+            NodeData                            data;
+
+            foreach (TreeNode node in nodes)
+            {
+                data = node.Tag as NodeData;
+
+                if (data != null)
+                {
+                    switch (data.Value.Type)
+                    {
+                        case Value.DataType.ARRAY:
+                            collection.Add (new KeyValuePair<Value, Value> (data.Key, this.ReadValues (node.Nodes)));
+
+                            break;
+
+                        default:
+                            collection.Add (new KeyValuePair<Value, Value> (data.Key, data.Value));
+
+                            break;
+                    }
+                }
+            }
+
+            return collection.ToArray ();
+        }
+
+        /*private void    SetValues (Document document)
         {
             Dictionary<Value, Value>    alertMessages = new Dictionary<Value, Value> ();
             Dictionary<Value, Value>    alertProps = new Dictionary<Value, Value> ();
@@ -107,6 +223,8 @@ namespace   Demo
             document.Values.Add ("messages", alertMessages);
             document.Values.Add ("props", alertProps);
             document.Values.Add ("tags", alertTags);
-        }
+        }*/
+
+        #endregion
     }
 }

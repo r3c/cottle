@@ -15,7 +15,7 @@ namespace   Cottle
 
         #region Properties
 
-        public Dictionary<string, Value>   Values
+        public Dictionary<string, Value>    Values
         {
             get
             {
@@ -29,7 +29,7 @@ namespace   Cottle
 
         private INode                       root;
 
-        private Dictionary<string, Value>  values = new Dictionary<string, Value> ();
+        private Dictionary<string, Value>   values = new Dictionary<string, Value> ();
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace   Cottle
 
         public Value   Print (TextWriter writer)
         {
-            Value  result;
+            Value   result;
             Scope   scope = new Scope ();
 
             foreach (KeyValuePair<string, Value> pair in this.values)
