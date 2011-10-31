@@ -1248,18 +1248,26 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Applying function to each value in an array: map(array, callback)</h3>
+				<h3>Applying function to each value in an array: map(array, callback[, a, b...])</h3>
 				<div class="s3">
 					<p>Return an array where values are built by applying given
-					function to original array values. Keys are preserved.</p>
+					function to original array values, while preserving keys.
+					Function <code>callback</code> is invoked for each value in
+					<code>array</code> as its first argument.</p>
+					<p>Optional arguments can be specified when calling
+					<code>map</code> and will be passed to each invocation of
+					<code>callback</code> as second, third, forth argument and
+					so on.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{define square(x) as: {return mul(x, x)}}
-{for v in map([1, 2, 3, 4], square): {v}}</code>
+{for v in map([1, 2, 3, 4], square): {v}}
+
+{dump map([1, 7, 4, 5, 3, 2, 6], lt, 4)}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>1 4 9 16</code>
+<code>[0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0]</code>
 					</div>
 				</div>
 
