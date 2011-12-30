@@ -73,7 +73,7 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return this.value.CompareTo (other.AsString);
+            return string.Compare (this.value, other.AsString);
         }
 
         public override string  ToString ()

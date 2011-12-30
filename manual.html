@@ -1519,15 +1519,15 @@ length</code>
 				<div class="s3">
 					<p>Return an array containing all pairs from input arrays,
 					but without duplicating any key. If a key exists in more
-					than one input array, only the first pair using it will be
-					added to result array.</p>
+					than one input array, the one from last array will
+					overwrite any previous one.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump union([1: "a", 2: "b"], [2: "x", 3: "c"], [4: "d"])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>[1: "a", 2: "b", 3: "c", 4: "d"]</code>
+<code>[1: "a", 2: "x", 3: "c", 4: "d"]</code>
 					</div>
 				</div>
 

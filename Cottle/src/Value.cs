@@ -53,12 +53,18 @@ namespace   Cottle
 
         #region Methods
 
-        public virtual int  CompareTo (Value other)
+        public abstract int CompareTo (Value other);
+
+        public override bool    Equals (object obj)
         {
-            return this.Type.CompareTo (other.Type);
+            Value   other = obj as Value;
+
+            return other != null && this.CompareTo (other) == 0;
         }
 
         public abstract bool    Find (Value key, out Value value);
+
+        public abstract override int    GetHashCode ();
 
         public abstract bool    Has (Value key);
 

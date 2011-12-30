@@ -312,7 +312,7 @@ namespace   Cottle.Lexers
 
         private void    NextRaw ()
         {
-            char    end;
+//          char    end;
 
             if (this.eof)
             {

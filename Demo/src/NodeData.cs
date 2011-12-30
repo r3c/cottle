@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace   Demo
 {
-    class   NodeData
+    public class    NodeData
     {
         #region Properties
 
@@ -51,20 +51,6 @@ namespace   Demo
         {
             this.key = key;
             this.value = value;
-        }
-
-        #endregion
-
-        #region Methods
-
-        public TreeNode ToNode ()
-        {
-            TreeNode    node;
-            
-            node = new TreeNode (string.Format ("{0} = {1}", this.key, this.value), this.ImageIndex, this.ImageIndex);
-            node.Tag = this;
-
-            return node;
         }
 
         #endregion

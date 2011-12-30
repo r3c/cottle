@@ -1,0 +1,6 @@
+/Demo/bin/
+/Demo/obj/
+/Cottle/bin/
+/Cottle/obj/
+*.suo
+*.user

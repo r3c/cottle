@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 using Cottle;
-using Cottle.Exceptions;
 using Cottle.Commons;
+using Cottle.Exceptions;
 using Cottle.Values;
 
 namespace   Demo
 {
     public partial class    DemoForm : Form
     {
-        #region Attributes
+        #region Constants
 
-        private TreeNode    root = new TreeNode ("Document", (int)Value.DataType.ARRAY, (int)Value.DataType.ARRAY);
+        private const string    AUTOLOAD = "autoload.ctv";
 
         #endregion
 
@@ -26,8 +28,10 @@ namespace   Demo
         {
             InitializeComponent ();
 
-            this.treeViewValue.Nodes.Add (this.root);
-            this.treeViewValue.ExpandAll ();
+            this.treeViewValue.Nodes.Add (new TreeNode ("Document", (int)Value.DataType.ARRAY, (int)Value.DataType.ARRAY));
+
+            if (File.Exists (DemoForm.AUTOLOAD))
+                this.ValuesLoad (DemoForm.AUTOLOAD, false);
         }
 
         #endregion
@@ -49,8 +53,11 @@ namespace   Demo
 
                     CommonFunctions.Assign (document);
 
-                    foreach (KeyValuePair<Value, Value> pair in this.ReadValues (this.root.Nodes))
-                        document.Values[pair.Key.AsString] = pair.Value;
+                    foreach (TreeNode root in this.treeViewValue.Nodes)
+                    {
+                        foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
+                            document.Values[pair.Key.AsString] = pair.Value;
+                    }
 
                     this.textBoxPrint.Text = document.Print ();
 
@@ -81,82 +88,226 @@ namespace   Demo
             }
         }
 
-        private void    toolStripMenuItemCreate_Click (object sender, EventArgs e)
+        private void    toolStripMenuItemFileLoad_Click (object sender, EventArgs e)
         {
-            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+            OpenFileDialog  dialog = new OpenFileDialog ();
 
-            if (node == null)
-                return;
+            dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
 
-            new NodeForm (delegate (TreeNode child)
-            {
-                node.Nodes.Add (child);
-                node.Expand ();
-            }).Show (this);
+            if (dialog.ShowDialog (this) == DialogResult.OK)
+                this.ValuesLoad (dialog.FileName, true);
         }
 
-        private void    toolStripMenuItemDelete_Click (object sender, EventArgs e)
+        private void    toolStripMenuItemFileSave_Click (object sender, EventArgs e)
         {
-            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+            SaveFileDialog  dialog = new SaveFileDialog ();
 
-            if (node != null && node != this.root)
-                node.Remove ();
+            dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
+
+            if (dialog.ShowDialog (this) == DialogResult.OK)
+                this.ValuesSave (dialog.FileName);
         }
 
         private void    toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
         {
-            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
-            int         swapIndex;
-            TreeNode    swapNode;
+            TreeNodeCollection  collection;
+            int                 index1;
+            int                 index2;
+            TreeNode            node1 = this.contextMenuStripTree.Tag as TreeNode;
+            TreeNode            node2;
 
-            if (node == null || node == this.root || node.NextNode == null)
-                return;
-throw new NotImplementedException ();
-            swapIndex = node.NextNode.Index;
-            swapNode = node.Parent.Nodes[node.Index];
+            if (node1 != null && node1.Parent != null && node1.NextNode != null)
+            {
+                collection = node1.Parent.Nodes;
+                node2 = node1.NextNode;
 
-            node.Parent.Nodes[node.Index] = node.NextNode;
-            node.Parent.Nodes[swapIndex] = swapNode;
+                index1 = node1.Index;
+                index2 = node2.Index;
 
+                node2.Remove ();
+                collection.Insert (index1, node2);
+                node1.Remove ();
+                collection.Insert (index2, node1);
+
+                this.treeViewValue.SelectedNode = node1;
+            }
         }
 
         private void    toolStripMenuItemMoveUp_Click (object sender, EventArgs e)
         {
-            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
-            int         swapIndex;
-            TreeNode    swapNode;
+            TreeNodeCollection  collection;
+            int                 index1;
+            int                 index2;
+            TreeNode            node1 = this.contextMenuStripTree.Tag as TreeNode;
+            TreeNode            node2;
 
-            if (node == null || node == this.root || node.PrevNode == null)
-                return;
-throw new NotImplementedException ();
-            swapIndex = node.PrevNode.Index;
-            swapNode = node.Parent.Nodes[node.Index];
+            if (node1 != null && node1.Parent != null && node1.PrevNode != null)
+            {
+                collection = node1.Parent.Nodes;
+                node2 = node1.PrevNode;
 
-            node.Parent.Nodes[node.Index] = node.PrevNode;
-            node.Parent.Nodes[swapIndex] = swapNode;
+                index1 = node1.Index;
+                index2 = node2.Index;
+
+                node1.Remove ();
+                collection.Insert (index2, node1);
+                node2.Remove ();
+                collection.Insert (index1, node2);
+
+                this.treeViewValue.SelectedNode = node1;
+            }
         }
 
-        private void    treeViewValue_NodeMouseClick (object sender, TreeNodeMouseClickEventArgs e)
+        private void    toolStripMenuItemNodeClone_Click (object sender, EventArgs e)
         {
-            NodeData    data = e.Node.Tag as NodeData;
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
 
-            if (e.Button != MouseButtons.Right)
-                return;
+            if (node != null && node.Parent != null)
+                node.Parent.Nodes.Insert (node.Index + 1, this.NodeClone (node));
+        }
 
-            this.toolStripMenuItemCreate.Enabled = e.Node == this.root || (data != null && data.Value.Type == Value.DataType.ARRAY);
-            this.toolStripMenuItemDelete.Enabled = e.Node != this.root;
-            this.toolStripMenuItemMoveDown.Enabled = e.Node != this.root && e.Node.NextNode != null;
-            this.toolStripMenuItemMoveUp.Enabled = e.Node != this.root && e.Node.PrevNode != null;
+        private void    toolStripMenuItemNodeCreate_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
 
-            this.contextMenuStripTree.Tag = e.Node;
-            this.contextMenuStripTree.Show (this.treeViewValue, e.X, e.Y);
+            if (node != null)
+            {
+                new NodeForm (null, delegate (string key, Value value)
+                {
+                    TreeNode    child = this.NodeCreate (key, value);
+
+                    node.Nodes.Add (child);
+                    node.Expand ();
+                }).Show (this);
+            }
+        }
+
+        private void    toolStripMenuItemNodeDelete_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+
+            if (node != null && node.Parent != null)
+                node.Remove ();
+        }
+
+        private void    toolStripMenuItemNodeUpdate_Click (object sender, EventArgs e)
+        {
+            TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
+
+            if (node != null)
+                new NodeForm (node.Tag as NodeData, (key, value) => this.NodeAssign (node, key, value)).Show (this);
+        }
+
+        private void    toolStripMenuItemTreeCollapse_Click (object sender, EventArgs e)
+        {
+            this.treeViewValue.CollapseAll ();
+        }
+
+        private void    toolStripMenuItemTreeExpand_Click (object sender, EventArgs e)
+        {
+            this.treeViewValue.ExpandAll ();
+        }
+
+        private void    contextMenuStripTree_Opening (object sender, CancelEventArgs e)
+        {
+            TreeNode    node = this.treeViewValue.SelectedNode;
+            NodeData    data = node != null ? node.Tag as NodeData : null;
+
+            this.toolStripMenuItemNodeClone.Enabled = node != null && node.Parent != null;
+            this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == Value.DataType.ARRAY);
+            this.toolStripMenuItemNodeDelete.Enabled = node != null && node.Parent != null;
+            this.toolStripMenuItemMoveDown.Enabled = node != null && node.Parent != null && node != null && node.NextNode != null;
+            this.toolStripMenuItemMoveUp.Enabled = node != null && node.Parent != null && node != null && node.PrevNode != null;
+            this.toolStripMenuItemNodeUpdate.Enabled = node != null && node.Parent != null;
+
+            this.contextMenuStripTree.Tag = node;
         }
 
         #endregion
 
         #region Methods / Private
 
-        private KeyValuePair<Value, Value>[]    ReadValues (TreeNodeCollection nodes)
+        private void    NodeAssign (TreeNode node, string key, Value value)
+        {
+            NodeData    data = new NodeData (key, value);
+
+            node.ImageIndex = data.ImageIndex;
+            node.SelectedImageIndex = data.ImageIndex;
+            node.Tag = data;
+
+            switch (value.Type)
+            {
+                case Value.DataType.ARRAY:
+                    node.Text = string.Format ("{0}", key);
+
+                    break;
+
+                default:
+                    node.Text = string.Format ("{0} = {1}", key, value);
+
+                    break;
+            }
+        }
+
+        private TreeNode    NodeClone (TreeNode node)
+        {
+            NodeData    data = node.Tag as NodeData;
+            TreeNode    copy;
+
+            if (data != null)
+            {
+                copy = this.NodeCreate (data.Key, data.Value);
+
+                if (data.Value.Type == Value.DataType.ARRAY)
+                {
+                    foreach (TreeNode child in node.Nodes)
+                        copy.Nodes.Add (this.NodeClone (child));
+                }
+
+                copy.Expand ();
+            }
+            else
+                copy = new TreeNode ();
+
+            return copy;
+        }
+
+        private TreeNode    NodeCreate (string key, Value value)
+        {
+            TreeNode    node = new TreeNode ();
+
+            switch (value.Type)
+            {
+                case Value.DataType.ARRAY:
+                    node.Nodes.AddRange (value.Fields.ConvertAll ((pair) => this.NodeCreate (pair.Key.AsString, pair.Value)).ToArray ());
+
+                    this.NodeAssign (node, key, new ArrayValue ());
+
+                    return node;
+
+                case Value.DataType.BOOLEAN:
+                    this.NodeAssign (node, key, new BooleanValue (value.AsBoolean));
+
+                    return node;
+
+                case Value.DataType.NUMBER:
+                    this.NodeAssign (node, key, new NumberValue (value.AsNumber));
+
+                    return node;
+
+                case Value.DataType.STRING:
+                    this.NodeAssign (node, key, new StringValue (value.AsString));
+
+                    return node;
+
+                default:
+                    this.NodeAssign (node, key, UndefinedValue.Instance);
+
+                    return node;
+            }
+        }
+
+        private List<KeyValuePair<Value, Value>>    ValuesBuild (TreeNodeCollection nodes)
         {
             List<KeyValuePair<Value, Value>>    collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
             NodeData                            data;
@@ -170,7 +321,7 @@ throw new NotImplementedException ();
                     switch (data.Value.Type)
                     {
                         case Value.DataType.ARRAY:
-                            collection.Add (new KeyValuePair<Value, Value> (data.Key, this.ReadValues (node.Nodes)));
+                            collection.Add (new KeyValuePair<Value, Value> (data.Key, this.ValuesBuild (node.Nodes)));
 
                             break;
 
@@ -182,48 +333,68 @@ throw new NotImplementedException ();
                 }
             }
 
-            return collection.ToArray ();
+            return collection;
         }
 
-        /*private void    SetValues (Document document)
+        private void    ValuesLoad (string path, bool dialog)
         {
-            Dictionary<Value, Value>    alertMessages = new Dictionary<Value, Value> ();
-            Dictionary<Value, Value>    alertProps = new Dictionary<Value, Value> ();
-            Dictionary<Value, Value>    alertTags = new Dictionary<Value, Value> ();
-            string                      dateTime = DateTime.Now.ToString (CultureInfo.InvariantCulture);
-            Random                      random = new Random ();
+            TreeNode                    root;
+            Dictionary<string, Value>   values;
 
-            for (int i = 0; i < 10; ++i)
+            if (this.treeViewValue.Nodes.Count < 1)
+                return;
+
+            root = this.treeViewValue.Nodes[0];
+            root.Nodes.Clear ();
+
+            try
             {
-                alertMessages.Add (i, new Dictionary<Value, Value>
+                using (Stream stream = new FileStream (path, FileMode.Open))
                 {
-                    {"contents",    "Contents for sample message #" + i},
-                    {"date_create", dateTime},
-                    {"date_gather", dateTime},
-                    {"origin",      "Sender"},
-                    {"subject",     "Subject for sample message #" + i}
-                });
+                    values = new Dictionary<string, Value> ();
+
+                    if (CommonTools.ValuesLoad (new BinaryReader (stream, Encoding.UTF8), values))
+                    {
+                        foreach (KeyValuePair<string, Value> pair in values)
+                            root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
+                    }
+                }
+
+                root.ExpandAll ();
+
+                if (dialog)
+                    MessageBox.Show (this, string.Format ("Values successfully loaded from \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                MessageBox.Show (this, string.Format ("Cannot open input file \"{0}\"", path), "File load error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void    ValuesSave (string path)
+        {
+            Dictionary<string, Value>   values = new Dictionary<string, Value> ();
+
+            foreach (TreeNode root in this.treeViewValue.Nodes)
+            {
+                foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
+                    values[pair.Key.AsString] = pair.Value;
             }
 
-            for (int i = 0; i < 5; ++i)
+            try
             {
-                alertProps.Add ("prop #" + i, new Dictionary<Value, Value>
+                using (Stream stream = new FileStream (path, FileMode.Create))
                 {
-                    {"value" + i + ".1",    random.Next ()},
-                    {"value" + i + ".2",    random.Next ()},
-                    {"value" + i + ".3",    random.Next ()}
-                });
-            }
+                    CommonTools.ValuesSave (new BinaryWriter (stream, Encoding.UTF8), values);
+                }
 
-            for (int i = 0; i < 5; ++i)
+                MessageBox.Show (this, string.Format ("Values successfully saved to \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
             {
-                alertTags.Add ("tag #" + i, i);
+                MessageBox.Show (this, string.Format ("Cannot open output file \"{0}\"", path), "File save error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            document.Values.Add ("messages", alertMessages);
-            document.Values.Add ("props", alertProps);
-            document.Values.Add ("tags", alertTags);
-        }*/
+        }
 
         #endregion
     }

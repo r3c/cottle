@@ -16,17 +16,53 @@ namespace   Demo
     {
         #region Attributes
 
-        private NodeInsertDelegate  insert;
+        private NodeAssignDelegate assign;
 
         #endregion
 
         #region Constructors
 
-        public  NodeForm (NodeInsertDelegate insert)
+        public  NodeForm (NodeData data, NodeAssignDelegate getNode)
         {
             InitializeComponent ();
 
-            this.insert = insert;
+            this.assign = getNode;
+
+            if (data != null)
+            {
+                this.textBoxName.Text = data.Key;
+
+                switch (data.Value.Type)
+                {
+                    case Value.DataType.ARRAY:
+                        this.radioButtonValueArray.Checked = true;
+
+                        break;
+
+                    case Value.DataType.BOOLEAN:
+                        this.radioButtonValueBoolean.Checked = true;
+                        this.checkBoxValueBoolean.Checked = data.Value.AsBoolean;
+
+                        break;
+
+                    case Value.DataType.NUMBER:
+                        this.radioButtonValueNumber.Checked = true;
+                        this.textBoxValueNumber.Text = data.Value.AsNumber.ToString (CultureInfo.InvariantCulture);
+
+                        break;
+
+                    case Value.DataType.STRING:
+                        this.radioButtonValueString.Checked = true;
+                        this.textBoxValueString.Text = data.Value.AsString;
+
+                        break;
+
+                    default:
+                        this.radioButtonValueUndefined.Checked = true;
+
+                        break;
+                }
+            }
 
             this.ApplyType ();
         }
@@ -37,12 +73,10 @@ namespace   Demo
 
         private void    buttonAccept_Click (object sender, EventArgs e)
         {
-            string  name;
+            string  key = this.textBoxName.Text;
             decimal number;
 
-            name = this.textBoxName.Text;
-
-            if (string.IsNullOrEmpty (name))
+            if (string.IsNullOrEmpty (key))
             {
                 MessageBox.Show (this, "Please enter a non-empty name for this value.", "Invalid name");
 
@@ -52,12 +86,12 @@ namespace   Demo
             switch (this.ApplyType ())
             {
                 case Value.DataType.ARRAY:
-                    this.insert (new NodeData (name, new ArrayValue ()).ToNode ());
+                    this.assign (key, new ArrayValue ());
 
                     break;
 
                 case Value.DataType.BOOLEAN:
-                    this.insert (new NodeData (name, this.checkBoxValueBoolean.Checked).ToNode ());
+                    this.assign (key, this.checkBoxValueBoolean.Checked);
 
                     break;
 
@@ -69,17 +103,17 @@ namespace   Demo
                         return;
                     }
 
-                    this.insert (new NodeData (name, number).ToNode ());
+                    this.assign (key, number);
 
                     break;
 
                 case Value.DataType.STRING:
-                    this.insert (new NodeData (name, this.textBoxValueString.Text).ToNode ());
+                    this.assign (key, this.textBoxValueString.Text);
 
                     break;
 
                 default:
-                    this.insert (new NodeData (name, UndefinedValue.Instance).ToNode ());
+                    this.assign (key, UndefinedValue.Instance);
 
                     break;
             }
@@ -127,7 +161,7 @@ namespace   Demo
 
         #region Types
 
-        public delegate void    NodeInsertDelegate (TreeNode node);
+        public delegate void    NodeAssignDelegate (string key, Value value);
 
         #endregion
     }

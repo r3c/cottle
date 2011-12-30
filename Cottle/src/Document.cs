@@ -58,7 +58,7 @@ namespace   Cottle
             return writer.ToString ();
         }
 
-        public Value   Print (TextWriter writer)
+        public Value    Print (TextWriter writer)
         {
             Value   result;
             Scope   scope = new Scope ();

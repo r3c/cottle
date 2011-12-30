@@ -82,6 +82,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="autoload.ctv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\tick.png" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +92,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\arrow_refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tag_blue_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tag_orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tag_blue_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\tag_blue_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow_down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\script_save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\script_lightning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\resultset_previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\resultset_next.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

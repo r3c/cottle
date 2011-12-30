@@ -70,11 +70,21 @@ namespace   Cottle.Values
 
         #region Methods
 
+        public override int CompareTo (Value other)
+        {
+            return other.Type == DataType.UNDEFINED ? 0 : 1;
+        }
+
         public override bool    Find (Value key, out Value value)
         {
             value = UndefinedValue.Instance;
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
         }
 
         public override bool    Has (Value key)

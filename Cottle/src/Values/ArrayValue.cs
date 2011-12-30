@@ -137,19 +137,19 @@ namespace   Cottle.Values
             return 0;
         }
 
+        public override bool    Find (Value key, out Value value)
+        {
+            return this.map.TryGetValue (key, out value);
+        }
+
         public override int GetHashCode ()
         {
             int hash = 0;
 
             foreach (KeyValuePair<Value, Value> item in this.list)
-                hash ^= item.Key.GetHashCode () ^ item.Value.GetHashCode ();
+                hash = (hash << 1) ^ item.Key.GetHashCode () ^ item.Value.GetHashCode ();
 
             return hash;
-        }
-
-        public override bool    Find (Value key, out Value value)
-        {
-            return this.map.TryGetValue (key, out value);
         }
 
         public override bool    Has (Value key)
