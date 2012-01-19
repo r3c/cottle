@@ -41,25 +41,24 @@ namespace   Demo
         private void    buttonDemo_Click (object sender, EventArgs e)
         {
             Document    document;
-            Parser      parser;
-
-            parser = new Parser ();
+            Scope       scope;
 
             try
             {
                 try
                 {
-                    document = parser.Parse (new StringReader (this.textBoxInput.Text));
+                    document = new Document (new StringReader (this.textBoxInput.Text));
+                    scope = new Scope ();
 
-                    CommonFunctions.Assign (document);
+                    CommonFunctions.Assign (scope);
 
                     foreach (TreeNode root in this.treeViewValue.Nodes)
                     {
                         foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-                            document.Values[pair.Key.AsString] = pair.Value;
+                            scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
                     }
 
-                    this.textBoxPrint.Text = document.Print ();
+                    this.textBoxPrint.Text = document.Render (scope);
 
                     this.textBoxResult.BackColor = Color.LightGreen;
                     this.textBoxResult.Text = "OK";

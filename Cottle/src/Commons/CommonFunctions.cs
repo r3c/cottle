@@ -194,9 +194,8 @@ namespace   Cottle.Commons
         public static readonly IFunction    FunctionInclude = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             KeyValuePair<Document, DateTime>    compiled;
-            Document                            document;
+            Scope                               inner;
             DateTime                            modified;
-            Parser                              parser;
             string                              path;
             FileStream                          stream;
             int                                 i;
@@ -213,25 +212,22 @@ namespace   Cottle.Commons
                     {
                         using (stream = File.OpenRead (path))
                         {
-                            parser = new Parser ();
-
-                            compiled = new KeyValuePair<Document, DateTime> (parser.Parse (new StreamReader (stream)), modified);
+                            compiled = new KeyValuePair<Document, DateTime> (new Document (new StreamReader (stream)), modified);
                         }
 
                         CommonFunctions.includes[path] = compiled;
                     }
                 }
 
-                document = compiled.Key;
-                document.Values.Clear ();
+                inner = new Scope();
 
                 for (i = 1; i < values.Count; ++i)
                 {
                     foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-                        document.Values[pair.Key.AsString] = pair.Value;
+                        inner.Set(pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
                 }
 
-                return document.Print (output);
+                return compiled.Key.Render (inner, output);
             }
             catch
             {
@@ -535,46 +531,46 @@ namespace   Cottle.Commons
 
         #region Methods
 
-        public static void  Assign (Document document)
+        public static void  Assign (Scope scope)
         {
-            document.Values["abs"] = new FunctionValue (CommonFunctions.FunctionAbsolute);
-            document.Values["add"] = new FunctionValue (CommonFunctions.FunctionAdd);
-            document.Values["and"] = new FunctionValue (CommonFunctions.FunctionAnd);
-            document.Values["cat"] = new FunctionValue (CommonFunctions.FunctionCat);
-            document.Values["char"] = new FunctionValue (CommonFunctions.FunctionChar);
-            document.Values["cmp"] = new FunctionValue (CommonFunctions.FunctionCompare);
-            document.Values["cross"] = new FunctionValue (CommonFunctions.FunctionCross);
-            document.Values["div"] = new FunctionValue (CommonFunctions.FunctionDiv);
-            document.Values["eq"] = new FunctionValue (CommonFunctions.FunctionEqual);
-            document.Values["except"] = new FunctionValue (CommonFunctions.FunctionExcept);
-            document.Values["find"] = new FunctionValue (CommonFunctions.FunctionFind);
-            document.Values["flip"] = new FunctionValue (CommonFunctions.FunctionFlip);
-            document.Values["ge"] = new FunctionValue (CommonFunctions.FunctionGreaterEqual);
-            document.Values["gt"] = new FunctionValue (CommonFunctions.FunctionGreater);
-            document.Values["has"] = new FunctionValue (CommonFunctions.FunctionHas);
-            document.Values["include"] = new FunctionValue (CommonFunctions.FunctionInclude);
-            document.Values["join"] = new FunctionValue (CommonFunctions.FunctionJoin);
-            document.Values["lcase"] = new FunctionValue (CommonFunctions.FunctionLowerCase);
-            document.Values["le"] = new FunctionValue (CommonFunctions.FunctionLowerEqual);
-            document.Values["len"] = new FunctionValue (CommonFunctions.FunctionLength);
-            document.Values["lt"] = new FunctionValue (CommonFunctions.FunctionLower);
-            document.Values["map"] = new FunctionValue (CommonFunctions.FunctionMap);
-            document.Values["match"] = new FunctionValue (CommonFunctions.FunctionMatch);
-            document.Values["max"] = new FunctionValue (CommonFunctions.FunctionMaximum);
-            document.Values["min"] = new FunctionValue (CommonFunctions.FunctionMinimum);
-            document.Values["mod"] = new FunctionValue (CommonFunctions.FunctionMod);
-            document.Values["mul"] = new FunctionValue (CommonFunctions.FunctionMul);
-            document.Values["not"] = new FunctionValue (CommonFunctions.FunctionNot);
-            document.Values["or"] = new FunctionValue (CommonFunctions.FunctionOr);
-            document.Values["ord"] = new FunctionValue (CommonFunctions.FunctionOrd);
-            document.Values["rand"] = new FunctionValue (CommonFunctions.FunctionRandom);
-            document.Values["slice"] = new FunctionValue (CommonFunctions.FunctionSlice);
-            document.Values["sort"] = new FunctionValue (CommonFunctions.FunctionSort);
-            document.Values["split"] = new FunctionValue (CommonFunctions.FunctionSplit);
-            document.Values["sub"] = new FunctionValue (CommonFunctions.FunctionSub);
-            document.Values["ucase"] = new FunctionValue (CommonFunctions.FunctionUpperCase);
-            document.Values["union"] = new FunctionValue (CommonFunctions.FunctionUnion);
-            document.Values["xor"] = new FunctionValue (CommonFunctions.FunctionXor);
+            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), Scope.SetMode.ANYWHERE);
+            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), Scope.SetMode.ANYWHERE);
+            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), Scope.SetMode.ANYWHERE);
+            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), Scope.SetMode.ANYWHERE);
+            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), Scope.SetMode.ANYWHERE);
+            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), Scope.SetMode.ANYWHERE);
+            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), Scope.SetMode.ANYWHERE);
+            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), Scope.SetMode.ANYWHERE);
+            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), Scope.SetMode.ANYWHERE);
+            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), Scope.SetMode.ANYWHERE);
+            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), Scope.SetMode.ANYWHERE);
+            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), Scope.SetMode.ANYWHERE);
+            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), Scope.SetMode.ANYWHERE);
+            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), Scope.SetMode.ANYWHERE);
+            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), Scope.SetMode.ANYWHERE);
+            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), Scope.SetMode.ANYWHERE);
+            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), Scope.SetMode.ANYWHERE);
+            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), Scope.SetMode.ANYWHERE);
+            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), Scope.SetMode.ANYWHERE);
+            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), Scope.SetMode.ANYWHERE);
+            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), Scope.SetMode.ANYWHERE);
+            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), Scope.SetMode.ANYWHERE);
+            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), Scope.SetMode.ANYWHERE);
+            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), Scope.SetMode.ANYWHERE);
+            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), Scope.SetMode.ANYWHERE);
+            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), Scope.SetMode.ANYWHERE);
+            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), Scope.SetMode.ANYWHERE);
+            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), Scope.SetMode.ANYWHERE);
+            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), Scope.SetMode.ANYWHERE);
+            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), Scope.SetMode.ANYWHERE);
+            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), Scope.SetMode.ANYWHERE);
+            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), Scope.SetMode.ANYWHERE);
+            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), Scope.SetMode.ANYWHERE);
+            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), Scope.SetMode.ANYWHERE);
+            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), Scope.SetMode.ANYWHERE);
+            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), Scope.SetMode.ANYWHERE);
+            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), Scope.SetMode.ANYWHERE);
+            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), Scope.SetMode.ANYWHERE);
         }
 
         #endregion

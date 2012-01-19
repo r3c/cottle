@@ -11,7 +11,7 @@ using Cottle.Values;
 
 namespace   Cottle
 {
-    public class    Parser
+    class   Parser
     {
         #region Constants
 
@@ -38,20 +38,20 @@ namespace   Cottle
 
         #region Methods
 
-        public Document Parse (TextReader reader)
+        public INode    Parse (TextReader reader)
         {
-            INode   root;
+            INode   node;
 
             this.lexer.Initialize (reader);
             this.lexer.Mode (Lexer.LexerMode.RAW);
             this.lexer.Next ();
 
-            root = this.ParseRaw ();
+            node = this.ParseRaw ();
 
             if (this.lexer.Current.Type != Lexer.LexemType.EOF)
                 throw new UnexpectedException (this.lexer, "end of file");
 
-            return new Document (root);
+            return node;
         }
 
         private INode   ParseBlock ()

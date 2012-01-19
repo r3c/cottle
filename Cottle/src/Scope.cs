@@ -8,11 +8,32 @@ namespace   Cottle
 {
     public class    Scope
     {
+        #region Properties
+
+        public Value    this[Value name]
+        {
+            get
+            {
+                Value   value;
+
+                if (this.Get (name, out value))
+                    return value;
+
+                return UndefinedValue.Instance;
+            }
+            set
+            {
+                this.Set (name, value, SetMode.ANYWHERE);
+            }
+        }
+
+        #endregion
+
         #region Attributes
 
-        private Stack<HashSet<string>>              levels = new Stack<HashSet<string>> ();
+        private Stack<HashSet<Value>>           levels = new Stack<HashSet<Value>> ();
 
-        private Dictionary<string, Stack<Value>>    stacks = new Dictionary<string, Stack<Value>> ();
+        private Dictionary<Value, Stack<Value>> stacks = new Dictionary<Value, Stack<Value>> ();
 
         #endregion
 
@@ -20,7 +41,7 @@ namespace   Cottle
 
         public  Scope ()
         {
-            this.levels.Push (new HashSet<string> ());
+            this.levels.Push (new HashSet<Value> ());
         }
 
         #endregion
@@ -29,10 +50,10 @@ namespace   Cottle
 
         public void Enter ()
         {
-            this.levels.Push (new HashSet<string> ());
+            this.levels.Push (new HashSet<Value> ());
         }
 
-        public bool Get (string name, out Value value)
+        public bool Get (Value name, out Value value)
         {
             Stack<Value>   stack;
 
@@ -54,7 +75,7 @@ namespace   Cottle
 
             if (this.levels.Count > 1)
             {
-                foreach (string name in this.levels.Pop ())
+                foreach (Value name in this.levels.Pop ())
                 {
                     if (this.stacks.TryGetValue (name, out stack))
                         stack.Pop ();
@@ -62,9 +83,9 @@ namespace   Cottle
             }
         }
 
-        public bool Set (string name, Value value, SetMode mode)
+        public bool Set (Value name, Value value, SetMode mode)
         {
-            HashSet<string> level;
+            HashSet<Value>  level;
             Stack<Value>    stack;
 
             if (!this.stacks.TryGetValue (name, out stack))

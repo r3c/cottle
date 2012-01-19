@@ -13,31 +13,19 @@ namespace   Cottle
 
         #endregion
 
-        #region Properties
-
-        public Dictionary<string, Value>    Values
-        {
-            get
-            {
-                return this.values;
-            }
-        }
-
-        #endregion
-
         #region Attributes
 
-        private INode                       root;
-
-        private Dictionary<string, Value>   values = new Dictionary<string, Value> ();
+        private INode   root;
 
         #endregion
 
         #region Constructors
 
-        internal    Document (INode root)
+        public  Document (TextReader reader)
         {
-            this.root = root;
+            Parser  parser = new Parser ();
+
+            this.root = parser.Parse (reader);
         }
 
         #endregion
@@ -58,24 +46,20 @@ namespace   Cottle
             return writer.ToString ();
         }
 
-        public Value    Print (TextWriter writer)
+        public Value    Render (Scope scope, TextWriter writer)
         {
             Value   result;
-            Scope   scope = new Scope ();
-
-            foreach (KeyValuePair<string, Value> pair in this.values)
-                scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
 
             this.root.Apply (scope, writer, out result);
 
             return result;
         }
 
-        public string   Print ()
+        public string   Render (Scope scope)
         {
             StringWriter    writer = new StringWriter ();
 
-            this.Print (writer);
+            this.Render (scope, writer);
 
             return writer.ToString ();
         }
