@@ -74,27 +74,42 @@ namespace   Cottle
 
         public static implicit operator Value (Dictionary<Value, Value> dictionary)
         {
-            return new ArrayValue (dictionary);
+            if (dictionary != null)
+                return new ArrayValue (dictionary);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (List<KeyValuePair<Value, Value>> pairs)
         {
-            return new ArrayValue (pairs);
+            if (pairs != null)
+                return new ArrayValue (pairs);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (KeyValuePair<Value, Value>[] pairs)
         {
-            return new ArrayValue (pairs);
+            if (pairs != null)
+                return new ArrayValue (pairs);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (List<Value> list)
         {
-            return new ArrayValue (list);
+            if (list != null)
+                return new ArrayValue (list);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (Value[] array)
         {
-            return new ArrayValue (array);
+            if (array != null)
+                return new ArrayValue (array);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (bool value)
@@ -124,7 +139,10 @@ namespace   Cottle
 
         public static implicit operator Value (string value)
         {
-            return new StringValue (value);
+            if (value != null)
+                return new StringValue (value);
+
+            return UndefinedValue.Instance;
         }
 
         public static implicit operator Value (char value)

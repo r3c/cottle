@@ -28,6 +28,11 @@ namespace   Cottle
             this.root = parser.Parse (reader);
         }
 
+        public  Document (string template) :
+            this(new StringReader(template))
+        {
+        }
+
         #endregion
 
         #region Methods
