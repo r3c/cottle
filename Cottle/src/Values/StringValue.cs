@@ -45,11 +45,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override DataType    Type
+        public override ValueContent    Type
         {
             get
             {
-                return DataType.STRING;
+                return ValueContent.String;
             }
         }
 
@@ -73,7 +73,7 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return string.Compare (this.value, other.AsString);
+            return other != null ? this.comparer.Compare (this.AsString, other.AsString) : 1;
         }
 
         public override string  ToString ()

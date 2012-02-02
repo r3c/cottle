@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -44,7 +45,7 @@ namespace   Cottle
 
         public string   Debug ()
         {
-            StringWriter    writer = new StringWriter ();
+            StringWriter    writer = new StringWriter (CultureInfo.InvariantCulture);
 
             this.Debug (writer);
 
@@ -62,7 +63,7 @@ namespace   Cottle
 
         public string   Render (Scope scope)
         {
-            StringWriter    writer = new StringWriter ();
+            StringWriter    writer = new StringWriter (CultureInfo.InvariantCulture);
 
             this.Render (scope, writer);
 

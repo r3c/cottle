@@ -4,13 +4,11 @@ using System.Text;
 
 namespace   Cottle.Values.Generics
 {
-    using   FieldList = List<KeyValuePair<Value, Value>>;
-
     public abstract class   ScalarValue<T> : Value
     {
         #region Properties
 
-        public override FieldList   Fields
+        public override KeyValuePair<Value, Value>[]    Fields
         {
             get
             {
@@ -22,7 +20,9 @@ namespace   Cottle.Values.Generics
 
         #region Attributes
 
-        protected T value;
+        protected Comparer<T>   comparer;
+
+        protected T             value;
 
         #endregion
 
@@ -30,6 +30,7 @@ namespace   Cottle.Values.Generics
 
         protected   ScalarValue (T value)
         {
+            this.comparer = Comparer<T>.Default;
             this.value = value;
         }
 

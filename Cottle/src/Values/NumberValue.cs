@@ -43,11 +43,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override DataType    Type
+        public override ValueContent    Type
         {
             get
             {
-                return DataType.NUMBER;
+                return ValueContent.Number;
             }
         }
 
@@ -66,7 +66,7 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return this.value.CompareTo (other.AsNumber);
+            return other != null ? this.comparer.Compare (this.AsNumber, other.AsNumber) : 1;
         }
 
         public override string  ToString ()

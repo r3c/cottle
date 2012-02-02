@@ -69,6 +69,7 @@
     <Compile Include="src\Parser.cs" />
     <Compile Include="src\Scope.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
+    <Compile Include="src\Values\LazyValue.cs" />
     <Compile Include="src\Values\UndefinedValue.cs" />
     <Compile Include="src\Values\ArrayValue.cs" />
     <Compile Include="src\Values\FunctionValue.cs" />

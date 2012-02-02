@@ -23,7 +23,7 @@ namespace   Cottle
             }
             set
             {
-                this.Set (name, value, SetMode.ANYWHERE);
+                this.Set (name, value, ScopeSet.Anywhere);
             }
         }
 
@@ -83,7 +83,7 @@ namespace   Cottle
             }
         }
 
-        public bool Set (Value name, Value value, SetMode mode)
+        public bool Set (Value name, Value value, ScopeSet set)
         {
             HashSet<Value>  level;
             Stack<Value>    stack;
@@ -97,15 +97,15 @@ namespace   Cottle
 
             level = this.levels.Peek ();
 
-            switch (mode)
+            switch (set)
             {
-                case SetMode.ANYWHERE:
+                case ScopeSet.Anywhere:
                     if (stack.Count > 0)
                         stack.Pop ();
 
                     break;
 
-                case SetMode.LOCAL:
+                case ScopeSet.Local:
                     if (!level.Add (name))
                         stack.Pop ();
 
@@ -118,15 +118,11 @@ namespace   Cottle
         }
 
         #endregion
+    }
 
-        #region Types
-
-        public enum SetMode
-        {
-            ANYWHERE,
-            LOCAL
-        }
-
-        #endregion
+    public enum ScopeSet
+    {
+        Anywhere,
+        Local
     }
 }

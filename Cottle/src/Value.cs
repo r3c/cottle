@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using Cottle.Values;
 
 namespace   Cottle
 {
-    using   ChildList = List<KeyValuePair<Value, Value>>;
-
-    public abstract class   Value : IComparable<Value>
+    public abstract class   Value : IComparable<Value>, IEquatable<Value>
     {
         #region Constants
 
-        protected static readonly ChildList EmptyFields = new List<KeyValuePair<Value, Value>> ();
+        protected static readonly KeyValuePair<Value, Value>[]  EmptyFields = new KeyValuePair<Value, Value>[0];
 
         #endregion
 
@@ -39,12 +36,12 @@ namespace   Cottle
             get;
         }
 
-        public abstract ChildList   Fields
+        public abstract KeyValuePair<Value, Value>[]    Fields
         {
             get;
         }
 
-        public abstract DataType    Type
+        public abstract ValueContent    Type
         {
             get;
         }
@@ -54,6 +51,11 @@ namespace   Cottle
         #region Methods
 
         public abstract int CompareTo (Value other);
+
+        public virtual bool Equals(Value other)
+        {
+            return this.CompareTo (other) == 0;
+        }
 
         public override bool    Equals (object obj)
         {
@@ -71,6 +73,34 @@ namespace   Cottle
         #endregion
 
         #region Operators
+
+        public static bool  operator == (Value lhs, Value rhs)
+        {
+            return object.ReferenceEquals (lhs, null) ? object.ReferenceEquals (rhs, null) : lhs.CompareTo (rhs) == 0;
+        }
+
+        public static bool  operator != (Value lhs, Value rhs)
+        {
+            return object.ReferenceEquals (lhs, null) ? !object.ReferenceEquals (rhs, null) : lhs.CompareTo (rhs) != 0;
+        }
+
+        public static bool  operator < (Value lhs, Value rhs)
+        {
+            return !object.ReferenceEquals (rhs, null) && rhs.CompareTo (lhs) > 0;
+        }
+
+        public static bool  operator > (Value lhs, Value rhs)
+        {
+            return !object.ReferenceEquals (lhs, null) && lhs.CompareTo (rhs) > 0;
+        }
+
+        public static implicit operator Value (Func<Value> resolver)
+        {
+            if (resolver != null)
+                return new LazyValue (resolver);
+
+            return UndefinedValue.Instance;
+        }
 
         public static implicit operator Value (Dictionary<Value, Value> dictionary)
         {
@@ -151,19 +181,15 @@ namespace   Cottle
         }
 
         #endregion
+    }
 
-        #region Types
-
-        public enum DataType
-        {
-            ARRAY,
-            BOOLEAN,
-            FUNCTION,
-            NUMBER,
-            STRING,
-            UNDEFINED
-        }
-
-        #endregion
+    public enum ValueContent
+    {
+        Array,
+        Boolean,
+        Function,
+        Number,
+        String,
+        Undefined
     }
 }

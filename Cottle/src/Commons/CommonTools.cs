@@ -51,11 +51,11 @@ namespace   Cottle.Commons
             Value                               arrayKey;
             Value                               arrayValue;
             int                                 count;
-            Value.DataType                      type = (Value.DataType)reader.ReadInt32 ();
+            ValueContent                      type = (ValueContent)reader.ReadInt32 ();
 
             switch (type)
             {
-                case Value.DataType.ARRAY:
+                case ValueContent.Array:
                     count = reader.ReadInt32 ();
                     array = new List<KeyValuePair<Value, Value>> (count);
 
@@ -75,27 +75,27 @@ namespace   Cottle.Commons
 
                     break;
 
-                case Value.DataType.BOOLEAN:
+                case ValueContent.Boolean:
                     value = reader.ReadBoolean () ? BooleanValue.True : BooleanValue.False;
 
                     break;
 
-                case Value.DataType.FUNCTION:
+                case ValueContent.Function:
                     value = UndefinedValue.Instance;
 
                     break;
 
-                case Value.DataType.NUMBER:
+                case ValueContent.Number:
                     value = reader.ReadDecimal ();
 
                     break;
 
-                case Value.DataType.STRING:
+                case ValueContent.String:
                     value = reader.ReadString ();
 
                     break;
 
-                case Value.DataType.UNDEFINED:
+                case ValueContent.Undefined:
                     value = UndefinedValue.Instance;
 
                     break;
@@ -115,8 +115,8 @@ namespace   Cottle.Commons
 
             switch (value.Type)
             {
-                case Value.DataType.ARRAY:
-                    writer.Write (value.Fields.Count);
+                case ValueContent.Array:
+                    writer.Write (value.Fields.Length);
 
                     foreach (KeyValuePair<Value, Value> pair in value.Fields)
                     {
@@ -126,17 +126,17 @@ namespace   Cottle.Commons
 
                     break;
 
-                case Value.DataType.BOOLEAN:
+                case ValueContent.Boolean:
                     writer.Write (value.AsBoolean);
 
                     break;
 
-                case Value.DataType.NUMBER:
+                case ValueContent.Number:
                     writer.Write (value.AsNumber);
 
                     break;
 
-                case Value.DataType.STRING:
+                case ValueContent.String:
                     writer.Write (value.AsString);
 
                     break;

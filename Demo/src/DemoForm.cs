@@ -28,7 +28,7 @@ namespace   Demo
         {
             InitializeComponent ();
 
-            this.treeViewValue.Nodes.Add (new TreeNode ("Document", (int)Value.DataType.ARRAY, (int)Value.DataType.ARRAY));
+            this.treeViewValue.Nodes.Add (new TreeNode ("Document", (int)ValueContent.Array, (int)ValueContent.Array));
 
             if (File.Exists (DemoForm.AUTOLOAD))
                 this.ValuesLoad (DemoForm.AUTOLOAD, false);
@@ -55,7 +55,7 @@ namespace   Demo
                     foreach (TreeNode root in this.treeViewValue.Nodes)
                     {
                         foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-                            scope.Set (pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
+                            scope.Set (pair.Key, pair.Value, ScopeSet.Anywhere);
                     }
 
                     this.textBoxPrint.Text = document.Render (scope);
@@ -213,7 +213,7 @@ namespace   Demo
             NodeData    data = node != null ? node.Tag as NodeData : null;
 
             this.toolStripMenuItemNodeClone.Enabled = node != null && node.Parent != null;
-            this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == Value.DataType.ARRAY);
+            this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Array);
             this.toolStripMenuItemNodeDelete.Enabled = node != null && node.Parent != null;
             this.toolStripMenuItemMoveDown.Enabled = node != null && node.Parent != null && node != null && node.NextNode != null;
             this.toolStripMenuItemMoveUp.Enabled = node != null && node.Parent != null && node != null && node.PrevNode != null;
@@ -236,7 +236,7 @@ namespace   Demo
 
             switch (value.Type)
             {
-                case Value.DataType.ARRAY:
+                case ValueContent.Array:
                     node.Text = string.Format ("{0}", key);
 
                     break;
@@ -257,7 +257,7 @@ namespace   Demo
             {
                 copy = this.NodeCreate (data.Key, data.Value);
 
-                if (data.Value.Type == Value.DataType.ARRAY)
+                if (data.Value.Type == ValueContent.Array)
                 {
                     foreach (TreeNode child in node.Nodes)
                         copy.Nodes.Add (this.NodeClone (child));
@@ -277,24 +277,24 @@ namespace   Demo
 
             switch (value.Type)
             {
-                case Value.DataType.ARRAY:
-                    node.Nodes.AddRange (value.Fields.ConvertAll ((pair) => this.NodeCreate (pair.Key.AsString, pair.Value)).ToArray ());
+                case ValueContent.Array:
+                    node.Nodes.AddRange (Array.ConvertAll (value.Fields, (p) => this.NodeCreate (p.Key.AsString, p.Value)));
 
                     this.NodeAssign (node, key, new ArrayValue ());
 
                     return node;
 
-                case Value.DataType.BOOLEAN:
+                case ValueContent.Boolean:
                     this.NodeAssign (node, key, new BooleanValue (value.AsBoolean));
 
                     return node;
 
-                case Value.DataType.NUMBER:
+                case ValueContent.Number:
                     this.NodeAssign (node, key, new NumberValue (value.AsNumber));
 
                     return node;
 
-                case Value.DataType.STRING:
+                case ValueContent.String:
                     this.NodeAssign (node, key, new StringValue (value.AsString));
 
                     return node;
@@ -319,7 +319,7 @@ namespace   Demo
                 {
                     switch (data.Value.Type)
                     {
-                        case Value.DataType.ARRAY:
+                        case ValueContent.Array:
                             collection.Add (new KeyValuePair<Value, Value> (data.Key, this.ValuesBuild (node.Nodes)));
 
                             break;

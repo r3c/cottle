@@ -14,7 +14,7 @@ namespace   Cottle.Nodes
 
         private IExpression     expression;
 
-        private Scope.SetMode   mode;
+        private ScopeSet   mode;
 
         private NameExpression  name;
 
@@ -22,7 +22,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  SetNode (NameExpression name, IExpression expression, Scope.SetMode mode)
+        public  SetNode (NameExpression name, IExpression expression, ScopeSet mode)
         {
             this.expression = expression;
             this.mode = mode;
@@ -49,12 +49,12 @@ namespace   Cottle.Nodes
 
             switch (this.mode)
             {
-                case Scope.SetMode.ANYWHERE:
+                case ScopeSet.Anywhere:
                     output.Write (" to ");
 
                     break;
 
-                case Scope.SetMode.LOCAL:
+                case ScopeSet.Local:
                     output.Write (" as ");
 
                     break;

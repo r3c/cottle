@@ -11,7 +11,7 @@ namespace   Cottle.Commons
 {
     public static class CommonFunctions
     {
-        #region Constants
+        #region Attributes / Public
 
         public static readonly IFunction    FunctionAbsolute = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
@@ -36,17 +36,17 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<KeyValuePair<Value, Value>>    array;
             StringBuilder                       builder;
+            List<KeyValuePair<Value, Value>>    list;
 
-            if (values[0].Type == Value.DataType.ARRAY)
+            if (values[0].Type == ValueContent.Array)
             {
-                array = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count * 2 + 1);
+                list = new List<KeyValuePair<Value, Value>> (values[0].Fields.Length * 2 + 1);
 
                 foreach (Value value in values)
-                    array.AddRange (value.Fields);
+                    list.AddRange (value.Fields);
 
-                return array;
+                return list;
             }
             else
             {
@@ -158,15 +158,15 @@ namespace   Cottle.Commons
             Value   token = values[1];
             Value   value = values[0];
 
-            if (value.Type == Value.DataType.ARRAY)
-                return value.Fields.FindIndex (index, p => p.Value.CompareTo (token) == 0);
+            if (value.Type == ValueContent.Array)
+                return Array.FindIndex (value.Fields, index, (p) => p.Value.CompareTo (token) == 0);
             else
-                return value.AsString.IndexOf (token.AsString, index);
+                return value.AsString.IndexOf (token.AsString, index, StringComparison.InvariantCulture);
         }, 2, 3);
 
         public static readonly IFunction    FunctionFlip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].Fields.ConvertAll (p => new KeyValuePair<Value, Value> (p.Value, p.Key));
+            return Array.ConvertAll (values[0].Fields, (p) => new KeyValuePair<Value, Value> (p.Value, p.Key));
         }, 1);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -224,7 +224,7 @@ namespace   Cottle.Commons
                 for (i = 1; i < values.Count; ++i)
                 {
                     foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-                        inner.Set(pair.Key, pair.Value, Scope.SetMode.ANYWHERE);
+                        inner.Set(pair.Key, pair.Value, ScopeSet.Anywhere);
                 }
 
                 return compiled.Key.Render (inner, output);
@@ -261,8 +261,8 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            if (values[0].Type == Value.DataType.ARRAY)
-                return values[0].Fields.Count;
+            if (values[0].Type == ValueContent.Array)
+                return values[0].Fields.Length;
 
             return values[0].AsString.Length;
         }, 1);
@@ -285,7 +285,7 @@ namespace   Cottle.Commons
         public static readonly IFunction    FunctionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             List<Value>                     arguments = new List<Value> (values.Count - 1);
-            KeyValuePair<Value, Value>[]    array = new KeyValuePair<Value, Value>[values[0].Fields.Count];
+            KeyValuePair<Value, Value>[]    array = new KeyValuePair<Value, Value>[values[0].Fields.Length];
             IFunction                       callback = values[1].AsFunction;
             int                             i = 0;
             int                             j;
@@ -338,16 +338,16 @@ namespace   Cottle.Commons
             decimal max;
             int     i;
 
-            if (values[0].Type == Value.DataType.ARRAY)
+            if (values[0].Type == ValueContent.Array)
             {
                 array = values[0];
 
-                if (array.Fields.Count <= 0)
+                if (array.Fields.Length <= 0)
                     return UndefinedValue.Instance;
 
                 max = array.Fields[0].Value.AsNumber;
 
-                for (i = 1; i < array.Fields.Count; ++i)
+                for (i = 1; i < array.Fields.Length; ++i)
                     max = Math.Max (max, array.Fields[i].Value.AsNumber);
             }
             else
@@ -367,16 +367,16 @@ namespace   Cottle.Commons
             decimal min;
             int     i;
 
-            if (values[0].Type == Value.DataType.ARRAY)
+            if (values[0].Type == ValueContent.Array)
             {
                 array = values[0];
 
-                if (array.Fields.Count <= 0)
+                if (array.Fields.Length <= 0)
                     return UndefinedValue.Instance;
 
                 min = array.Fields[0].Value.AsNumber;
 
-                for (i = 1; i < array.Fields.Count; ++i)
+                for (i = 1; i < array.Fields.Length; ++i)
                     min = Math.Min (min, array.Fields[i].Value.AsNumber);
             }
             else
@@ -448,17 +448,24 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            int     count;
-            int     limit;
-            int     index;
-            Value   value = values[0];
+            KeyValuePair<Value, Value>[]    array;
+            int                             count;
+            int                             limit;
+            int                             index;
+            Value                           value = values[0];
 
-            limit = value.Type == Value.DataType.ARRAY ? value.Fields.Count : value.AsString.Length;
+            limit = value.Type == ValueContent.Array ? value.Fields.Length : value.AsString.Length;
             index = Math.Min ((int)values[1].AsNumber, limit);
             count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, limit - index) : limit - index;
 
-            if (value.Type == Value.DataType.ARRAY)
-                return value.Fields.GetRange (index, count);
+            if (value.Type == ValueContent.Array)
+            {
+                array = new KeyValuePair<Value, Value>[count];
+
+                Array.Copy (value.Fields, index, array, 0, count);
+
+                return array;
+            }
             else
                 return value.AsString.Substring (index, count);
         }, 2, 3);
@@ -466,8 +473,7 @@ namespace   Cottle.Commons
         public static readonly IFunction    FunctionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             IFunction                           callback = values.Count > 1 ? values[1].AsFunction : null;
-            List<KeyValuePair<Value, Value>>    source = values[0].Fields;
-            List<KeyValuePair<Value, Value>>    sorted = new List<KeyValuePair<Value, Value>> (source);
+            List<KeyValuePair<Value, Value>>    sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
 
             if (callback != null)
                 sorted.Sort ((a, b) => (int)callback.Execute (new Value[] {a.Value, b.Value}, scope, output).AsNumber);
@@ -520,7 +526,7 @@ namespace   Cottle.Commons
 
         #endregion
 
-        #region Attributes
+        #region Attributes / Private
 
         private static Dictionary<string, KeyValuePair<Document, DateTime>> includes = new Dictionary<string, KeyValuePair<Document, DateTime>> ();
 
@@ -533,44 +539,44 @@ namespace   Cottle.Commons
 
         public static void  Assign (Scope scope)
         {
-            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), Scope.SetMode.ANYWHERE);
-            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), Scope.SetMode.ANYWHERE);
-            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), Scope.SetMode.ANYWHERE);
-            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), Scope.SetMode.ANYWHERE);
-            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), Scope.SetMode.ANYWHERE);
-            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), Scope.SetMode.ANYWHERE);
-            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), Scope.SetMode.ANYWHERE);
-            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), Scope.SetMode.ANYWHERE);
-            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), Scope.SetMode.ANYWHERE);
-            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), Scope.SetMode.ANYWHERE);
-            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), Scope.SetMode.ANYWHERE);
-            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), Scope.SetMode.ANYWHERE);
-            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), Scope.SetMode.ANYWHERE);
-            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), Scope.SetMode.ANYWHERE);
-            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), Scope.SetMode.ANYWHERE);
-            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), Scope.SetMode.ANYWHERE);
-            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), Scope.SetMode.ANYWHERE);
-            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), Scope.SetMode.ANYWHERE);
-            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), Scope.SetMode.ANYWHERE);
-            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), Scope.SetMode.ANYWHERE);
-            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), Scope.SetMode.ANYWHERE);
-            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), Scope.SetMode.ANYWHERE);
-            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), Scope.SetMode.ANYWHERE);
-            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), Scope.SetMode.ANYWHERE);
-            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), Scope.SetMode.ANYWHERE);
-            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), Scope.SetMode.ANYWHERE);
-            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), Scope.SetMode.ANYWHERE);
-            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), Scope.SetMode.ANYWHERE);
-            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), Scope.SetMode.ANYWHERE);
-            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), Scope.SetMode.ANYWHERE);
-            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), Scope.SetMode.ANYWHERE);
-            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), Scope.SetMode.ANYWHERE);
-            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), Scope.SetMode.ANYWHERE);
-            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), Scope.SetMode.ANYWHERE);
-            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), Scope.SetMode.ANYWHERE);
-            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), Scope.SetMode.ANYWHERE);
-            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), Scope.SetMode.ANYWHERE);
-            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), Scope.SetMode.ANYWHERE);
+            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), ScopeSet.Anywhere);
+            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), ScopeSet.Anywhere);
+            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), ScopeSet.Anywhere);
+            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), ScopeSet.Anywhere);
+            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), ScopeSet.Anywhere);
+            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), ScopeSet.Anywhere);
+            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), ScopeSet.Anywhere);
+            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), ScopeSet.Anywhere);
+            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), ScopeSet.Anywhere);
+            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), ScopeSet.Anywhere);
+            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), ScopeSet.Anywhere);
+            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), ScopeSet.Anywhere);
+            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), ScopeSet.Anywhere);
+            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), ScopeSet.Anywhere);
+            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), ScopeSet.Anywhere);
+            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), ScopeSet.Anywhere);
+            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), ScopeSet.Anywhere);
+            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), ScopeSet.Anywhere);
+            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), ScopeSet.Anywhere);
+            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), ScopeSet.Anywhere);
+            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), ScopeSet.Anywhere);
+            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), ScopeSet.Anywhere);
+            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), ScopeSet.Anywhere);
+            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), ScopeSet.Anywhere);
+            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), ScopeSet.Anywhere);
+            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), ScopeSet.Anywhere);
+            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), ScopeSet.Anywhere);
+            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), ScopeSet.Anywhere);
+            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), ScopeSet.Anywhere);
+            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), ScopeSet.Anywhere);
+            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), ScopeSet.Anywhere);
+            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), ScopeSet.Anywhere);
+            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), ScopeSet.Anywhere);
+            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), ScopeSet.Anywhere);
+            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), ScopeSet.Anywhere);
+            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), ScopeSet.Anywhere);
+            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), ScopeSet.Anywhere);
+            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), ScopeSet.Anywhere);
         }
 
         #endregion

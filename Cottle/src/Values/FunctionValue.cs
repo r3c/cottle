@@ -6,8 +6,6 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    using   FieldList = List<KeyValuePair<Value, Value>>;
-
     public sealed class FunctionValue : Value
     {
         #region Properties
@@ -44,7 +42,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override FieldList   Fields
+        public override KeyValuePair<Value, Value>[]    Fields
         {
             get
             {
@@ -52,11 +50,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override DataType    Type
+        public override ValueContent    Type
         {
             get
             {
-                return DataType.FUNCTION;
+                return ValueContent.Function;
             }
         }
 

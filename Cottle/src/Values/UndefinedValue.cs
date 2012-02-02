@@ -6,16 +6,8 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    using   FieldList = List<KeyValuePair<Value, Value>>;
-
     public sealed class UndefinedValue : Value
     {
-        #region Constants
-
-        public static readonly UndefinedValue   Instance = new UndefinedValue ();
-
-        #endregion
-
         #region Properties
 
         public override bool        AsBoolean
@@ -50,7 +42,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override FieldList   Fields
+        public override KeyValuePair<Value, Value>[]    Fields
         {
             get
             {
@@ -58,13 +50,19 @@ namespace   Cottle.Values
             }
         }
 
-        public override DataType    Type
+        public override ValueContent    Type
         {
             get
             {
-                return DataType.UNDEFINED;
+                return ValueContent.Undefined;
             }
         }
+
+        #endregion
+
+        #region Attributes
+
+        public static readonly UndefinedValue   Instance = new UndefinedValue ();
 
         #endregion
 
@@ -72,7 +70,12 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return other.Type == DataType.UNDEFINED ? 0 : 1;
+            if (other == null)
+                return 1;
+            else if (other.Type != ValueContent.Undefined)
+                return -1;
+            else
+                return 0;
         }
 
         public override bool    Find (Value key, out Value value)

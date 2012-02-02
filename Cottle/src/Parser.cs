@@ -217,7 +217,7 @@ namespace   Cottle
         {
             List<NameExpression>    arguments;
             NameExpression          name = this.ParseName ();
-            Scope.SetMode           mode;
+            ScopeSet           mode;
 
             if (this.lexer.Current.Type != Lexer.LexemType.PARENTHESIS_BEGIN)
                 throw new UnexpectedException (this.lexer, "arguments begin ('(')");
@@ -239,14 +239,14 @@ namespace   Cottle
                 case "as":
                     this.lexer.Next ();
 
-                    mode = Scope.SetMode.LOCAL;
+                    mode = ScopeSet.Local;
 
                     break;
 
                 case "to":
                     this.lexer.Next ();
 
-                    mode = Scope.SetMode.ANYWHERE;
+                    mode = ScopeSet.Anywhere;
 
                     break;
 
@@ -356,21 +356,21 @@ namespace   Cottle
         private INode   ParseKeywordSet ()
         {
             NameExpression  name = this.ParseName ();
-            Scope.SetMode   mode;
+            ScopeSet   mode;
 
             switch (this.lexer.Current.Type == Lexer.LexemType.LITERAL ? this.lexer.Current.Data : string.Empty)
             {
                 case "as":
                     this.lexer.Next ();
 
-                    mode = Scope.SetMode.LOCAL;
+                    mode = ScopeSet.Local;
 
                     break;
 
                 case "to":
                     this.lexer.Next ();
 
-                    mode = Scope.SetMode.ANYWHERE;
+                    mode = ScopeSet.Anywhere;
 
                     break;
 

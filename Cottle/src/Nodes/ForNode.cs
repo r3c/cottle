@@ -41,19 +41,19 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            List<KeyValuePair<Value, Value>>    fields = this.from.Evaluate (scope, output).Fields;
+            KeyValuePair<Value, Value>[]    fields = this.from.Evaluate (scope, output).Fields;
 
-            if (fields.Count > 0)
+            if (fields.Length > 0)
             {
                 foreach (KeyValuePair<Value, Value> pair in fields)
                 {
                     scope.Enter ();
 
                     if (this.key != null)
-                        this.key.Set (scope, pair.Key, Scope.SetMode.LOCAL);
+                        this.key.Set (scope, pair.Key, ScopeSet.Local);
 
                     if (this.value != null)
-                        this.value.Set (scope, pair.Value, Scope.SetMode.LOCAL);
+                        this.value.Set (scope, pair.Value, ScopeSet.Local);
 
                     if (this.body.Apply (scope, output, out result))
                     {

@@ -34,24 +34,24 @@ namespace   Demo
 
                 switch (data.Value.Type)
                 {
-                    case Value.DataType.ARRAY:
+                    case ValueContent.Array:
                         this.radioButtonValueArray.Checked = true;
 
                         break;
 
-                    case Value.DataType.BOOLEAN:
+                    case ValueContent.Boolean:
                         this.radioButtonValueBoolean.Checked = true;
                         this.checkBoxValueBoolean.Checked = data.Value.AsBoolean;
 
                         break;
 
-                    case Value.DataType.NUMBER:
+                    case ValueContent.Number:
                         this.radioButtonValueNumber.Checked = true;
                         this.textBoxValueNumber.Text = data.Value.AsNumber.ToString (CultureInfo.InvariantCulture);
 
                         break;
 
-                    case Value.DataType.STRING:
+                    case ValueContent.String:
                         this.radioButtonValueString.Checked = true;
                         this.textBoxValueString.Text = data.Value.AsString;
 
@@ -85,17 +85,17 @@ namespace   Demo
 
             switch (this.ApplyType ())
             {
-                case Value.DataType.ARRAY:
+                case ValueContent.Array:
                     this.assign (key, new ArrayValue ());
 
                     break;
 
-                case Value.DataType.BOOLEAN:
+                case ValueContent.Boolean:
                     this.assign (key, this.checkBoxValueBoolean.Checked);
 
                     break;
 
-                case Value.DataType.NUMBER:
+                case ValueContent.Number:
                     if (!decimal.TryParse (this.textBoxValueNumber.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
                     {
                         MessageBox.Show (this, string.Format ("\"{0}\" is not a valid number, please enter a valid decimal value (e.g.: 5.0, 27, .897).", this.textBoxValueNumber.Text), "Invalid number");
@@ -107,7 +107,7 @@ namespace   Demo
 
                     break;
 
-                case Value.DataType.STRING:
+                case ValueContent.String:
                     this.assign (key, this.textBoxValueString.Text);
 
                     break;
@@ -135,24 +135,24 @@ namespace   Demo
 
         #region Methods / Private
 
-        private Value.DataType  ApplyType ()
+        private ValueContent  ApplyType ()
         {
-            Value.DataType  type;
+            ValueContent  type;
 
             if (this.radioButtonValueArray.Checked)
-                type = Value.DataType.ARRAY;
+                type = ValueContent.Array;
             else if (this.radioButtonValueBoolean.Checked)
-                type = Value.DataType.BOOLEAN;
+                type = ValueContent.Boolean;
             else if (this.radioButtonValueNumber.Checked)
-                type = Value.DataType.NUMBER;
+                type = ValueContent.Number;
             else if (this.radioButtonValueString.Checked)
-                type = Value.DataType.STRING;
+                type = ValueContent.String;
             else
-                type = Value.DataType.UNDEFINED;
+                type = ValueContent.Undefined;
 
-            this.checkBoxValueBoolean.Enabled = (type == Value.DataType.BOOLEAN);
-            this.textBoxValueNumber.Enabled = (type == Value.DataType.NUMBER);
-            this.textBoxValueString.Enabled = (type == Value.DataType.STRING);
+            this.checkBoxValueBoolean.Enabled = (type == ValueContent.Boolean);
+            this.textBoxValueNumber.Enabled = (type == ValueContent.Number);
+            this.textBoxValueString.Enabled = (type == ValueContent.String);
 
             return type;
         }

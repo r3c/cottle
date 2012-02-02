@@ -17,7 +17,7 @@ namespace   Cottle.Nodes
 
         private INode                   body;
 
-        private Scope.SetMode           mode;
+        private ScopeSet           mode;
 
         private NameExpression          name;
 
@@ -25,7 +25,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  DefineNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, Scope.SetMode mode)
+        public  DefineNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeSet mode)
         {
             this.arguments = new List<NameExpression> (arguments);
             this.body = body;
