@@ -103,6 +103,11 @@ namespace   Cottle.Commons
             return result;
         }, 1, -1);
 
+        public static readonly IFunction    FunctionDefault = new CallbackFunction(delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            return values[0].AsBoolean ? values[0] : values[1];
+        }, 2);
+
         public static readonly IFunction    FunctionDiv = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal denominator = values[1].AsNumber;
@@ -511,6 +516,14 @@ namespace   Cottle.Commons
             return values[0].AsString.ToUpperInvariant ();
         }, 1);
 
+        public static readonly IFunction    FunctionWhen = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            if (values[0].AsBoolean)
+                return values[1];
+
+            return values.Count > 2 ? values[2] : UndefinedValue.Instance;
+        }, 2, 3);
+
         public static readonly IFunction    FunctionXor = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int count = 0;
@@ -546,6 +559,7 @@ namespace   Cottle.Commons
             scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), ScopeSet.Anywhere);
             scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), ScopeSet.Anywhere);
             scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), ScopeSet.Anywhere);
+            scope.Set ("default", new FunctionValue (CommonFunctions.FunctionDefault), ScopeSet.Anywhere);
             scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), ScopeSet.Anywhere);
             scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), ScopeSet.Anywhere);
             scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), ScopeSet.Anywhere);
@@ -576,6 +590,7 @@ namespace   Cottle.Commons
             scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), ScopeSet.Anywhere);
             scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), ScopeSet.Anywhere);
             scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), ScopeSet.Anywhere);
+            scope.Set ("when", new FunctionValue (CommonFunctions.FunctionWhen), ScopeSet.Anywhere);
             scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), ScopeSet.Anywhere);
         }
 

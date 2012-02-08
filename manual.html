@@ -866,9 +866,9 @@ hello! hello! hello!
 					however be used if you want your function to print
 					something.</p>
 					<p>The <code>CallbackFunction</code> objects also takes 2
-					more optional parameters, used to indicate how many
+					more optional arguments, used to indicate how many
 					arguments are expected for your function. You can either
-					ignore those parameters (and check yourself how many
+					ignore those arguments (and check yourself how many
 					values your function received), specify an exact number of
 					expected arguments, or specify min/max boundaries (-1 as a
 					max boundary means "unlimited"). When specifying expected
@@ -995,9 +995,28 @@ hello! hello! hello!
 					</div>
 				</div>
 
+				<h3>Get input value or default value: default(test[, fallback])</h3>
+				<div class="s3">
+					<p>Return <code>test</code> if it would have satisfied an
+					<code>if</code> condition, or <code>fallback</code> else
+					(or an undefined value if <code>fallback</code> is
+					missing).</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{set x to 3}
+{dump default(x, "invisible")}
+{dump default(y, "visible")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>"visible"</code>
+					</div>
+				</div>
+
 				<h3>Compute divide result of two values: div(a, b)</h3>
 				<div class="s3">
-					<p>Return the numeric value of a divided by b.</p>
+					<p>Return the numeric value of <code>a</code> divided by
+					the value of <code>b</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{div(5, 2)}</code>
@@ -1043,7 +1062,7 @@ false</code>
 				<div class="s3">
 					<p>Find the 0-based index of given token in an array, or
 					sub-string in a string. Search starts at index 0 unless the
-					<code>start</code> parameter is specified.</p>
+					<code>start</code> argument is specified.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{find([89, 3, 572, 35, 7], 35)}
@@ -1422,7 +1441,7 @@ true</code>
 					<p>Extact slice from an array, or sub-string from a
 					string. <code>count</code> pairs or characters are
 					extracted from given 0-based <code>index</code>. If no
-					<code>count</code> parameter is specified, all elements
+					<code>count</code> argument is specified, all elements
 					starting from given <code>index</code> are extracted.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1477,11 +1496,11 @@ length</code>
 					</div>
 				</div>
 
-				<h3>Split string into array: split(a, b)</h3>
+				<h3>Split string into array: split(input, separator)</h3>
 				<div class="s3">
-					<p>Split string <code>a</code> according to given string
-					separator <code>b</code>. Result is an array where pair
-					values contain split sub-strings.</p>
+					<p>Split string <code>input</code> according to given
+					string separator <code>separator</code>. Result is an
+					array where pair values contain split sub-strings.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump split("2011/01/01", "/")}</code>
@@ -1507,7 +1526,8 @@ length</code>
 
 				<h3>Convert string to uppercase: ucase(string)</h3>
 				<div class="s3">
-					<p>Return an uppercase conversion of given string value.</p>
+					<p>Return an uppercase conversion of given string
+					value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{ucase("Mixed Case String"}</code>
@@ -1531,6 +1551,26 @@ length</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>[1: "a", 2: "x", 3: "c", 4: "d"]</code>
+					</div>
+				</div>
+
+				<h3>Get value depending on a conditional test: when(test[, true_part[, false_part]])</h3>
+				<div class="s3">
+					<p>Return <code>true_part</code> if <code>test</code> would
+					have satisfied an <code>if</code> condition, or
+					<code>false_part</code> else (or a undefined value if
+					<code>false_part</code> is missing).</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{set x to 3}
+{set y to 0}
+{dump when(x, "x is true", "x is false")}
+{dump when(y, "y is true", "y is false")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>"x is true"
+"y is false"</code>
 					</div>
 				</div>
 
