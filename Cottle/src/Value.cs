@@ -16,22 +16,22 @@ namespace   Cottle
 
         #region Properties
 
-        public abstract bool        AsBoolean
+        public abstract bool            AsBoolean
         {
             get;
         }
 
-        public abstract IFunction   AsFunction
+        public abstract IFunction       AsFunction
         {
             get;
         }
 
-        public abstract decimal     AsNumber
+        public abstract decimal         AsNumber
         {
             get;
         }
 
-        public abstract string      AsString
+        public abstract string          AsString
         {
             get;
         }
@@ -181,15 +181,5 @@ namespace   Cottle
         }
 
         #endregion
-    }
-
-    public enum ValueContent
-    {
-        Array,
-        Boolean,
-        Function,
-        Number,
-        String,
-        Undefined
     }
 }

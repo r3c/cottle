@@ -8,12 +8,6 @@ namespace   Cottle
 {
     public class    Document
     {
-        #region Constants
-
-        private const string    DEFAULT_INDENT = "    ";
-
-        #endregion
-
         #region Attributes
 
         private INode   root;

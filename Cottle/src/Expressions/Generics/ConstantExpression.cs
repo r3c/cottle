@@ -9,7 +9,7 @@ namespace   Cottle.Expressions.Generics
     {
         #region Attributes
 
-        private Value  value;
+        private Value   value;
 
         #endregion
 
@@ -24,7 +24,7 @@ namespace   Cottle.Expressions.Generics
 
         #region Methods
 
-        public override Value  Evaluate (Scope scope, TextWriter output)
+        public override Value   Evaluate (Scope scope, TextWriter output)
         {
             return this.value;
         }

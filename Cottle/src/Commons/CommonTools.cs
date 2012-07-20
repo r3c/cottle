@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using Cottle.Values;
 
 namespace   Cottle.Commons
@@ -51,7 +52,7 @@ namespace   Cottle.Commons
             Value                               arrayKey;
             Value                               arrayValue;
             int                                 count;
-            ValueContent                      type = (ValueContent)reader.ReadInt32 ();
+            ValueContent                        type = (ValueContent)reader.ReadInt32 ();
 
             switch (type)
             {

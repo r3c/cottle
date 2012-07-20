@@ -310,6 +310,48 @@ namespace   Cottle.Lexers
             }
         }
 
+        private void    NextRawPrototype ()
+        {
+            List<KeyValuePair<string, LexemType>>           choices;
+            int                                             index;
+            ICollection<KeyValuePair<string, LexemType>>    tokens;
+
+            if (this.eof)
+            {
+                this.current.Type = LexemType.EOF;
+                this.current.Push ("<EOF>");
+
+                return;
+            }
+/*
+            tokens = this.tokens;
+            index = 0;
+
+            do
+            {
+                choices = new List<KeyValuePair<string, LexemType>>();
+
+                foreach (KeyValuePair<string, LexemType> choice in tokens)
+                {
+                    if (index < choice.Key.Length && choice.Key[index] == this.last)
+                    {
+                        if (index + 1 == choice.Key.Length)
+                        {
+                            this.current.Type = choice.Value;
+
+                            return;
+                        }
+                    }
+                }
+
+                this.current.Push (this.last);
+
+                tokens = choices;
+            }
+            while (this.Read());
+*/
+        }
+
         private void    NextRaw ()
         {
 //          char    end;
@@ -402,98 +444,6 @@ namespace   Cottle.Lexers
         #endregion
 
         #region Types
-
-        public class    Lexem
-        {
-            #region Properties
-
-            public string       Data
-            {
-                get
-                {
-                    return this.builder.ToString ();
-                }
-            }
-
-            public LexemType    Type
-            {
-                get
-                {
-                    return this.type;
-                }
-                set
-                {
-                    this.type = value;
-                }
-            }
-
-            #endregion
-
-            #region Attributes
-
-            private StringBuilder   builder = new StringBuilder ();
-
-            private LexemType       type;
-
-            #endregion
-
-            #region Methods
-/*
-            public void Clean ()
-            {
-                int length = this.builder.Length;
-
-                if (length > 1 && this.builder[length - 1] <= ' ' && this.builder[length - 2] <= ' ')
-                {
-                    for (--length; length > 1 && this.builder[length - 2] <= ' '; )
-                        --length;
-
-                    this.builder.Length = length;
-                }
-            }
-*/
-            public void Flush ()
-            {
-                this.builder.Length = 0;
-            }
-
-            public void Push (string value)
-            {
-                this.builder.Append (value);
-            }
-
-            public void Push (char value)
-            {
-                this.builder.Append (value);
-            }
-
-            #endregion
-        }
-
-        public enum LexemType
-        {
-            EOF,
-            BRACE_BEGIN,
-            BRACE_END,
-            BRACKET_BEGIN,
-            BRACKET_END,
-            COMMA,
-            COLON,
-            DOT,
-            LITERAL,
-            NUMBER,
-            PIPE,
-            PARENTHESIS_BEGIN,
-            PARENTHESIS_END,
-            STRING,
-            TEXT
-        }
-
-        public enum LexerMode
-        {
-            BLOCK,
-            RAW
-        }
 
         private delegate void   LexerNext ();
 

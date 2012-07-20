@@ -54,6 +54,9 @@
     <Compile Include="src\IExpression.cs" />
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
+    <Compile Include="src\Lexem.cs" />
+    <Compile Include="src\LexemType.cs" />
+    <Compile Include="src\LexerMode.cs" />
     <Compile Include="src\Nodes\DumpNode.cs" />
     <Compile Include="src\Value.cs" />
     <Compile Include="src\Lexer.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="src\Nodes\WhileNode.cs" />
     <Compile Include="src\Parser.cs" />
     <Compile Include="src\Scope.cs" />
+    <Compile Include="src\ValueContent.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
     <Compile Include="src\Values\LazyValue.cs" />
     <Compile Include="src\Values\UndefinedValue.cs" />
