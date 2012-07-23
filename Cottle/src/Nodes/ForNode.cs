@@ -50,10 +50,10 @@ namespace   Cottle.Nodes
                     scope.Enter ();
 
                     if (this.key != null)
-                        this.key.Set (scope, pair.Key, ScopeSet.Local);
+                        this.key.Set (scope, pair.Key, ScopeMode.Local);
 
                     if (this.value != null)
-                        this.value.Set (scope, pair.Value, ScopeSet.Local);
+                        this.value.Set (scope, pair.Value, ScopeMode.Local);
 
                     if (this.body.Apply (scope, output, out result))
                     {

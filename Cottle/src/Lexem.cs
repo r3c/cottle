@@ -9,11 +9,11 @@ namespace   Cottle
     {
         #region Properties
 
-        public string       Data
+        public string       Content
         {
             get
             {
-                return this.builder.ToString ();
+                return this.content.ToString ();
             }
         }
 
@@ -23,19 +23,15 @@ namespace   Cottle
             {
                 return this.type;
             }
-            set
-            {
-                this.type = value;
-            }
         }
 
         #endregion
 
         #region Attributes
 
-        private StringBuilder   builder = new StringBuilder ();
+        private StringBuilder   content = new StringBuilder ();
 
-        private LexemType       type;
+        private LexemType       type = LexemType.None;
 
         #endregion
 
@@ -54,19 +50,20 @@ namespace   Cottle
             }
         }
 */
-        public void Flush ()
-        {
-            this.builder.Length = 0;
-        }
-
         public void Push (string value)
         {
-            this.builder.Append (value);
+            this.content.Append (value);
         }
 
         public void Push (char value)
         {
-            this.builder.Append (value);
+            this.content.Append (value);
+        }
+
+        public void Reset (LexemType type)
+        {
+            this.content.Length = 0;
+            this.type = type;
         }
 
         #endregion

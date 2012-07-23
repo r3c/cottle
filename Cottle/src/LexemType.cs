@@ -7,20 +7,21 @@ namespace   Cottle
 {
     enum    LexemType
     {
-        EOF,
-        BRACE_BEGIN,
-        BRACE_END,
-        BRACKET_BEGIN,
-        BRACKET_END,
-        COMMA,
-        COLON,
-        DOT,
-        LITERAL,
-        NUMBER,
-        PIPE,
-        PARENTHESIS_BEGIN,
-        PARENTHESIS_END,
-        STRING,
-        TEXT
+        None,
+        EndOfFile,
+        BraceBegin,
+        BraceEnd,
+        BracketBegin,
+        BracketEnd,
+        Comma,
+        Colon,
+        Dot,
+        Literal,
+        Number,
+        Pipe,
+        ParenthesisBegin,
+        ParenthesisEnd,
+        String,
+        Text
     }
 }

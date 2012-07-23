@@ -55,9 +55,12 @@
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
     <Compile Include="src\Lexem.cs" />
+    <Compile Include="src\LexemMatch.cs" />
     <Compile Include="src\LexemType.cs" />
+    <Compile Include="src\LexerConfig.cs" />
     <Compile Include="src\LexerMode.cs" />
     <Compile Include="src\Nodes\DumpNode.cs" />
+    <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Value.cs" />
     <Compile Include="src\Lexer.cs" />
     <Compile Include="src\Nodes\CompositeNode.cs" />

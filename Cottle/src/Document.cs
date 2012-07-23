@@ -16,15 +16,25 @@ namespace   Cottle
 
         #region Constructors
 
-        public  Document (TextReader reader)
+        public  Document (TextReader reader, LexerConfig config)
         {
-            Parser  parser = new Parser ();
+            Parser  parser = new Parser (config);
 
             this.root = parser.Parse (reader);
         }
 
+        public  Document (TextReader reader) :
+            this (reader, new LexerConfig ())
+        {
+        }
+
+        public  Document (string template, LexerConfig config) :
+            this(new StringReader (template), config)
+        {
+        }
+
         public  Document (string template) :
-            this(new StringReader(template))
+            this(new StringReader (template), new LexerConfig ())
         {
         }
 
@@ -32,7 +42,7 @@ namespace   Cottle
 
         #region Methods
 
-        public void Debug (TextWriter writer)
+        public void     Debug (TextWriter writer)
         {
             this.root.Debug (writer);
         }

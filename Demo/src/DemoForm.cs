@@ -55,7 +55,7 @@ namespace   Demo
                     foreach (TreeNode root in this.treeViewValue.Nodes)
                     {
                         foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-                            scope.Set (pair.Key, pair.Value, ScopeSet.Anywhere);
+                            scope.Set (pair.Key, pair.Value, ScopeMode.Closest);
                     }
 
                     this.textBoxPrint.Text = document.Render (scope);

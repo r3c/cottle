@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle.Lexers;
-
 namespace   Cottle.Exceptions
 {
     public class    UnexpectedException : LexemException
@@ -49,7 +47,7 @@ namespace   Cottle.Exceptions
         internal    UnexpectedException (Lexer lexer, string expected) :
             base (lexer)
         {
-            this.current = lexer.Current.Data;
+            this.current = lexer.Current.Content;
             this.expected = expected;
         }
 

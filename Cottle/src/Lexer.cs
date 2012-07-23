@@ -5,7 +5,7 @@ using System.Text;
 
 using Cottle.Exceptions;
 
-namespace   Cottle.Lexers
+namespace   Cottle
 {
     class   Lexer
     {
@@ -47,27 +47,64 @@ namespace   Cottle.Lexers
 
         #region Attributes
 
-        private int         column;
+        private LexemMatch[]    blocks;
 
-        private Lexem       current;
+        private int             column;
 
-        private bool        eof;
+        private Lexem           current;
 
-        private int         index;
+        private bool            eof;
 
-        private char        last;
+        private int             index;
 
-        private int         line;
+        private char            last;
 
-        private LexerNext   next;
+        private int             line;
 
-        private TextReader  reader;
+        private LexemMatch      pending;
+
+        private TextReader      reader;
 
         #endregion
 
-        #region Methods
+        #region Constructors
 
-        public bool Initialize (TextReader reader)
+        public  Lexer (LexerConfig config)
+        {
+            this.blocks = new LexemMatch[]
+            {
+			    new LexemMatch (LexemType.BraceBegin, config.BlockBegin),
+			    new LexemMatch (LexemType.Pipe, config.BlockContinue),
+			    new LexemMatch (LexemType.BraceEnd, config.BlockEnd)
+            };
+
+            this.pending = new LexemMatch (LexemType.None, string.Empty);
+        }
+
+        #endregion
+
+        #region Methods / Public
+
+        public void Next (LexerMode mode)
+        {
+            switch (mode)
+            {
+                case LexerMode.BLOCK:
+                    this.NextBlock ();
+
+                    break;
+
+                case LexerMode.RAW:
+                    this.NextRaw ();
+
+                    break;
+
+                default:
+                    throw new UnknownException (this, "invalid lexem");
+            }
+        }
+
+        public bool Reset (TextReader reader)
         {
             this.column = 1;
             this.current = new Lexem ();
@@ -80,28 +117,9 @@ namespace   Cottle.Lexers
             return this.Read ();
         }
 
-        public void Mode (LexerMode mode)
-        {
-            switch (mode)
-            {
-                case LexerMode.BLOCK:
-                    this.next = this.NextBlock;
+        #endregion
 
-                    break;
-
-                case LexerMode.RAW:
-                    this.next = this.NextRaw;
-
-                    break;
-            }
-        }
-
-        public void Next ()
-        {
-            this.current.Flush ();
-
-            this.next ();
-        }
+        #region Methods / Private
 
         private void    NextBlock ()
         {
@@ -112,8 +130,8 @@ namespace   Cottle.Lexers
             {
                 if (this.eof)
                 {
+                    this.current.Reset (LexemType.EndOfFile);
                     this.current.Push ("<EOF>");
-                    this.current.Type = LexemType.EOF;
 
                     return;
                 }
@@ -129,65 +147,57 @@ namespace   Cottle.Lexers
 
                         break;
 
-                    case '}':
-                        this.current.Push (this.last);
-                        this.current.Type = LexemType.BRACE_END;
-
-                        this.Read ();
-
-                        return;
-
                     case '[':
+                        this.current.Reset (LexemType.BracketBegin);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.BRACKET_BEGIN;
 
                         this.Read ();
 
                         return;
 
                     case ']':
+                        this.current.Reset (LexemType.BracketEnd);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.BRACKET_END;
 
                         this.Read ();
 
                         return;
 
                     case ',':
+                        this.current.Reset (LexemType.Comma);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.COMMA;
 
                         this.Read ();
 
                         return;
 
                     case ':':
+                        this.current.Reset (LexemType.Colon);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.COLON;
 
                         this.Read ();
 
                         return;
 
                     case '.':
+                        this.current.Reset (LexemType.Dot);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.DOT;
 
                         this.Read ();
 
                         return;
 
                     case '(':
+                        this.current.Reset (LexemType.ParenthesisBegin);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.PARENTHESIS_BEGIN;
 
                         this.Read ();
 
                         return;
 
                     case ')':
+                        this.current.Reset (LexemType.ParenthesisEnd);
                         this.current.Push (this.last);
-                        this.current.Type = LexemType.PARENTHESIS_END;
 
                         this.Read ();
 
@@ -246,6 +256,8 @@ namespace   Cottle.Lexers
                     case 'x':
                     case 'y':
                     case 'z':
+                        this.current.Reset (LexemType.Literal);
+
                         do 
                         {
                             this.current.Push (this.last);
@@ -254,8 +266,6 @@ namespace   Cottle.Lexers
                                                 (this.last >= 'A' && this.last <= 'Z') ||
                                                 (this.last >= 'a' && this.last <= 'z') ||
                                                 (this.last == '_')));
-
-                        this.current.Type = LexemType.LITERAL;
 
                         return;
 
@@ -270,6 +280,8 @@ namespace   Cottle.Lexers
 					case '7':
 					case '8':
                     case '9':
+                        this.current.Reset (LexemType.Number);
+
                         dot = false;
 
                         do
@@ -281,12 +293,12 @@ namespace   Cottle.Lexers
                         }
                         while (this.Read () && ((this.last >= '0' && this.last <= '9') || (this.last == '.' && !dot)));
 
-                        this.current.Type = LexemType.NUMBER;
-
                         return;
 
                     case '\'':
                     case '"':
+                        this.current.Reset (LexemType.String);
+
                         end = this.last;
 
                         while (this.Read () && this.last != end)
@@ -300,121 +312,101 @@ namespace   Cottle.Lexers
 
                         this.Read ();
 
-                        this.current.Type = LexemType.STRING;
-
                         return;
 
                     default:
-                        throw new UnknownException (this, "unexpected character");
+                        this.current.Reset (LexemType.None);
+
+                        return;
                 }
             }
         }
 
-        private void    NextRawPrototype ()
+        private void	NextRaw ()
         {
-            List<KeyValuePair<string, LexemType>>           choices;
-            int                                             index;
-            ICollection<KeyValuePair<string, LexemType>>    tokens;
+        	ICollection<LexemMatch> branches;
+        	StringBuilder           buffer;
+        	StringBuilder           builder;
+        	int                     index;
+        	List<LexemMatch>        trails;
+
+			if (this.pending.Type != LexemType.None)
+			{
+                this.current.Reset (this.pending.Type);
+				this.current.Push (this.pending.Content);
+
+				this.pending = new LexemMatch (LexemType.None, string.Empty);
+
+				return;
+			}
 
             if (this.eof)
             {
-                this.current.Type = LexemType.EOF;
-                this.current.Push ("<EOF>");
-
-                return;
-            }
-/*
-            tokens = this.tokens;
-            index = 0;
-
-            do
-            {
-                choices = new List<KeyValuePair<string, LexemType>>();
-
-                foreach (KeyValuePair<string, LexemType> choice in tokens)
-                {
-                    if (index < choice.Key.Length && choice.Key[index] == this.last)
-                    {
-                        if (index + 1 == choice.Key.Length)
-                        {
-                            this.current.Type = choice.Value;
-
-                            return;
-                        }
-                    }
-                }
-
-                this.current.Push (this.last);
-
-                tokens = choices;
-            }
-            while (this.Read());
-*/
-        }
-
-        private void    NextRaw ()
-        {
-//          char    end;
-
-            if (this.eof)
-            {
-                this.current.Type = LexemType.EOF;
+                this.current.Reset (LexemType.EndOfFile);
                 this.current.Push ("<EOF>");
 
                 return;
             }
 
-            switch (this.last)
-            {
-                case '{':
-                    this.current.Push (this.last);
-                    this.current.Type = LexemType.BRACE_BEGIN;
+			builder = new StringBuilder ();
+            buffer = new StringBuilder ();
+			
+			while (!this.eof)
+			{
+				branches = this.blocks;
+				index = 0;
 
-                    this.Read ();
+				buffer.Length = 0;
 
-                    return;
+				do
+				{
+					trails = null;
 
-                case '}':
-                    this.current.Push (this.last);
-                    this.current.Type = LexemType.BRACE_END;
+					foreach (LexemMatch branch in branches)
+					{
+						if (index < branch.Content.Length && branch.Content[index] == this.last)
+						{
+							if (index + 1 == branch.Content.Length)
+							{
+								if (builder.Length > 0)
+								{
+                                    this.current.Reset (LexemType.Text);
+                                    this.current.Push (builder.ToString ());
 
-                    this.Read ();
+									this.pending = branch;
+								}
+                                else
+                                {
+                                    this.current.Reset (branch.Type);
+								    this.current.Push (branch.Content);
+                                }
 
-                    return;
+								this.Read ();
 
-                case '|':
-                    this.current.Push (this.last);
-                    this.current.Type = LexemType.PIPE;
+								return;
+							}
 
-                    this.Read ();
+							if (trails == null)
+								trails = new List<LexemMatch> (branches.Count);
 
-                    return;
+							trails.Add (branch);
+						}
+					}
 
-                default:
-/*
-                    if (this.last <= ' ')
-                    {
-                        end = this.last;
+                    if (this.last != '\\' || this.Read ())
+					    buffer.Append (this.last);
 
-                        for (this.Read (); !this.eof && this.last <= ' '; this.Read ())
-                            end = this.last;
+					branches = trails;
 
-                        this.current.Push (end);
-                    }
-*/
-                    while (!this.eof && this.last != '{' && this.last != '|' && this.last != '}')
-                    {
-                        if (this.last != '\\' || this.Read ())
-                            this.current.Push (this.last);
+					++index;
+				}
+				while (this.Read () && branches != null && branches.Count > 0);
 
-                        this.Read ();
-                    }
+				builder.Append (buffer.ToString ());
+			}
 
-//                  this.current.Clean ();
-                    this.current.Type = LexemType.TEXT;
-
-                    return;
-            }
+            this.current.Reset (LexemType.Text);
+			this.current.Push (builder.ToString ());
         }
 
         private bool    Read ()

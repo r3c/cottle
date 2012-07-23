@@ -37,7 +37,7 @@ namespace   Cottle.Expressions
             return UndefinedValue.Instance;
         }
 
-        public bool Set (Scope scope, Value value, ScopeSet mode)
+        public bool Set (Scope scope, Value value, ScopeMode mode)
         {
             return scope.Set (this.name, value, mode);
         }

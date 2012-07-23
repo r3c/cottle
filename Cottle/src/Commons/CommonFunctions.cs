@@ -229,7 +229,7 @@ namespace   Cottle.Commons
                 for (i = 1; i < values.Count; ++i)
                 {
                     foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-                        inner.Set(pair.Key, pair.Value, ScopeSet.Anywhere);
+                        inner.Set(pair.Key, pair.Value, ScopeMode.Closest);
                 }
 
                 return compiled.Key.Render (inner, output);
@@ -552,46 +552,46 @@ namespace   Cottle.Commons
 
         public static void  Assign (Scope scope)
         {
-            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), ScopeSet.Anywhere);
-            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), ScopeSet.Anywhere);
-            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), ScopeSet.Anywhere);
-            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), ScopeSet.Anywhere);
-            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), ScopeSet.Anywhere);
-            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), ScopeSet.Anywhere);
-            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), ScopeSet.Anywhere);
-            scope.Set ("default", new FunctionValue (CommonFunctions.FunctionDefault), ScopeSet.Anywhere);
-            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), ScopeSet.Anywhere);
-            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), ScopeSet.Anywhere);
-            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), ScopeSet.Anywhere);
-            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), ScopeSet.Anywhere);
-            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), ScopeSet.Anywhere);
-            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), ScopeSet.Anywhere);
-            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), ScopeSet.Anywhere);
-            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), ScopeSet.Anywhere);
-            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), ScopeSet.Anywhere);
-            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), ScopeSet.Anywhere);
-            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), ScopeSet.Anywhere);
-            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), ScopeSet.Anywhere);
-            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), ScopeSet.Anywhere);
-            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), ScopeSet.Anywhere);
-            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), ScopeSet.Anywhere);
-            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), ScopeSet.Anywhere);
-            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), ScopeSet.Anywhere);
-            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), ScopeSet.Anywhere);
-            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), ScopeSet.Anywhere);
-            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), ScopeSet.Anywhere);
-            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), ScopeSet.Anywhere);
-            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), ScopeSet.Anywhere);
-            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), ScopeSet.Anywhere);
-            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), ScopeSet.Anywhere);
-            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), ScopeSet.Anywhere);
-            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), ScopeSet.Anywhere);
-            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), ScopeSet.Anywhere);
-            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), ScopeSet.Anywhere);
-            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), ScopeSet.Anywhere);
-            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), ScopeSet.Anywhere);
-            scope.Set ("when", new FunctionValue (CommonFunctions.FunctionWhen), ScopeSet.Anywhere);
-            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), ScopeSet.Anywhere);
+            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), ScopeMode.Closest);
+            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), ScopeMode.Closest);
+            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), ScopeMode.Closest);
+            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), ScopeMode.Closest);
+            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), ScopeMode.Closest);
+            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), ScopeMode.Closest);
+            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), ScopeMode.Closest);
+            scope.Set ("default", new FunctionValue (CommonFunctions.FunctionDefault), ScopeMode.Closest);
+            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), ScopeMode.Closest);
+            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), ScopeMode.Closest);
+            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), ScopeMode.Closest);
+            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), ScopeMode.Closest);
+            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), ScopeMode.Closest);
+            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), ScopeMode.Closest);
+            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), ScopeMode.Closest);
+            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), ScopeMode.Closest);
+            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), ScopeMode.Closest);
+            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), ScopeMode.Closest);
+            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), ScopeMode.Closest);
+            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), ScopeMode.Closest);
+            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), ScopeMode.Closest);
+            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), ScopeMode.Closest);
+            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), ScopeMode.Closest);
+            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), ScopeMode.Closest);
+            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), ScopeMode.Closest);
+            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), ScopeMode.Closest);
+            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), ScopeMode.Closest);
+            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), ScopeMode.Closest);
+            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), ScopeMode.Closest);
+            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), ScopeMode.Closest);
+            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), ScopeMode.Closest);
+            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), ScopeMode.Closest);
+            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), ScopeMode.Closest);
+            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), ScopeMode.Closest);
+            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), ScopeMode.Closest);
+            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), ScopeMode.Closest);
+            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), ScopeMode.Closest);
+            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), ScopeMode.Closest);
+            scope.Set ("when", new FunctionValue (CommonFunctions.FunctionWhen), ScopeMode.Closest);
+            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), ScopeMode.Closest);
         }
 
         #endregion

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle.Lexers;
-
 namespace   Cottle.Exceptions
 {
     public abstract class   LexemException : Exception
