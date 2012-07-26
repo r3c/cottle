@@ -4,27 +4,24 @@ Cottle: Compact Object to Text Transform Language
 Overview
 --------
 
-Hi, and thank you for reading this.
-
-Cottle is an open-source (BSD) template engine I wrote because I needed
-something light and efficient at work, and was not pleased with other
-available libraries. If you never used a template engine before, here is a
-simple explanation about how it works:
+Cottle is an open-source (BSD) template engine designed to be light, efficient
+and extensible. If you never used a template engine before, here is a
+simple example about how it could be used:
 
 - A program of yours generated some structured data, for example a list of
 products with associated name, description, quantity and price for each of
 them.
 - You want to make out an invoice from this list, meaning you want to render
-them as a formatted text document like an HTML page, an XML file or a plain
-text file.
-- Cottle allows you to write a template, that is a file that describes how your
-data should be printed to produce the final invoice. Once the template is
-ready, it can be re-used with any products list as long as it keeps the same
-structure (in our example, products with names, descriptions, quantities and
-prices).
+them as a formatted output like an HTML page, an XML document or a plain text
+file.
+- By writing a template, which is a file that describes how your inputs should
+be rendered to produce the final invoice, Cottle allows you to manage this data
+transform. Once your template is ready, it can be re-used with any products
+list as long as it keeps the same structure (to keep with our example, products
+with names, descriptions, quantities and prices).
 
-Cottle can read template files written with its own syntax (as explained in the
-user manual), them transform data sources into rendered text documents.
+Template files must be written using Cottle's specific template language, as
+explained in the user manual (see "Installation" section).
 
 
 
@@ -38,8 +35,9 @@ solution if you want to use it. It is compatible with .NET 3.5 and above.
 - Demo, a simple Windows Form test program that allows you to write templates
 directly in a text box and render them using predefined data.
 
-User manual (available as "manual.html" or at http://sub.mirari.fr/cottle/)
-explains how to use the library, and contains a lot of code examples.
+User manual (the "manual.html" at repository root, also available through
+http://r3c.github.com/Cottle/) explains how to use the library, and contains a
+lot of code examples.
 
 
 
