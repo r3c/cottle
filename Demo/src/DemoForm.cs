@@ -47,7 +47,7 @@ namespace   Demo
             {
                 try
                 {
-                    document = new Document (new StringReader (this.textBoxInput.Text));
+                    document = new Document (this.textBoxInput.Text);
                     scope = new Scope ();
 
                     CommonFunctions.Assign (scope);
