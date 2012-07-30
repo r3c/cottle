@@ -174,6 +174,55 @@ namespace   Cottle.Commons
             return Array.ConvertAll (values[0].Fields, (p) => new KeyValuePair<Value, Value> (p.Value, p.Key));
         }, 1);
 
+        /// <summary>
+        /// Provides a .NET formating for a value.
+        /// 
+        /// Template examples :
+        /// - The short date version is {format(timestamp, "d:F")}  //will display the timestamp as a long full date format
+        /// - The short date version is {format(ratio, "n:p2")}     //will display the ratio as a percent with 2 digit after the decimal separator
+        /// - The amount is {format(amount, "b:n2")}                //will display the amount rounded to 2 decimals with the correct thousand 
+        ///  separator and decimal separator
+        /// </summary>
+        public static readonly IFunction    FunctionFormat = new CallbackFunction(delegate(IList<Value> values, Scope scope, TextWriter output)
+        {
+            Value   rawTarget;
+            string  rawFormat;
+            object  target;
+            string  format;
+
+            if (values.Count == 0)
+                return UndefinedValue.Instance;
+            if (values.Count == 1)
+                return values[0];
+
+            rawTarget = values[0];
+            rawFormat = values[1].AsString;
+
+            if (rawFormat.Length <= 2 || rawFormat[1] != ':')
+                return UndefinedValue.Instance;
+
+            switch (rawFormat[0])
+            {
+                case 'n':
+                    target = rawTarget.AsNumber;
+                    break;
+                case 'd':
+                    target = minTimeStamp.AddSeconds((double)rawTarget.AsNumber);
+                    break;
+                case 'b':
+                    target = rawTarget.AsBoolean;
+                    break;
+                case 's':
+                    target = rawTarget.AsString;
+                    break;
+                default:
+                    return UndefinedValue.Instance;
+            }
+            format = rawFormat.Substring(2);
+
+            return string.Format("{0:" + format + "}", target);
+        }, 2);
+
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber > values[1].AsNumber;
@@ -537,55 +586,6 @@ namespace   Cottle.Commons
             return count == 1;
         });
 
-        /// <summary>
-        /// Provides a .NET formating for a value.
-        /// 
-        /// Template examples :
-        /// - The short date version is {format(timestamp, "d:F")}  //will display the timestamp as a long full date format
-        /// - The short date version is {format(ratio, "n:p2")}     //will display the ratio as a percent with 2 digit after the decimal separator
-        /// - The amount is {format(amount, "b:n2")}                //will display the amount rounded to 2 decimals with the correct thousand 
-        ///  separator and decimal separator
-        /// </summary>
-        public static readonly IFunction FunctionFormat = new CallbackFunction(delegate(IList<Value> values, Scope scope, TextWriter output)
-        {
-            Value   rawTarget;
-            string  rawFormat;
-            object  target;
-            string  format;
-
-            if (values.Count == 0)
-                return UndefinedValue.Instance;
-            if (values.Count == 1)
-                return values[0];
-
-            rawTarget = values[0];
-            rawFormat = values[1].AsString;
-
-            if (rawFormat.Length <= 2 || rawFormat[1] != ':')
-                return UndefinedValue.Instance;
-
-            switch (rawFormat[0])
-            {
-                case 'n':
-                    target = rawTarget.AsNumber;
-                    break;
-                case 'd':
-                    target = minTimeStamp.AddSeconds((double)rawTarget.AsNumber);
-                    break;
-                case 'b':
-                    target = rawTarget.AsBoolean;
-                    break;
-                case 's':
-                    target = rawTarget.AsString;
-                    break;
-                default:
-                    return UndefinedValue.Instance;
-            }
-            format = rawFormat.Substring(2);
-
-            return string.Format("{0:" + format + "}", target);
-        });
-
         #endregion
 
         #region Attributes / Private
@@ -615,6 +615,7 @@ namespace   Cottle.Commons
             scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), ScopeMode.Closest);
             scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), ScopeMode.Closest);
             scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), ScopeMode.Closest);
+            scope.Set ("format", new FunctionValue (CommonFunctions.FunctionFormat), ScopeMode.Closest);
             scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), ScopeMode.Closest);
             scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), ScopeMode.Closest);
             scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), ScopeMode.Closest);
@@ -642,7 +643,6 @@ namespace   Cottle.Commons
             scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), ScopeMode.Closest);
             scope.Set ("when", new FunctionValue (CommonFunctions.FunctionWhen), ScopeMode.Closest);
             scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), ScopeMode.Closest);
-            scope.Set ("format", new FunctionValue(CommonFunctions.FunctionFormat), ScopeMode.Closest);
         }
 
         #endregion
