@@ -35,27 +35,27 @@
             this.groupBoxValue = new System.Windows.Forms.GroupBox();
             this.treeViewValue = new System.Windows.Forms.TreeView();
             this.contextMenuStripTree = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.imageListTree = new System.Windows.Forms.ImageList(this.components);
-            this.groupBoxResult = new System.Windows.Forms.GroupBox();
-            this.textBoxResult = new System.Windows.Forms.TextBox();
-            this.groupBoxInput = new System.Windows.Forms.GroupBox();
-            this.textBoxInput = new System.Windows.Forms.TextBox();
-            this.groupBoxOutput = new System.Windows.Forms.GroupBox();
-            this.textBoxPrint = new System.Windows.Forms.TextBox();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemNodeCreate = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemNodeClone = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemNodeUpdate = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemNodeDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemMoveUp = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemMoveDown = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemFileLoad = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemFileSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripMenuItemTreeCollapse = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemTreeExpand = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageListTree = new System.Windows.Forms.ImageList(this.components);
+            this.groupBoxResult = new System.Windows.Forms.GroupBox();
             this.buttonDemo = new System.Windows.Forms.Button();
+            this.textBoxResult = new System.Windows.Forms.TextBox();
+            this.groupBoxInput = new System.Windows.Forms.GroupBox();
+            this.textBoxInput = new System.Windows.Forms.TextBox();
+            this.groupBoxOutput = new System.Windows.Forms.GroupBox();
+            this.textBoxPrint = new System.Windows.Forms.TextBox();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -149,15 +149,100 @@
             this.contextMenuStripTree.Size = new System.Drawing.Size(161, 264);
             this.contextMenuStripTree.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTree_Opening);
             // 
+            // toolStripMenuItemNodeCreate
+            // 
+            this.toolStripMenuItemNodeCreate.Image = global::Demo.Properties.Resources.tag_blue_add;
+            this.toolStripMenuItemNodeCreate.Name = "toolStripMenuItemNodeCreate";
+            this.toolStripMenuItemNodeCreate.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemNodeCreate.Text = "Insert value here";
+            this.toolStripMenuItemNodeCreate.Click += new System.EventHandler(this.toolStripMenuItemNodeCreate_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(157, 6);
             // 
+            // toolStripMenuItemNodeClone
+            // 
+            this.toolStripMenuItemNodeClone.Image = global::Demo.Properties.Resources.tag_orange;
+            this.toolStripMenuItemNodeClone.Name = "toolStripMenuItemNodeClone";
+            this.toolStripMenuItemNodeClone.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemNodeClone.Text = "Clone value";
+            this.toolStripMenuItemNodeClone.Click += new System.EventHandler(this.toolStripMenuItemNodeClone_Click);
+            // 
+            // toolStripMenuItemNodeUpdate
+            // 
+            this.toolStripMenuItemNodeUpdate.Image = global::Demo.Properties.Resources.tag_blue_edit;
+            this.toolStripMenuItemNodeUpdate.Name = "toolStripMenuItemNodeUpdate";
+            this.toolStripMenuItemNodeUpdate.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemNodeUpdate.Text = "Modify value";
+            this.toolStripMenuItemNodeUpdate.Click += new System.EventHandler(this.toolStripMenuItemNodeUpdate_Click);
+            // 
+            // toolStripMenuItemNodeDelete
+            // 
+            this.toolStripMenuItemNodeDelete.Image = global::Demo.Properties.Resources.tag_blue_delete;
+            this.toolStripMenuItemNodeDelete.Name = "toolStripMenuItemNodeDelete";
+            this.toolStripMenuItemNodeDelete.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemNodeDelete.Text = "Delete value";
+            this.toolStripMenuItemNodeDelete.Click += new System.EventHandler(this.toolStripMenuItemNodeDelete_Click);
+            // 
+            // toolStripMenuItemMoveUp
+            // 
+            this.toolStripMenuItemMoveUp.Image = global::Demo.Properties.Resources.arrow_up;
+            this.toolStripMenuItemMoveUp.Name = "toolStripMenuItemMoveUp";
+            this.toolStripMenuItemMoveUp.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemMoveUp.Text = "Move up";
+            this.toolStripMenuItemMoveUp.Click += new System.EventHandler(this.toolStripMenuItemMoveUp_Click);
+            // 
+            // toolStripMenuItemMoveDown
+            // 
+            this.toolStripMenuItemMoveDown.Image = global::Demo.Properties.Resources.arrow_down;
+            this.toolStripMenuItemMoveDown.Name = "toolStripMenuItemMoveDown";
+            this.toolStripMenuItemMoveDown.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemMoveDown.Text = "Move down";
+            this.toolStripMenuItemMoveDown.Click += new System.EventHandler(this.toolStripMenuItemMoveDown_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+            // 
+            // toolStripMenuItemFileLoad
+            // 
+            this.toolStripMenuItemFileLoad.Image = global::Demo.Properties.Resources.script_lightning;
+            this.toolStripMenuItemFileLoad.Name = "toolStripMenuItemFileLoad";
+            this.toolStripMenuItemFileLoad.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemFileLoad.Text = "Load values...";
+            this.toolStripMenuItemFileLoad.Click += new System.EventHandler(this.toolStripMenuItemFileLoad_Click);
+            // 
+            // toolStripMenuItemFileSave
+            // 
+            this.toolStripMenuItemFileSave.Image = global::Demo.Properties.Resources.script_save;
+            this.toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
+            this.toolStripMenuItemFileSave.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemFileSave.Text = "Save values...";
+            this.toolStripMenuItemFileSave.Click += new System.EventHandler(this.toolStripMenuItemFileSave_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
+            // 
+            // toolStripMenuItemTreeCollapse
+            // 
+            this.toolStripMenuItemTreeCollapse.Image = global::Demo.Properties.Resources.resultset_previous;
+            this.toolStripMenuItemTreeCollapse.Name = "toolStripMenuItemTreeCollapse";
+            this.toolStripMenuItemTreeCollapse.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemTreeCollapse.Text = "Collapse all";
+            this.toolStripMenuItemTreeCollapse.Click += new System.EventHandler(this.toolStripMenuItemTreeCollapse_Click);
+            // 
+            // toolStripMenuItemTreeExpand
+            // 
+            this.toolStripMenuItemTreeExpand.Image = global::Demo.Properties.Resources.resultset_next;
+            this.toolStripMenuItemTreeExpand.Name = "toolStripMenuItemTreeExpand";
+            this.toolStripMenuItemTreeExpand.Size = new System.Drawing.Size(160, 22);
+            this.toolStripMenuItemTreeExpand.Text = "Expand all";
+            this.toolStripMenuItemTreeExpand.Click += new System.EventHandler(this.toolStripMenuItemTreeExpand_Click);
             // 
             // imageListTree
             // 
@@ -182,6 +267,18 @@
             this.groupBoxResult.TabIndex = 4;
             this.groupBoxResult.TabStop = false;
             this.groupBoxResult.Text = "Validate && debug:";
+            // 
+            // buttonDemo
+            // 
+            this.buttonDemo.Image = global::Demo.Properties.Resources.arrow_refresh;
+            this.buttonDemo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonDemo.Location = new System.Drawing.Point(6, 19);
+            this.buttonDemo.Name = "buttonDemo";
+            this.buttonDemo.Size = new System.Drawing.Size(80, 23);
+            this.buttonDemo.TabIndex = 1;
+            this.buttonDemo.Text = "OK";
+            this.buttonDemo.UseVisualStyleBackColor = true;
+            this.buttonDemo.Click += new System.EventHandler(this.buttonDemo_Click);
             // 
             // textBoxResult
             // 
@@ -242,103 +339,6 @@
             this.textBoxPrint.Size = new System.Drawing.Size(371, 528);
             this.textBoxPrint.TabIndex = 3;
             this.textBoxPrint.WordWrap = false;
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(157, 6);
-            // 
-            // toolStripMenuItemNodeCreate
-            // 
-            this.toolStripMenuItemNodeCreate.Image = global::Demo.Properties.Resources.tag_blue_add;
-            this.toolStripMenuItemNodeCreate.Name = "toolStripMenuItemNodeCreate";
-            this.toolStripMenuItemNodeCreate.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemNodeCreate.Text = "Insert value here";
-            this.toolStripMenuItemNodeCreate.Click += new System.EventHandler(this.toolStripMenuItemNodeCreate_Click);
-            // 
-            // toolStripMenuItemNodeClone
-            // 
-            this.toolStripMenuItemNodeClone.Image = global::Demo.Properties.Resources.tag_orange;
-            this.toolStripMenuItemNodeClone.Name = "toolStripMenuItemNodeClone";
-            this.toolStripMenuItemNodeClone.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemNodeClone.Text = "Clone value";
-            this.toolStripMenuItemNodeClone.Click += new System.EventHandler(this.toolStripMenuItemNodeClone_Click);
-            // 
-            // toolStripMenuItemNodeUpdate
-            // 
-            this.toolStripMenuItemNodeUpdate.Image = global::Demo.Properties.Resources.tag_blue_edit;
-            this.toolStripMenuItemNodeUpdate.Name = "toolStripMenuItemNodeUpdate";
-            this.toolStripMenuItemNodeUpdate.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemNodeUpdate.Text = "Modify value";
-            this.toolStripMenuItemNodeUpdate.Click += new System.EventHandler(this.toolStripMenuItemNodeUpdate_Click);
-            // 
-            // toolStripMenuItemNodeDelete
-            // 
-            this.toolStripMenuItemNodeDelete.Image = global::Demo.Properties.Resources.tag_blue_delete;
-            this.toolStripMenuItemNodeDelete.Name = "toolStripMenuItemNodeDelete";
-            this.toolStripMenuItemNodeDelete.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemNodeDelete.Text = "Delete value";
-            this.toolStripMenuItemNodeDelete.Click += new System.EventHandler(this.toolStripMenuItemNodeDelete_Click);
-            // 
-            // toolStripMenuItemMoveUp
-            // 
-            this.toolStripMenuItemMoveUp.Image = global::Demo.Properties.Resources.arrow_up;
-            this.toolStripMenuItemMoveUp.Name = "toolStripMenuItemMoveUp";
-            this.toolStripMenuItemMoveUp.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemMoveUp.Text = "Move up";
-            this.toolStripMenuItemMoveUp.Click += new System.EventHandler(this.toolStripMenuItemMoveUp_Click);
-            // 
-            // toolStripMenuItemMoveDown
-            // 
-            this.toolStripMenuItemMoveDown.Image = global::Demo.Properties.Resources.arrow_down;
-            this.toolStripMenuItemMoveDown.Name = "toolStripMenuItemMoveDown";
-            this.toolStripMenuItemMoveDown.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemMoveDown.Text = "Move down";
-            this.toolStripMenuItemMoveDown.Click += new System.EventHandler(this.toolStripMenuItemMoveDown_Click);
-            // 
-            // toolStripMenuItemFileLoad
-            // 
-            this.toolStripMenuItemFileLoad.Image = global::Demo.Properties.Resources.script_lightning;
-            this.toolStripMenuItemFileLoad.Name = "toolStripMenuItemFileLoad";
-            this.toolStripMenuItemFileLoad.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemFileLoad.Text = "Load values...";
-            this.toolStripMenuItemFileLoad.Click += new System.EventHandler(this.toolStripMenuItemFileLoad_Click);
-            // 
-            // toolStripMenuItemFileSave
-            // 
-            this.toolStripMenuItemFileSave.Image = global::Demo.Properties.Resources.script_save;
-            this.toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
-            this.toolStripMenuItemFileSave.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemFileSave.Text = "Save values...";
-            this.toolStripMenuItemFileSave.Click += new System.EventHandler(this.toolStripMenuItemFileSave_Click);
-            // 
-            // toolStripMenuItemTreeCollapse
-            // 
-            this.toolStripMenuItemTreeCollapse.Image = global::Demo.Properties.Resources.resultset_previous;
-            this.toolStripMenuItemTreeCollapse.Name = "toolStripMenuItemTreeCollapse";
-            this.toolStripMenuItemTreeCollapse.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemTreeCollapse.Text = "Collapse all";
-            this.toolStripMenuItemTreeCollapse.Click += new System.EventHandler(this.toolStripMenuItemTreeCollapse_Click);
-            // 
-            // toolStripMenuItemTreeExpand
-            // 
-            this.toolStripMenuItemTreeExpand.Image = global::Demo.Properties.Resources.resultset_next;
-            this.toolStripMenuItemTreeExpand.Name = "toolStripMenuItemTreeExpand";
-            this.toolStripMenuItemTreeExpand.Size = new System.Drawing.Size(160, 22);
-            this.toolStripMenuItemTreeExpand.Text = "Expand all";
-            this.toolStripMenuItemTreeExpand.Click += new System.EventHandler(this.toolStripMenuItemTreeExpand_Click);
-            // 
-            // buttonDemo
-            // 
-            this.buttonDemo.Image = global::Demo.Properties.Resources.arrow_refresh;
-            this.buttonDemo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonDemo.Location = new System.Drawing.Point(6, 19);
-            this.buttonDemo.Name = "buttonDemo";
-            this.buttonDemo.Size = new System.Drawing.Size(80, 23);
-            this.buttonDemo.TabIndex = 1;
-            this.buttonDemo.Text = "OK";
-            this.buttonDemo.UseVisualStyleBackColor = true;
-            this.buttonDemo.Click += new System.EventHandler(this.buttonDemo_Click);
             // 
             // DemoForm
             // 
