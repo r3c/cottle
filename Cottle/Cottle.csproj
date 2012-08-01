@@ -38,6 +38,7 @@
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Commons\CommonTools.cs" />
     <Compile Include="src\Document.cs" />
+    <Compile Include="src\Exceptions\ConfigException.cs" />
     <Compile Include="src\Exceptions\LexemException.cs" />
     <Compile Include="src\Exceptions\UnknownException.cs" />
     <Compile Include="src\Exceptions\UnexpectedException.cs" />

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace   Cottle
 {
@@ -18,7 +15,9 @@ namespace   Cottle
 
         public  Document (TextReader reader, LexerConfig config)
         {
-            Parser  parser = new Parser (config);
+            Parser  parser;
+
+            parser = new Parser (config);
 
             this.root = parser.Parse (reader);
         }

@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace   Cottle.Exceptions
 {
     public class    UnexpectedException : LexemException
     {
         #region Properties
-
-        public string	Current
-        {
-            get
-            {
-                return this.current;
-            }
-        }
 
         public string   Expected
         {
@@ -24,11 +17,11 @@ namespace   Cottle.Exceptions
             }
         }
 
-        public override string  Message
+        public string	Lexem
         {
             get
             {
-                return string.Format ("Unexpected '{0}', expected {1} at line {2}, column {3}", this.current, expected, this.line, this.column);
+                return this.lexem;
             }
         }
 
@@ -36,19 +29,19 @@ namespace   Cottle.Exceptions
 
         #region Attributes
 
-        private string	current;
-
         private string	expected;
+
+        private string	lexem;
 
         #endregion
 
         #region Constructors
 
         internal    UnexpectedException (Lexer lexer, string expected) :
-            base (lexer)
+            base (lexer, string.Format (CultureInfo.InvariantCulture, "unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Current.Content, expected, lexer.Line, lexer.Column))
         {
-            this.current = lexer.Current.Content;
             this.expected = expected;
+            this.lexem = lexer.Current.Content;
         }
 
         #endregion

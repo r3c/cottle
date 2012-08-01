@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -69,17 +68,17 @@ namespace   Demo
                     this.textBoxResult.BackColor = Color.LightGreen;
                     this.textBoxResult.Text = "OK";
                 }
-                catch (UnexpectedException ex)
+                catch (UnexpectedException exception)
                 {
-                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - ex.Current.Length - 1, 0);
-                    this.textBoxInput.SelectionLength = ex.Current.Length;
+                    this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
+                    this.textBoxInput.SelectionLength = exception.Lexem.Length;
                     this.textBoxInput.Focus ();
 
                     throw;
                 }
-                catch (UnknownException ex)
+                catch (UnknownException exception)
                 {
-                    this.textBoxInput.SelectionStart = Math.Max (ex.Index - 1, 0);
+                    this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
                     this.textBoxInput.SelectionLength = 1;
                     this.textBoxInput.Focus ();
 
@@ -89,7 +88,7 @@ namespace   Demo
             catch (Exception ex)
             {
                 this.textBoxResult.BackColor = Color.LightSalmon;
-                this.textBoxResult.Text = ex.Message;
+                this.textBoxResult.Text = "Error: " + ex.Message;
             }
         }
 

@@ -32,11 +32,6 @@ namespace   Cottle.Exceptions
             }
         }
 
-        public abstract override string Message
-        {
-            get;
-        }
-
         #endregion
 
         #region Attributes
@@ -51,7 +46,8 @@ namespace   Cottle.Exceptions
 
         #region Constructors
 
-        internal    LexemException (Lexer lexer)
+        internal    LexemException (Lexer lexer, string message) :
+            base (message)
         {
             this.column = lexer.Column;
             this.index = lexer.Index;

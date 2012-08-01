@@ -76,9 +76,15 @@ namespace   Cottle
             this.cursors = new Queue<LexemCursor> ();
             this.pending = new Lexem (LexemType.None, string.Empty);
             this.root = new LexemState ();
-            this.root.Store (LexemType.BraceBegin, config.BlockBegin);
-            this.root.Store (LexemType.Pipe, config.BlockContinue);
-            this.root.Store (LexemType.BraceEnd, config.BlockEnd);
+
+            if (!this.root.Store (LexemType.BraceBegin, config.BlockBegin))
+                throw new ConfigException ("BlockBegin", config.BlockBegin, "token used twice");
+
+            if (!this.root.Store (LexemType.Pipe, config.BlockContinue))
+                throw new ConfigException ("BlockContinue", config.BlockContinue, "token used twice");
+
+            if (!this.root.Store (LexemType.BraceEnd, config.BlockEnd))
+                throw new ConfigException ("BlockEnd", config.BlockEnd, "token used twice");
         }
 
         #endregion
@@ -383,12 +389,6 @@ namespace   Cottle
 
             return !this.eof;
         }
-
-        #endregion
-
-        #region Types
-
-        private delegate Lexem  LexerNextDelegate ();
 
         #endregion
     }

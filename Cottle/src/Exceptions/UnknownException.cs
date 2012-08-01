@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Globalization;
 
 namespace   Cottle.Exceptions
 {
@@ -8,19 +6,11 @@ namespace   Cottle.Exceptions
     {
         #region Properties
 
-        public string   Problem
+        public string   Token
         {
             get
             {
-                return this.problem;
-            }
-        }
-
-        public override string  Message
-        {
-            get
-            {
-                return string.Format ("Found '{0}' at line {1}, column {2}", this.problem, this.line, this.column);
+                return this.token;
             }
         }
 
@@ -28,16 +18,16 @@ namespace   Cottle.Exceptions
 
         #region Attributes
 
-        private string  problem;
+        private string  token;
 
         #endregion
 
         #region Constructors
 
-        internal    UnknownException (Lexer lexer, string problem) :
-            base (lexer)
+        internal    UnknownException (Lexer lexer, string token) :
+            base (lexer, string.Format (CultureInfo.InvariantCulture, "found '{0}' at line {1}, column {2}", token, lexer.Line, lexer.Column))
         {
-            this.problem = problem;
+            this.token = token;
         }
 
         #endregion
