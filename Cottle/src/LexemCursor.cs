@@ -51,6 +51,11 @@ namespace   Cottle
 
         #region Methods
 
+        public void Cancel ()
+        {
+            this.state = null;
+        }
+
         public bool Move (char character, out LexemType type)
         {
             if (this.state != null)

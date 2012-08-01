@@ -281,7 +281,7 @@ namespace   Cottle
                         return new Lexem (LexemType.String, buffer.ToString ());
 
                     default:
-                        return new Lexem (LexemType.None, string.Empty);
+                        return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
                 }
             }
         }
@@ -299,6 +299,7 @@ namespace   Cottle
 
         private Lexem   NextRaw ()
         {
+            bool            cancel;
             Lexem           lexem;
             StringBuilder   text;
             StringBuilder   token;
@@ -321,13 +322,16 @@ namespace   Cottle
 
             for (; !this.eof; this.Read ())
             {
-                this.cursors.Enqueue (new LexemCursor (this.last, this.root));
-
+                cancel = this.last == '\\' && this.Read ();
                 trail = 0;
+
+                this.cursors.Enqueue (new LexemCursor (this.last, this.root));
 
                 foreach (LexemCursor cursor in this.cursors)
                 {
-                    if (cursor.Move (this.last, out type))
+                    if (cancel)
+                        cursor.Cancel ();
+                    else if (cursor.Move (this.last, out type))
                     {
                         while (trail-- > 0)
                             text.Append (this.cursors.Dequeue ().Character);
