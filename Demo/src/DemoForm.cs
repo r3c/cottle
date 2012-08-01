@@ -22,6 +22,12 @@ namespace   Demo
 
         #endregion
 
+        #region Attributes
+
+        private LexerConfig config = new LexerConfig ();
+
+        #endregion
+
         #region Constructors
 
         public  DemoForm ()
@@ -47,7 +53,7 @@ namespace   Demo
             {
                 try
                 {
-                    document = new Document (this.textBoxInput.Text);
+                    document = new Document (this.textBoxInput.Text, this.config);
                     scope = new Scope ();
 
                     CommonFunctions.Assign (scope);
@@ -85,6 +91,14 @@ namespace   Demo
                 this.textBoxResult.BackColor = Color.LightSalmon;
                 this.textBoxResult.Text = ex.Message;
             }
+        }
+
+        private void    toolStripMenuItemConfig_Click (object sender, EventArgs e)
+        {
+            Form    form;
+
+            form = new ConfigForm (this.config, (config) => this.config = config);
+            form.ShowDialog (this);
         }
 
         private void    toolStripMenuItemFileLoad_Click (object sender, EventArgs e)
@@ -167,17 +181,20 @@ namespace   Demo
 
         private void    toolStripMenuItemNodeCreate_Click (object sender, EventArgs e)
         {
+            Form        form;
             TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
 
             if (node != null)
             {
-                new NodeForm (null, delegate (string key, Value value)
+                form = new NodeForm (null, delegate (string key, Value value)
                 {
                     TreeNode    child = this.NodeCreate (key, value);
 
                     node.Nodes.Add (child);
                     node.Expand ();
-                }).Show (this);
+                });
+
+                form.ShowDialog (this);
             }
         }
 
@@ -191,10 +208,14 @@ namespace   Demo
 
         private void    toolStripMenuItemNodeUpdate_Click (object sender, EventArgs e)
         {
+            Form        form;
             TreeNode    node = this.contextMenuStripTree.Tag as TreeNode;
 
             if (node != null)
-                new NodeForm (node.Tag as NodeData, (key, value) => this.NodeAssign (node, key, value)).Show (this);
+            {
+                form = new NodeForm (node.Tag as NodeData, (key, value) => this.NodeAssign (node, key, value));
+                form.ShowDialog (this);
+            }
         }
 
         private void    toolStripMenuItemTreeCollapse_Click (object sender, EventArgs e)

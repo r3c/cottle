@@ -5,7 +5,7 @@ using System.Text;
 
 namespace   Cottle
 {
-    class   Lexem
+    struct  Lexem
     {
         #region Properties
 
@@ -13,7 +13,7 @@ namespace   Cottle
         {
             get
             {
-                return this.content.ToString ();
+                return this.content;
             }
         }
 
@@ -29,40 +29,17 @@ namespace   Cottle
 
         #region Attributes
 
-        private StringBuilder   content = new StringBuilder ();
+        private string      content;
 
-        private LexemType       type = LexemType.None;
+        private LexemType   type;
 
         #endregion
 
-        #region Methods
-/*
-        public void Clean ()
-        {
-            int length = this.builder.Length;
+        #region Constructors
 
-            if (length > 1 && this.builder[length - 1] <= ' ' && this.builder[length - 2] <= ' ')
-            {
-                for (--length; length > 1 && this.builder[length - 2] <= ' '; )
-                    --length;
-
-                this.builder.Length = length;
-            }
-        }
-*/
-        public void Push (string value)
+        public  Lexem (LexemType type, string content)
         {
-            this.content.Append (value);
-        }
-
-        public void Push (char value)
-        {
-            this.content.Append (value);
-        }
-
-        public void Reset (LexemType type)
-        {
-            this.content.Length = 0;
+            this.content = content;
             this.type = type;
         }
 

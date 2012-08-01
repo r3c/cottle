@@ -16,17 +16,17 @@ namespace   Demo
     {
         #region Attributes
 
-        private NodeAssignDelegate assign;
+        private NodeAssignDelegate  assign;
 
         #endregion
 
         #region Constructors
 
-        public  NodeForm (NodeData data, NodeAssignDelegate getNode)
+        public  NodeForm (NodeData data, NodeAssignDelegate assign)
         {
-            InitializeComponent ();
+            this.assign = assign;
 
-            this.assign = getNode;
+            InitializeComponent ();
 
             if (data != null)
             {

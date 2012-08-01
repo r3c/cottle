@@ -55,7 +55,8 @@
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
     <Compile Include="src\Lexem.cs" />
-    <Compile Include="src\LexemMatch.cs" />
+    <Compile Include="src\LexemCursor.cs" />
+    <Compile Include="src\LexemState.cs" />
     <Compile Include="src\LexemType.cs" />
     <Compile Include="src\LexerConfig.cs" />
     <Compile Include="src\LexerMode.cs" />

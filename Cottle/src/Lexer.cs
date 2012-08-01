@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -47,23 +47,25 @@ namespace   Cottle
 
         #region Attributes
 
-        private LexemMatch[]    blocks;
+        private int                 column;
 
-        private int             column;
+        private Lexem               current;
 
-        private Lexem           current;
+        private Queue<LexemCursor>  cursors;
 
-        private bool            eof;
+        private bool                eof;
 
-        private int             index;
+        private int                 index;
 
-        private char            last;
+        private char                last;
 
-        private int             line;
+        private int                 line;
 
-        private LexemMatch      pending;
+        private Lexem               pending;
 
-        private TextReader      reader;
+        private TextReader          reader;
+
+        private LexemState          root;
 
         #endregion
 
@@ -71,14 +73,12 @@ namespace   Cottle
 
         public  Lexer (LexerConfig config)
         {
-            this.blocks = new LexemMatch[]
-            {
-			    new LexemMatch (LexemType.BraceBegin, config.BlockBegin),
-			    new LexemMatch (LexemType.Pipe, config.BlockContinue),
-			    new LexemMatch (LexemType.BraceEnd, config.BlockEnd)
-            };
-
-            this.pending = new LexemMatch (LexemType.None, string.Empty);
+            this.cursors = new Queue<LexemCursor> ();
+            this.pending = new Lexem (LexemType.None, string.Empty);
+            this.root = new LexemState ();
+            this.root.Store (LexemType.BraceBegin, config.BlockBegin);
+            this.root.Store (LexemType.Pipe, config.BlockContinue);
+            this.root.Store (LexemType.BraceEnd, config.BlockEnd);
         }
 
         #endregion
@@ -90,17 +90,17 @@ namespace   Cottle
             switch (mode)
             {
                 case LexerMode.BLOCK:
-                    this.NextBlock ();
+                    this.current = this.NextBlock ();
 
                     break;
 
                 case LexerMode.RAW:
-                    this.NextRaw ();
+                    this.current = this.NextRaw ();
 
                     break;
 
                 default:
-                    throw new UnknownException (this, "invalid lexem");
+                    throw new UnknownException (this, "invalid mode");
             }
         }
 
@@ -121,20 +121,16 @@ namespace   Cottle
 
         #region Methods / Private
 
-        private void    NextBlock ()
+        private Lexem   NextBlock ()
         {
-            bool    dot;
-            char    end;
+            StringBuilder   buffer;
+            bool            dot;
+            char            end;
 
             while (true)
             {
                 if (this.eof)
-                {
-                    this.current.Reset (LexemType.EndOfFile);
-                    this.current.Push ("<EOF>");
-
-                    return;
-                }
+                    return new Lexem (LexemType.EndOfFile, "<EOF>");
 
                 switch (this.last)
                 {
@@ -148,60 +144,25 @@ namespace   Cottle
                         break;
 
                     case '[':
-                        this.current.Reset (LexemType.BracketBegin);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.BracketBegin);
 
                     case ']':
-                        this.current.Reset (LexemType.BracketEnd);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.BracketEnd);
 
                     case ',':
-                        this.current.Reset (LexemType.Comma);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.Comma);
 
                     case ':':
-                        this.current.Reset (LexemType.Colon);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.Colon);
 
                     case '.':
-                        this.current.Reset (LexemType.Dot);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.Dot);
 
                     case '(':
-                        this.current.Reset (LexemType.ParenthesisBegin);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.ParenthesisBegin);
 
                     case ')':
-                        this.current.Reset (LexemType.ParenthesisEnd);
-                        this.current.Push (this.last);
-
-                        this.Read ();
-
-                        return;
+                        return this.NextChar (LexemType.ParenthesisEnd);
 
                     case '_':
                     case 'A':
@@ -256,18 +217,18 @@ namespace   Cottle
                     case 'x':
                     case 'y':
                     case 'z':
-                        this.current.Reset (LexemType.Literal);
+                        buffer = new StringBuilder ();
 
                         do 
                         {
-                            this.current.Push (this.last);
+                            buffer.Append (this.last);
                         }
                         while (this.Read () && ((this.last >= '0' && this.last <= '9') ||
                                                 (this.last >= 'A' && this.last <= 'Z') ||
                                                 (this.last >= 'a' && this.last <= 'z') ||
                                                 (this.last == '_')));
 
-                        return;
+                        return new Lexem (LexemType.Literal, buffer.ToString ());
 
                     case '-':
                     case '0':
@@ -280,8 +241,7 @@ namespace   Cottle
 					case '7':
 					case '8':
                     case '9':
-                        this.current.Reset (LexemType.Number);
-
+                        buffer = new StringBuilder ();
                         dot = false;
 
                         do
@@ -289,22 +249,22 @@ namespace   Cottle
                             if (this.last == '.')
                                 dot = true;
 
-                            this.current.Push (this.last);
+                            buffer.Append (this.last);
                         }
-                        while (this.Read () && ((this.last >= '0' && this.last <= '9') || (this.last == '.' && !dot)));
+                        while (this.Read () && ((this.last >= '0' && this.last <= '9') ||
+                                                (this.last == '.' && !dot)));
 
-                        return;
+                        return new Lexem (LexemType.Number, buffer.ToString ());
 
                     case '\'':
                     case '"':
-                        this.current.Reset (LexemType.String);
-
+                        buffer = new StringBuilder ();
                         end = this.last;
 
                         while (this.Read () && this.last != end)
                         {
                             if (this.last != '\\' || this.Read ())
-                                this.current.Push (this.last);
+                                buffer.Append (this.last);
                         }
 
                         if (this.eof)
@@ -312,106 +272,97 @@ namespace   Cottle
 
                         this.Read ();
 
-                        return;
+                        return new Lexem (LexemType.String, buffer.ToString ());
 
                     default:
-                        this.current.Reset (LexemType.None);
-
-                        return;
+                        return new Lexem (LexemType.None, string.Empty);
                 }
             }
         }
 
-        private void	NextRaw ()
+        private Lexem   NextChar (LexemType type)
         {
-        	ICollection<LexemMatch> branches;
-        	StringBuilder           buffer;
-        	StringBuilder           builder;
-        	int                     index;
-        	List<LexemMatch>        trails;
+            Lexem   lexem;
+
+            lexem = new Lexem (type, this.last.ToString (CultureInfo.InvariantCulture));
+
+            this.Read ();
+
+            return lexem;
+        }
+
+        private Lexem   NextRaw ()
+        {
+            Lexem           lexem;
+            StringBuilder   text;
+            StringBuilder   token;
+            int             trail;
+            LexemType       type;
 
 			if (this.pending.Type != LexemType.None)
 			{
-                this.current.Reset (this.pending.Type);
-				this.current.Push (this.pending.Content);
+                lexem = this.pending;
 
-				this.pending = new LexemMatch (LexemType.None, string.Empty);
+				this.pending = new Lexem (LexemType.None, string.Empty);
 
-				return;
+				return lexem;
 			}
 
             if (this.eof)
-            {
-                this.current.Reset (LexemType.EndOfFile);
-                this.current.Push ("<EOF>");
+                return new Lexem (LexemType.EndOfFile, "<EOF>");
 
-                return;
+            text = new StringBuilder ();
+
+            for (; !this.eof; this.Read ())
+            {
+                this.cursors.Enqueue (new LexemCursor (this.last, this.root));
+
+                trail = 0;
+
+                foreach (LexemCursor cursor in this.cursors)
+                {
+                    if (cursor.Move (this.last, out type))
+                    {
+                        while (trail-- > 0)
+                            text.Append (this.cursors.Dequeue ().Character);
+
+                        token = new StringBuilder ();
+
+                        while (this.cursors.Count > 0)
+                            token.Append (this.cursors.Dequeue ().Character);
+
+                        lexem = new Lexem (type, token.ToString ());
+
+                        if (text.Length > 0)
+                        {
+                            this.pending = lexem;
+
+                            lexem = new Lexem (LexemType.Text, text.ToString ());
+                        }
+
+                        this.Read ();
+
+                        return lexem;
+                    }
+
+                    ++trail;
+                }
+
+                while (this.cursors.Count > 0 && this.cursors.Peek ().State == null)
+                    text.Append (this.cursors.Dequeue ().Character);
             }
 
-			builder = new StringBuilder ();
-            buffer = new StringBuilder ();
-			
-			while (!this.eof)
-			{
-				branches = this.blocks;
-				index = 0;
+            while (this.cursors.Count > 0)
+                text.Append (this.cursors.Dequeue ().Character);
 
-				buffer.Length = 0;
-
-				do
-				{
-					trails = null;
-
-					foreach (LexemMatch branch in branches)
-					{
-						if (index < branch.Content.Length && branch.Content[index] == this.last)
-						{
-							if (index + 1 == branch.Content.Length)
-							{
-								if (builder.Length > 0)
-								{
-                                    this.current.Reset (LexemType.Text);
-                                    this.current.Push (builder.ToString ());
-
-									this.pending = branch;
-								}
-                                else
-                                {
-                                    this.current.Reset (branch.Type);
-								    this.current.Push (branch.Content);
-                                }
-
-								this.Read ();
-
-								return;
-							}
-
-							if (trails == null)
-								trails = new List<LexemMatch> (branches.Count);
-
-							trails.Add (branch);
-						}
-					}
-
-                    if (this.last != '\\' || this.Read ())
-					    buffer.Append (this.last);
-
-					branches = trails;
-
-					++index;
-				}
-				while (this.Read () && branches != null && branches.Count > 0);
-
-				builder.Append (buffer.ToString ());
-			}
-
-            this.current.Reset (LexemType.Text);
-			this.current.Push (builder.ToString ());
+            return new Lexem (LexemType.Text, text.ToString ());
         }
 
         private bool    Read ()
         {
-            int value = this.reader.Read ();
+            int value;
+
+            value = this.reader.Read ();
 
             if (value >= 0)
             {
@@ -437,7 +388,7 @@ namespace   Cottle
 
         #region Types
 
-        private delegate void   LexerNext ();
+        private delegate Lexem  LexerNextDelegate ();
 
         #endregion
     }

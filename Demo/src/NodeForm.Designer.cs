@@ -72,7 +72,7 @@
             this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox.Location = new System.Drawing.Point(5, 5);
             this.groupBox.Name = "groupBox";
-            this.groupBox.Size = new System.Drawing.Size(454, 191);
+            this.groupBox.Size = new System.Drawing.Size(454, 208);
             this.groupBox.TabIndex = 2;
             this.groupBox.TabStop = false;
             this.groupBox.Text = "Value parameters:";
@@ -80,7 +80,7 @@
             // checkBoxValueBoolean
             // 
             this.checkBoxValueBoolean.AutoSize = true;
-            this.checkBoxValueBoolean.Location = new System.Drawing.Point(200, 71);
+            this.checkBoxValueBoolean.Location = new System.Drawing.Point(200, 75);
             this.checkBoxValueBoolean.Name = "checkBoxValueBoolean";
             this.checkBoxValueBoolean.Size = new System.Drawing.Size(55, 17);
             this.checkBoxValueBoolean.TabIndex = 6;
@@ -93,7 +93,7 @@
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonCancel.Image = global::Demo.Properties.Resources.cross;
             this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonCancel.Location = new System.Drawing.Point(230, 162);
+            this.buttonCancel.Location = new System.Drawing.Point(230, 178);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(100, 23);
             this.buttonCancel.TabIndex = 13;
@@ -105,7 +105,7 @@
             // 
             this.textBoxValueString.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxValueString.Location = new System.Drawing.Point(200, 115);
+            this.textBoxValueString.Location = new System.Drawing.Point(200, 125);
             this.textBoxValueString.Name = "textBoxValueString";
             this.textBoxValueString.Size = new System.Drawing.Size(244, 20);
             this.textBoxValueString.TabIndex = 10;
@@ -114,7 +114,7 @@
             // 
             this.textBoxValueNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxValueNumber.Location = new System.Drawing.Point(200, 92);
+            this.textBoxValueNumber.Location = new System.Drawing.Point(200, 99);
             this.textBoxValueNumber.Name = "textBoxValueNumber";
             this.textBoxValueNumber.Size = new System.Drawing.Size(244, 20);
             this.textBoxValueNumber.TabIndex = 8;
@@ -123,7 +123,7 @@
             // 
             this.radioButtonValueUndefined.AutoSize = true;
             this.radioButtonValueUndefined.Checked = true;
-            this.radioButtonValueUndefined.Location = new System.Drawing.Point(100, 139);
+            this.radioButtonValueUndefined.Location = new System.Drawing.Point(100, 152);
             this.radioButtonValueUndefined.Name = "radioButtonValueUndefined";
             this.radioButtonValueUndefined.Size = new System.Drawing.Size(103, 17);
             this.radioButtonValueUndefined.TabIndex = 11;
@@ -135,7 +135,7 @@
             // radioButtonValueString
             // 
             this.radioButtonValueString.AutoSize = true;
-            this.radioButtonValueString.Location = new System.Drawing.Point(100, 116);
+            this.radioButtonValueString.Location = new System.Drawing.Point(100, 126);
             this.radioButtonValueString.Name = "radioButtonValueString";
             this.radioButtonValueString.Size = new System.Drawing.Size(81, 17);
             this.radioButtonValueString.TabIndex = 9;
@@ -146,7 +146,7 @@
             // radioButtonValueNumber
             // 
             this.radioButtonValueNumber.AutoSize = true;
-            this.radioButtonValueNumber.Location = new System.Drawing.Point(100, 93);
+            this.radioButtonValueNumber.Location = new System.Drawing.Point(100, 100);
             this.radioButtonValueNumber.Name = "radioButtonValueNumber";
             this.radioButtonValueNumber.Size = new System.Drawing.Size(92, 17);
             this.radioButtonValueNumber.TabIndex = 7;
@@ -157,7 +157,7 @@
             // radioButtonValueBoolean
             // 
             this.radioButtonValueBoolean.AutoSize = true;
-            this.radioButtonValueBoolean.Location = new System.Drawing.Point(100, 70);
+            this.radioButtonValueBoolean.Location = new System.Drawing.Point(100, 74);
             this.radioButtonValueBoolean.Name = "radioButtonValueBoolean";
             this.radioButtonValueBoolean.Size = new System.Drawing.Size(93, 17);
             this.radioButtonValueBoolean.TabIndex = 5;
@@ -169,7 +169,7 @@
             // radioButtonValueArray
             // 
             this.radioButtonValueArray.AutoSize = true;
-            this.radioButtonValueArray.Location = new System.Drawing.Point(100, 47);
+            this.radioButtonValueArray.Location = new System.Drawing.Point(100, 48);
             this.radioButtonValueArray.Name = "radioButtonValueArray";
             this.radioButtonValueArray.Size = new System.Drawing.Size(78, 17);
             this.radioButtonValueArray.TabIndex = 4;
@@ -181,7 +181,7 @@
             // labelContent
             // 
             this.labelContent.AutoSize = true;
-            this.labelContent.Location = new System.Drawing.Point(8, 49);
+            this.labelContent.Location = new System.Drawing.Point(8, 50);
             this.labelContent.Name = "labelContent";
             this.labelContent.Size = new System.Drawing.Size(76, 13);
             this.labelContent.TabIndex = 3;
@@ -201,7 +201,7 @@
             this.buttonAccept.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.buttonAccept.Image = global::Demo.Properties.Resources.tick;
             this.buttonAccept.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonAccept.Location = new System.Drawing.Point(124, 162);
+            this.buttonAccept.Location = new System.Drawing.Point(124, 178);
             this.buttonAccept.Name = "buttonAccept";
             this.buttonAccept.Size = new System.Drawing.Size(100, 23);
             this.buttonAccept.TabIndex = 12;
@@ -215,14 +215,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(464, 201);
+            this.ClientSize = new System.Drawing.Size(464, 218);
             this.Controls.Add(this.groupBox);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "NodeForm";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Create value";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Value parameters";
             this.groupBox.ResumeLayout(false);
             this.groupBox.PerformLayout();
             this.ResumeLayout(false);

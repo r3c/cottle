@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Globalization;
 
+using System.IO;
 using Cottle.Exceptions;
 using Cottle.Expressions;
 using Cottle.Nodes;
-using Cottle.Values;
 
 namespace   Cottle
 {
@@ -140,7 +138,7 @@ namespace   Cottle
                     break;
 
                 case LexemType.Number:
-                    expression = new NumberExpression (decimal.TryParse (this.lexer.Current.Content, out number) ? number : 0);
+                    expression = new NumberExpression (decimal.TryParse (this.lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture, out number) ? number : 0);
 
                     this.lexer.Next (LexerMode.BLOCK);
 
@@ -217,7 +215,11 @@ namespace   Cottle
 
         private INode   ParseKeywordComment ()
         {
-            this.ParseStatement ();
+            do
+            {
+                this.lexer.Next (LexerMode.RAW);
+            }
+            while (this.lexer.Current.Type == LexemType.Text);
 
             return null;
         }

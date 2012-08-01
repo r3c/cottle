@@ -174,53 +174,79 @@ namespace   Cottle.Commons
             return Array.ConvertAll (values[0].Fields, (p) => new KeyValuePair<Value, Value> (p.Value, p.Key));
         }, 1);
 
-        /// <summary>
-        /// Provides a .NET formating for a value.
-        /// 
-        /// Template examples :
-        /// - The short date version is {format(timestamp, "d:F")}  //will display the timestamp as a long full date format
-        /// - The short date version is {format(ratio, "n:p2")}     //will display the ratio as a percent with 2 digit after the decimal separator
-        /// - The amount is {format(amount, "b:n2")}                //will display the amount rounded to 2 decimals with the correct thousand 
-        ///  separator and decimal separator
-        /// </summary>
-        public static readonly IFunction    FunctionFormat = new CallbackFunction(delegate(IList<Value> values, Scope scope, TextWriter output)
+        public static readonly IFunction    FunctionFormat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            Value   rawTarget;
-            string  rawFormat;
-            object  target;
             string  format;
+            int     index;
+            object  target;
 
-            if (values.Count == 0)
-                return UndefinedValue.Instance;
-            if (values.Count == 1)
-                return values[0];
+            format = values[1].AsString;
+            index = format.IndexOf (':');
 
-            rawTarget = values[0];
-            rawFormat = values[1].AsString;
-
-            if (rawFormat.Length <= 2 || rawFormat[1] != ':')
-                return UndefinedValue.Instance;
-
-            switch (rawFormat[0])
+            switch (index >= 0 ? format.Substring (0, index) : "a")
             {
-                case 'n':
-                    target = rawTarget.AsNumber;
+                case "a":
+                    switch (values[0].Type)
+                    {
+                        case ValueContent.Boolean:
+                            target = values[0].AsBoolean;
+
+                            break;
+
+                        case ValueContent.Number:
+                            target = values[0].AsNumber;
+
+                            break;
+
+                        case ValueContent.String:
+                            target = values[0].AsString;
+
+                            break;
+
+                        default:
+                            target = null;
+
+                            break;
+                    }
+
                     break;
-                case 'd':
-                    target = minTimeStamp.AddSeconds((double)rawTarget.AsNumber);
+
+                case "b":
+                    target = values[0].AsBoolean;
+
                     break;
-                case 'b':
-                    target = rawTarget.AsBoolean;
+
+                case "d":
+                case "du":
+                    target = epoch.AddSeconds((double)values[0].AsNumber);
+
                     break;
-                case 's':
-                    target = rawTarget.AsString;
+
+                case "dl":
+                    target = epoch.AddSeconds((double)values[0].AsNumber).ToLocalTime ();
+
                     break;
+
+                case "i":
+                    target = (long)values[0].AsNumber;
+
+                    break;
+
+                case "n":
+                    target = values[0].AsNumber;
+
+                    break;
+
+                case "s":
+                    target = values[0].AsString;
+
+                    break;
+
                 default:
                     return UndefinedValue.Instance;
             }
-            format = rawFormat.Substring(2);
 
-            return string.Format("{0:" + format + "}", target);
+            return string.Format ("{0:" + format.Substring(index + 1) + "}", target);
         }, 2);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -590,8 +616,9 @@ namespace   Cottle.Commons
 
         #region Attributes / Private
 
-        private static Dictionary<string, KeyValuePair<Document, DateTime>> includes        = new Dictionary<string, KeyValuePair<Document, DateTime>> ();
-        private static readonly DateTime                                    minTimeStamp    = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime                                    epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        private static Dictionary<string, KeyValuePair<Document, DateTime>> includes = new Dictionary<string, KeyValuePair<Document, DateTime>> ();
 
         [ThreadStatic]
         private static Random                                               random = null;

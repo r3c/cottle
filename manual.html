@@ -61,15 +61,15 @@
 				font-weight:	bold;
 			}
 
-			div.s1 {
+			div.section {
 				margin:		8px 0px 48px 0px;
 			}
 
-			div.s2 {
+			div.section div.section {
 				margin:		8px 0px 32px 0px;
 			}
 
-			div.s3 {
+			div.section div.section div.section {
 				margin:		8px 0px 24px 0px;
 			}
 
@@ -119,17 +119,17 @@
 	</head>
 	<body>
 		<h1>Cottle Documentation</h1>
-		<div class="s1" id="toc-from">
+		<div class="section" id="toc-from">
 			<h2>Table of contents</h2>
-			<div class="s2" id="toc-data">
+			<div class="section" id="toc-data">
 				<ul>
 				</ul>
 			</div>
 
 			<h2>Cottle overview</h2>
-			<div class="s2">
+			<div class="section">
 				<h3>What is Cottle, and what does it looks like?</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Cottle, short for "<u>C</u>ompact <u>O</u>bject to
 					<u>T</u>ext <u>T</u>ransform <u>L</u>anguag<u>e</u>" is a
 					lightweight template engine in .NET 3.5 allowing you to
@@ -174,14 +174,14 @@
 				</div>
 
 				<h3>Download the library</h3>
-				<div class="s3">
+				<div class="section">
 					<p>You can download the last version of Cottle on Github,
 					by following this link:
 					<a href="https://github.com/r3c/Cottle">https://github.com/r3c/Cottle</a>.</p>
 				</div>
 
 				<h3>About this documentation</h3>
-				<div class="s3">
+				<div class="section">
 					<p>This document intent to explain how Cottle works, how to
 					write templates and how to use them in your code. Some
 					features are introduced with a code sample, and some
@@ -227,9 +227,9 @@ document.Render(scope, Console.Out);</code>
 			</div>
 			
 			<h2>Template fundamentals</h2>
-			<div class="s2">
+			<div class="section">
 				<h3>Simple raw text output</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Everything you type into a Cottle template will be
 					printed "as is" in the result document, except for some
 					special characters. That means raw text will appear exactly
@@ -245,8 +245,31 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
-				<h3>Sending variables to template</h3>
-				<div class="s3">
+				<h3>Using commands in templates</h3>
+				<div class="section">
+					<p>A Cottle template can contain commands which will
+					trigger special functionalities such as printing value of
+					variables, using conditional statements, etc.</p>
+					<p>To write a command, use the "{" (left brace) character
+					followed by the name of the command you want to use, then
+					its body, then a "}" (right brace) character to end it.
+					Here is an example using the <code>echo</code> command
+					which outputs the value of a variable of constant:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>The answer is: {echo 42}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>The answer is: 42</code>
+					</div>
+					<p>Of course, this template sample has no actual use as it
+					results in a constant string, but we'll see more realistic
+					examples in following sections.</p>
+				</div>
+
+				<h3>Sending variables to a template</h3>
+				<div class="section">
 					<p>To send variables to parsed document so they can be used
 					while rendering, you must use a <code>Cottle.Scope</code>
 					instance that will hold them. This class behaves quite like
@@ -262,7 +285,7 @@ document.Render(scope, Console.Out);</code>
 
 					<p>Once assigned, variables can be used in the template,
 					for example by using the <code>echo</code> command that
-					prints the value of its argument: </p>
+					can output the value of any variable:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>Hello {echo name}, you have no new message.</code>
@@ -280,11 +303,11 @@ document.Render(scope, Console.Out);</code>
 					want to print doesn't conflict with another command:
 					<code>{echo name}</code> is equivalent to
 					<code>{name}</code> in this example. This shorter form
-					will be used in all incoming samples.</p>
+					will be used in all following samples.</p>
 				</div>
 
 				<h3>Escaping special characters</h3>
-				<div class="s3">
+				<div class="section">
 					<p>There are four special characters that won't be printed
 					unless you escape them, since they're used by template
 					parser to trigger special behaviours. Special characters
@@ -307,7 +330,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Using array values</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Array values contain multiple values stored as key/value
 					pairs. Keys and values can be scalar values, or other
 					nested array values. Values within an array value can be
@@ -342,7 +365,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Literals and variables</h3>
-				<div class="s3">
+				<div class="section">
 					<p>All commands in Cottle, like <code>echo</code>, must be
 					called with values as arguments. These arguments can be
 					names of variables you set through .NET code before
@@ -361,7 +384,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Calling functions</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Functions in Cottle are special values that can be
 					called just like functions in any programming language,
 					using this syntax:</p>
@@ -405,14 +428,14 @@ scope["messages"] = new Dictionary&lt;Value,Value&gt;
 				</div>
 
 				<h3>Commenting your templates</h3>
-				<div class="s3">
+				<div class="section">
 					<p>You can use the <code>_</code> (underscore) command to
-					add comments to your template. This command should be
-					followed by a literal string (characters between quotes),
-					and won't print any result when template is rendered.</p>
+					add comments to your template. This command can be followed
+					by any literal text and won't print any result when
+					template is rendered.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{_ "This is a comment that will be ignored when rendering the template"}
+<code>{_ This is a comment that will be ignored when rendering the template}
 Hello, World!</code>
 					</div>
 					<div class="code">
@@ -423,9 +446,9 @@ Hello, World!</code>
 			</div>
 
 			<h2>Flow control</h2>
-			<div class="s2">
+			<div class="section">
 				<h3>Conditional statements</h3>
-				<div class="s3">
+				<div class="section">
 					<p>You can write conditional statements by using the
 					<code>if</code> command which evaluate the value of a
 					variable (or the result of a function call) to check if its
@@ -481,7 +504,7 @@ X is negative.</code>
 				</div>
 
 				<h3>Arrays enumeration</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Pairs contained within an array value can be enumerated
 					with the <code>for</code> command, that will print its body
 					for each key/value pair it found. An alternative syntax can
@@ -527,7 +550,7 @@ Tags: action horror fantastic</code>
 				</div>
 
 				<h3 id="variables_assignment">Variables assignment</h3>
-				<div class="s3">
+				<div class="section">
 					<p>You can assign variables while template is being
 					rendered by using the <code>set</code> command. Variable
 					assignment allows you improve performance by storing
@@ -553,7 +576,7 @@ Tags: action horror fantastic</code>
     }
 }
 
-{nb_long} message{if gt(nb_long, 1):s is|else:" "are} more than 20 characters long.</code>
+{nb_long} message{if gt(nb_long, 1):s is|else: are} more than 20 characters long.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
@@ -576,7 +599,7 @@ Tags: action horror fantastic</code>
 				</div>
 
 				<h3>Loops</h3>
-				<div class="s3">
+				<div class="section">
 					<p>The <code>while</code> command is the equivalent of the
 					"while" keyword in most programming languages. Be sure to
 					check for a condition that will become false after a finite
@@ -613,9 +636,9 @@ Your random password is: {password}.</code>
 			</div>
 
 			<h2>Advanced topics</h2>
-			<div class="s2">
+			<div class="section">
 				<h3>Variable contents inspection</h3>
-				<div class="s3">
+				<div class="section">
 					<p>When your template doesn't render as you would expect,
 					the <code>dump</code> command can help you identify issues
 					by showing value in a "printable" form. Undefined values,
@@ -639,7 +662,7 @@ Your random password is: {password}.</code>
 				</div>
 
 				<h3>Functions declaration</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Cottle allows you to declare functions, that are
 					callable values you can use to factor code as you would do
 					in a program. To declare a function and assign it to a
@@ -711,7 +734,7 @@ Move one disk from A to C</code>
 				</div>
 
 				<h3>Variables scopes</h3>
-				<div class="s3">
+				<div class="section">
 					<p>When writing complex templates using nested or recursive
 					functions, you may have to take care of variable scopes to
 					avoid potential issues. A scope is the local evaluation
@@ -801,7 +824,7 @@ Move one disk from A to C</code>
 				</div>
 
 				<h3>Custom .NET methods</h3>
-				<div class="s3">
+				<div class="section">
 					<p>If you need new features or improved performance, you
 					can assign your own .NET methods to template variables.
 					That's actually what Cottle does each time you call
@@ -882,7 +905,7 @@ hello! hello! hello!
 				</div>
 
 				<h3>Block delimiters customization</h3>
-				<div class="s3">
+				<div class="section">
 					<p>By default, Cottle uses { character to start a code
 					block, | to continue it (before an <code>else</code>
 					statement for example), and } to end it. These characters
@@ -900,7 +923,7 @@ hello! hello! hello!
 					conflict with internal end-of-array delimiter.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>Block delimiters are now &lt;&lt;block_begin&gt;&gt; and &lt;&lt;block_end&gt;&gt;.</code>
+<code>Block delimiters are now [[block_begin]], [[block_continue]] and [[block_end]].</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
@@ -909,8 +932,9 @@ LexemConfig    config;
 Scope          scope;
 
 config = new LexemConfig();
-config.BlockBegin = "&lt;&lt;";
-config.BlockEnd = "&gt;&gt;";
+config.BlockBegin = "[[";
+config.BlockContinue = "||";
+config.BlockEnd = "]]";
 
 using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
 {
@@ -918,22 +942,23 @@ using (StreamReader template = new StreamReader(new FileStream("template.ctl", F
 }
 
 scope = new Scope();
-scope["block_begin"] = config.BlockBegin + " (double lower-than)";
-scope["block_end"] = config.BlockEnd + " (double greater-than)";
+scope["block_begin"] = "double left bracket (" + config.BlockBegin + ")";
+scope["block_continue"] = "double pipe (" + config.BlockContinue + ")";
+scope["block_end"] = "double right bracket (" + config.BlockEnd + ")";
 
 document.Render(scope, Console.Out);</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>Block delimiters are now &lt;&lt; (double lower-than) and &gt;&gt; (double greater-than) characters.</code>
+<code>Block delimiters are now double left bracket ([[), double pipe (||) and double right bracket (]]).</code>
 					</div>
 				</div>
 			</div>
 
 			<h2 id="common_functions">Common functions</h2>
-			<div class="s2">
+			<div class="section">
 				<h3>Absolute value: abs(numeric)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the absolute value of given numeric value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -948,7 +973,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Compute sum of two values: add(a, b)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the sum of two numeric values.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -961,7 +986,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Logical AND: and(a, b, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Perform logical "and" between given boolean values, i.e.
 					return "true" if every argument is true.</p>
 					<div class="code">
@@ -975,7 +1000,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Concatenate values: cat(a, b, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Concatenate all input values into a single one. This
 					function works on string and arrays.</p>
 					<div class="code">
@@ -991,7 +1016,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Get character from unicode value: char(int)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Get a 1-character string from its unicode value. See
 					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
 					Wikipedia</a> for details.</p>
@@ -1006,13 +1031,14 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Compare two values: cmp(a, b)</h3>
-				<div class="s3">
-					<p>Compare value a against b, and return -1 if a is lower
-					than b, 0 if they're equal, or 1 else. When used on
-					numeric values, the <code>cmp</code> function uses
-					numerical order. When used on strings, it uses
-					alphabetical order. When used on arrays, it first compare
-					their lengths then compare their values two by two.</p>
+				<div class="section">
+					<p>Compare <code>a</code> against <code>b</code>, and
+					return -1 if <code>a</code> is lower than <code>b</code>,
+					0 if they're equal, or 1 else. When used on numeric
+					values, the <code>cmp</code> function uses numerical order.
+					When used on strings, it uses alphabetical order. When
+					used on arrays, it first compare their lengths then compare
+					their values if lengths are equal.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{cmp("abc", "bcd")}
@@ -1028,7 +1054,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Filter pairs in an array: cross(array1, array2, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an array containing all pairs from
 					<code>array1</code> having a key that also exists in
 					<code>array2</code> and following arrays. Output pair
@@ -1044,7 +1070,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Get input value or default value: default(test[, fallback])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return <code>test</code> if it would have satisfied an
 					<code>if</code> condition, or <code>fallback</code> else
 					(or an undefined value if <code>fallback</code> is
@@ -1062,7 +1088,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Compute divide result of two values: div(a, b)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the numeric value of <code>a</code> divided by
 					the value of <code>b</code>.</p>
 					<div class="code">
@@ -1076,7 +1102,7 @@ document.Render(scope, Console.Out);</code>
 				</div>
 
 				<h3>Test if two numeric values are equal: eq(a, b)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return true if a equals b, false false.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1091,7 +1117,7 @@ false</code>
 				</div>
 
 				<h3>Remove pairs from an array: except(array1, array2, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an array containing all pairs from
 					<code>array1</code> having a key that does not exist in
 					<code>array2</code> and following arrays. This function can
@@ -1107,7 +1133,7 @@ false</code>
 				</div>
 
 				<h3>Find index of element in a value: find(value, token[, start])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Find the 0-based index of given token in an array, or
 					sub-string in a string. Search starts at index 0 unless the
 					<code>start</code> argument is specified.</p>
@@ -1124,7 +1150,7 @@ false</code>
 				</div>
 
 				<h3>Swap keys and values in an array: flip(array)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an array were pairs are created by swapping each
 					key and value pair from input array. If two or more values
 					where equal in input array, then only the last one will be
@@ -1143,9 +1169,41 @@ false</code>
 					</div>
 				</div>
 
+				<h3>Apply .NET formatting on value: format(value, format)</h3>
+				<div class="section">
+					<p>Convert any <code>value</code> to a string using given
+					formatting from <code>format</code> argument. Format should
+					use syntax "expr" or "t:expr" where "t" indicates the type
+					of the formatter to use, and "expr" is the .NET format
+					specifier. Available formatter types are:</p>
+					<ul>
+						<li>a: automatic (default, used if "t" is omitted)</li>
+						<li>b: System.Boolean</li>
+						<li>d or du: System.DateTime (UTC)</li>
+						<li>dl: System.DateTime (local)</li>
+						<li>i: System.Int64</li>
+						<li>n: System.Decimal</li>
+						<li>s: System.String</li>
+					</ul>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{format(1339936496, "d:yyyy-MM-dd HH:mm:ss")}
+{format(0.165, "n:p2")}
+{format(1, "b:n2")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>2012-06-17 12:34:56
+16.50 %
+True</code>
+					</div>
+					<p>Formatters always use current culture.</p>
+				</div>
+
 				<h3>Test if numeric value is greater or equal to another: ge(a, b)</h3>
-				<div class="s3">
-					<p>Return true if a is greater or equal to b, false else.</p>
+				<div class="section">
+					<p>Return true if <code>a</code> is greater or equal to
+					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{ge(7, 3)}
@@ -1159,8 +1217,9 @@ true</code>
 				</div>
 
 				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
-				<div class="s3">
-					<p>Return true if a is greater that b, false else.</p>
+				<div class="section">
+					<p>Return true if <code>a</code> is greater that
+					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{gt(7, 3)}
@@ -1174,9 +1233,9 @@ false</code>
 				</div>
 
 				<h3>Check if an array value contains given key: has(array, key)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return true if given array has a value associated to
-					given key, or false else.</p>
+					given key, or false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{has(["name": "Paul", "age": 37, "sex": "M"], "age")}</code>
@@ -1188,7 +1247,7 @@ false</code>
 				</div>
 
 				<h3>Include and render template file: include(path[, vars[, vars...]])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Parse document from a template file and render it with
 					given variables. Variables should be array values, their
 					keys will be used as assigned variable names.</p>
@@ -1244,7 +1303,7 @@ false</code>
 				</div>
 
 				<h3>Join values from an array: join(array[, string])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Concatenate all values from given array pairs, using
 					given string as a separator (or empty string if no
 					separator is provided).</p>
@@ -1259,7 +1318,7 @@ false</code>
 				</div>
 
 				<h3>Convert string to lowercase: lcase(string)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return a lowercase conversion of given string value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1272,7 +1331,7 @@ false</code>
 				</div>
 
 				<h3>Get length of a value: len(a)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the length or given value, that is number pairs
 					if value was an array, or number of characters if value
 					was a string.</p>
@@ -1289,8 +1348,9 @@ false</code>
 				</div>
 
 				<h3>Test if numeric value is lower than another: lt(a, b)</h3>
-				<div class="s3">
-					<p>Return true if a is lower that b, false else.</p>
+				<div class="section">
+					<p>Return true if <code>a</code> is lower that
+					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{lt(3, 7)}
@@ -1304,8 +1364,9 @@ false</code>
 				</div>
 
 				<h3>Test if numeric value is lower or equal to another: le(a, b)</h3>
-				<div class="s3">
-					<p>Return true if a is lower or equal to b, false else.</p>
+				<div class="section">
+					<p>Return true if <code>a</code> is lower or equal to
+					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{le(3, 7)}
@@ -1319,7 +1380,7 @@ true</code>
 				</div>
 
 				<h3>Applying function to each value in an array: map(array, callback[, a, b...])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an array where values are built by applying given
 					function to original array values, while preserving keys.
 					Function <code>callback</code> is invoked for each value in
@@ -1341,24 +1402,28 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Test if a string matches a regular expression: match(string, pattern)</h3>
-				<div class="s3">
-					<p>Return true if a string matches given regular expression
-					pattern, or false else. See
+				<h3>Match string against a regular expression: match(string, pattern)</h3>
+				<div class="section">
+					<p>Match <code>string</code> against given regular
+					expression pattern. If match is successful, an array
+					containing each captured group is returned, otherwise
+					result is an undefined value. See
 					<a href="http://msdn.microsoft.com/en-us/library/hs600312(v=vs.71).aspx">.NET
-					Framework Regular Expressions</a> for details.</p>
+					Framework Regular Expressions</a> for more information.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{match("abc123", "^[a-z]+[0-9]+$")}</code>
+<code>{dump match("abc123", "^[a-z]+([0-9]+)$")}
+{dump match("xyz", "^[a-z]+([0-9]+)$")}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>true</code>
+<code>[0: "abc123", 1: "123"]
+&lt;undefined&gt;</code>
 					</div>
 				</div>
 
 				<h3>Get the maximum between 2 or more values: max(a[, b[, c...]])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the highest numeric value among given ones. This
 					function also works on an array, and will return its
 					highest numeric value.</p>
@@ -1375,7 +1440,7 @@ true</code>
 				</div>
 
 				<h3>Get the minimum between 2 or more values: min(a[, b[, c...]])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the lowest numeric value among given ones. This
 					function also works on an array, and will return its
 					lowest numeric value.</p>
@@ -1392,9 +1457,9 @@ true</code>
 				</div>
 
 				<h3>Compute reminder of two values: mod(a, b)</h3>
-				<div class="s3">
-					<p>Return the value of the first numeric argument modulo the
-					second one.</p>
+				<div class="section">
+					<p>Return the value of the first numeric argument modulo
+					the second one.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{mod(7, 3)}</code>
@@ -1406,8 +1471,9 @@ true</code>
 				</div>
 
 				<h3>Compute product of two values: mul(a, b)</h3>
-				<div class="s3">
-					<p>Return the numeric value of a times b.</p>
+				<div class="section">
+					<p>Return the numeric value of <code>a</code> times
+					<code>b</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{mul(3, 4)}</code>
@@ -1419,7 +1485,7 @@ true</code>
 				</div>
 
 				<h3>Logical NOT: not(a)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Perform logical "not" on given boolean value, i.e return
 					true if value was false or false if it was true.</p>
 					<div class="code">
@@ -1433,7 +1499,7 @@ true</code>
 				</div>
 
 				<h3>Logical OR: or(a, b, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Perform logical "or" between given boolean values, i.e.
 					return "true" if at least one argument is true.</p>
 					<div class="code">
@@ -1447,7 +1513,7 @@ true</code>
 				</div>
 
 				<h3>Get unicode value from character: ord(char)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Get the unicode value of the first character of given
 					string. See
 					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
@@ -1463,7 +1529,7 @@ true</code>
 				</div>
 
 				<h3>Generate pseudo-random value: rand([a[, b]])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Get a pseudo-random numeric value between 0 and
 					2.147.483.647 inclusive. If <code>a</code> is
 					specified, return a pseudo-random numeric value
@@ -1485,7 +1551,7 @@ true</code>
 				</div>
 
 				<h3>Extract part of value: slice(value, index[, count])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Extact slice from an array, or sub-string from a
 					string. <code>count</code> pairs or characters are
 					extracted from given 0-based <code>index</code>. If no
@@ -1504,7 +1570,7 @@ hello</code>
 				</div>
 
 				<h3>Get sorted array: sort(array[, callback])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return a sorted copy of given array. First argument is
 					the input array, and will be sorted using natural order
 					(numerical or alphabetical, depending on value types) by
@@ -1545,7 +1611,7 @@ length</code>
 				</div>
 
 				<h3>Split string into array: split(input, separator)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Split string <code>input</code> according to given
 					string separator <code>separator</code>. Result is an
 					array where pair values contain split sub-strings.</p>
@@ -1560,7 +1626,7 @@ length</code>
 				</div>
 
 				<h3>Compute difference between two values: sub(a, b)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return the numeric value of a minus b.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1573,7 +1639,7 @@ length</code>
 				</div>
 
 				<h3>Convert string to uppercase: ucase(string)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an uppercase conversion of given string
 					value.</p>
 					<div class="code">
@@ -1587,7 +1653,7 @@ length</code>
 				</div>
 
 				<h3>Get union of two arrays: union(array1, array2, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return an array containing all pairs from input arrays,
 					but without duplicating any key. If a key exists in more
 					than one input array, the one from last array will
@@ -1603,7 +1669,7 @@ length</code>
 				</div>
 
 				<h3>Get value depending on a conditional test: when(test[, true_part[, false_part]])</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Return <code>true_part</code> if <code>test</code> would
 					have satisfied an <code>if</code> condition, or
 					<code>false_part</code> else (or a undefined value if
@@ -1623,7 +1689,7 @@ length</code>
 				</div>
 
 				<h3>Logical exclusive OR: xor(a, b, ...)</h3>
-				<div class="s3">
+				<div class="section">
 					<p>Perform logical "xor" between given boolean values, i.e.
 					return "true" if exactly one argument is true and all the
 					others are false.</p>
@@ -1639,7 +1705,7 @@ length</code>
 			</div>
 
 			<h2>Contact</h2>
-			<div class="s2">
+			<div class="section">
 				<p>Contact me by e-mail: cottle [at] mirari [dot] fr</p>
 				<p><a href="http://remi.caput.fr/">RCa</a>, 2011</p>
 			</div>
