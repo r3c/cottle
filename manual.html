@@ -147,8 +147,8 @@
     &lt;body&gt;
         &lt;h1&gt;Hello, {name}!&lt;/h1&gt;
         &lt;p&gt;
-            {if gt(count(messages),0):
-                You have {count(messages)} new message{if gt(count(messages),1):s} in your mailbox!
+            {if gt(len(messages),0):
+                You have {len(messages)} new message{if gt(len(messages),1):s} in your mailbox!
             |else:
                 You have no new message.
             }
@@ -390,7 +390,7 @@ document.Render(scope, Console.Out); // may throw a RenderException on error</co
 					using this syntax:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>You have {count(messages)} new message(s) in your inbox.</code>
+<code>You have {len(messages)} new message(s) in your inbox.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
@@ -464,8 +464,8 @@ Hello, World!</code>
 
 {if test: Variable "test" is true! |else: Variable "test" is false! }
 
-{if gt(count(items), 2):
-    There are more than two items in array ({count(items)}, actually).
+{if gt(len(items), 2):
+    There are more than two items in array ({len(items)}, actually).
 }
 
 {if lt(x, 0):
@@ -560,7 +560,7 @@ Tags: action horror fantastic</code>
 					<code>for</code> and <code>set</code> commands.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{set nb_msgs to count(messages)}
+<code>{set nb_msgs to len(messages)}
 
 {if gt(nb_msgs,0):
     You have {nb_msgs} new message{if gt(nb_msgs, 1):s} in your mailbox!
@@ -1083,7 +1083,8 @@ document.Render(scope, Console.Out);</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>"visible"</code>
+<code>3
+"visible"</code>
 					</div>
 				</div>
 
@@ -1152,11 +1153,11 @@ false</code>
 				<h3>Swap keys and values in an array: flip(array)</h3>
 				<div class="section">
 					<p>Return an array were pairs are created by swapping each
-					key and value pair from input array. If two or more values
-					where equal in input array, then only the last one will be
-					accessed directly. Using resulting array with the
-					<code>for</code> command will still iterate through each
-					pair even if there was duplicates.</p>
+					key and value pair from input array. Using resulting array
+					with the <code>for</code> command will still iterate
+					through each pair even if there was duplicates, but only
+					the last occurrence of each duplicate can be accessed
+					using array subscript operator ([]).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump flip([1: "hello,", 2: "world!"])}
@@ -1341,7 +1342,7 @@ false</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{len("Hello!")}
-{count([17, 22, 391, 44])}</code>
+{len([17, 22, 391, 44])}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
