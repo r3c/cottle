@@ -204,14 +204,14 @@ Scope      scope;
 
 using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
 {
-    document = new Document(template);
+    document = new Document(template); // may throw a ConfigException or DocumentException on error
 }
 
 scope = new Scope();
 
 /* assign values to scope here */
 
-document.Render(scope, Console.Out);</code>
+document.Render(scope, Console.Out); // may throw a RenderException on error</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
@@ -1169,7 +1169,7 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Apply .NET formatting on value: format(value, format)</h3>
+				<h3>Apply .NET formatting on value: format(value, format[, culture])</h3>
 				<div class="section">
 					<p>Convert any <code>value</code> to a string using given
 					formatting from <code>format</code> argument. Format should
@@ -1188,16 +1188,19 @@ false</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{format(1339936496, "d:yyyy-MM-dd HH:mm:ss")}
-{format(0.165, "n:p2")}
+{format(0.165, "n:p2", "fr-FR")}
 {format(1, "b:n2")}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>2012-06-17 12:34:56
-16.50 %
+16,50 %
 True</code>
 					</div>
-					<p>Formatters always use current culture.</p>
+					<p>Formatters use current culture, unless a culture name is
+					specified in the <code>culture</code> argument. See
+					<a href="http://msdn.microsoft.com/fr-fr/goglobal/bb896001.aspx">National Language Support API on MSDN</a>
+					for a list of valid culture names.</p>
 				</div>
 
 				<h3>Test if numeric value is greater or equal to another: ge(a, b)</h3>

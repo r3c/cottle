@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using Cottle.Exceptions;
 using Cottle.Expressions.Generics;
 using Cottle.Values;
 
@@ -41,7 +42,14 @@ namespace   Cottle.Expressions
                 foreach (IExpression argument in this.arguments)
                     values[i++] = argument.Evaluate (scope, output);
 
-                return function.Execute (values, scope, output);
+                try
+                {
+                    return function.Execute (values, scope, output);
+                }
+                catch (Exception exception)
+                {
+                    throw new RenderException ("function evaluation raised an exception", exception);
+                }
             }
 
             return UndefinedValue.Instance;

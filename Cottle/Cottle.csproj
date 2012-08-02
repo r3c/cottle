@@ -39,7 +39,8 @@
     <Compile Include="src\Commons\CommonTools.cs" />
     <Compile Include="src\Document.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
-    <Compile Include="src\Exceptions\LexemException.cs" />
+    <Compile Include="src\Exceptions\DocumentException.cs" />
+    <Compile Include="src\Exceptions\RenderException.cs" />
     <Compile Include="src\Exceptions\UnknownException.cs" />
     <Compile Include="src\Exceptions\UnexpectedException.cs" />
     <Compile Include="src\Expressions\AccessExpression.cs" />

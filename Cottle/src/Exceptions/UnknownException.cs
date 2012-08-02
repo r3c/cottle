@@ -2,7 +2,7 @@
 
 namespace   Cottle.Exceptions
 {
-    public class    UnknownException : LexemException
+    public class    UnknownException : DocumentException
     {
         #region Properties
 

@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace   Cottle.Exceptions
 {
-    public class    UnexpectedException : LexemException
+    public class    UnexpectedException : DocumentException
     {
         #region Properties
 

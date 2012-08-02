@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -176,10 +177,12 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionFormat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            string  format;
-            int     index;
-            object  target;
+            CultureInfo culture;
+            string      format;
+            int         index;
+            object      target;
 
+            culture = values.Count > 2 ? CultureInfo.GetCultureInfo(values[2].AsString) : CultureInfo.CurrentCulture;
             format = values[1].AsString;
             index = format.IndexOf (':');
 
@@ -246,8 +249,8 @@ namespace   Cottle.Commons
                     return UndefinedValue.Instance;
             }
 
-            return string.Format ("{0:" + format.Substring(index + 1) + "}", target);
-        }, 2);
+            return string.Format (culture, "{0:" + format.Substring(index + 1) + "}", target);
+        }, 2, 3);
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {

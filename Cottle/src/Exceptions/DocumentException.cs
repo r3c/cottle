@@ -4,7 +4,7 @@ using System.Text;
 
 namespace   Cottle.Exceptions
 {
-    public abstract class   LexemException : Exception
+    public abstract class   DocumentException : Exception
     {
         #region Properties
 
@@ -46,7 +46,7 @@ namespace   Cottle.Exceptions
 
         #region Constructors
 
-        internal    LexemException (Lexer lexer, string message) :
+        internal    DocumentException (Lexer lexer, string message) :
             base (message)
         {
             this.column = lexer.Column;
