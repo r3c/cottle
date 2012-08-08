@@ -35,6 +35,18 @@ namespace   Cottle.Commons
             return true;
         });
 
+        public static readonly IFunction    FunctionCall = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            IFunction   function;
+
+            function = values[0].AsFunction;
+
+            if (function == null)
+                return UndefinedValue.Instance;
+
+            return function.Execute(Array.ConvertAll(values[1].Fields, (field) => field.Value), scope, output);
+        }, 2);
+
         public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             StringBuilder                       builder;
@@ -121,11 +133,11 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            decimal compare = values[0].AsNumber;
+            Value   first = values[0];
             int     i;
 
             for (i = 1; i < values.Count; ++i)
-                if (values[i].AsNumber != compare)
+                if (values[i].CompareTo (first) != 0)
                     return false;
 
             return true;
@@ -254,12 +266,12 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].AsNumber > values[1].AsNumber;
+            return values[0].CompareTo (values[1]) > 0;
         }, 2);
 
         public static readonly IFunction    FunctionGreaterEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].AsNumber >= values[1].AsNumber;
+            return values[0].CompareTo (values[1]) >= 0;
         }, 2);
 
         public static readonly IFunction    FunctionHas = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -352,7 +364,7 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionLower = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].AsNumber < values[1].AsNumber;
+            return values[0].CompareTo (values[1]) < 0;
         }, 2);
 
         public static readonly IFunction    FunctionLowerCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -362,7 +374,7 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionLowerEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return values[0].AsNumber <= values[1].AsNumber;
+            return values[0].CompareTo (values[1]) <= 0;
         }, 2);
 
         public static readonly IFunction    FunctionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -417,58 +429,26 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            Value   array;
             decimal max;
             int     i;
 
-            if (values[0].Type == ValueContent.Array)
-            {
-                array = values[0];
+            max = values[0].AsNumber;
 
-                if (array.Fields.Length <= 0)
-                    return UndefinedValue.Instance;
-
-                max = array.Fields[0].Value.AsNumber;
-
-                for (i = 1; i < array.Fields.Length; ++i)
-                    max = Math.Max (max, array.Fields[i].Value.AsNumber);
-            }
-            else
-            {
-                max = values[0].AsNumber;
-
-                for (i = 1; i < values.Count; ++i)
-                    max = Math.Max (max, values[i].AsNumber);
-            }
+            for (i = 1; i < values.Count; ++i)
+                max = Math.Max (max, values[i].AsNumber);
 
             return max;
         }, 1, -1);
 
         public static readonly IFunction    FunctionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            Value   array;
             decimal min;
             int     i;
 
-            if (values[0].Type == ValueContent.Array)
-            {
-                array = values[0];
+            min = values[0].AsNumber;
 
-                if (array.Fields.Length <= 0)
-                    return UndefinedValue.Instance;
-
-                min = array.Fields[0].Value.AsNumber;
-
-                for (i = 1; i < array.Fields.Length; ++i)
-                    min = Math.Min (min, array.Fields[i].Value.AsNumber);
-            }
-            else
-            {
-                min = values[0].AsNumber;
-
-                for (i = 1; i < values.Count; ++i)
-                    min = Math.Min (min, values[i].AsNumber);
-            }
+            for (i = 1; i < values.Count; ++i)
+                min = Math.Min (min, values[i].AsNumber);
 
             return min;
         }, 1, -1);
@@ -635,6 +615,7 @@ namespace   Cottle.Commons
             scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), ScopeMode.Closest);
             scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), ScopeMode.Closest);
             scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), ScopeMode.Closest);
+            scope.Set ("call", new FunctionValue (CommonFunctions.FunctionCall), ScopeMode.Closest);
             scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), ScopeMode.Closest);
             scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), ScopeMode.Closest);
             scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), ScopeMode.Closest);

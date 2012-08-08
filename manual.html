@@ -999,10 +999,27 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
+				<h3>Use array values as another function's arguments:
+				call(func, array)</h3>
+				<div class="section">
+					<p>Call function <code>func</code> with values from given
+					array as arguments.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{call(cat, ["Hello", ", ", "World", "!"])}
+{call(max, [3, 8, 2, 7])}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Hello, World!
+8</code>
+					</div>
+				</div>
+
 				<h3>Concatenate values: cat(a, b, ...)</h3>
 				<div class="section">
 					<p>Concatenate all input values into a single one. This
-					function works on string and arrays.</p>
+					function works on both strings and arrays.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{cat("Hello, ", "World!")}
@@ -1069,12 +1086,13 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
-				<h3>Get input value or default value: default(test[, fallback])</h3>
+				<h3>Get input value or default value:
+				default(test[, fallback])</h3>
 				<div class="section">
 					<p>Return <code>test</code> if it would have satisfied an
-					<code>if</code> condition, or <code>fallback</code> else
-					(or an undefined value if <code>fallback</code> is
-					missing).</p>
+					<code>if</code> condition, or <code>fallback</code>
+					otherwise (or an undefined value if <code>fallback</code>
+					is missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set x to 3}
@@ -1102,22 +1120,26 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
-				<h3>Test if two numeric values are equal: eq(a, b)</h3>
+				<h3>Test if values are equal: eq(a, b, ...)</h3>
 				<div class="section">
-					<p>Return true if a equals b, false false.</p>
+					<p>Return true if all arguments are equal, or false
+					otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{eq(7, 7)}
-{eq(1, 4)}</code>
+{eq(1, 4)}
+{eq("test", "test")}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>true
-false</code>
+false
+true</code>
 					</div>
 				</div>
 
-				<h3>Remove pairs from an array: except(array1, array2, ...)</h3>
+				<h3>Remove pairs from an array: except(array1, array2,
+				...)</h3>
 				<div class="section">
 					<p>Return an array containing all pairs from
 					<code>array1</code> having a key that does not exist in
@@ -1133,10 +1155,11 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Find index of element in a value: find(value, token[, start])</h3>
+				<h3>Find index of element in a value: find(value, token[,
+				start])</h3>
 				<div class="section">
 					<p>Find the 0-based index of given token in an array, or
-					sub-string in a string. Search starts at index 0 unless the
+					sub-string in a string. Search starts at index 0 unless
 					<code>start</code> argument is specified.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1170,7 +1193,8 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Apply .NET formatting on value: format(value, format[, culture])</h3>
+				<h3>Apply .NET formatting on value: format(value, format[,
+				culture])</h3>
 				<div class="section">
 					<p>Convert any <code>value</code> to a string using given
 					formatting from <code>format</code> argument. Format should
@@ -1204,39 +1228,45 @@ True</code>
 					for a list of valid culture names.</p>
 				</div>
 
-				<h3>Test if numeric value is greater or equal to another: ge(a, b)</h3>
+				<h3>Test if a value is greater or equal to another: ge(a,
+				b)</h3>
 				<div class="section">
 					<p>Return true if <code>a</code> is greater or equal to
 					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{ge(7, 3)}
-{ge(2, 2)}</code>
+{ge(2, 2)}
+{ge("abc", "abx")}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>true
-true</code>
-					</div>
-				</div>
-
-				<h3>Test if numeric value is greater than another: gt(a, b)</h3>
-				<div class="section">
-					<p>Return true if <code>a</code> is greater that
-					<code>b</code>, false otherwise.</p>
-					<div class="code">
-						<blockquote><span>Template:</span></blockquote>
-<code>{gt(7, 3)}
-{gt(2, 2)}</code>
-					</div>
-					<div class="code">
-						<blockquote><span>Result:</span></blockquote>
-<code>true
+true
 false</code>
 					</div>
 				</div>
 
-				<h3>Check if an array value contains given key: has(array, key)</h3>
+				<h3>Test if a value is greater than another: gt(a, b)</h3>
+				<div class="section">
+					<p>Return true if <code>a</code> is greater than
+					<code>b</code>, false otherwise.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{gt(7, 3)}
+{gt(2, 2)}
+{ge("abc", "abx")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false
+false</code>
+					</div>
+				</div>
+
+				<h3>Check if an array value contains given key: has(array,
+				key)</h3>
 				<div class="section">
 					<p>Return true if given array has a value associated to
 					given key, or false otherwise.</p>
@@ -1250,7 +1280,8 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Include and render template file: include(path[, vars[, vars...]])</h3>
+				<h3>Include and render template file: include(path[, vars[,
+				vars, ...]])</h3>
 				<div class="section">
 					<p>Parse document from a template file and render it with
 					given variables. Variables should be array values, their
@@ -1259,7 +1290,8 @@ false</code>
 					"article.ctl" is available in current directory and
 					contains this template code:</p>
 					<div class="code">
-						<blockquote><span>Template "article.ctl":</span></blockquote>
+						<blockquote><span>Template
+						"article.ctl":</span></blockquote>
 <code>&lt;div class="box"&gt;
     &lt;div class="title"&gt;{a.title}&lt;/div&gt;
     &lt;div class="text"&gt;{a.text}&lt;/div&gt;
@@ -1351,39 +1383,44 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Test if numeric value is lower than another: lt(a, b)</h3>
-				<div class="section">
-					<p>Return true if <code>a</code> is lower that
-					<code>b</code>, false otherwise.</p>
-					<div class="code">
-						<blockquote><span>Template:</span></blockquote>
-<code>{lt(3, 7)}
-{lt(2, 2)}</code>
-					</div>
-					<div class="code">
-						<blockquote><span>Result:</span></blockquote>
-<code>true
-false</code>
-					</div>
-				</div>
-
-				<h3>Test if numeric value is lower or equal to another: le(a, b)</h3>
+				<h3>Test if a value is lower or equal to another: le(a, b)</h3>
 				<div class="section">
 					<p>Return true if <code>a</code> is lower or equal to
 					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{le(3, 7)}
-{le(2, 2)}</code>
+{le(2, 2)}
+{le("abc", "abx")}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>true
+true
 true</code>
 					</div>
 				</div>
 
-				<h3>Applying function to each value in an array: map(array, callback[, a, b...])</h3>
+				<h3>Test if a value is lower than another: lt(a, b)</h3>
+				<div class="section">
+					<p>Return true if <code>a</code> is lower than
+					<code>b</code>, false otherwise.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{lt(3, 7)}
+{lt(2, 2)}
+{lt("abc", "abx")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>true
+false
+true</code>
+					</div>
+				</div>
+
+				<h3>Applying function to each value in an array: map(array,
+				callback[, a, b, ...])</h3>
 				<div class="section">
 					<p>Return an array where values are built by applying given
 					function to original array values, while preserving keys.
@@ -1406,7 +1443,8 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Match string against a regular expression: match(string, pattern)</h3>
+				<h3>Match string against a regular expression: match(string,
+				pattern)</h3>
 				<div class="section">
 					<p>Match <code>string</code> against given regular
 					expression pattern. If match is successful, an array
@@ -1426,36 +1464,34 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Get the maximum between 2 or more values: max(a[, b[, c...]])</h3>
+				<h3>Get the maximum between 2 or more values: max(a[, b[,
+				c, ...]])</h3>
 				<div class="section">
-					<p>Return the highest numeric value among given ones. This
-					function also works on an array, and will return its
-					highest numeric value.</p>
+					<p>Return the highest numeric value among given ones.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{max(6, 8, 5, 7, 1, 2)}
-{max([6, 8, 5, 7, 1, 2])}</code>
+<code>{max(7, 5)}
+{max(6, 8, 5, 7, 1, 2)}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>8
+<code>7
 8</code>
 					</div>
 				</div>
 
-				<h3>Get the minimum between 2 or more values: min(a[, b[, c...]])</h3>
+				<h3>Get the minimum between 2 or more values: min(a[, b[,
+				c, ...]])</h3>
 				<div class="section">
-					<p>Return the lowest numeric value among given ones. This
-					function also works on an array, and will return its
-					lowest numeric value.</p>
+					<p>Return the lowest numeric value among given ones.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{min(6, 8, 5, 7, 1, 2)}
-{min([6, 8, 5, 7, 1, 2])}</code>
+<code>{min(9, 3)}
+{min(6, 8, 5, 7, 1, 2)}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>1
+<code>3
 1</code>
 					</div>
 				</div>
@@ -1581,7 +1617,7 @@ hello</code>
 					default. You can specify a second argument as
 					comparison delegate, that should accept two arguments and
 					return -1 if the first should be placed "before" the
-					second, 0 if they are equal, or 1 else.</p>
+					second, 0 if they are equal, or 1 otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set shuffled to ["in", "order", "elements" "natural"]}
@@ -1672,11 +1708,12 @@ length</code>
 					</div>
 				</div>
 
-				<h3>Get value depending on a conditional test: when(test[, true_part[, false_part]])</h3>
+				<h3>Get value depending on a conditional test: when(test[,
+				true_part[, false_part]])</h3>
 				<div class="section">
 					<p>Return <code>true_part</code> if <code>test</code> would
 					have satisfied an <code>if</code> condition, or
-					<code>false_part</code> else (or a undefined value if
+					<code>false_part</code> otherwise (or a undefined value if
 					<code>false_part</code> is missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>

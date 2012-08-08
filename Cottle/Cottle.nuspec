@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Cottle</id>
+    <version>1.0.0.7</version>
+    <authors>Remi Caput</authors>
+    <owners>Remi Caput</owners>
+    <!--<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>-->
+    <projectUrl>https://github.com/r3c/Cottle/</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Cottle Template Library</description>
+    <tags>Cottle Template</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\*.dll" target="lib\net35" />
+  </files>
+</package>
