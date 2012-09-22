@@ -224,47 +224,56 @@
 
 				<h3>About this documentation</h3>
 				<div class="section">
-					<p>This document intent to explain how Cottle works, how to
-					write templates and how to use them in your code. Some
-					features are introduced with a code sample, and some
-					guidelines have been followed to ease readability.</p>
-					<p>Using Cottle requires an input template, which could be
-					streamed from any source compatible with
-					<code>System.IO.TextReader</code> class (text file, memory
-					buffer, network socket...), and an executable code that
-					parse the template into a <code>Cottle.Document</code>
-					instance, then renders it into an output string or writer.
-					These three parts will be shown in examples as follows:</p>
+					<p>The intent of this document is to explain how Cottle
+					works, how to write templates and how to use them in your
+					code. Most features will be introduced with a code sample
+					to ease readability.</p>
+					<p>Using Cottle in your code requires two things:</p>
+					<ul>
+						<li>An input template written in Cottle format, used to
+						control how your data must be rendered. This template
+						can be streamed from any source compatible with
+						<code>System.IO.TextReader</code> class (text file,
+						memory buffer, network socket...) as shown in the
+						example below.</li>
+						<li>An executable code that parses the template into a
+						<code>Cottle.Document</code> instance, then renders it
+						into an output string or writer.</li>
+					</ul>
+					<p>Here is a simple use case:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>Text contents of the template file 'template.ctl'.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>Document   document;
-Scope      scope;
-
-using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
+<code>private void   SomeFunction ()
 {
-    document = new Document(template); // may throw a ConfigException or DocumentException on error
-}
+    Document   document;
+    Scope      scope;
 
-scope = new Scope(); // create a new empty scope to store values
-CommonFunctions.Assign(scope); // see paragraph "<a href="#calling_functions">Calling functions</a>" about this line
+    using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
+    {
+        document = new Document(template); // may throw a ConfigException or DocumentException on error
+    }
 
-/* TODO: assign some values to scope */
+    scope = new Scope(); // create a new empty scope to store values
+    CommonFunctions.Assign(scope); // see paragraph "<a href="#calling_functions">Calling functions</a>" about this line
 
-document.Render(scope, Console.Out); // may throw a RenderException on error</code>
+    /* TODO: assign some values to scope */
+
+    document.Render(scope, Console.Out); // may throw a RenderException on error
+}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>Text contents of the template file 'template.ctl'.</code>
 					</div>
 					<p>Since the sample C# codes used in example is quite
-					redundant, only the specific parts for each one will appear
-					in examples and should be inserted where indicated by a
-					comment in the sample above. Common parts of the code won't
-					be shown anymore.
+					redundant, only specific parts for each one will appear in
+					following examples. They should be inserted when indicated
+					by the "TODO" comment in sample above. Common parts of the
+					code won't be shown anymore.
 					</p>
 				</div>
 			</div>
@@ -297,7 +306,7 @@ document.Render(scope, Console.Out); // may throw a RenderException on error</co
 					followed by the name of the command you want to use, then
 					its body, then a "}" (right brace) character to end it.
 					Here is an example using the <code>echo</code> command
-					which outputs the value of a variable of constant:</p>
+					which outputs the value of a variable or constant:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>The answer is: {echo 42}</code>
