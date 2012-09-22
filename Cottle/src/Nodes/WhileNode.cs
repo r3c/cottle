@@ -50,15 +50,16 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
-            output.Write ("{while ");
+        	output.Write (config.BlockBegin);
+            output.Write ("while ");
             output.Write (this.test);
-            output.Write (": ");
+            output.Write (":");
 
-            this.body.Debug (output);
+            this.body.Print (config, output);
 
-            output.Write ("}");
+            output.Write (config.BlockEnd);
         }
 
         #endregion

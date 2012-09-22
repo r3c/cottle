@@ -39,10 +39,10 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
             foreach (INode node in this.nodes)
-                node.Debug (output);
+                node.Print (config, output);
         }
 
         #endregion

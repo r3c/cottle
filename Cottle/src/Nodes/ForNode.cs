@@ -84,9 +84,10 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
-            output.Write ("{for ");
+        	output.Write (config.BlockBegin);
+            output.Write ("for ");
 
             if (this.key != null)
             {
@@ -97,18 +98,19 @@ namespace   Cottle.Nodes
             output.Write (this.value);
             output.Write (" in ");
             output.Write (this.from);
-            output.Write (": ");
+            output.Write (":");
 
-            this.body.Debug (output);
+            this.body.Print (config, output);
 
             if (this.empty != null)
             {
-                output.Write ("|empty:");
+            	output.Write (config.BlockContinue);
+                output.Write ("empty:");
 
-                this.empty.Debug (output);
+                this.empty.Print (config, output);
             }
 
-            output.Write ('}');
+            output.Write (config.BlockEnd);
         }
 
         #endregion

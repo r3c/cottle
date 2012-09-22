@@ -17,7 +17,7 @@ namespace   Cottle.Nodes
 
         private INode                   body;
 
-        private ScopeMode           mode;
+        private ScopeMode				mode;
 
         private NameExpression          name;
 
@@ -46,11 +46,12 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
             bool    comma = false;
 
-            output.Write ("{def ");
+            output.Write (config.BlockBegin);
+            output.Write ("define ");
             output.Write (this.name);
             output.Write ('(');
 
@@ -66,9 +67,9 @@ namespace   Cottle.Nodes
 
             output.Write ("): ");
 
-            this.body.Debug (output);
+            this.body.Print (config, output);
 
-            output.Write ('}');
+            output.Write (config.BlockEnd);
         }
 
         #endregion

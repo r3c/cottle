@@ -73,6 +73,74 @@
 				margin:		8px 0px 24px 0px;
 			}
 
+			div.section p {
+				margin:	12px 8px;
+			}
+
+			div.section ul {
+				padding:	4px 32px;
+				margin:		8px 0px;
+				list-style:	circle;
+			}
+
+			div.section ul ul {
+				padding:	0px 32px;
+				margin:		0px;
+			}
+
+			div.section p code,
+			div.section ul code {
+				background:	#E0E0E0;
+				font:		normal normal normal 1.0em monospace;
+			}
+
+			div.toc {
+				position:	absolute;
+				left:		4px;
+				top:		4px;
+			}
+
+			div.toc span.handle {
+				cursor:			pointer;
+				padding:		1px 8px 1px 9px;
+				background:		#B0C6E0;
+				border-top:		1px solid #C0D0F0;
+				border-right:	1px solid #A0B0C0;
+				border-bottom:	1px solid #A0B0C0;
+				border-left:	1px solid #C0D0F0;
+				border-radius:	6px;
+				font-size:		0.7em;
+				font-weight:	bold;
+			}
+
+			div.toc ul {
+				display:		none;
+				padding:		0px 6px 0px 24px;
+				margin:			4px 2px;
+				background:		#D0E0F0;
+				border-top:		1px solid #80A0B0;
+				border-right:	1px solid #A0C0D0;
+				border-bottom:	1px solid #A0C0D0;
+				border-left:	1px solid #80A0B0;
+				border-radius:	4px;
+				font-size:		0.8em;
+			}
+
+			div.toc:hover ul {
+				display:		block;
+			}
+
+			div.toc ul ul {
+				display:		block;
+				padding:		0px 6px;
+				margin:			0px 2px;
+				background:		transparent;
+				border-top:		0px;
+				border-right:	0px;
+				border-bottom:	0px;
+				border-left:	0px;
+			}
+
 			h1 {
 				padding:	0px;
 				margin:		24px 8px;
@@ -94,38 +162,12 @@
 				font-size:	1.0em;
 				color:		#6080C0;
 			}
-
-			p {
-				margin:	12px 8px;
-			}
-
-			ul {
-				padding:	4px 32px;
-				margin:		8px 0px;
-				list-style:	circle;
-			}
-
-			ul ul {
-				padding:	0px 32px;
-				margin:		0px;
-			}
-
-			p code, ul code {
-				background:	#E0E0E0;
-				font:		normal normal normal 1.0em monospace;
-			}
 		</style>
 		<title>Cottle Documentation</title>
 	</head>
 	<body>
 		<h1>Cottle Documentation</h1>
 		<div class="section" id="toc-from">
-			<h2>Table of contents</h2>
-			<div class="section" id="toc-data">
-				<ul>
-				</ul>
-			</div>
-
 			<h2>Cottle overview</h2>
 			<div class="section">
 				<h3>What is Cottle, and what does it looks like?</h3>
@@ -207,9 +249,10 @@ using (StreamReader template = new StreamReader(new FileStream("template.ctl", F
     document = new Document(template); // may throw a ConfigException or DocumentException on error
 }
 
-scope = new Scope();
+scope = new Scope(); // create a new empty scope to store values
+CommonFunctions.Assign(scope); // see paragraph "<a href="#calling_functions">Calling functions</a>" about this line
 
-/* assign values to scope here */
+/* TODO: assign some values to scope */
 
 document.Render(scope, Console.Out); // may throw a RenderException on error</code>
 					</div>
@@ -383,7 +426,7 @@ document.Render(scope, Console.Out); // may throw a RenderException on error</co
 					</div>
 				</div>
 
-				<h3>Calling functions</h3>
+				<h3 id="calling_functions">Calling functions</h3>
 				<div class="section">
 					<p>Functions in Cottle are special values that can be
 					called just like functions in any programming language,
@@ -394,7 +437,7 @@ document.Render(scope, Console.Out); // may throw a RenderException on error</co
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(scope);
+<code>CommonFunctions.Assign(scope); // see below for details about this line
 
 scope["messages"] = new Dictionary&lt;Value,Value&gt;
 {
@@ -419,8 +462,8 @@ scope["messages"] = new Dictionary&lt;Value,Value&gt;
 					fills given <code>Scope</code> object with some useful
 					functions, like <code>count</code> we used in previous
 					example.</p>
-					<p>To get a description of each of the functions set
-					when using <code>CommonFunctions.Assign</code>, see
+					<p>To get a description of each of the functions assigned
+					when calling <code>CommonFunctions.Assign</code>, see
 					paragraph
 					"<a href="#common_functions">Common functions</a>". For all
 					following samples, we'll assume that common functions are
@@ -1751,6 +1794,11 @@ length</code>
 				<p><a href="http://remi.caput.fr/">RCa</a>, 2011</p>
 			</div>
 		</div>
+		<div class="toc" id="toc-data">
+			<div>
+				<span class="handle">Table of contents</span>
+			</div>
+		</div>
 
 		<script type="text/javascript">
 <!--
@@ -1796,16 +1844,15 @@ length</code>
 				for (var i = stack.length; i-- > 0; )
 					node.innerHTML = stack[i].num + '.' + node.innerHTML;
 
+				if (!node.id)
+					node.id = 'toc' + unique++;
+
 				anchor = document.createElement ('a');
 				anchor.innerHTML = node.innerHTML;
-				anchor.href = '#toc' + unique;
+				anchor.href = '#' + node.id;
 
 				child = document.createElement ('li');
 				child.appendChild (anchor);
-
-				node.id = 'toc' + unique;
-
-				++unique;
 
 				for (; next > depth; ++depth)
 				{

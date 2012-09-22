@@ -60,29 +60,42 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
-            bool    first = true;
+            bool    first;
+            
+            first = true;
 
             foreach (Branch branch in this.branches)
             {
-                output.Write (first ? "{if " : "|elif");
+            	if (first)
+            	{
+            		output.Write (config.BlockBegin);
+            		output.Write ("if ");
+
+            		first = false;
+            	}
+            	else
+            	{
+            		output.Write (config.BlockContinue);
+            		output.Write ("elif ");
+            	}
+
                 output.Write (branch.Test);
-                output.Write (": ");
+                output.Write (":");
 
-                branch.Body.Debug (output);
-
-                first = false;
+                branch.Body.Print (config, output);
             }
 
             if (this.fallback != null)
             {
-                output.Write ("|else:");
+            	output.Write (config.BlockContinue);
+                output.Write ("else:");
 
-                this.fallback.Debug (output);
+                this.fallback.Print (config, output);
             }
 
-            output.Write ('}');
+            output.Write (config.BlockEnd);
         }
 
         #endregion

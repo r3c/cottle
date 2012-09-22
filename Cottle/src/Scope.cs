@@ -69,21 +69,23 @@ namespace   Cottle
             return false;
         }
 
-        public void Leave ()
+        public bool Leave ()
         {
             Stack<Value>   stack;
 
-            if (this.levels.Count > 1)
+            if (this.levels.Count < 2)
+            	return false;
+
+            foreach (Value name in this.levels.Pop ())
             {
-                foreach (Value name in this.levels.Pop ())
-                {
-                    if (this.stacks.TryGetValue (name, out stack))
-                        stack.Pop ();
-                }
+                if (this.stacks.TryGetValue (name, out stack))
+                    stack.Pop ();
             }
+
+			return true;
         }
 
-        public bool Set (Value name, Value value, ScopeMode set)
+        public bool	Set (Value name, Value value, ScopeMode mode)
         {
             HashSet<Value>  level;
             Stack<Value>    stack;
@@ -97,7 +99,7 @@ namespace   Cottle
 
             level = this.levels.Peek ();
 
-            switch (set)
+            switch (mode)
             {
                 case ScopeMode.Closest:
                     if (stack.Count > 0)

@@ -35,8 +35,10 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
+        	// FIXME: special sequences in text should be escaped
+
             output.Write (this.text);
         }
 

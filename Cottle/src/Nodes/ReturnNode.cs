@@ -31,11 +31,12 @@ namespace   Cottle.Nodes
             return true;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
-            output.Write ("{return ");
+        	output.Write (config.BlockBegin);
+            output.Write ("return ");
             output.Write (this.expression);
-            output.Write ('}');
+            output.Write (config.BlockEnd);
         }
 
         #endregion

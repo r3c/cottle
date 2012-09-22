@@ -5,7 +5,7 @@ using System.Text;
 
 namespace   Cottle
 {
-    public enum ValueContent
+    public enum	ValueContent
     {
         Array,
         Boolean,

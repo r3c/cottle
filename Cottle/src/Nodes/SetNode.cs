@@ -14,15 +14,15 @@ namespace   Cottle.Nodes
 
         private IExpression     expression;
 
-        private ScopeMode   mode;
+        private ScopeMode		mode;
 
-        private NameExpression  name;
+        private NameExpression	name;
 
         #endregion
 
         #region Constructors
 
-        public  SetNode (NameExpression name, IExpression expression, ScopeMode mode)
+        public	SetNode (NameExpression name, IExpression expression, ScopeMode mode)
         {
             this.expression = expression;
             this.mode = mode;
@@ -42,9 +42,10 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Debug (TextWriter output)
+        public void Print (LexerConfig config, TextWriter output)
         {
-            output.Write ("{set ");
+        	output.Write (config.BlockBegin);
+            output.Write ("set ");
             output.Write (this.name);
 
             switch (this.mode)
@@ -61,7 +62,7 @@ namespace   Cottle.Nodes
             }
 
             output.Write (this.expression);
-            output.Write ('}');
+            output.Write (config.BlockEnd);
         }
 
         #endregion
