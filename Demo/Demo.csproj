@@ -94,46 +94,20 @@
     <None Include="autoload.ctv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\tick.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\cross.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\arrow_refresh.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tag_blue_add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tag_orange.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tag_blue_edit.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\tag_blue_delete.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\arrow_up.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\arrow_down.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\script_save.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\script_lightning.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\resultset_previous.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\resultset_next.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\wrench_orange.png" />
+    <None Include="Resources\button_accept.png" />
+    <None Include="Resources\button_cancel.png" />
+    <None Include="Resources\button_submit.png" />
+    <None Include="Resources\menu_config.png" />
+    <None Include="Resources\menu_file_load.png" />
+    <None Include="Resources\menu_file_save.png" />
+    <None Include="Resources\menu_move_down.png" />
+    <None Include="Resources\menu_move_up.png" />
+    <None Include="Resources\menu_tree_collapse.png" />
+    <None Include="Resources\menu_tree_expand.png" />
+    <None Include="Resources\menu_value_clone.png" />
+    <None Include="Resources\menu_value_delete.png" />
+    <None Include="Resources\menu_value_edit.png" />
+    <None Include="Resources\menu_value_insert.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

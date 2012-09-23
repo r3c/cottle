@@ -12,7 +12,7 @@ namespace   Cottle.Values.Generics
         {
             get
             {
-                return Value.EmptyFields;
+                return Value.emptyFields;
             }
         }
 

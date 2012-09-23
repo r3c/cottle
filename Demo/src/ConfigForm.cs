@@ -28,7 +28,7 @@ namespace   Demo
 
         #endregion
 
-        #region Methods / Listeners
+        #region Methods
 
         private void    buttonAccept_Click (object sender, EventArgs e)
         {

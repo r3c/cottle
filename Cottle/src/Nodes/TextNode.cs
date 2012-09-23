@@ -37,9 +37,15 @@ namespace   Cottle.Nodes
 
         public void Print (LexerConfig config, TextWriter output)
         {
-        	// FIXME: special sequences in text should be escaped
+        	StringBuilder	builder;
 
-            output.Write (this.text);
+        	builder = new StringBuilder (this.text);
+        	builder.Replace ("\\", "\\\\");
+        	builder.Replace (config.BlockBegin, "\\" + config.BlockBegin);
+        	builder.Replace (config.BlockContinue, "\\" + config.BlockContinue);
+        	builder.Replace (config.BlockEnd, "\\" + config.BlockEnd);
+
+        	output.Write (builder.ToString ());
         }
 
         #endregion

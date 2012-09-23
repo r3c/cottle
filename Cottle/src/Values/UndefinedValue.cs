@@ -6,7 +6,7 @@ using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
-    public sealed class UndefinedValue : Value
+    public sealed class	UndefinedValue : Value
     {
         #region Properties
 
@@ -46,7 +46,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return Value.EmptyFields;
+                return Value.emptyFields;
             }
         }
 

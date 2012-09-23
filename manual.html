@@ -115,15 +115,17 @@
 
 			div.toc ul {
 				display:		none;
-				padding:		0px 6px 0px 24px;
-				margin:			4px 2px;
+				padding:		1px 6px;
+				margin:			2px;
 				background:		#D0E0F0;
 				border-top:		1px solid #80A0B0;
 				border-right:	1px solid #A0C0D0;
 				border-bottom:	1px solid #A0C0D0;
 				border-left:	1px solid #80A0B0;
 				border-radius:	4px;
-				font-size:		0.8em;
+				font-size:		0.9em;
+				line-height:	16px;
+				list-style:		none;
 			}
 
 			div.toc:hover ul {
@@ -300,11 +302,11 @@
 				<h3>Using commands in templates</h3>
 				<div class="section">
 					<p>A Cottle template can contain commands which will
-					trigger special functionalities such as printing value of
+					trigger special behaviors such as printing value of
 					variables, using conditional statements, etc.</p>
 					<p>To write a command, use the "{" (left brace) character
-					followed by the name of the command you want to use, then
-					its body, then a "}" (right brace) character to end it.
+					followed by the name of the command you want to use and its
+					parameters, then a "}" (right brace) character to end it.
 					Here is an example using the <code>echo</code> command
 					which outputs the value of a variable or constant:</p>
 					<div class="code">
@@ -318,6 +320,22 @@
 					<p>Of course, this template sample has no actual use as it
 					results in a constant string, but we'll see more realistic
 					examples in following sections.</p>
+					<p>You'll see later that some commands, such as the
+					<code>if</code> comamnd, also require a body which must
+					appear between a ":" (colon) character and the "}" at the
+					end of the command:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{if condition:something}</code>
+					</div>
+					<p>Command bodies are always raw text, not code, so in this
+					example "something" will be printed if the <code>if</code>
+					command is satisfied. You can of course use commands from
+					within another command body:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{if condition:{echo result}}</code>
+					</div>
 				</div>
 
 				<h3>Sending variables to a template</h3>
@@ -379,6 +397,8 @@
 						<blockquote><span>Result:</span></blockquote>
 <code>Special characters {, }, | and \ must be escaped.</code>
 					</div>
+					<p>Special characters can be changed as you'll see in
+					section <a href="#block_delimiters_customization">Block delimiters customization</a>.</p>
 				</div>
 
 				<h3>Using array values</h3>
@@ -499,15 +519,18 @@ Hello, World!</code>
 
 			<h2>Flow control</h2>
 			<div class="section">
-				<h3>Conditional statements</h3>
+				<h3 id="conditional_statements">Conditional statements</h3>
 				<div class="section">
 					<p>You can write conditional statements by using the
-					<code>if</code> command which evaluate the value of a
-					variable (or the result of a function call) to check if its
-					body should be printed or not. The <code>if</code> command
-					also supports optional <code>elif</code> (else if) and
-					<code>else</code> blocks that behave like in any
-					programming language.</p>
+					<code>if</code> command which evaluates a value (which can
+					be a variable or the result of a function call) to check if
+					its body should be printed or not. A condition is satisfied
+					if the value evaluates to true : any undefined result,
+					empty string, 0 or empty array will evaluate to false where
+					any other value will evaluate to true.</p>
+					<p>The <code>if</code> command also supports optional
+					<code>elif</code> (else if) and <code>else</code> blocks
+					that behave like in any programming language.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{if 1:
@@ -550,9 +573,6 @@ There are more than two items in array (3, actually).
 
 X is negative.</code>
 					</div>
-					<p>Any undefined result, empty string, 0 or empty array
-					will be evaluated to "false" when used in conditional
-					statements. Other values will be considered as "true".</p>
 				</div>
 
 				<h3>Arrays enumeration</h3>
@@ -648,9 +668,30 @@ Tags: action horror fantastic</code>
 					<p>You can assume that all variables are set in a global
 					common scope. More advanced use of variable assignments
 					will be explained later in this document.</p>
+					<p>Variables in Cottle are immutable, so it's not possible
+					to assign some value to an array subscript. If you want to
+					append, replace or erase a value in an array, you'll have
+					to build a new one and inject, filter out or replace
+					desired value. Common functions
+					"<a href="#function_union">union</a>" and
+					"<a href="#function_except">except</a>" can be used to
+					easily achieve such operations:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{set my_array to ["delete_me": "TODO: delete this value", "let_me": "I shouldn't be touched"]}
+
+{set my_array to union(my_array, ["append_me": "I'm here!"])}
+{set my_array to except(my_array, ["delete_me": 0])}
+
+{dump my_array}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>["let_me": "I shouldn't be touched", "append_me": "I'm here!"]</code>
+					</div>					
 				</div>
 
-				<h3>Loops</h3>
+				<h3>Conditional loops</h3>
 				<div class="section">
 					<p>The <code>while</code> command is the equivalent of the
 					"while" keyword in most programming languages. Be sure to
@@ -956,7 +997,42 @@ hello! hello! hello!
 					native type is valid too.</p>
 				</div>
 
-				<h3>Block delimiters customization</h3>
+				<h3>Lazy evaluation</h3>
+				<div class="section">
+					<p>In some cases, you may want to inject to your template
+					big and/or complex values that may or may not be needed at
+					rendering, depending on other parameters. In such
+					configurations, it may be better to avoid injecting the
+					entire value in your scope if there is chances it won't be
+					used, and use lazy evaluation instead.</p>
+					<p>Lazy evaluation allows you to inject a value with a
+					"resolver" callback which will be called only the first
+					time value is accessed, or not called at all if value is
+					not used for rendering. Lazy values are just another
+					specialized version of the <code>Value</code> object and
+					are built from any resolver callback that returns a
+					<code>Value</code> instance:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{if is_admin:
+    Administration log:
+    {log}
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>scope = new Scope();
+scope["is_admin"] = user.IsAdmin ();
+scope["log"] = () => log.BuildComplexAdministrationLogValue ();
+
+document.Render(scope, Console.Out);</code>
+					</div>
+					<p>In this example, method
+					<code>log.BuildComplexAdministrationLogValue</code> won't
+					be called unless <code>is_admin</code> value is true.</p>
+				</div>
+
+				<h3 id="block_delimiters_customization">Block delimiters customization</h3>
 				<div class="section">
 					<p>By default, Cottle uses { character to start a code
 					block, | to continue it (before an <code>else</code>
@@ -1122,7 +1198,7 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
-				<h3>Filter pairs in an array: cross(array1, array2, ...)</h3>
+				<h3>Cross-join pairs in an array: cross(array1, array2, ...)</h3>
 				<div class="section">
 					<p>Return an array containing all pairs from
 					<code>array1</code> having a key that also exists in
@@ -1138,13 +1214,13 @@ document.Render(scope, Console.Out);</code>
 					</div>
 				</div>
 
-				<h3>Get input value or default value:
-				default(test[, fallback])</h3>
+				<h3>Get input value or default value: default(test[,
+				fallback])</h3>
 				<div class="section">
-					<p>Return <code>test</code> if it would have satisfied an
-					<code>if</code> condition, or <code>fallback</code>
-					otherwise (or an undefined value if <code>fallback</code>
-					is missing).</p>
+					<p>Return <code>test</code> if it
+					<a href="#conditional_statements">evaluates to true</a>, or
+					<code>fallback</code> otherwise (or an undefined value
+					if <code>fallback</code> is missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set x to 3}
@@ -1190,8 +1266,8 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Remove pairs from an array: except(array1, array2,
-				...)</h3>
+				<h3 id="function_except">Remove pairs from an array:
+				except(array1, array2, ...)</h3>
 				<div class="section">
 					<p>Return an array containing all pairs from
 					<code>array1</code> having a key that does not exist in
@@ -1204,6 +1280,30 @@ true</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>[1: "a", 3: "c"]</code>
+					</div>
+				</div>
+
+				<h3>Filter values from an array: filter(array, predicate[, a,
+				b, ...])</h3>
+				<div class="section">
+					<p>Return an array containing all pairs having a value that
+					satisfies given predicate. Function <code>predicate</code>
+					is invoked for each value from <code>array</code> with this
+					value as its first argument, and pair is added to output
+					array if predicate result
+					<a href="#conditional_statements">evaluates to true</a>.</p>
+					<p>Optional arguments can be specified when calling
+					<code>filter</code> and will be passed to each invocation
+					of <code>predicate</code> as second, third, forth argument
+					and so on.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{define multiple_of(x, y) as: {return eq(mod(x, y), 0)}}
+{for v in filter([1, 6, 7, 4, 9, 5, 0], multiple_of, 3): {v}}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>6 9 0</code>
 					</div>
 				</div>
 
@@ -1472,26 +1572,28 @@ true</code>
 				</div>
 
 				<h3>Applying function to each value in an array: map(array,
-				callback[, a, b, ...])</h3>
+				modifier[, a, b, ...])</h3>
 				<div class="section">
 					<p>Return an array where values are built by applying given
-					function to original array values, while preserving keys.
-					Function <code>callback</code> is invoked for each value in
-					<code>array</code> as its first argument.</p>
+					modifier to original array values, while preserving keys.
+					Function <code>modifier</code> is invoked for each value in
+					<code>array</code> with this value as its first
+					argument.</p>
 					<p>Optional arguments can be specified when calling
 					<code>map</code> and will be passed to each invocation of
-					<code>callback</code> as second, third, forth argument and
+					<code>modifier</code> as second, third, forth argument and
 					so on.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{define square(x) as: {return mul(x, x)}}
 {for v in map([1, 2, 3, 4], square): {v}}
 
-{dump map([1, 7, 4, 5, 3, 2, 6], lt, 4)}</code>
+{dump map(["a": 1, "b": 7, "c": 4, "d": 5, "e": 3, "f": 2, "g": 6], lt, 4)}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>[0: 1, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0]</code>
+<code>1 4 9 16
+["a": 1, "b": 0, "c": 0, "d": 0, "e": 1, "f": 1, "g": 0]</code>
 					</div>
 				</div>
 
@@ -1744,7 +1846,8 @@ length</code>
 					</div>
 				</div>
 
-				<h3>Get union of two arrays: union(array1, array2, ...)</h3>
+				<h3 id="function_union">Get union of two arrays: union(array1,
+				array2, ...)</h3>
 				<div class="section">
 					<p>Return an array containing all pairs from input arrays,
 					but without duplicating any key. If a key exists in more
@@ -1763,10 +1866,11 @@ length</code>
 				<h3>Get value depending on a conditional test: when(test[,
 				true_part[, false_part]])</h3>
 				<div class="section">
-					<p>Return <code>true_part</code> if <code>test</code> would
-					have satisfied an <code>if</code> condition, or
-					<code>false_part</code> otherwise (or a undefined value if
-					<code>false_part</code> is missing).</p>
+					<p>Return <code>true_part</code> if <code>test</code>
+					<a href="#conditional_statements">evaluates to true</a>, or
+					<code>false_part</code> otherwise
+					(or a undefined value if <code>false_part</code> is
+					missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set x to 3}
@@ -1800,7 +1904,7 @@ length</code>
 			<h2>Contact</h2>
 			<div class="section">
 				<p>Contact me by e-mail: cottle [at] mirari [dot] fr</p>
-				<p><a href="http://remi.caput.fr/">RCa</a>, 2011</p>
+				<p><a href="http://remi.caput.fr/">RCa</a>, 2012</p>
 			</div>
 		</div>
 		<div class="toc" id="toc-data">

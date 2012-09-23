@@ -46,7 +46,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return Value.EmptyFields;
+                return Value.emptyFields;
             }
         }
 

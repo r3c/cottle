@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ namespace   Demo
     {
         #region Constants
 
-        private const string    AUTOLOAD = "autoload.ctv";
+        private const string	AUTOLOAD = "autoload.ctv";
 
         #endregion
 
@@ -33,10 +34,10 @@ namespace   Demo
         {
             InitializeComponent ();
 
-            this.treeViewValue.Nodes.Add (new TreeNode ("Document", (int)ValueContent.Array, (int)ValueContent.Array));
+            this.treeViewValue.Nodes.Add (new TreeNode ("Cottle Scope", 6, 6));
 
             if (File.Exists (DemoForm.AUTOLOAD))
-                this.ValuesLoad (DemoForm.AUTOLOAD, false);
+                this.StateLoad (DemoForm.AUTOLOAD, false);
         }
 
         #endregion
@@ -66,13 +67,12 @@ namespace   Demo
                     this.textBoxPrint.Text = document.Render (scope);
 
                     this.textBoxResult.BackColor = Color.LightGreen;
-                    this.textBoxResult.Text = "OK";
+                    this.textBoxResult.Text = "Document parsed & rendered successfully";
                 }
                 catch (UnexpectedException exception)
                 {
                     this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
                     this.textBoxInput.SelectionLength = exception.Lexem.Length;
-                    this.textBoxInput.Focus ();
 
                     throw;
                 }
@@ -80,15 +80,21 @@ namespace   Demo
                 {
                     this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
                     this.textBoxInput.SelectionLength = 1;
-                    this.textBoxInput.Focus ();
 
                     throw;
                 }
             }
-            catch (Exception ex)
+            catch (DocumentException exception)
+            {
+            	this.textBoxResult.BackColor = Color.LightPink;
+            	this.textBoxResult.Text = "Document error: " + exception.Message;
+
+            	this.textBoxInput.Focus ();
+            }
+            catch (RenderException exception)
             {
                 this.textBoxResult.BackColor = Color.LightSalmon;
-                this.textBoxResult.Text = "Error: " + ex.Message;
+                this.textBoxResult.Text = "Render error: " + exception.Message;
             }
         }
 
@@ -107,7 +113,7 @@ namespace   Demo
             dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
 
             if (dialog.ShowDialog (this) == DialogResult.OK)
-                this.ValuesLoad (dialog.FileName, true);
+                this.StateLoad (dialog.FileName, true);
         }
 
         private void    toolStripMenuItemFileSave_Click (object sender, EventArgs e)
@@ -117,7 +123,7 @@ namespace   Demo
             dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
 
             if (dialog.ShowDialog (this) == DialogResult.OK)
-                this.ValuesSave (dialog.FileName);
+                this.StateSave (dialog.FileName);
         }
 
         private void    toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
@@ -257,12 +263,12 @@ namespace   Demo
             switch (value.Type)
             {
                 case ValueContent.Array:
-                    node.Text = string.Format ("{0}", key);
+                    node.Text = string.Format (CultureInfo.InvariantCulture, "{0}", key);
 
                     break;
 
                 default:
-                    node.Text = string.Format ("{0} = {1}", key, value);
+                    node.Text = string.Format (CultureInfo.InvariantCulture, "{0} = {1}", key, value);
 
                     break;
             }
@@ -326,6 +332,85 @@ namespace   Demo
             }
         }
 
+        private void    StateLoad (string path, bool dialog)
+        {
+            TreeNode                    root;
+            Dictionary<string, Value>   values;
+
+            if (this.treeViewValue.Nodes.Count < 1)
+                return;
+
+            root = this.treeViewValue.Nodes[0];
+            root.Nodes.Clear ();
+
+            try
+            {
+                using (BinaryReader reader = new BinaryReader (new FileStream (path, FileMode.Open), Encoding.UTF8))
+                {
+                    values = new Dictionary<string, Value> ();
+
+                    if (reader.ReadInt32 () != 1)
+                    {
+                    	MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Incompatible file format"));
+                    	
+                    	return;
+                    }
+
+                    if (CommonTools.ValuesLoad (reader, values))
+                    {
+                        foreach (KeyValuePair<string, Value> pair in values)
+                            root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
+                    }
+
+                    this.config.BlockBegin = reader.ReadString ();
+                    this.config.BlockContinue = reader.ReadString ();
+                    this.config.BlockEnd = reader.ReadString ();
+                    this.textBoxInput.Text = reader.ReadString ();
+                }
+
+                root.ExpandAll ();
+
+                if (dialog)
+                    MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "State successfully loaded from \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Cannot open input file \"{0}\"", path), "File load error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void    StateSave (string path)
+        {
+            Dictionary<string, Value>	values = new Dictionary<string, Value> ();
+
+            foreach (TreeNode root in this.treeViewValue.Nodes)
+            {
+                foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
+                    values[pair.Key.AsString] = pair.Value;
+            }
+
+            try
+            {
+            	using (BinaryWriter writer = new BinaryWriter (new FileStream (path, FileMode.Create), Encoding.UTF8))
+                {
+            		writer.Write (1);
+
+                    CommonTools.ValuesSave (writer, values);
+
+                    writer.Write (this.config.BlockBegin);
+                    writer.Write (this.config.BlockContinue);
+                    writer.Write (this.config.BlockEnd);
+                    writer.Write (this.textBoxInput.Text);
+                }
+
+                MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "State successfully saved to \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch
+            {
+                MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Cannot open output file \"{0}\"", path), "File save error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private List<KeyValuePair<Value, Value>>    ValuesBuild (TreeNodeCollection nodes)
         {
             List<KeyValuePair<Value, Value>>    collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
@@ -353,66 +438,6 @@ namespace   Demo
             }
 
             return collection;
-        }
-
-        private void    ValuesLoad (string path, bool dialog)
-        {
-            TreeNode                    root;
-            Dictionary<string, Value>   values;
-
-            if (this.treeViewValue.Nodes.Count < 1)
-                return;
-
-            root = this.treeViewValue.Nodes[0];
-            root.Nodes.Clear ();
-
-            try
-            {
-                using (Stream stream = new FileStream (path, FileMode.Open))
-                {
-                    values = new Dictionary<string, Value> ();
-
-                    if (CommonTools.ValuesLoad (new BinaryReader (stream, Encoding.UTF8), values))
-                    {
-                        foreach (KeyValuePair<string, Value> pair in values)
-                            root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
-                    }
-                }
-
-                root.ExpandAll ();
-
-                if (dialog)
-                    MessageBox.Show (this, string.Format ("Values successfully loaded from \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch
-            {
-                MessageBox.Show (this, string.Format ("Cannot open input file \"{0}\"", path), "File load error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void    ValuesSave (string path)
-        {
-            Dictionary<string, Value>   values = new Dictionary<string, Value> ();
-
-            foreach (TreeNode root in this.treeViewValue.Nodes)
-            {
-                foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-                    values[pair.Key.AsString] = pair.Value;
-            }
-
-            try
-            {
-                using (Stream stream = new FileStream (path, FileMode.Create))
-                {
-                    CommonTools.ValuesSave (new BinaryWriter (stream, Encoding.UTF8), values);
-                }
-
-                MessageBox.Show (this, string.Format ("Values successfully saved to \"{0}\".", path), "File save successfull", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch
-            {
-                MessageBox.Show (this, string.Format ("Cannot open output file \"{0}\"", path), "File save error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         #endregion

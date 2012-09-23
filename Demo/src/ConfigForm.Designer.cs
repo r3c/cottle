@@ -98,7 +98,7 @@
             // 
             this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Image = global::Demo.Properties.Resources.cross;
+            this.buttonCancel.Image = global::Demo.Properties.Resources.button_cancel;
             this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.buttonCancel.Location = new System.Drawing.Point(140, 102);
             this.buttonCancel.Name = "buttonCancel";
@@ -120,7 +120,7 @@
             // buttonAccept
             // 
             this.buttonAccept.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.buttonAccept.Image = global::Demo.Properties.Resources.tick;
+            this.buttonAccept.Image = global::Demo.Properties.Resources.button_accept;
             this.buttonAccept.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.buttonAccept.Location = new System.Drawing.Point(34, 102);
             this.buttonAccept.Name = "buttonAccept";

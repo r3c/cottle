@@ -8,12 +8,6 @@ namespace   Cottle
 {
     public abstract class   Value : IComparable<Value>, IEquatable<Value>
     {
-        #region Constants
-
-        protected static readonly KeyValuePair<Value, Value>[]  EmptyFields = new KeyValuePair<Value, Value>[0];
-
-        #endregion
-
         #region Properties
 
         public abstract bool            AsBoolean
@@ -48,27 +42,9 @@ namespace   Cottle
 
         #endregion
 
-        #region Methods
+        #region Attributes
 
-        public abstract int CompareTo (Value other);
-
-        public virtual bool Equals(Value other)
-        {
-            return this.CompareTo (other) == 0;
-        }
-
-        public override bool    Equals (object obj)
-        {
-            Value   other = obj as Value;
-
-            return other != null && this.CompareTo (other) == 0;
-        }
-
-        public abstract bool    Find (Value key, out Value value);
-
-        public abstract override int    GetHashCode ();
-
-        public abstract bool    Has (Value key);
+        protected static readonly KeyValuePair<Value, Value>[]	emptyFields = new KeyValuePair<Value, Value>[0];
 
         #endregion
 
@@ -179,6 +155,30 @@ namespace   Cottle
         {
             return new StringValue (value);
         }
+
+        #endregion
+
+        #region Methods
+
+        public abstract int CompareTo (Value other);
+
+        public virtual bool Equals(Value other)
+        {
+            return this.CompareTo (other) == 0;
+        }
+
+        public override bool	Equals (object obj)
+        {
+            Value   other = obj as Value;
+
+            return other != null && this.CompareTo (other) == 0;
+        }
+
+        public abstract bool    Find (Value key, out Value value);
+
+        public abstract override int    GetHashCode ();
+
+        public abstract bool    Has (Value key);
 
         #endregion
     }
