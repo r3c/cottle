@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Cottle</id>
-    <version>1.0.0.8</version>
+    <version>1.0.0.9</version>
     <authors>Remi Caput</authors>
     <owners>Remi Caput</owners>
     <licenseUrl>https://raw.github.com/r3c/Cottle/master/LICENSE</licenseUrl>
