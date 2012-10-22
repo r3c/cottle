@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -18,17 +19,18 @@ namespace   Cottle
 
         #region Attributes / Static
 
-        private static readonly Dictionary<string, Keyword> keywords = new Dictionary<string, Keyword>
+        private static readonly Dictionary<string, KeywordDelegate> keywords = new Dictionary<string, KeywordDelegate>
         {
-            {"_",       p => p.ParseKeywordComment ()},
-            {"define",  p => p.ParseKeywordDefine ()},
-            {"dump",    p => p.ParseKeywordDump ()},
-            {"echo",    p => p.ParseKeywordEcho ()},
-            {"for",     p => p.ParseKeywordFor ()},
-            {"if",      p => p.ParseKeywordIf ()},
-            {"return",  p => p.ParseKeywordReturn ()},
-            {"set",     p => p.ParseKeywordSet ()},
-            {"while",   p => p.ParseKeywordWhile ()}
+            {"_",       (p) => p.ParseKeywordComment ()},
+            {"declare", (p) => p.ParseKeywordDeclare ()},
+            {"define",  (p) => p.ParseKeywordSet ()},
+            {"dump",    (p) => p.ParseKeywordDump ()},
+            {"echo",    (p) => p.ParseKeywordEcho ()},
+            {"for",     (p) => p.ParseKeywordFor ()},
+            {"if",      (p) => p.ParseKeywordIf ()},
+            {"return",  (p) => p.ParseKeywordReturn ()},
+            {"set",     (p) => p.ParseKeywordSet ()},
+            {"while",   (p) => p.ParseKeywordWhile ()}
         };
 
         #endregion
@@ -49,7 +51,7 @@ namespace   Cottle
             INode   node;
 
             this.lexer.Reset (reader);
-            this.lexer.Next (LexerMode.RAW);
+            this.lexer.Next (LexerMode.Raw);
 
             node = this.ParseRaw ();
 
@@ -63,22 +65,83 @@ namespace   Cottle
 
         #region Methods / Private
 
+        private INode   ParseAssignment (ScopeMode mode)
+        {
+            List<NameExpression>    arguments = new List<NameExpression> ();
+            Func<ScopeMode, INode>  build;
+            NameExpression          name;
+
+            name = this.ParseName ();
+
+            switch (this.lexer.Current.Type)
+            {
+                case LexemType.ParenthesisBegin:
+                    arguments = new List<NameExpression> ();
+
+                    for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+                    {
+                        arguments.Add (this.ParseName ());
+
+                        if (this.lexer.Current.Type == LexemType.Comma)
+                            this.lexer.Next (LexerMode.Block);
+                    }
+
+                    this.lexer.Next (LexerMode.Block);
+
+                    build = (m) => new AssignFunctionNode (name, arguments, this.ParseBody (), m); 
+
+                    break;
+
+                default:
+                    build = (m) => new AssignValueNode (name, this.ParseStatement (), m);
+
+                    break;
+            }
+
+            switch (this.lexer.Current.Type)
+            {
+                case LexemType.Literal:
+                    if (mode == ScopeMode.Closest)
+                    {
+                        // <TODO> remove legacy keywords handling
+                        if (this.lexer.Current.Content == "as")
+                        {
+                            this.lexer.Next (LexerMode.Block);
+
+                            mode = ScopeMode.Local;
+                        }
+                        else
+                        // </TODO>
+                            this.ParseSingle (LexemType.Literal, "to", "'to' keyword");
+                    }
+                    else
+                        this.ParseSingle (LexemType.Literal, "as", "'as' keyword");
+
+                    return build (mode);
+
+                default:
+                    this.lexer.Next (LexerMode.Raw);
+
+                    return new AssignValueNode (name, UndefinedExpression.Instance, mode);
+            }
+        }
+
         private INode   ParseBlock ()
         {
-            Keyword keyword;
-            INode   node;
+            KeywordDelegate keyword;
+            INode           node;
 
             if (this.lexer.Current.Type == LexemType.Literal && Parser.keywords.TryGetValue (this.lexer.Current.Content, out keyword))
-                this.lexer.Next (LexerMode.BLOCK);
+                this.lexer.Next (LexerMode.Block);
             else
-                keyword = p => p.ParseKeywordEcho ();
+                keyword = (p) => p.ParseKeywordEcho ();
 
             node = keyword (this);
 
-            if (this.lexer.Current.Type != LexemType.BraceEnd)
+            if (this.lexer.Current.Type != LexemType.BlockEnd)
                 throw new UnexpectedException (this.lexer, "end of block");
 
-            this.lexer.Next (LexerMode.RAW);
+            this.lexer.Next (LexerMode.Raw);
 
             return node;
         }
@@ -88,7 +151,7 @@ namespace   Cottle
             if (this.lexer.Current.Type != LexemType.Colon)
                 throw new UnexpectedException (this.lexer, "body separator (':')");
 
-            this.lexer.Next (LexerMode.RAW);
+            this.lexer.Next (LexerMode.Raw);
 
             return this.ParseRaw ();
         }
@@ -109,13 +172,13 @@ namespace   Cottle
                     elements = new List<KeyValuePair<IExpression, IExpression>> ();
                     index = 0;
 
-                    for (this.lexer.Next (LexerMode.BLOCK); this.lexer.Current.Type != LexemType.BracketEnd; )
+                    for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.BracketEnd; )
                     {
                         key = this.ParseExpression ();
 
                         if (this.lexer.Current.Type == LexemType.Colon)
                         {
-                            this.lexer.Next (LexerMode.BLOCK);
+                            this.lexer.Next (LexerMode.Block);
 
                             value = this.ParseExpression ();
                         }
@@ -128,10 +191,10 @@ namespace   Cottle
                         elements.Add (new KeyValuePair<IExpression, IExpression> (key, value));
 
                         if (this.lexer.Current.Type == LexemType.Comma)
-                            this.lexer.Next (LexerMode.BLOCK);
+                            this.lexer.Next (LexerMode.Block);
                     }
 
-                    this.lexer.Next (LexerMode.BLOCK);
+                    this.lexer.Next (LexerMode.Block);
 
                     expression = new ArrayExpression (elements);
 
@@ -140,14 +203,14 @@ namespace   Cottle
                 case LexemType.Number:
                     expression = new NumberExpression (decimal.TryParse (this.lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture, out number) ? number : 0);
 
-                    this.lexer.Next (LexerMode.BLOCK);
+                    this.lexer.Next (LexerMode.Block);
 
                     break;
 
                 case LexemType.String:
                     expression = new StringExpression (this.lexer.Current.Content);
 
-                    this.lexer.Next (LexerMode.BLOCK);
+                    this.lexer.Next (LexerMode.Block);
 
                     break;
 
@@ -165,43 +228,43 @@ namespace   Cottle
                 switch (this.lexer.Current.Type)
                 {
                     case LexemType.BracketBegin:
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         value = this.ParseExpression ();
 
                         if (this.lexer.Current.Type != LexemType.BracketEnd)
                             throw new UnexpectedException (this.lexer, "array index end (']')");
 
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         expression = new AccessExpression (expression, value);
 
                         break;
 
                     case LexemType.Dot:
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         if (this.lexer.Current.Type != LexemType.Literal)
                             throw new UnexpectedException (this.lexer, "field name");
 
                         expression = new AccessExpression (expression, new StringExpression (this.lexer.Current.Content));
 
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         break;
 
                     case LexemType.ParenthesisBegin:
                         arguments = new List<IExpression> ();
 
-                        for (this.lexer.Next (LexerMode.BLOCK); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+                        for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
                         {
                             arguments.Add (this.ParseExpression ());
 
                             if (this.lexer.Current.Type == LexemType.Comma)
-                                this.lexer.Next (LexerMode.BLOCK);
+                                this.lexer.Next (LexerMode.Block);
                         }
 
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         expression = new CallExpression (expression, arguments);
 
@@ -217,57 +280,16 @@ namespace   Cottle
         {
             do
             {
-                this.lexer.Next (LexerMode.RAW);
+                this.lexer.Next (LexerMode.Raw);
             }
             while (this.lexer.Current.Type == LexemType.Text);
 
             return null;
         }
 
-        private INode   ParseKeywordDefine ()
+        private INode   ParseKeywordDeclare ()
         {
-            List<NameExpression>    arguments;
-            ScopeMode               mode;
-            NameExpression          name;
-
-            name = this.ParseName ();
-
-            if (this.lexer.Current.Type != LexemType.ParenthesisBegin)
-                throw new UnexpectedException (this.lexer, "arguments begin ('(')");
-
-            arguments = new List<NameExpression> ();
-
-            for (this.lexer.Next (LexerMode.BLOCK); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
-            {
-                arguments.Add (this.ParseName ());
-
-                if (this.lexer.Current.Type == LexemType.Comma)
-                    this.lexer.Next (LexerMode.BLOCK);
-            }
-
-            this.lexer.Next (LexerMode.BLOCK);
-
-            switch (this.lexer.Current.Type == LexemType.Literal ? this.lexer.Current.Content : string.Empty)
-            {
-                case "as":
-                    this.lexer.Next (LexerMode.BLOCK);
-
-                    mode = ScopeMode.Local;
-
-                    break;
-
-                case "to":
-                    this.lexer.Next (LexerMode.BLOCK);
-
-                    mode = ScopeMode.Closest;
-
-                    break;
-
-                default:
-                    throw new UnexpectedException (this.lexer, "'as' or 'to' keyword");
-            }
-
-            return new DefineNode (name, arguments, this.ParseBody (), mode);
+            return this.ParseAssignment (ScopeMode.Local);
         }
 
         private INode   ParseKeywordDump ()
@@ -292,7 +314,7 @@ namespace   Cottle
 
             if (this.lexer.Current.Type == LexemType.Comma)
             {
-                this.lexer.Next (LexerMode.BLOCK);
+                this.lexer.Next (LexerMode.Block);
 
                 value = this.ParseName ();
             }
@@ -307,9 +329,9 @@ namespace   Cottle
             from = this.ParseExpression ();
             body = this.ParseBody ();
 
-            if (this.lexer.Current.Type == LexemType.Pipe)
+            if (this.lexer.Current.Type == LexemType.BlockContinue)
             {
-                this.lexer.Next (LexerMode.BLOCK);
+                this.lexer.Next (LexerMode.Block);
 
                 this.ParseSingle (LexemType.Literal, "empty", "'empty' keyword");
 
@@ -331,14 +353,14 @@ namespace   Cottle
 
             branches.Add (new IfNode.Branch (test, this.ParseBody ()));
 
-            while (fallback == null && this.lexer.Current.Type == LexemType.Pipe)
+            while (fallback == null && this.lexer.Current.Type == LexemType.BlockContinue)
             {
-                this.lexer.Next (LexerMode.BLOCK);
+                this.lexer.Next (LexerMode.Block);
 
                 switch (this.lexer.Current.Type == LexemType.Literal ? this.lexer.Current.Content : string.Empty)
                 {
                     case "elif":
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         test = this.ParseExpression ();
 
@@ -347,7 +369,7 @@ namespace   Cottle
                         break;
 
                     case "else":
-                        this.lexer.Next (LexerMode.BLOCK);
+                        this.lexer.Next (LexerMode.Block);
 
                         fallback = this.ParseBody ();
 
@@ -368,32 +390,7 @@ namespace   Cottle
 
         private INode   ParseKeywordSet ()
         {
-            ScopeMode       mode;
-            NameExpression  name;
-
-            name = this.ParseName ();
-
-            switch (this.lexer.Current.Type == LexemType.Literal ? this.lexer.Current.Content : string.Empty)
-            {
-                case "as":
-                    this.lexer.Next (LexerMode.BLOCK);
-
-                    mode = ScopeMode.Local;
-
-                    break;
-
-                case "to":
-                    this.lexer.Next (LexerMode.BLOCK);
-
-                    mode = ScopeMode.Closest;
-
-                    break;
-
-                default:
-                    throw new UnexpectedException (this.lexer, "'as' or 'to' keyword");
-            }
-
-            return new SetNode (name, this.ParseStatement (), mode);
+            return this.ParseAssignment (ScopeMode.Closest);
         }
 
         private INode   ParseKeywordWhile ()
@@ -412,7 +409,7 @@ namespace   Cottle
 
             name = new NameExpression (this.lexer.Current.Content);
 
-            this.lexer.Next (LexerMode.BLOCK);
+            this.lexer.Next (LexerMode.Block);
 
             return name;
         }
@@ -428,8 +425,8 @@ namespace   Cottle
             {
                 switch (this.lexer.Current.Type)
                 {
-                    case LexemType.BraceBegin:
-                        this.lexer.Next (LexerMode.BLOCK);
+                    case LexemType.BlockBegin:
+                        this.lexer.Next (LexerMode.Block);
 
                         node = this.ParseBlock ();
 
@@ -438,16 +435,16 @@ namespace   Cottle
 
                         break;
 
-                    case LexemType.BraceEnd:
+                    case LexemType.BlockContinue:
+                    case LexemType.BlockEnd:
                     case LexemType.EndOfFile:
-                    case LexemType.Pipe:
                         return nodes.Count != 1 ? new CompositeNode (nodes) : nodes[0];
 
                     case LexemType.Text:
                         if (!string.IsNullOrEmpty (this.lexer.Current.Content))
                             nodes.Add (new TextNode (this.lexer.Current.Content));
 
-                        this.lexer.Next (LexerMode.RAW);
+                        this.lexer.Next (LexerMode.Raw);
 
                         break;
 
@@ -462,7 +459,7 @@ namespace   Cottle
             if (this.lexer.Current.Type != type || this.lexer.Current.Content != value)
                 throw new UnexpectedException (this.lexer, expected);
 
-            this.lexer.Next (LexerMode.BLOCK);
+            this.lexer.Next (LexerMode.Block);
         }
 
         private IExpression ParseStatement ()
@@ -471,7 +468,7 @@ namespace   Cottle
 
             expression = this.ParseExpression ();
 
-            this.lexer.Next (LexerMode.RAW);
+            this.lexer.Next (LexerMode.Raw);
 
             return expression;
         }
@@ -480,7 +477,7 @@ namespace   Cottle
 
         #region Types
 
-        private delegate INode  Keyword (Parser parser);
+        private delegate INode  KeywordDelegate (Parser parser);
 
         #endregion
     }

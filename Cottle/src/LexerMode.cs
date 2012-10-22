@@ -7,7 +7,7 @@ namespace   Cottle
 {
     enum    LexerMode
     {
-        BLOCK,
-        RAW
+        Block,
+        Raw
     }
 }

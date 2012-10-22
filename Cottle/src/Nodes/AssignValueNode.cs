@@ -8,7 +8,7 @@ using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    SetNode : INode
+    sealed class    AssignValueNode : INode
     {
         #region Attributes
 
@@ -22,7 +22,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public	SetNode (NameExpression name, IExpression expression, ScopeMode mode)
+        public	AssignValueNode (NameExpression name, IExpression expression, ScopeMode mode)
         {
             this.expression = expression;
             this.mode = mode;

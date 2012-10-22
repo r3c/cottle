@@ -208,7 +208,7 @@
 					<ul>
 						<li>Text substitutions through variables,</li>
 						<li>Builtin and used-defined functions,</li>
-						<li>Variable & function declaration and
+						<li>Variables & functions declaration and
 						assignments,</li>
 						<li>Conditional statements (if),</li>
 						<li>Loops (for, while).</li>
@@ -759,19 +759,19 @@ Your random password is: {password}.</code>
 					<p>Cottle allows you to declare functions, that are
 					callable values you can use to factor code as you would do
 					in a program. To declare a function and assign it to a
-					variable, use the <code>define</code> command that behaves
-					quite like <code>set</code> but have a slightly different
-					syntax. Function arguments are specified between
+					variable, use the same <code>set</code> you used for
+					regular values assignments with a slightly different
+					syntax. Function arguments must be specified between
 					parenthesis right after the variable name that should
-					receive the function, followed by <code>as</code> and
-					function body declaration.</p>
+					receive the function, and are followed by <code>to</code>
+					and function body declaration.</p>
 					<p>Functions can return a value that can be used in any
 					expression or stored in a variable. To make a function halt
 					and return a value, use the <code>return</code> command
 					within its body.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{define factorial(n) as:
+<code>{set factorial(n) to:
     {if gt(n, 1):
         {return mul(n, factorial(sub(n, 1)))}
     |else:
@@ -783,7 +783,7 @@ Factorial 1 = {factorial(1)}
 Factorial 3 = {factorial(3)}
 Factorial 8 = {factorial(8)}
 
-{define hanoi_rec(n, from, by, to) as:
+{set hanoi_rec(n, from, by, to) to:
     {set n to sub(n, 1)}
 
     {if gt(n, 0): {hanoi_rec(n, from, to, by)}}
@@ -791,7 +791,7 @@ Move one disk from {from} to {to}
     {if gt(n, 0): {hanoi_rec(n, by, from, to)}}
 }
 
-{define hanoi(n) as:
+{set hanoi(n) to:
     {hanoi_rec(n, "A", "B", "C")}
 }
 
@@ -838,7 +838,7 @@ Move one disk from A to C</code>
 					this template:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{define depth(item) as:
+<code>{set depth(item) to:
     {set res to 0}
 
     {for child in item:
@@ -866,33 +866,22 @@ Move one disk from A to C</code>
 					The <code>depth</code> function recursively calls itself
 					but overwrite the unique <code>res</code> variable each
 					time it tries to store a value in it, and therefore fails
-					to store the actual deepest level as it should. To solve
-					this issue, the <code>res</code> variable needs to be local
-					to function <code>depth</code>, that means each call to
-					<code>depth</code> must use its own <code>res</code>
-					instance.</p>
-					<p>For that reason, the <code>set</code> command actually
-					supports two assignment modes:</p>
-					<ul>
-						<li>When using <code>{set x to 1}</code>, Cottle
-						searches for <code>x</code> in parent scopes bottom-up
-						(from inner to outer), or create it in global scope if
-						not found.</li>
-						<li>When using <code>{set x as 1}</code>, Cottle
-						searches for <code>x</code> in current scope, or create
-						it in current scope if not found.</li>
-					</ul>
-					<p>To fix our previous example, <code>set</code> must be
-					used with the <code>as</code> keyword before the if
-					<code>for</code> block, to initialize a new local
-					<code>res</code> variable. For next uses of
-					<code>set</code>, the <code>to</code> keyword will still be
-					used since it will now resolve to local
-					<code>res</code>:</p>
+					to store the actual deepest level as it should.</p>
+					<p>To solve this issue, the <code>res</code> variable needs
+					to be local to function <code>depth</code>, that means each
+					call to <code>depth</code> must use its own instance of the
+					<code>res</code> variable. This can be achieved by using
+					the <code>declare</code> command that creates a variable in
+					current scope. Our previous example can then be fixed by
+					declaring a new <code>res</code> variable inside body of
+					function <code>depth</code>, so that every subsequent
+					reference to <code>res</code> resolves to our local
+					instance:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{define depth(item) as:
-    {set res <strong>as</strong> 0}
+<code>{set depth(item) to:
+    <strong>{declare res}</strong>
+    {set res to 0}
 
     {for child in item:
         {set res_child to add(depth(child), 1)}
@@ -904,16 +893,28 @@ Move one disk from A to C</code>
 
 {depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}</code>
 					</div>
-					<p>We only replaced the first <code>to</code> keyword, not
-					the two others. By replacing all the <code>to</code>
-					keywords by <code>as</code>, we would have created a new
-					local <code>res</code> instance within the <code>for</code>
-					command, making our previous <code>res</code> instance
-					unused and always equal to its initial value of
-					<code>0</code>.</p>
-					<p>Note that the <code>define</code> command also supports
-					the two keywords <code>as</code> and <code>to</code> for
-					the same reasons.</p>
+					<p>You could even optimize the first <code>set</code>
+					command away by assigning a value to <code>res</code>
+					during declaration ; the <code>declare</code> command
+					allows you to assign functions or values to variables by
+					using the same kind of syntax than the <code>set</code>
+					command, the only difference being than "to" should be
+					replaced by "as":</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{declare res as 0}</code>
+					</div>
+					<p>The same command can also be used to declare
+					functions:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{declare depth(item) to:
+    ...
+}</code>
+					</div>
+					<p>Note that the <code>set</code> command can also be used
+					without a value. Declaring or setting a variable without a
+					value is equivalent to asigning it an undefined value.</p>
 				</div>
 
 				<h3>Custom .NET methods</h3>
@@ -1298,7 +1299,7 @@ true</code>
 					and so on.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{define multiple_of(x, y) as: {return eq(mod(x, y), 0)}}
+<code>{declare multiple_of(x, y) as: {return eq(mod(x, y), 0)}}
 {for v in filter([1, 6, 7, 4, 9, 5, 0], multiple_of, 3): {v}}</code>
 					</div>
 					<div class="code">
@@ -1585,7 +1586,7 @@ true</code>
 					so on.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{define square(x) as: {return mul(x, x)}}
+<code>{declare square(x) as: {return mul(x, x)}}
 {for v in map([1, 2, 3, 4], square): {v}}
 
 {dump map(["a": 1, "b": 7, "c": 4, "d": 5, "e": 3, "f": 2, "g": 6], lt, 4)}</code>
@@ -1780,7 +1781,7 @@ hello</code>
     {item}
 }
 
-{define by_length(a, b) as:
+{declare by_length(a, b) as:
     {return cmp(len(b), len(a))}
 }
 
@@ -1901,10 +1902,34 @@ length</code>
 				</div>
 			</div>
 
-			<h2>Contact</h2>
+			<h2>Reference</h2>
 			<div class="section">
-				<p>Contact me by e-mail: cottle [at] mirari [dot] fr</p>
-				<p><a href="http://remi.caput.fr/">RCa</a>, 2012</p>
+				<h3>Change log</h3>
+				<div class="section">
+					<p>Here is a summary of important changes made to the
+					library:</p>
+					<ul>
+						<li>1.0.0.9 =&gt; 1.0.1.0:
+							<ul>
+								<li>Local variables must now be declared with
+								the new <code>declare</code> command.</li>
+								<li>Changed meaning of the <code>set</code>
+								command (using it with "as" is
+								deprecated).</li>
+								<li>Command <code>define</code> is now
+								deprecated (both <code>set</code> and
+								<code>declare</code> can be used to assign
+								functions).</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+
+				<h3>Contact</h3>
+				<div class="section">
+					<p>Contact me by e-mail: cottle [at] mirari [dot] fr</p>
+					<p><a href="http://remi.caput.fr/">RCa</a>, 2012</p>
+				</div>
 			</div>
 		</div>
 		<div class="toc" id="toc-data">

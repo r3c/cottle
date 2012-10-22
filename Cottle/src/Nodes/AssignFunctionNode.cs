@@ -9,7 +9,7 @@ using Cottle.Values;
 
 namespace   Cottle.Nodes
 {
-    sealed class    DefineNode : INode
+    sealed class    AssignFunctionNode : INode
     {
         #region Attributes
 
@@ -25,7 +25,7 @@ namespace   Cottle.Nodes
 
         #region Constructors
 
-        public  DefineNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeMode mode)
+        public  AssignFunctionNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeMode mode)
         {
             this.arguments = new List<NameExpression> (arguments);
             this.body = body;

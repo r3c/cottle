@@ -77,13 +77,13 @@ namespace   Cottle
             this.pending = new Lexem (LexemType.None, string.Empty);
             this.root = new LexemState ();
 
-            if (!this.root.Store (LexemType.BraceBegin, config.BlockBegin))
+            if (!this.root.Store (LexemType.BlockBegin, config.BlockBegin))
                 throw new ConfigException ("BlockBegin", config.BlockBegin, "token used twice");
 
-            if (!this.root.Store (LexemType.Pipe, config.BlockContinue))
+            if (!this.root.Store (LexemType.BlockContinue, config.BlockContinue))
                 throw new ConfigException ("BlockContinue", config.BlockContinue, "token used twice");
 
-            if (!this.root.Store (LexemType.BraceEnd, config.BlockEnd))
+            if (!this.root.Store (LexemType.BlockEnd, config.BlockEnd))
                 throw new ConfigException ("BlockEnd", config.BlockEnd, "token used twice");
         }
 
@@ -95,12 +95,12 @@ namespace   Cottle
         {
             switch (mode)
             {
-                case LexerMode.BLOCK:
+                case LexerMode.Block:
                     this.current = this.NextBlock ();
 
                     break;
 
-                case LexerMode.RAW:
+                case LexerMode.Raw:
                     this.current = this.NextRaw ();
 
                     break;
