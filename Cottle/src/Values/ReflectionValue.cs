@@ -54,16 +54,7 @@ namespace   Cottle.Values
 
         #endregion
 
-        #region Methods / Public
-
-        public override string  ToString ()
-        {
-            return "<reflexion>";
-        }
-
-        #endregion
-
-        #region Methods / Protected
+        #region Methods
 
         protected override Value    Resolve()
         {

@@ -324,7 +324,6 @@
         	this.textBoxInput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
         	this.textBoxInput.Size = new System.Drawing.Size(371, 320);
         	this.textBoxInput.TabIndex = 0;
-        	this.textBoxInput.Text = resources.GetString("textBoxInput.Text");
         	this.textBoxInput.WordWrap = false;
         	// 
         	// groupBoxOutput

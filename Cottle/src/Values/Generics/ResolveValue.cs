@@ -82,6 +82,11 @@ namespace   Cottle.Values.Generics
             return this.Acquire ().GetHashCode ();
         }
 
+        public override string  ToString ()
+        {
+        	return this.Acquire ().ToString ();
+        }
+
         #endregion
 
         #region Methods / Private
