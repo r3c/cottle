@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace   Cottle.Values.Generics
 {
@@ -8,11 +6,11 @@ namespace   Cottle.Values.Generics
     {
         #region Properties
 
-        public override KeyValuePair<Value, Value>[]    Fields
+        public override FieldMap    Fields
         {
             get
             {
-                return Value.emptyFields;
+                return FieldMap.Empty;
             }
         }
 
@@ -38,21 +36,9 @@ namespace   Cottle.Values.Generics
 
         #region Methods
 
-        public override bool    Find (Value key, out Value value)
-        {
-            value = UndefinedValue.Instance;
-
-            return false;
-        }
-
         public override int GetHashCode ()
         {
             return this.value.GetHashCode ();
-        }
-
-        public override bool    Has (Value key)
-        {
-            return false;
         }
 
         #endregion

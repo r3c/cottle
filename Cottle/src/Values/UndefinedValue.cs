@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Cottle.Values.Generics;
-
+﻿
 namespace   Cottle.Values
 {
     public sealed class	UndefinedValue : Value
     {
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
@@ -18,7 +13,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override IFunction   AsFunction
+        public override IFunction       AsFunction
         {
             get
             {
@@ -26,7 +21,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
@@ -34,7 +29,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
@@ -42,11 +37,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override KeyValuePair<Value, Value>[]    Fields
+        public override FieldMap        Fields
         {
             get
             {
-                return Value.emptyFields;
+                return FieldMap.Empty;
             }
         }
 
@@ -60,9 +55,21 @@ namespace   Cottle.Values
 
         #endregion
 
+        #region Properties / Static
+
+        public static UndefinedValue    Instance
+        {
+            get
+            {
+                return UndefinedValue.instance;
+            }
+        }
+
+        #endregion
+
         #region Attributes
 
-        public static readonly UndefinedValue   Instance = new UndefinedValue ();
+        private static readonly UndefinedValue  instance = new UndefinedValue ();
 
         #endregion
 
@@ -78,21 +85,9 @@ namespace   Cottle.Values
                 return 0;
         }
 
-        public override bool    Find (Value key, out Value value)
-        {
-            value = UndefinedValue.Instance;
-
-            return false;
-        }
-
         public override int GetHashCode()
         {
             return 0;
-        }
-
-        public override bool    Has (Value key)
-        {
-            return false;
         }
 
         public override string  ToString ()

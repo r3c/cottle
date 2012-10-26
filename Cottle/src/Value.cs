@@ -30,7 +30,7 @@ namespace   Cottle
             get;
         }
 
-        public abstract KeyValuePair<Value, Value>[]    Fields
+        public abstract FieldMap        Fields
         {
             get;
         }
@@ -42,32 +42,46 @@ namespace   Cottle
 
         #endregion
 
-        #region Attributes
-
-        protected static readonly KeyValuePair<Value, Value>[]	emptyFields = new KeyValuePair<Value, Value>[0];
-
-        #endregion
-
         #region Operators
 
         public static bool  operator == (Value lhs, Value rhs)
         {
-            return object.ReferenceEquals (lhs, null) ? object.ReferenceEquals (rhs, null) : lhs.CompareTo (rhs) == 0;
+            if (object.ReferenceEquals (lhs, null))
+                return object.ReferenceEquals (rhs, null);
+            else if (object.ReferenceEquals (rhs, null))
+                return false;
+
+            return lhs.CompareTo (rhs) == 0;
         }
 
         public static bool  operator != (Value lhs, Value rhs)
         {
-            return object.ReferenceEquals (lhs, null) ? !object.ReferenceEquals (rhs, null) : lhs.CompareTo (rhs) != 0;
+            if (object.ReferenceEquals (lhs, null))
+                return !object.ReferenceEquals (rhs, null);
+            else if (object.ReferenceEquals (rhs, null))
+                return true;
+
+            return lhs.CompareTo (rhs) != 0;
         }
 
         public static bool  operator < (Value lhs, Value rhs)
         {
-            return !object.ReferenceEquals (rhs, null) && rhs.CompareTo (lhs) > 0;
+            if (object.ReferenceEquals (lhs, null))
+                return !object.ReferenceEquals (rhs, null);
+            else if (object.ReferenceEquals (rhs, null))
+                return false;
+
+            return lhs.CompareTo (rhs) < 0;
         }
 
         public static bool  operator > (Value lhs, Value rhs)
         {
-            return !object.ReferenceEquals (lhs, null) && lhs.CompareTo (rhs) > 0;
+            if (object.ReferenceEquals (lhs, null))
+                return false;
+            else if (object.ReferenceEquals (rhs, null))
+                return true;
+
+            return lhs.CompareTo (rhs) > 0;
         }
 
         public static implicit operator Value (Func<Value> resolver)
@@ -123,12 +137,27 @@ namespace   Cottle
             return value ? BooleanValue.True : BooleanValue.False;
         }
 
+        public static implicit operator Value (byte value)
+        {
+            return new NumberValue (value);
+        }
+
+        public static implicit operator Value (char value)
+        {
+            return new StringValue (value);
+        }
+
         public static implicit operator Value (decimal value)
         {
             return new NumberValue (value);
         }
 
-        public static implicit operator Value (short value)
+        public static implicit operator Value (double value)
+        {
+            return new NumberValue (value);
+        }
+
+        public static implicit operator Value (float value)
         {
             return new NumberValue (value);
         }
@@ -143,17 +172,17 @@ namespace   Cottle
             return new NumberValue (value);
         }
 
+        public static implicit operator Value (short value)
+        {
+            return new NumberValue (value);
+        }
+
         public static implicit operator Value (string value)
         {
             if (value != null)
                 return new StringValue (value);
 
             return UndefinedValue.Instance;
-        }
-
-        public static implicit operator Value (char value)
-        {
-            return new StringValue (value);
         }
 
         #endregion
@@ -174,11 +203,7 @@ namespace   Cottle
             return other != null && this.CompareTo (other) == 0;
         }
 
-        public abstract bool    Find (Value key, out Value value);
-
         public abstract override int    GetHashCode ();
-
-        public abstract bool    Has (Value key);
 
         #endregion
     }

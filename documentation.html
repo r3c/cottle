@@ -249,7 +249,7 @@
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>private void   SomeFunction ()
+<code>private void   SomeFunction()
 {
     Document   document;
     Scope      scope;
@@ -362,7 +362,7 @@
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>scope["name"] = "John";</code>
+<code>scope["name"] = "John"; // implicit conversion to Value, new StringValue("John") is valid too</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
@@ -398,7 +398,8 @@
 <code>Special characters {, }, | and \ must be escaped.</code>
 					</div>
 					<p>Special characters can be changed as you'll see in
-					section <a href="#block_delimiters_customization">Block delimiters customization</a>.</p>
+					section
+					"<a href="#block_delimiters_customization">Block delimiters customization</a>".</p>
 				</div>
 
 				<h3>Using array values</h3>
@@ -414,7 +415,7 @@
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>scope["myarray"] = new Dictionary&lt;Value,Value&gt;
+<code>scope["myarray"] = new Dictionary&lt;Value,Value&gt; // implicit conversion to ArrayValue
 {
     {"f1", "dotted"},
     {"f2", "subscript"}
@@ -908,7 +909,7 @@ Move one disk from A to C</code>
 					functions:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{declare depth(item) to:
+<code>{declare depth(item) as:
     ...
 }</code>
 					</div>
@@ -941,7 +942,7 @@ Move one disk from A to C</code>
 					</div>
 					<div class="code">
 					<blockquote><span>C# code:</span></blockquote>
-<code>scope["repeat"] = new FunctionValue (new CallbackFunction (delegate (IList&lt;Value&gt; values, Scope scope, TextWriter output)
+<code>scope["repeat"] = new FunctionValue(new CallbackFunction(delegate(IList&lt;Value&gt; values, Scope scope, TextWriter output)
 {
     StringBuilder builder = new StringBuilder();
     int           i;
@@ -1024,7 +1025,7 @@ hello! hello! hello!
 						<blockquote><span>C# code:</span></blockquote>
 <code>scope = new Scope();
 scope["is_admin"] = user.IsAdmin ();
-scope["log"] = () => log.BuildComplexAdministrationLogValue ();
+scope["log"] = () => log.BuildComplexAdministrationLogValue (); // implicit conversion to LazyValue
 
 document.Render(scope, Console.Out);</code>
 					</div>

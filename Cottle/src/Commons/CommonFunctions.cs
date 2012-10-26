@@ -37,14 +37,22 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionCall = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
+            Value[]     arguments;
             IFunction   function;
+            int         i;
 
             function = values[0].AsFunction;
 
             if (function == null)
                 return UndefinedValue.Instance;
 
-            return function.Execute(Array.ConvertAll(values[1].Fields, (field) => field.Value), scope, output);
+            arguments = new Value[values[1].Fields.Count];
+            i = 0;
+
+            foreach (KeyValuePair<Value, Value> pair in values[1].Fields)
+                arguments[i++] = pair.Value;
+
+            return function.Execute(arguments, scope, output);
         }, 2);
 
         public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -54,7 +62,7 @@ namespace   Cottle.Commons
 
             if (values[0].Type == ValueContent.Array)
             {
-                list = new List<KeyValuePair<Value, Value>> (values[0].Fields.Length * 2 + 1);
+                list = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count * 2 + 1);
 
                 foreach (Value value in values)
                     list.AddRange (value.Fields);
@@ -101,7 +109,7 @@ namespace   Cottle.Commons
 
                 for (i = 1; i < values.Count; ++i)
                 {
-                    if (!values[i].Has (pair.Key))
+                    if (!values[i].Fields.Contains (pair.Key))
                     {
                         insert = false;
 
@@ -155,7 +163,7 @@ namespace   Cottle.Commons
 
                 for (i = 1; i < values.Count; ++i)
                 {
-                    if (values[i].Has (pair.Key))
+                    if (values[i].Fields.Contains (pair.Key))
                     {
                         insert = false;
 
@@ -174,7 +182,7 @@ namespace   Cottle.Commons
         {
             List<Value>                     	arguments = new List<Value> (values.Count - 1);
             IFunction                       	callback = values[1].AsFunction;
-            List<KeyValuePair<Value, Value>>	result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Length);
+            List<KeyValuePair<Value, Value>>	result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
 
             if (callback == null)
                 return UndefinedValue.Instance;
@@ -196,19 +204,39 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            int     index = values.Count > 2 ? (int)values[2].AsNumber : 0;
-            Value   token = values[1];
+            int     offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
+            Value   search = values[1];
             Value   value = values[0];
+            int     i;
 
             if (value.Type == ValueContent.Array)
-                return Array.FindIndex (value.Fields, index, (p) => p.Value.CompareTo (token) == 0);
+            {
+                i = 0;
+
+                foreach (KeyValuePair<Value, Value> pair in value.Fields)
+                {
+                    if (++i > offset && pair.Value.CompareTo (search) == 0)
+                        return i - 1;
+                }
+
+                return -1;
+            }
             else
-                return value.AsString.IndexOf (token.AsString, index, StringComparison.InvariantCulture);
+                return value.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
         }, 2, 3);
 
         public static readonly IFunction    FunctionFlip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            return Array.ConvertAll (values[0].Fields, (p) => new KeyValuePair<Value, Value> (p.Value, p.Key));
+            KeyValuePair<Value, Value>[]    flip;
+            int                             i;
+
+            flip = new KeyValuePair<Value, Value>[values[0].Fields.Count];
+            i = 0;
+
+            foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
+                flip[i++] = new KeyValuePair<Value, Value> (pair.Value, pair.Key);
+
+            return flip;
         }, 1);
 
         public static readonly IFunction    FunctionFormat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -304,7 +332,7 @@ namespace   Cottle.Commons
             int     i;
 
             for (i = 1; i < values.Count; ++i)
-                if (!value.Has (values[i]))
+                if (!value.Fields.Contains (values[i]))
                     return false;
 
             return true;
@@ -381,7 +409,7 @@ namespace   Cottle.Commons
         public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             if (values[0].Type == ValueContent.Array)
-                return values[0].Fields.Length;
+                return values[0].Fields.Count;
 
             return values[0].AsString.Length;
         }, 1);
@@ -405,7 +433,7 @@ namespace   Cottle.Commons
         {
             List<Value>                     arguments = new List<Value> (values.Count - 1);
             IFunction                       callback = values[1].AsFunction;
-            KeyValuePair<Value, Value>[]    result = new KeyValuePair<Value, Value>[values[0].Fields.Length];
+            KeyValuePair<Value, Value>[]    result = new KeyValuePair<Value, Value>[values[0].Fields.Count];
             int                             i = 0;
 
             if (callback == null)
@@ -534,26 +562,36 @@ namespace   Cottle.Commons
 
         public static readonly IFunction    FunctionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            KeyValuePair<Value, Value>[]    array;
-            int                             count;
-            int                             limit;
-            int                             index;
-            Value                           value = values[0];
+            int                                     count;
+            IEnumerator<KeyValuePair<Value, Value>> enumerator;
+            int                                     length;
+            int                                     offset;
+            Value                                   source;
+            KeyValuePair<Value, Value>[]            target;
+            int                                     i;
 
-            limit = value.Type == ValueContent.Array ? value.Fields.Length : value.AsString.Length;
-            index = Math.Min ((int)values[1].AsNumber, limit);
-            count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, limit - index) : limit - index;
+            source = values[0];
+            length = source.Type == ValueContent.Array ? source.Fields.Count : source.AsString.Length;
+            offset = Math.Min ((int)values[1].AsNumber, length);
+            count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, length - offset) : length - offset;
 
-            if (value.Type == ValueContent.Array)
+            if (source.Type == ValueContent.Array)
             {
-                array = new KeyValuePair<Value, Value>[count];
+                enumerator = source.Fields.GetEnumerator ();
 
-                Array.Copy (value.Fields, index, array, 0, count);
+                while (offset-- > 0 && enumerator.MoveNext ())
+                    ;
 
-                return array;
+                target = new KeyValuePair<Value, Value>[count];
+                i = 0;
+
+                while (count-- > 0 && enumerator.MoveNext ())
+                    target[i++] = enumerator.Current;
+
+                return target;
             }
-            else
-                return value.AsString.Substring (index, count);
+
+            return source.AsString.Substring (offset, count);
         }, 2, 3);
 
         public static readonly IFunction    FunctionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)

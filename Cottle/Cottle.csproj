@@ -67,6 +67,7 @@
     <Compile Include="src\Expressions\Generics\Expression.cs" />
     <Compile Include="src\Expressions\NameExpression.cs" />
     <Compile Include="src\Expressions\UndefinedExpression.cs" />
+    <Compile Include="src\FieldMap.cs" />
     <Compile Include="src\Functions\NodeFunction.cs" />
     <Compile Include="src\Functions\CallbackFunction.cs" />
     <Compile Include="src\IExpression.cs" />
@@ -95,7 +96,9 @@
     <Compile Include="src\Scope.cs" />
     <Compile Include="src\ValueContent.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
+    <Compile Include="src\Values\Generics\ResolveValue.cs" />
     <Compile Include="src\Values\LazyValue.cs" />
+    <Compile Include="src\Values\ReflectionValue.cs" />
     <Compile Include="src\Values\UndefinedValue.cs" />
     <Compile Include="src\Values\ArrayValue.cs" />
     <Compile Include="src\Values\FunctionValue.cs" />

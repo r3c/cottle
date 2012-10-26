@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 using Cottle.Expressions.Generics;
@@ -30,12 +28,12 @@ namespace   Cottle.Expressions
 
         #region Methods
 
-        public override Value  Evaluate (Scope scope, TextWriter output)
+        public override Value   Evaluate (Scope scope, TextWriter output)
         {
             Value  array = this.array.Evaluate (scope, output);
             Value  value;
 
-            if (array.Find (this.index.Evaluate (scope, output), out value))
+            if (array.Fields.TryGet (this.index.Evaluate (scope, output), out value))
                 return value;
 
             return UndefinedValue.Instance;

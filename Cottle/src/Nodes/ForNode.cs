@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Expressions;
 using Cottle.Values;
@@ -41,9 +39,9 @@ namespace   Cottle.Nodes
 
         public bool Apply (Scope scope, TextWriter output, out Value result)
         {
-            KeyValuePair<Value, Value>[]    fields = this.from.Evaluate (scope, output).Fields;
+            FieldMap    fields = this.from.Evaluate (scope, output).Fields;
 
-            if (fields.Length > 0)
+            if (fields.Count > 0)
             {
                 foreach (KeyValuePair<Value, Value> pair in fields)
                 {

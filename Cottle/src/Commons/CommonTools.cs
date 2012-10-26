@@ -117,7 +117,7 @@ namespace   Cottle.Commons
             switch (value.Type)
             {
                 case ValueContent.Array:
-                    writer.Write (value.Fields.Length);
+                    writer.Write (value.Fields.Count);
 
                     foreach (KeyValuePair<Value, Value> pair in value.Fields)
                     {

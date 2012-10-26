@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Cottle.Values.Generics;
+﻿using System.Collections.Generic;
 
 namespace   Cottle.Values
 {
@@ -10,7 +6,7 @@ namespace   Cottle.Values
     {
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
@@ -18,7 +14,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override IFunction   AsFunction
+        public override IFunction       AsFunction
         {
             get
             {
@@ -26,7 +22,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
@@ -34,19 +30,19 @@ namespace   Cottle.Values
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
-                return "<function>";
+                return string.Empty;
             }
         }
 
-        public override KeyValuePair<Value, Value>[]    Fields
+        public override FieldMap        Fields
         {
             get
             {
-                return Value.emptyFields;
+                return FieldMap.Empty;
             }
         }
 
@@ -79,24 +75,12 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return 0;
-        }
-
-        public override bool    Find (Value key, out Value value)
-        {
-            value = UndefinedValue.Instance;
-
-            return false;
+            return 1;
         }
 
         public override int GetHashCode ()
         {
             return this.function.GetHashCode ();
-        }
-
-        public override bool    Has (Value key)
-        {
-            return false;
         }
 
         public override string  ToString ()

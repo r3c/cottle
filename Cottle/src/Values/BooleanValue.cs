@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Cottle.Values.Generics;
+﻿using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {

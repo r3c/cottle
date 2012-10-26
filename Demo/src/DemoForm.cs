@@ -300,11 +300,19 @@ namespace   Demo
         private TreeNode    NodeCreate (string key, Value value)
         {
             TreeNode    node = new TreeNode ();
+            TreeNode[]  range;
+            int         i;
 
             switch (value.Type)
             {
                 case ValueContent.Array:
-                    node.Nodes.AddRange (Array.ConvertAll (value.Fields, (p) => this.NodeCreate (p.Key.AsString, p.Value)));
+                    range = new TreeNode[value.Fields.Count];
+                    i = 0;
+
+                    foreach (KeyValuePair<Value, Value> pair in value.Fields)
+                        range[i++] = this.NodeCreate (pair.Key.AsString, pair.Value);
+
+                    node.Nodes.AddRange (range);
 
                     this.NodeAssign (node, key, new ArrayValue ());
 

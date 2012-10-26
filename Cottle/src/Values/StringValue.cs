@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 
 using Cottle.Values.Generics;
@@ -73,7 +71,7 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return other != null ? this.comparer.Compare (this.AsString, other.AsString) : 1;
+            return string.CompareOrdinal (this.value, other.AsString);
         }
 
         public override string  ToString ()

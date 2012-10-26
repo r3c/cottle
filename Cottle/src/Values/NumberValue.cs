@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 
 using Cottle.Values.Generics;
 
@@ -55,7 +52,37 @@ namespace   Cottle.Values
 
         #region Constructors
 
+        public  NumberValue (byte value) :
+            base (value)
+        {
+        }
+
         public  NumberValue (decimal value) :
+            base (value)
+        {
+        }
+
+        public  NumberValue (double value) :
+            base ((decimal)value)
+        {
+        }
+
+        public  NumberValue (float value) :
+            base ((decimal)value)
+        {
+        }
+
+        public  NumberValue (int value) :
+            base (value)
+        {
+        }
+
+        public  NumberValue (long value) :
+            base (value)
+        {
+        }
+
+        public  NumberValue (short value) :
             base (value)
         {
         }

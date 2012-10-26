@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-
-using Cottle.Values.Generics;
 
 namespace   Cottle.Values
 {
@@ -10,15 +7,15 @@ namespace   Cottle.Values
     {
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
-                return this.array.Length > 0;
+                return this.fields.Count > 0;
             }
         }
 
-        public override IFunction   AsFunction
+        public override IFunction       AsFunction
         {
             get
             {
@@ -26,27 +23,27 @@ namespace   Cottle.Values
             }
         }
 
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
-                return this.array.Length;
+                return this.fields.Count;
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
-                return "<array>";
+                return string.Empty;
             }
         }
 
-        public override KeyValuePair<Value, Value>[]    Fields
+        public override FieldMap        Fields
         {
             get
             {
-                return this.array;
+                return this.fields;
             }
         }
 
@@ -62,9 +59,7 @@ namespace   Cottle.Values
 
         #region Attributes
 
-        private KeyValuePair<Value, Value>[]    array;
-
-        private Dictionary<Value, Value>        map;
+        private FieldMap    fields;
 
         #endregion
 
@@ -72,39 +67,17 @@ namespace   Cottle.Values
 
         public  ArrayValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
         {
-            this.array = new List<KeyValuePair<Value, Value>> (pairs).ToArray ();
-            this.map = new Dictionary<Value, Value> ();
-
-            foreach (KeyValuePair<Value, Value> pair in pairs)
-                this.map[pair.Key] = pair.Value;
+            this.fields = new FieldMap (pairs);
         }
 
         public  ArrayValue (IEnumerable<Value> values)
         {
-            Value                               key;
-            List<KeyValuePair<Value, Value>>    list;
-            int                                 i = 0;
-
-            this.map = new Dictionary<Value, Value> ();
-
-            list = new List<KeyValuePair<Value,Value>> ();
-
-            foreach (Value value in values)
-            {
-                key = new NumberValue (i++);
-
-                list.Add (new KeyValuePair<Value, Value> (key, value));
-
-                this.map.Add (key, value);
-            }
-
-            this.array = list.ToArray ();
+            this.fields = new FieldMap (values);
         }
 
         public  ArrayValue ()
         {
-            this.array = new KeyValuePair<Value,Value>[0];
-            this.map = new Dictionary<Value, Value> ();
+            this.fields = FieldMap.Empty;
         }
 
         #endregion
@@ -113,23 +86,24 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            int                             compare;
-            KeyValuePair<Value, Value>[]    fields;
-            int                             i;
+            int                                     compare;
+            IEnumerator<KeyValuePair<Value, Value>> lhs;
+            IEnumerator<KeyValuePair<Value, Value>> rhs;
 
             if (other == null)
                 return 1;
 
-            fields = other.Fields;
-
-            if (this.array.Length < fields.Length)
+            if (this.fields.Count < other.Fields.Count)
                 return -1;
-            else if (this.array.Length > fields.Length)
+            else if (this.fields.Count > other.Fields.Count)
                 return 1;
 
-            for (i = this.array.Length; i-- > 0; )
+            lhs = this.fields.GetEnumerator ();
+            rhs = this.fields.GetEnumerator ();
+
+            while (lhs.MoveNext () && rhs.MoveNext ())
             {
-                compare = this.array[i].Value.CompareTo (fields[i].Value);
+                compare = lhs.Current.Value.CompareTo (rhs.Current.Value);
 
                 if (compare != 0)
                     return compare;
@@ -138,24 +112,14 @@ namespace   Cottle.Values
             return 0;
         }
 
-        public override bool    Find (Value key, out Value value)
-        {
-            return this.map.TryGetValue (key, out value);
-        }
-
         public override int GetHashCode ()
         {
             int hash = 0;
 
-            foreach (KeyValuePair<Value, Value> item in this.array)
+            foreach (KeyValuePair<Value, Value> item in this.fields)
                 hash = (hash << 1) ^ item.Key.GetHashCode () ^ item.Value.GetHashCode ();
 
             return hash;
-        }
-
-        public override bool    Has (Value key)
-        {
-            return this.map.ContainsKey (key);
         }
 
         public override string  ToString ()
@@ -165,16 +129,16 @@ namespace   Cottle.Values
 
             builder.Append ('[');
 
-            foreach (KeyValuePair<Value, Value> item in this.array)
+            foreach (KeyValuePair<Value, Value> pair in this.fields)
             {
                 if (separator)
                     builder.Append (", ");
                 else
                     separator = true;
 
-                builder.Append (item.Key);
+                builder.Append (pair.Key);
                 builder.Append (": ");
-                builder.Append (item.Value);
+                builder.Append (pair.Value);
             }
 
             builder.Append (']');
