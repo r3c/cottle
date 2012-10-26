@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
 using Cottle.Values.Generics;
-using System.Collections;
 
 namespace   Cottle.Values
 {
@@ -11,7 +11,9 @@ namespace   Cottle.Values
     {
         #region Attributes / Instance
 
-        private object  source;
+        private BindingFlags    binding;
+
+        private object          source;
 
         #endregion
 
@@ -36,12 +38,18 @@ namespace   Cottle.Values
 
         #region Constructors
 
-        public  ReflectionValue (object source)
+        public  ReflectionValue (object source, BindingFlags binding)
         {
             if (source == null)
                 throw new ArgumentNullException ("source");
 
+            this.binding = binding;
             this.source = source;
+        }
+
+        public  ReflectionValue (object source) :
+            this (source, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        {
         }
 
         #endregion
@@ -95,11 +103,11 @@ namespace   Cottle.Values
                 {
                     reader = new List<MemberReader> ();
 
-                    foreach (FieldInfo field in type.GetFields (BindingFlags.Instance | BindingFlags.NonPublic))
-                        reader.Add (new MemberReader (field));
+                    foreach (FieldInfo field in type.GetFields (this.binding))
+                        reader.Add (new MemberReader (field, this.binding));
 
-                    foreach (PropertyInfo property in type.GetProperties (BindingFlags.Instance | BindingFlags.NonPublic))
-                        reader.Add (new MemberReader (property));
+                    foreach (PropertyInfo property in type.GetProperties (this.binding))
+                        reader.Add (new MemberReader (property, this.binding));
 
                     ReflectionValue.readers[type] = reader;
                 }
@@ -131,6 +139,8 @@ namespace   Cottle.Values
 
             #region Attributes
 
+            private BindingFlags            binding;
+
             private Func<object, object>    extractor;
 
 		    private string                  name;
@@ -139,18 +149,20 @@ namespace   Cottle.Values
 
             #region Constructors
 
-            public  MemberReader (FieldInfo field)
+            public  MemberReader (FieldInfo field, BindingFlags binding)
             {
+                this.binding = binding;
                 this.extractor = (s) => field.GetValue (s);
                 this.name = field.Name;
             }
 
-            public  MemberReader (PropertyInfo property)
+            public  MemberReader (PropertyInfo property, BindingFlags binding)
             {
                 MethodInfo  method;
 
                 method = property.GetGetMethod (true);
 
+                this.binding = binding;
                 this.extractor = (s) => method.Invoke (s, null);
                 this.name = property.Name;
             }
@@ -166,7 +178,7 @@ namespace   Cottle.Values
                 value = this.extractor (source);
 
                 if (value != null)
-                    return new ReflectionValue (value);
+                    return new ReflectionValue (value, this.binding);
 
                 return UndefinedValue.Instance;
             }

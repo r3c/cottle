@@ -1034,6 +1034,57 @@ document.Render(scope, Console.Out);</code>
 					be called unless <code>is_admin</code> value is true.</p>
 				</div>
 
+				<h3>Inspect objects through reflection</h3>
+				<div class="section">
+					<p>Instead of converting complex object hierarchies to
+					Cottle values, you can have the library do it for you by
+					using .NET reflection. Keep in mind that reflection is
+					significantly slower than creating Cottle values manually,
+					but as it's a lazy mechanism it may be a good choice if you
+					have complex objects and don't know in advance which fields
+					might be used in your templates.</p>
+					<p>To use reflection, create a new ReflectionValue from any
+					.NET object instance, and push it to your scope. Its fields
+					and properties will be accessible like if it were a Cottle
+					array:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>Your image has a size of {image.Width} x {image.Height} pixels.
+
+{for key, value in stream:
+  {key} = {value}
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>scope["image"] = new ReflectionValue(new Bitmap(50, 50));</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Your image has a size of 50 x 50 pixels.
+
+nativeImage =
+Tag =
+PhysicalDimension =
+Size =
+Width = 50
+Height = 50
+HorizontalResolution = 96
+VerticalResolution = 96
+Flags = 2
+RawFormat =
+PixelFormat =
+Palette =
+FrameDimensionsList =
+PropertyIdList =
+PropertyItems =</code>
+					</div>
+					<p>By default, a <code>ReflectionValue</code> will read all
+					instance members, both public and private. If you want to
+					change this behavior, specify your BindingFlags as a second
+					parameter to <code>ReflectionValue</code> constructor.</p>
+				</div>
+
 				<h3 id="block_delimiters_customization">Block delimiters customization</h3>
 				<div class="section">
 					<p>By default, Cottle uses { character to start a code
