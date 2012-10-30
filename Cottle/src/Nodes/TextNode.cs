@@ -37,15 +37,15 @@ namespace   Cottle.Nodes
 
         public void Print (LexerConfig config, TextWriter output)
         {
-        	StringBuilder	builder;
+            StringBuilder   builder;
 
-        	builder = new StringBuilder (this.text);
-        	builder.Replace ("\\", "\\\\");
-        	builder.Replace (config.BlockBegin, "\\" + config.BlockBegin);
-        	builder.Replace (config.BlockContinue, "\\" + config.BlockContinue);
-        	builder.Replace (config.BlockEnd, "\\" + config.BlockEnd);
+            builder = new StringBuilder (this.text);
+            builder.Replace ("\\", "\\\\");
+            builder.Replace (config.BlockBegin, "\\" + config.BlockBegin);
+            builder.Replace (config.BlockContinue, "\\" + config.BlockContinue);
+            builder.Replace (config.BlockEnd, "\\" + config.BlockEnd);
 
-        	output.Write (builder.ToString ());
+            output.Write (builder.ToString ());
         }
 
         #endregion

@@ -1,7 +1,7 @@
 ﻿
 namespace   Cottle.Values
 {
-    public sealed class	UndefinedValue : Value
+    public sealed class UndefinedValue : Value
     {
         #region Properties
 

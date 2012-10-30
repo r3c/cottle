@@ -115,7 +115,7 @@ namespace   Cottle.Values
         #region Types
 
         private struct  MemberReader
-	    {
+        {
             #region Properties
 
             public string   Name
@@ -134,7 +134,7 @@ namespace   Cottle.Values
 
             private Func<object, object>    extractor;
 
-		    private string                  name;
+            private string                  name;
 
             #endregion
 
@@ -175,7 +175,7 @@ namespace   Cottle.Values
             }
 
             #endregion
-	    }
+        }
 
         private delegate Value  ValueConverter (object source);
 

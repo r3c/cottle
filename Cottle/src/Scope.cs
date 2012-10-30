@@ -74,7 +74,7 @@ namespace   Cottle
             Stack<Value>   stack;
 
             if (this.levels.Count < 2)
-            	return false;
+                return false;
 
             foreach (Value name in this.levels.Pop ())
             {
@@ -82,10 +82,10 @@ namespace   Cottle
                     stack.Pop ();
             }
 
-			return true;
+            return true;
         }
 
-        public bool	Set (Value name, Value value, ScopeMode mode)
+        public bool Set (Value name, Value value, ScopeMode mode)
         {
             HashSet<Value>  level;
             Stack<Value>    stack;

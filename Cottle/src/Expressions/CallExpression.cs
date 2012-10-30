@@ -48,7 +48,7 @@ namespace   Cottle.Expressions
                 }
                 catch (Exception exception)
                 {
-                    throw new RenderException ("function evaluation raised an exception", exception);
+                    throw new RenderException ("function call raised an exception", exception);
                 }
             }
 

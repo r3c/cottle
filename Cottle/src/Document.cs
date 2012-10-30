@@ -7,9 +7,9 @@ namespace   Cottle
     {
         #region Attributes
 
-		private LexerConfig	config;
+        private LexerConfig config;
 
-        private INode   	root;
+        private INode       root;
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace   Cottle
 
             parser = new Parser (config);
 
-			this.config = config;
+            this.config = config;
             this.root = parser.Parse (reader);
         }
 
@@ -51,9 +51,9 @@ namespace   Cottle
 
         public string   Export ()
         {
-            StringWriter	writer;
+            StringWriter    writer;
 
-			writer = new StringWriter (CultureInfo.InvariantCulture);
+            writer = new StringWriter (CultureInfo.InvariantCulture);
 
             this.Export (writer);
 
@@ -73,7 +73,7 @@ namespace   Cottle
         {
             StringWriter    writer;
 
-			writer = new StringWriter (CultureInfo.InvariantCulture);
+            writer = new StringWriter (CultureInfo.InvariantCulture);
 
             this.Render (scope, writer);
 

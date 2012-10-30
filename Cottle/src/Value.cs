@@ -196,7 +196,7 @@ namespace   Cottle
             return this.CompareTo (other) == 0;
         }
 
-        public override bool	Equals (object obj)
+        public override bool    Equals (object obj)
         {
             Value   other = obj as Value;
 

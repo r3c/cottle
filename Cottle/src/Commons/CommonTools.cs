@@ -46,7 +46,7 @@ namespace   Cottle.Commons
 
         #region Methods / Private
 
-        private static bool	ValueLoad (BinaryReader reader, out Value value)
+        private static bool ValueLoad (BinaryReader reader, out Value value)
         {
             List<KeyValuePair<Value, Value>>    array;
             Value                               arrayKey;

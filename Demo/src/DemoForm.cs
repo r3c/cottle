@@ -18,7 +18,7 @@ namespace   Demo
     {
         #region Constants
 
-        private const string	AUTOLOAD = "autoload.ctv";
+        private const string    AUTOLOAD = "autoload.ctv";
 
         #endregion
 
@@ -86,10 +86,10 @@ namespace   Demo
             }
             catch (DocumentException exception)
             {
-            	this.textBoxResult.BackColor = Color.LightPink;
-            	this.textBoxResult.Text = "Document error: " + exception.Message;
+                this.textBoxResult.BackColor = Color.LightPink;
+                this.textBoxResult.Text = "Document error: " + exception.Message;
 
-            	this.textBoxInput.Focus ();
+                this.textBoxInput.Focus ();
             }
             catch (RenderException exception)
             {
@@ -359,9 +359,9 @@ namespace   Demo
 
                     if (reader.ReadInt32 () != 1)
                     {
-                    	MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Incompatible file format"));
-                    	
-                    	return;
+                        MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Incompatible file format"));
+
+                        return;
                     }
 
                     if (CommonTools.ValuesLoad (reader, values))
@@ -389,7 +389,7 @@ namespace   Demo
 
         private void    StateSave (string path)
         {
-            Dictionary<string, Value>	values = new Dictionary<string, Value> ();
+            Dictionary<string, Value>   values = new Dictionary<string, Value> ();
 
             foreach (TreeNode root in this.treeViewValue.Nodes)
             {
@@ -399,9 +399,9 @@ namespace   Demo
 
             try
             {
-            	using (BinaryWriter writer = new BinaryWriter (new FileStream (path, FileMode.Create), Encoding.UTF8))
+                using (BinaryWriter writer = new BinaryWriter (new FileStream (path, FileMode.Create), Encoding.UTF8))
                 {
-            		writer.Write (1);
+                    writer.Write (1);
 
                     CommonTools.ValuesSave (writer, values);
 

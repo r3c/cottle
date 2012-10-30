@@ -84,7 +84,7 @@ namespace   Cottle.Nodes
 
         public void Print (LexerConfig config, TextWriter output)
         {
-        	output.Write (config.BlockBegin);
+            output.Write (config.BlockBegin);
             output.Write ("for ");
 
             if (this.key != null)
@@ -102,7 +102,7 @@ namespace   Cottle.Nodes
 
             if (this.empty != null)
             {
-            	output.Write (config.BlockContinue);
+                output.Write (config.BlockContinue);
                 output.Write ("empty:");
 
                 this.empty.Print (config, output);

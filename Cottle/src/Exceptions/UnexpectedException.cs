@@ -17,7 +17,7 @@ namespace   Cottle.Exceptions
             }
         }
 
-        public string	Lexem
+        public string   Lexem
         {
             get
             {
@@ -29,9 +29,9 @@ namespace   Cottle.Exceptions
 
         #region Attributes
 
-        private string	expected;
+        private string  expected;
 
-        private string	lexem;
+        private string  lexem;
 
         #endregion
 

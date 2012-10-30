@@ -17,7 +17,7 @@ namespace   Cottle.Nodes
 
         private INode                   body;
 
-        private ScopeMode				mode;
+        private ScopeMode               mode;
 
         private NameExpression          name;
 

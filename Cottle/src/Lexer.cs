@@ -244,8 +244,8 @@ namespace   Cottle
                     case '4':
                     case '5':
                     case '6':
-					case '7':
-					case '8':
+                    case '7':
+                    case '8':
                     case '9':
                         buffer = new StringBuilder ();
                         dot = false;
@@ -306,14 +306,14 @@ namespace   Cottle
             int             trail;
             LexemType       type;
 
-			if (this.pending.Type != LexemType.None)
-			{
+            if (this.pending.Type != LexemType.None)
+            {
                 lexem = this.pending;
 
-				this.pending = new Lexem (LexemType.None, string.Empty);
+                this.pending = new Lexem (LexemType.None, string.Empty);
 
-				return lexem;
-			}
+                return lexem;
+            }
 
             if (this.eof)
                 return new Lexem (LexemType.EndOfFile, "<EOF>");

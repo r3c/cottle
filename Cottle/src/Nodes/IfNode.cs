@@ -69,18 +69,18 @@ namespace   Cottle.Nodes
 
             foreach (Branch branch in this.branches)
             {
-            	if (first)
-            	{
-            		output.Write (config.BlockBegin);
-            		output.Write ("if ");
+                if (first)
+                {
+                    output.Write (config.BlockBegin);
+                    output.Write ("if ");
 
-            		first = false;
-            	}
-            	else
-            	{
-            		output.Write (config.BlockContinue);
-            		output.Write ("elif ");
-            	}
+                    first = false;
+                }
+                else
+                {
+                    output.Write (config.BlockContinue);
+                    output.Write ("elif ");
+                }
 
                 output.Write (branch.Test);
                 output.Write (":");
@@ -90,7 +90,7 @@ namespace   Cottle.Nodes
 
             if (this.fallback != null)
             {
-            	output.Write (config.BlockContinue);
+                output.Write (config.BlockContinue);
                 output.Write ("else:");
 
                 this.fallback.Print (config, output);

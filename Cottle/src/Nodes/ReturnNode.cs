@@ -33,7 +33,7 @@ namespace   Cottle.Nodes
 
         public void Print (LexerConfig config, TextWriter output)
         {
-        	output.Write (config.BlockBegin);
+            output.Write (config.BlockBegin);
             output.Write ("return ");
             output.Write (this.expression);
             output.Write (config.BlockEnd);

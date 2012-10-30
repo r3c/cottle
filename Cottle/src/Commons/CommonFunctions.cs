@@ -178,11 +178,11 @@ namespace   Cottle.Commons
             return result;
         }, 1, -1);
 
-		public static readonly IFunction	FunctionFilter = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        public static readonly IFunction    FunctionFilter = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            List<Value>                     	arguments = new List<Value> (values.Count - 1);
-            IFunction                       	callback = values[1].AsFunction;
-            List<KeyValuePair<Value, Value>>	result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
+            List<Value>                         arguments = new List<Value> (values.Count - 1);
+            IFunction                           callback = values[1].AsFunction;
+            List<KeyValuePair<Value, Value>>    result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
 
             if (callback == null)
                 return UndefinedValue.Instance;
@@ -196,11 +196,11 @@ namespace   Cottle.Commons
                     arguments.Add (values[i]);
 
                 if (callback.Execute (arguments, scope, output).AsBoolean)
-                	result.Add (new KeyValuePair<Value, Value> (pair.Key, pair.Value));
+                    result.Add (new KeyValuePair<Value, Value> (pair.Key, pair.Value));
             }
 
             return result;
-		});
+        });
 
         public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
@@ -349,37 +349,33 @@ namespace   Cottle.Commons
 
             path = Path.GetFullPath (values[0].AsString);
 
-            try
-            {
-                modified = File.GetLastWriteTime (path);
+            if (!File.Exists (path))
+            	return UndefinedValue.Instance;
 
-                lock (CommonFunctions.includes)
+            modified = File.GetLastWriteTime (path);
+
+            lock (CommonFunctions.includes)
+            {
+                if (!CommonFunctions.includes.TryGetValue (path, out compiled) || compiled.Value < modified)
                 {
-                    if (!CommonFunctions.includes.TryGetValue (path, out compiled) || compiled.Value < modified)
+                    using (stream = File.OpenRead (path))
                     {
-                        using (stream = File.OpenRead (path))
-                        {
-                            compiled = new KeyValuePair<Document, DateTime> (new Document (new StreamReader (stream)), modified);
-                        }
-
-                        CommonFunctions.includes[path] = compiled;
+                        compiled = new KeyValuePair<Document, DateTime> (new Document (new StreamReader (stream)), modified);
                     }
+
+                    CommonFunctions.includes[path] = compiled;
                 }
-
-                inner = new Scope();
-
-                for (i = 1; i < values.Count; ++i)
-                {
-                    foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-                        inner.Set(pair.Key, pair.Value, ScopeMode.Closest);
-                }
-
-                return compiled.Key.Render (inner, output);
             }
-            catch
+
+            inner = new Scope();
+
+            for (i = 1; i < values.Count; ++i)
             {
-                return UndefinedValue.Instance;
+                foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
+                    inner.Set(pair.Key, pair.Value, ScopeMode.Closest);
             }
+
+            return compiled.Key.Render (inner, output);
         }, 1, -1);
 
         public static readonly IFunction    FunctionJoin = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -458,14 +454,7 @@ namespace   Cottle.Commons
             List<Value> groups;
             Match       match;
 
-            try
-            {
-                match = Regex.Match (values[0].AsString, values[1].AsString);
-            }
-            catch
-            {
-                return UndefinedValue.Instance;
-            }
+            match = Regex.Match (values[0].AsString, values[1].AsString);
 
             if (!match.Success)
                 return UndefinedValue.Instance;
@@ -673,7 +662,7 @@ namespace   Cottle.Commons
 
         public static void  Assign (Scope scope, ScopeMode mode = ScopeMode.Closest)
         {
-            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), ScopeMode.Closest);
+            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), mode);
             scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), mode);
             scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), mode);
             scope.Set ("call", new FunctionValue (CommonFunctions.FunctionCall), mode);

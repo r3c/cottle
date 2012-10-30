@@ -84,7 +84,7 @@ namespace   Cottle.Values.Generics
 
         public override string  ToString ()
         {
-        	return this.Acquire ().ToString ();
+            return this.Acquire ().ToString ();
         }
 
         #endregion

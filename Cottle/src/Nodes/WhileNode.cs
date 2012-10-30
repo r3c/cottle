@@ -52,7 +52,7 @@ namespace   Cottle.Nodes
 
         public void Print (LexerConfig config, TextWriter output)
         {
-        	output.Write (config.BlockBegin);
+            output.Write (config.BlockBegin);
             output.Write ("while ");
             output.Write (this.test);
             output.Write (":");
