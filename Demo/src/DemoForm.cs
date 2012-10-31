@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Cottle;
 using Cottle.Commons;
 using Cottle.Exceptions;
+using Cottle.Settings;
 using Cottle.Values;
 
 namespace   Demo
@@ -24,7 +25,7 @@ namespace   Demo
 
         #region Attributes
 
-        private LexerConfig config = new LexerConfig ();
+        private ISetting    setting = DefaultSetting.Instance;
 
         #endregion
 
@@ -53,7 +54,7 @@ namespace   Demo
             {
                 try
                 {
-                    document = new Document (this.textBoxInput.Text, this.config);
+                    document = new Document (this.textBoxInput.Text, this.setting);
                     scope = new Scope ();
 
                     CommonFunctions.Assign (scope);
@@ -98,11 +99,11 @@ namespace   Demo
             }
         }
 
-        private void    toolStripMenuItemConfig_Click (object sender, EventArgs e)
+        private void    toolStripMenuItemSetting_Click (object sender, EventArgs e)
         {
             Form    form;
 
-            form = new ConfigForm (this.config, (config) => this.config = config);
+            form = new SettingForm (this.setting, (setting) => this.setting = setting);
             form.ShowDialog (this);
         }
 
@@ -343,7 +344,9 @@ namespace   Demo
         private void    StateLoad (string path, bool dialog)
         {
             TreeNode                    root;
+            CustomSetting               setting;
             Dictionary<string, Value>   values;
+            int                         version;
 
             if (this.treeViewValue.Nodes.Count < 1)
                 return;
@@ -356,8 +359,9 @@ namespace   Demo
                 using (BinaryReader reader = new BinaryReader (new FileStream (path, FileMode.Open), Encoding.UTF8))
                 {
                     values = new Dictionary<string, Value> ();
+                    version = reader.ReadInt32 ();
 
-                    if (reader.ReadInt32 () != 1)
+                    if (version < 1 || version > 2)
                     {
                         MessageBox.Show (this, string.Format (CultureInfo.InvariantCulture, "Incompatible file format"));
 
@@ -370,9 +374,13 @@ namespace   Demo
                             root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
                     }
 
-                    this.config.BlockBegin = reader.ReadString ();
-                    this.config.BlockContinue = reader.ReadString ();
-                    this.config.BlockEnd = reader.ReadString ();
+                    setting = new CustomSetting ();
+                    setting.BlockBegin = reader.ReadString ();
+                    setting.BlockContinue = reader.ReadString ();
+                    setting.BlockEnd = reader.ReadString ();
+                    setting.Clean = version > 1 ? (SettingClean)reader.ReadInt32 () : SettingClean.Nothing;
+
+                    this.setting = setting;
                     this.textBoxInput.Text = reader.ReadString ();
                 }
 
@@ -401,13 +409,14 @@ namespace   Demo
             {
                 using (BinaryWriter writer = new BinaryWriter (new FileStream (path, FileMode.Create), Encoding.UTF8))
                 {
-                    writer.Write (1);
+                    writer.Write (2);
 
                     CommonTools.ValuesSave (writer, values);
 
-                    writer.Write (this.config.BlockBegin);
-                    writer.Write (this.config.BlockContinue);
-                    writer.Write (this.config.BlockEnd);
+                    writer.Write (this.setting.BlockBegin);
+                    writer.Write (this.setting.BlockContinue);
+                    writer.Write (this.setting.BlockEnd);
+                    writer.Write ((int)this.setting.Clean);
                     writer.Write (this.textBoxInput.Text);
                 }
 

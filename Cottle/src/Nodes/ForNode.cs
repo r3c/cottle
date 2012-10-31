@@ -82,9 +82,9 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (LexerConfig config, TextWriter output)
+        public void Print (ISetting setting, TextWriter output)
         {
-            output.Write (config.BlockBegin);
+            output.Write (setting.BlockBegin);
             output.Write ("for ");
 
             if (this.key != null)
@@ -98,17 +98,17 @@ namespace   Cottle.Nodes
             output.Write (this.from);
             output.Write (":");
 
-            this.body.Print (config, output);
+            this.body.Print (setting, output);
 
             if (this.empty != null)
             {
-                output.Write (config.BlockContinue);
+                output.Write (setting.BlockContinue);
                 output.Write ("empty:");
 
-                this.empty.Print (config, output);
+                this.empty.Print (setting, output);
             }
 
-            output.Write (config.BlockEnd);
+            output.Write (setting.BlockEnd);
         }
 
         #endregion

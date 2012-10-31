@@ -53,6 +53,9 @@
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Commons\CommonTools.cs" />
     <Compile Include="src\Document.cs" />
+    <Compile Include="src\ICleaner.cs" />
+    <Compile Include="src\ISetting.cs" />
+    <Compile Include="src\SettingClean.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
     <Compile Include="src\Exceptions\DocumentException.cs" />
     <Compile Include="src\Exceptions\RenderException.cs" />
@@ -83,6 +86,11 @@
     <Compile Include="src\Nodes\AssignValueNode.cs" />
     <Compile Include="src\Nodes\DumpNode.cs" />
     <Compile Include="src\ScopeMode.cs" />
+    <Compile Include="src\Cleaners\BlankCharactersCleaner.cs" />
+    <Compile Include="src\Cleaners\FirstLastLinesCleaner.cs" />
+    <Compile Include="src\Cleaners\NothingCleaner.cs" />
+    <Compile Include="src\Settings\CustomSettings.cs" />
+    <Compile Include="src\Settings\DefaultSetting.cs" />
     <Compile Include="src\Value.cs" />
     <Compile Include="src\Lexer.cs" />
     <Compile Include="src\Nodes\CompositeNode.cs" />
@@ -106,7 +114,10 @@
     <Compile Include="src\Values\NumberValue.cs" />
     <Compile Include="src\Values\StringValue.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="src\Cleaners" />
+    <Folder Include="src\Settings" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

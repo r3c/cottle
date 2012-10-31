@@ -35,15 +35,15 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (LexerConfig config, TextWriter output)
+        public void Print (ISetting setting, TextWriter output)
         {
             StringBuilder   builder;
 
             builder = new StringBuilder (this.text);
             builder.Replace ("\\", "\\\\");
-            builder.Replace (config.BlockBegin, "\\" + config.BlockBegin);
-            builder.Replace (config.BlockContinue, "\\" + config.BlockContinue);
-            builder.Replace (config.BlockEnd, "\\" + config.BlockEnd);
+            builder.Replace (setting.BlockBegin, "\\" + setting.BlockBegin);
+            builder.Replace (setting.BlockContinue, "\\" + setting.BlockContinue);
+            builder.Replace (setting.BlockEnd, "\\" + setting.BlockEnd);
 
             output.Write (builder.ToString ());
         }

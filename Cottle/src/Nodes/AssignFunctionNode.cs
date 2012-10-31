@@ -46,11 +46,11 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (LexerConfig config, TextWriter output)
+        public void Print (ISetting setting, TextWriter output)
         {
             bool    comma = false;
 
-            output.Write (config.BlockBegin);
+            output.Write (setting.BlockBegin);
             output.Write ("define ");
             output.Write (this.name);
             output.Write ('(');
@@ -67,9 +67,9 @@ namespace   Cottle.Nodes
 
             output.Write ("): ");
 
-            this.body.Print (config, output);
+            this.body.Print (setting, output);
 
-            output.Write (config.BlockEnd);
+            output.Write (setting.BlockEnd);
         }
 
         #endregion

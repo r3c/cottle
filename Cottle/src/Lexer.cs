@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
+using Cottle.Cleaners;
 using Cottle.Exceptions;
 
 namespace   Cottle
@@ -47,6 +48,8 @@ namespace   Cottle
 
         #region Attributes
 
+        private ICleaner            cleaner;
+
         private int                 column;
 
         private Lexem               current;
@@ -71,20 +74,38 @@ namespace   Cottle
 
         #region Constructors
 
-        public  Lexer (LexerConfig config)
+        public  Lexer (ISetting setting)
         {
             this.cursors = new Queue<LexemCursor> ();
             this.pending = new Lexem (LexemType.None, string.Empty);
             this.root = new LexemState ();
 
-            if (!this.root.Store (LexemType.BlockBegin, config.BlockBegin))
-                throw new ConfigException ("BlockBegin", config.BlockBegin, "token used twice");
+            if (!this.root.Store (LexemType.BlockBegin, setting.BlockBegin))
+                throw new ConfigException ("BlockBegin", setting.BlockBegin, "token used twice");
 
-            if (!this.root.Store (LexemType.BlockContinue, config.BlockContinue))
-                throw new ConfigException ("BlockContinue", config.BlockContinue, "token used twice");
+            if (!this.root.Store (LexemType.BlockContinue, setting.BlockContinue))
+                throw new ConfigException ("BlockContinue", setting.BlockContinue, "token used twice");
 
-            if (!this.root.Store (LexemType.BlockEnd, config.BlockEnd))
-                throw new ConfigException ("BlockEnd", config.BlockEnd, "token used twice");
+            if (!this.root.Store (LexemType.BlockEnd, setting.BlockEnd))
+                throw new ConfigException ("BlockEnd", setting.BlockEnd, "token used twice");
+
+            switch (setting.Clean)
+            {
+                case SettingClean.BlankCharacters:
+                    this.cleaner = new BlankCharactersCleaner ();
+            		
+                    break;
+
+            	case SettingClean.FirstLastLines:
+                    this.cleaner = new FirstLastLinesCleaner ();
+            		
+                    break;
+
+               default:
+                    this.cleaner = new NothingCleaner ();
+            		
+                    break;
+            }
         }
 
         #endregion
@@ -299,9 +320,10 @@ namespace   Cottle
 
         private Lexem   NextRaw ()
         {
+            StringBuilder   buffer;
             bool            cancel;
             Lexem           lexem;
-            StringBuilder   text;
+            string          text;
             StringBuilder   token;
             int             trail;
             LexemType       type;
@@ -315,10 +337,7 @@ namespace   Cottle
                 return lexem;
             }
 
-            if (this.eof)
-                return new Lexem (LexemType.EndOfFile, "<EOF>");
-
-            text = new StringBuilder ();
+            buffer = new StringBuilder ();
 
             for (; !this.eof; this.Read ())
             {
@@ -334,7 +353,7 @@ namespace   Cottle
                     else if (cursor.Move (this.last, out type))
                     {
                         while (trail-- > 0)
-                            text.Append (this.cursors.Dequeue ().Character);
+                            buffer.Append (this.cursors.Dequeue ().Character);
 
                         token = new StringBuilder ();
 
@@ -342,12 +361,13 @@ namespace   Cottle
                             token.Append (this.cursors.Dequeue ().Character);
 
                         lexem = new Lexem (type, token.ToString ());
+                        text = this.cleaner.Clean (buffer);
 
-                        if (text.Length > 0)
+                        if (!string.IsNullOrEmpty (text))
                         {
                             this.pending = lexem;
 
-                            lexem = new Lexem (LexemType.Text, text.ToString ());
+                            lexem = new Lexem (LexemType.Text, text);
                         }
 
                         this.Read ();
@@ -359,13 +379,18 @@ namespace   Cottle
                 }
 
                 while (this.cursors.Count > 0 && this.cursors.Peek ().State == null)
-                    text.Append (this.cursors.Dequeue ().Character);
+                    buffer.Append (this.cursors.Dequeue ().Character);
             }
 
             while (this.cursors.Count > 0)
-                text.Append (this.cursors.Dequeue ().Character);
+                buffer.Append (this.cursors.Dequeue ().Character);
 
-            return new Lexem (LexemType.Text, text.ToString ());
+            text = this.cleaner.Clean (buffer);
+
+            if (!string.IsNullOrEmpty (text))
+                return new Lexem (LexemType.Text, text);
+
+            return new Lexem (LexemType.EndOfFile, "<EOF>");
         }
 
         private bool    Read ()

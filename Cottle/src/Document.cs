@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
+
+using Cottle.Settings;
 
 namespace   Cottle
 {
@@ -7,36 +10,48 @@ namespace   Cottle
     {
         #region Attributes
 
-        private LexerConfig config;
-
         private INode       root;
+
+        private ISetting    setting;
 
         #endregion
 
         #region Constructors
 
-        public  Document (TextReader reader, LexerConfig config)
+        public  Document (TextReader reader, ISetting setting)
         {
             Parser  parser;
 
-            parser = new Parser (config);
+            parser = new Parser (setting);
 
-            this.config = config;
             this.root = parser.Parse (reader);
+            this.setting = setting;
         }
 
         public  Document (TextReader reader) :
-            this (reader, new LexerConfig ())
+            this (reader, DefaultSetting.Instance)
         {
         }
 
-        public  Document (string template, LexerConfig config) :
-            this(new StringReader (template), config)
+        public  Document (string template, ISetting setting) :
+            this (new StringReader (template), setting)
         {
         }
 
         public  Document (string template) :
-            this(new StringReader (template), new LexerConfig ())
+            this (new StringReader (template), DefaultSetting.Instance)
+        {
+        }
+
+        [Obsolete("Please replace LexerConfig by a CustomSetting instance")]
+        public  Document (TextReader reader, LexerConfig config) :
+        	this (reader, (ISetting)config)
+        {
+        }
+
+        [Obsolete("Please replace LexerConfig by a CustomSetting instance")]
+        public  Document (string template, LexerConfig config) :
+            this (template, (ISetting)config)
         {
         }
 
@@ -46,7 +61,7 @@ namespace   Cottle
 
         public void     Export (TextWriter writer)
         {
-            this.root.Print (this.config, writer);
+            this.root.Print (this.setting, writer);
         }
 
         public string   Export ()

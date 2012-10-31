@@ -37,9 +37,9 @@ namespace   Cottle
 
         #region Constructors
 
-        public  Parser (LexerConfig config)
+        public  Parser (ISetting setting)
         {
-            this.lexer = new Lexer (config);
+            this.lexer = new Lexer (setting);
         }
 
         #endregion

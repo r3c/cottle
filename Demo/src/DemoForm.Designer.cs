@@ -45,7 +45,7 @@
         	this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
         	this.toolStripMenuItemFileLoad = new System.Windows.Forms.ToolStripMenuItem();
         	this.toolStripMenuItemFileSave = new System.Windows.Forms.ToolStripMenuItem();
-        	this.toolStripMenuItemConfig = new System.Windows.Forms.ToolStripMenuItem();
+        	this.toolStripMenuItemSetting = new System.Windows.Forms.ToolStripMenuItem();
         	this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
         	this.toolStripMenuItemTreeCollapse = new System.Windows.Forms.ToolStripMenuItem();
         	this.toolStripMenuItemTreeExpand = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,7 +143,7 @@
         	        	        	this.toolStripSeparator2,
         	        	        	this.toolStripMenuItemFileLoad,
         	        	        	this.toolStripMenuItemFileSave,
-        	        	        	this.toolStripMenuItemConfig,
+        	        	        	this.toolStripMenuItemSetting,
         	        	        	this.toolStripSeparator3,
         	        	        	this.toolStripMenuItemTreeCollapse,
         	        	        	this.toolStripMenuItemTreeExpand});
@@ -225,13 +225,13 @@
         	this.toolStripMenuItemFileSave.Text = "Save state...";
         	this.toolStripMenuItemFileSave.Click += new System.EventHandler(this.toolStripMenuItemFileSave_Click);
         	// 
-        	// toolStripMenuItemConfig
+        	// toolStripMenuItemSetting
         	// 
-        	this.toolStripMenuItemConfig.Image = global::Demo.Properties.Resources.menu_config;
-        	this.toolStripMenuItemConfig.Name = "toolStripMenuItemConfig";
-        	this.toolStripMenuItemConfig.Size = new System.Drawing.Size(160, 22);
-        	this.toolStripMenuItemConfig.Text = "Configuration...";
-        	this.toolStripMenuItemConfig.Click += new System.EventHandler(this.toolStripMenuItemConfig_Click);
+        	this.toolStripMenuItemSetting.Image = global::Demo.Properties.Resources.menu_config;
+        	this.toolStripMenuItemSetting.Name = "toolStripMenuItemSetting";
+        	this.toolStripMenuItemSetting.Size = new System.Drawing.Size(160, 22);
+        	this.toolStripMenuItemSetting.Text = "Setting...";
+        	this.toolStripMenuItemSetting.Click += new System.EventHandler(this.toolStripMenuItemSetting_Click);
         	// 
         	// toolStripSeparator3
         	// 
@@ -405,6 +405,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTreeCollapse;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTreeExpand;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemConfig;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSetting;
     }
 }

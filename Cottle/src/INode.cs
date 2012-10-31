@@ -11,7 +11,7 @@ namespace   Cottle
 
         bool    Apply (Scope scope, TextWriter output, out Value result);
 
-        void    Print (LexerConfig config, TextWriter output);
+        void    Print (ISetting setting, TextWriter output);
 
         #endregion
     }

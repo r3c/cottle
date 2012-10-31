@@ -61,7 +61,7 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (LexerConfig config, TextWriter output)
+        public void Print (ISetting setting, TextWriter output)
         {
             bool    first;
             
@@ -71,32 +71,32 @@ namespace   Cottle.Nodes
             {
                 if (first)
                 {
-                    output.Write (config.BlockBegin);
+                    output.Write (setting.BlockBegin);
                     output.Write ("if ");
 
                     first = false;
                 }
                 else
                 {
-                    output.Write (config.BlockContinue);
+                    output.Write (setting.BlockContinue);
                     output.Write ("elif ");
                 }
 
                 output.Write (branch.Test);
                 output.Write (":");
 
-                branch.Body.Print (config, output);
+                branch.Body.Print (setting, output);
             }
 
             if (this.fallback != null)
             {
-                output.Write (config.BlockContinue);
+                output.Write (setting.BlockContinue);
                 output.Write ("else:");
 
-                this.fallback.Print (config, output);
+                this.fallback.Print (setting, output);
             }
 
-            output.Write (config.BlockEnd);
+            output.Write (setting.BlockEnd);
         }
 
         #endregion
