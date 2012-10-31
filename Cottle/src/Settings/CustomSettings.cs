@@ -5,7 +5,7 @@ namespace Cottle.Settings
     {
         #region Properties
 
-        public string       BlockBegin
+        public string   BlockBegin
         {
             get
             {
@@ -17,7 +17,7 @@ namespace Cottle.Settings
             }
         }
 
-        public string       BlockContinue
+        public string   BlockContinue
         {
             get
             {
@@ -29,7 +29,7 @@ namespace Cottle.Settings
             }
         }
 
-        public string       BlockEnd
+        public string   BlockEnd
         {
             get
             {
@@ -41,15 +41,15 @@ namespace Cottle.Settings
             }
         }
 
-        public SettingClean Clean
+        public ICleaner Cleaner
         {
             get
             {
-                return this.clean;
+                return this.cleaner;
             }
             set
             {
-                this.clean = value;
+                this.cleaner = value;
             }
         }
 
@@ -57,13 +57,13 @@ namespace Cottle.Settings
 
         #region Attributes
 
-        private string          blockBegin = DefaultSetting.Instance.BlockBegin;
+        private string     blockBegin = DefaultSetting.Instance.BlockBegin;
 
-        private string          blockContinue = DefaultSetting.Instance.BlockContinue;
+        private string     blockContinue = DefaultSetting.Instance.BlockContinue;
 
-        private string          blockEnd = DefaultSetting.Instance.BlockEnd;
+        private string     blockEnd = DefaultSetting.Instance.BlockEnd;
 
-        private SettingClean    clean = DefaultSetting.Instance.Clean;
+        private ICleaner   cleaner = DefaultSetting.Instance.Cleaner;
 
         #endregion
     }

@@ -2,7 +2,7 @@
 
 namespace   Cottle.Cleaners
 {
-	class   BlankCharactersCleaner : ICleaner
+	public class    BlankCharactersCleaner : ICleaner
     {
         #region Methods
         
@@ -24,7 +24,10 @@ namespace   Cottle.Cleaners
 
             stop = i + 1;
 
-            return buffer.ToString (start, stop - start);
+            if (start < stop)
+                return buffer.ToString (start, stop - start);
+
+            return string.Empty;
         }
         
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Cottle;
@@ -22,10 +23,10 @@ namespace   Demo
 
             InitializeComponent ();
 
-            foreach (SettingClean clean in Enum.GetValues (typeof (SettingClean)))
-            	this.comboBoxClean.Items.Add (clean);
+            foreach (KeyValuePair<string, ICleaner> cleaner in CleanerCollection.Cleaners)
+                this.comboBoxClean.Items.Add (cleaner.Key);
 
-            this.comboBoxClean.SelectedIndex = (int)setting.Clean;
+			this.comboBoxClean.SelectedIndex = CleanerCollection.GetIndex (setting.Cleaner);
             this.textBoxBlockBegin.Text = setting.BlockBegin;
             this.textBoxBlockContinue.Text = setting.BlockContinue;
             this.textBoxBlockEnd.Text = setting.BlockEnd;
@@ -43,7 +44,7 @@ namespace   Demo
             setting.BlockBegin = this.textBoxBlockBegin.Text;
             setting.BlockContinue = this.textBoxBlockContinue.Text;
             setting.BlockEnd = this.textBoxBlockEnd.Text;
-            setting.Clean = (SettingClean)this.comboBoxClean.SelectedIndex;
+            setting.Cleaner = CleanerCollection.GetCleaner (this.comboBoxClean.SelectedIndex);
 
             this.apply (setting);
 

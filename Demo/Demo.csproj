@@ -48,6 +48,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="src\CleanerCollection.cs" />
     <Compile Include="src\DemoForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -63,11 +64,11 @@
     </Compile>
     <Compile Include="src\Program.cs" />
     <Compile Include="src\SettingForm.cs">
-	  <SubType>Form</SubType>
-	</Compile>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="src\SettingForm.Designer.cs">
-	  <DependentUpon>SettingForm.cs</DependentUpon>
-	</Compile>
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cottle\Cottle.csproj">
@@ -87,8 +88,8 @@
       <DependentUpon>NodeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\SettingForm.resx">
-	  <DependentUpon>SettingForm.cs</DependentUpon>
-	</EmbeddedResource>
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="autoload.ctv">

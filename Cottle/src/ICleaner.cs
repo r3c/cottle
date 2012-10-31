@@ -2,7 +2,7 @@
 
 namespace   Cottle
 {
-    interface   ICleaner
+    public interface    ICleaner
     {
         #region Methods
 

@@ -2,7 +2,7 @@
 
 namespace   Cottle.Cleaners
 {
-	class   FirstLastLinesCleaner : ICleaner
+	public class    FirstLastLinesCleaner : ICleaner
     {
         #region Methods
         
@@ -34,7 +34,10 @@ namespace   Cottle.Cleaners
             else
                 stop = i - 1;
 
-            return buffer.ToString (start, stop - start);
+            if (start < stop)
+                return buffer.ToString (start, stop - start);
+
+            return buffer.ToString ();
         }
         
         #endregion

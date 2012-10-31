@@ -55,7 +55,6 @@
     <Compile Include="src\Document.cs" />
     <Compile Include="src\ICleaner.cs" />
     <Compile Include="src\ISetting.cs" />
-    <Compile Include="src\SettingClean.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
     <Compile Include="src\Exceptions\DocumentException.cs" />
     <Compile Include="src\Exceptions\RenderException.cs" />

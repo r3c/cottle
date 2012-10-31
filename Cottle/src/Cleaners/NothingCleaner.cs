@@ -2,7 +2,7 @@
 
 namespace   Cottle.Cleaners
 {
-	class   NothingCleaner : ICleaner
+	public class    NothingCleaner : ICleaner
     {
         #region Methods
         

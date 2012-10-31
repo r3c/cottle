@@ -76,6 +76,7 @@ namespace   Cottle
 
         public  Lexer (ISetting setting)
         {
+            this.cleaner = setting.Cleaner;
             this.cursors = new Queue<LexemCursor> ();
             this.pending = new Lexem (LexemType.None, string.Empty);
             this.root = new LexemState ();
@@ -88,24 +89,6 @@ namespace   Cottle
 
             if (!this.root.Store (LexemType.BlockEnd, setting.BlockEnd))
                 throw new ConfigException ("BlockEnd", setting.BlockEnd, "token used twice");
-
-            switch (setting.Clean)
-            {
-                case SettingClean.BlankCharacters:
-                    this.cleaner = new BlankCharactersCleaner ();
-            		
-                    break;
-
-            	case SettingClean.FirstLastLines:
-                    this.cleaner = new FirstLastLinesCleaner ();
-            		
-                    break;
-
-               default:
-                    this.cleaner = new NothingCleaner ();
-            		
-                    break;
-            }
         }
 
         #endregion

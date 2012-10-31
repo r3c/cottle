@@ -245,7 +245,7 @@
 					<p>Here is a simple use case:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>Text contents of the template file 'template.ctl'.</code>
+<code>Text contents of the template file 'test.cottle'.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
@@ -254,7 +254,7 @@
     Document   document;
     Scope      scope;
 
-    using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
+    using (StreamReader template = new StreamReader(new FileStream("test.cottle", FileMode.Open), Encoding.UTF8))
     {
         document = new Document(template); // may throw a ConfigException or DocumentException on error
     }
@@ -269,13 +269,13 @@
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>Text contents of the template file 'template.ctl'.</code>
+<code>Text contents of the template file 'test.cottle'.</code>
 					</div>
 					<p>Since the sample C# codes used in example is quite
 					redundant, only specific parts for each one will appear in
-					following examples. They should be inserted when indicated
-					by the "TODO" comment in sample above. Common parts of the
-					code won't be shown anymore.
+					following examples. They should be inserted where the
+					"TODO" comment is located. Common parts of the code won't
+					be shown anymore.
 					</p>
 				</div>
 			</div>
@@ -449,12 +449,22 @@
 					<p>Here is how to use literal values in your templates:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{17}
+<code>{17.42}
 {"Constant string value"}
+{'String with single quotes'}
 {["key1": "value1", "key2": "value2", 43: "value for key 43"]}
 {["constant", "array", "with", "auto-generated", "numeric", "keys"]}
 {[1: ["array", "with"], "mixed": "values"]}</code>
 					</div>
+					<p>As you can see in this example, literals can be:</p>
+					<ul>
+						<li>Integer or decimal numeric constants,</li>
+						<li>Character strings delimited by either single or
+						double quotes,</li>
+						<li>Arrays with either key/value pairs or values
+						only (numeric keys starting at index 0 are generated in
+						this case)</li>
+					</ul>
 				</div>
 
 				<h3 id="calling_functions">Calling functions</h3>
@@ -726,6 +736,178 @@ Your random password is: {password}.</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>Your random password is: 2PIBnodftxz8jAX.</code>
+					</div>
+				</div>
+			</div>
+
+			<h2>Configuration options</h2>
+			<div class="section">
+				<h3>Using custom configuration</h3>
+				<div class="section">
+					<p>When creating a new Cottle document, you can pass it an
+					optional <code>Cottle.ISetting</code> object which contains
+					configuration parameters. If this parameter is missing then
+					a default instance is used. You can use builtin
+					<code>Cottle.Settings.CustomSetting</code> object to
+					override any configuration parameter you want, or implement
+					the interface yourself for more advanced uses:</p>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+					<code>Document        document;
+Scope           scope;
+CustomSetting   setting;
+
+setting = new CustomSetting();
+
+/* TODO: update setting properties */
+
+scope = new Scope();
+
+/* TODO: assign some values to scope */
+
+using (StreamReader template = new StreamReader(new FileStream("test.cottle", FileMode.Open), Encoding.UTF8))
+{
+    document = new Document(template, setting);
+}
+
+document.Render(scope, Console.Out);</code>
+					</div>
+					<p>Configuration parameters can be updated where the first
+					"TODO" comment is located. This code will be used for
+					detailed usage of specific parameters in following
+					sections.</p>
+				</div>
+
+				<h3>Raw text whitespaces cleaning</h3>
+				<div class="section">
+					<p>Cottle's default behavior for raw text is to render it
+					without any modification. While this gives you a perfect
+					character-level control of how a template is rendered, it
+					may prevent you from writing clean indented code for target
+					formats where white spaces are either ignored or collapsed,
+					such as HTML.</p>
+					<p>For that reason, you can change the way raw text is
+					transformed by Cottle before it is rendered through the use
+					of "cleaners". Cleaners are objects that implement the
+					<code>Cottle.ICleaner</code> interface, and are called for
+					each raw text block from input templates. Three default
+					cleaners are provided by Cottle, but you can write your
+					owns if needed. Available cleaners are:</p>
+					<ul>
+						<li>BlankCharactersCleaner: remove all leading and
+						trailing blank characters from raw text blocks,</li>
+						<li>FirstLastLinesCleaner: remove first and last empty
+						lines from raw text blocks except for blocks that
+						contain only blank characters,</li>
+						<li>NothingCleaner: leave raw text untouched (this is
+						the default cleaner).</li>
+					</ul>
+					<p>Here are some simple templates and their rendered
+					results using different cleaners. Unlike other examples in
+					this document, exact white spaces are preserved in
+					results.</p>
+					<p>BlankCharactersCleaner:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>This is a line of text with {'inline'} Cottle code.
+
+{for s in ["normal", "exceptional", "elite"]:
+    - Length of string "{s}" is {len(s)} character(s).
+
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>setting.Cleaner = new BlankCharactersCleaner();</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>This is a line of text withinlineCottle code.- Length of string "normal" is6character(s).- Length of string "exceptional" is11character(s).- Length of string "elite" is5character(s).
+</code>
+					</div>
+					<p>FirstLastLinesCleaner:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>This is a line of text with {'inline'} Cottle code.
+
+{for s in ["normal", "exceptional", "elite"]:
+    - Length of string "{s}" is {len(s)} character(s).
+
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>setting.Cleaner = new FirstLastLinesCleaner();</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>This is a line of text with inline Cottle code.
+    - Length of string "normal" is 6 character(s).
+    - Length of string "exceptional" is 11 character(s).
+    - Length of string "elite" is 5 character(s).</code>
+					</div>
+					<p>NothingCleaner:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>This is a line of text with {'inline'} Cottle code.
+
+{for s in ["normal", "exceptional", "elite"]:
+    - Length of string "{s}" is {len(s)} character(s).
+}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>setting.Cleaner = new NothingCleaner();</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>This is a line of text with inline Cottle code.
+
+
+    - Length of string "normal" is 6 character(s).
+
+
+    - Length of string "exceptional" is 11 character(s).
+
+
+    - Length of string "elite" is 5 character(s).</code>
+					</div>
+				</div>
+
+				<h3 id="block_delimiters_customization">Block delimiters customization</h3>
+				<div class="section">
+					<p>When using default configuration, Cottle uses {
+					character to start a code block, | to continue it (before
+					an <code>else</code> statement for example), and } to end
+					it. These characters may not be a good choice if you want
+					to write a template that makes extensive literal use of
+					them, for example if you're writing a JavaScript template,
+					because you would have to escape every {, } and | to avoid
+					Cottle seeing them as block delimiters.</p>
+					<p>To workaround this problem, you can change default block
+					delimiters when creating a new document. New delimiters can
+					be any string and won't be validated by Cottle, so you
+					should avoid anything ambiguous otherwise the parser may
+					not be able to understand your code. For example, choosing
+					the ] character as a delimiter is a bad idea, as it will
+					conflict with internal end-of-array delimiter.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>Block delimiters are now [[block_begin]], [[block_continue]] and [[block_end]].</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>setting.BlockBegin = "[[";
+setting.BlockContinue = "||";
+setting.BlockEnd = "]]";
+
+scope["block_begin"] = "double left bracket (" + setting.BlockBegin + ")";
+scope["block_continue"] = "double pipe (" + setting.BlockContinue + ")";
+scope["block_end"] = "double right bracket (" + setting.BlockEnd + ")";</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Block delimiters are now double left bracket ([[), double pipe (||) and double right bracket (]]).</code>
 					</div>
 				</div>
 			</div>
@@ -1085,56 +1267,6 @@ PropertyItems =</code>
 					change this behavior, specify your BindingFlags as a second
 					parameter to <code>ReflectionValue</code> constructor.</p>
 				</div>
-
-				<h3 id="block_delimiters_customization">Block delimiters customization</h3>
-				<div class="section">
-					<p>By default, Cottle uses { character to start a code
-					block, | to continue it (before an <code>else</code>
-					statement for example), and } to end it. These characters
-					may not be a good choice if you want to write a template
-					that makes extensive literal use of them, for example if
-					you're writing a JavaScript template, because you would
-					have to escape every {, } and | to avoid Cottle seeing them
-					as block delimiters.</p>
-					<p>To workaround this problem, you can change default block
-					delimiters when creating a new document. New delimiters can
-					be any string and won't be validated by Cottle, so you
-					should avoid anything ambiguous otherwise the parser may
-					not be able to understand your code. For example, choosing
-					the ] character as a delimiter is a bad idea, as it will
-					conflict with internal end-of-array delimiter.</p>
-					<div class="code">
-						<blockquote><span>Template:</span></blockquote>
-<code>Block delimiters are now [[block_begin]], [[block_continue]] and [[block_end]].</code>
-					</div>
-					<div class="code">
-						<blockquote><span>C# code:</span></blockquote>
-<code>Document       document;
-LexemConfig    config;
-Scope          scope;
-
-config = new LexemConfig();
-config.BlockBegin = "[[";
-config.BlockContinue = "||";
-config.BlockEnd = "]]";
-
-using (StreamReader template = new StreamReader(new FileStream("template.ctl", FileMode.Open), Encoding.UTF8))
-{
-    document = new Document(template, config);
-}
-
-scope = new Scope();
-scope["block_begin"] = "double left bracket (" + config.BlockBegin + ")";
-scope["block_continue"] = "double pipe (" + config.BlockContinue + ")";
-scope["block_end"] = "double right bracket (" + config.BlockEnd + ")";
-
-document.Render(scope, Console.Out);</code>
-					</div>
-					<div class="code">
-						<blockquote><span>Result:</span></blockquote>
-<code>Block delimiters are now double left bracket ([[), double pipe (||) and double right bracket (]]).</code>
-					</div>
-				</div>
 			</div>
 
 			<h2 id="common_functions">Common functions</h2>
@@ -1493,11 +1625,11 @@ false</code>
 					given variables. Variables should be array values, their
 					keys will be used as assigned variable names.</p>
 					<p>For the next example, we will assume that a file named
-					"article.ctl" is available in current directory and
+					"article.cottle" is available in current directory and
 					contains this template code:</p>
 					<div class="code">
 						<blockquote><span>Template
-						"article.ctl":</span></blockquote>
+						"article.cottle":</span></blockquote>
 <code>&lt;div class="box"&gt;
     &lt;div class="title"&gt;{a.title}&lt;/div&gt;
     &lt;div class="text"&gt;{a.text}&lt;/div&gt;
@@ -1508,7 +1640,7 @@ false</code>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{for article in articles:
-    {include("article.ctl", ["a": article])}
+    {include("article.cottle", ["a": article])}
 }</code>
 					</div>
 					<div class="code">
@@ -1959,8 +2091,8 @@ length</code>
 			<div class="section">
 				<h3>Change log</h3>
 				<div class="section">
-					<p>Here is a summary of important changes made to the
-					library:</p>
+					<p>Here is a summary of importantand potentially
+					backward-incompatible changes made to the library:</p>
 					<ul>
 						<li>1.0.0.9 =&gt; 1.0.1.0:
 							<ul>
@@ -1973,6 +2105,13 @@ length</code>
 								deprecated (both <code>set</code> and
 								<code>declare</code> can be used to assign
 								functions).</li>
+							</ul>
+						</li>
+						<li>1.0.1.0 =&gt; 1.0.2.0:
+							<ul>
+								<li><code>LexerConfig</code> must be replaced
+								by <code>CustomSetting</code> object to change
+								configuration.</li>
 							</ul>
 						</li>
 					</ul>

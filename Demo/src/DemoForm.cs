@@ -23,7 +23,7 @@ namespace   Demo
 
         #endregion
 
-        #region Attributes
+        #region Attributes / Instance
 
         private ISetting    setting = DefaultSetting.Instance;
 
@@ -378,7 +378,7 @@ namespace   Demo
                     setting.BlockBegin = reader.ReadString ();
                     setting.BlockContinue = reader.ReadString ();
                     setting.BlockEnd = reader.ReadString ();
-                    setting.Clean = version > 1 ? (SettingClean)reader.ReadInt32 () : SettingClean.Nothing;
+                    setting.Cleaner = CleanerCollection.GetCleaner (version > 1 ? reader.ReadInt32 () : -1);
 
                     this.setting = setting;
                     this.textBoxInput.Text = reader.ReadString ();
@@ -416,7 +416,7 @@ namespace   Demo
                     writer.Write (this.setting.BlockBegin);
                     writer.Write (this.setting.BlockContinue);
                     writer.Write (this.setting.BlockEnd);
-                    writer.Write ((int)this.setting.Clean);
+                    writer.Write (CleanerCollection.GetIndex (this.setting.Cleaner));
                     writer.Write (this.textBoxInput.Text);
                 }
 

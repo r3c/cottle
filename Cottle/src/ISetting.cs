@@ -5,22 +5,22 @@ namespace  Cottle
     {
         #region Methods
         
-        string          BlockBegin
+        string      BlockBegin
         {
             get;
         }
 
-        string          BlockContinue
+        string      BlockContinue
         {
             get;
         }
 
-        string          BlockEnd
+        string      BlockEnd
         {
             get;
         }
 
-        SettingClean    Clean
+        ICleaner    Cleaner
         {
             get;
         }
