@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Cleaners\NullCleaner.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Commons\CommonTools.cs" />
     <Compile Include="src\Document.cs" />
@@ -87,7 +88,6 @@
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Cleaners\BlankCharactersCleaner.cs" />
     <Compile Include="src\Cleaners\FirstLastLinesCleaner.cs" />
-    <Compile Include="src\Cleaners\NothingCleaner.cs" />
     <Compile Include="src\Settings\CustomSettings.cs" />
     <Compile Include="src\Settings\DefaultSetting.cs" />
     <Compile Include="src\Value.cs" />

@@ -24,14 +24,14 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             result = this.expression.Evaluate (scope, output);
 
             return true;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             output.Write (setting.BlockBegin);
             output.Write ("return ");

@@ -6,7 +6,7 @@ namespace   Cottle
     {
         #region Methods
 
-        string  Clean (StringBuilder buffer);
+        void    GetRange (string text, out int start, out int length);
 
         #endregion
     }

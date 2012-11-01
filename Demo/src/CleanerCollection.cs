@@ -30,9 +30,9 @@ namespace   Demo
 
         private static readonly KeyValuePair<string, ICleaner>[]    cleaners = new KeyValuePair<string, ICleaner>[]
         {
-            new KeyValuePair<string, ICleaner> ("BlankCharacters",  new BlankCharactersCleaner ()),
-            new KeyValuePair<string, ICleaner> ("FirstLastLines",   new FirstLastLinesCleaner ()),
-            new KeyValuePair<string, ICleaner> ("Nothing",          new NothingCleaner ())
+            new KeyValuePair<string, ICleaner> ("Blank characters",     new BlankCharactersCleaner ()),
+            new KeyValuePair<string, ICleaner> ("First and last lines", new FirstLastLinesCleaner ()),
+            new KeyValuePair<string, ICleaner> ("Do not clean",         new NullCleaner ())
         };
 
         #endregion

@@ -48,8 +48,6 @@ namespace   Cottle
 
         #region Attributes
 
-        private ICleaner            cleaner;
-
         private int                 column;
 
         private Lexem               current;
@@ -76,7 +74,6 @@ namespace   Cottle
 
         public  Lexer (ISetting setting)
         {
-            this.cleaner = setting.Cleaner;
             this.cursors = new Queue<LexemCursor> ();
             this.pending = new Lexem (LexemType.None, string.Empty);
             this.root = new LexemState ();
@@ -344,7 +341,7 @@ namespace   Cottle
                             token.Append (this.cursors.Dequeue ().Character);
 
                         lexem = new Lexem (type, token.ToString ());
-                        text = this.cleaner.Clean (buffer);
+                        text = buffer.ToString ();
 
                         if (!string.IsNullOrEmpty (text))
                         {
@@ -368,7 +365,7 @@ namespace   Cottle
             while (this.cursors.Count > 0)
                 buffer.Append (this.cursors.Dequeue ().Character);
 
-            text = this.cleaner.Clean (buffer);
+            text = buffer.ToString ();
 
             if (!string.IsNullOrEmpty (text))
                 return new Lexem (LexemType.Text, text);

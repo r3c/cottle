@@ -54,7 +54,7 @@ namespace Cottle.Settings
 
         #region Attributes
         
-        private static readonly NothingCleaner  cleaner = new NothingCleaner ();
+        private static readonly NullCleaner     cleaner = new NullCleaner ();
 
         private static readonly DefaultSetting  instance = new DefaultSetting ();
 

@@ -11,39 +11,46 @@ namespace   Cottle.Nodes
     {
         #region Attributes
 
-        private string  text;
+        private char[]  buffer;
+        
+        private int     length;
+        
+        private int     start;
 
         #endregion
 
         #region Constructors
 
-        public  TextNode (string text)
+        public  TextNode (string text, int start, int length)
         {
-            this.text = text;
+            this.buffer = text.ToCharArray ();
+            this.length = length;
+            this.start = start;
         }
 
         #endregion
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
-            output.Write (this.text);
+            output.Write (this.buffer, this.start, this.length);
 
             result = UndefinedValue.Instance;
 
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             StringBuilder   builder;
 
-            builder = new StringBuilder (this.text);
-            builder.Replace ("\\", "\\\\");
-            builder.Replace (setting.BlockBegin, "\\" + setting.BlockBegin);
-            builder.Replace (setting.BlockContinue, "\\" + setting.BlockContinue);
-            builder.Replace (setting.BlockEnd, "\\" + setting.BlockEnd);
+            builder = new StringBuilder ()
+                .Append (this.buffer)
+                .Replace ("\\", "\\\\")
+                .Replace (setting.BlockBegin, "\\" + setting.BlockBegin)
+                .Replace (setting.BlockContinue, "\\" + setting.BlockContinue)
+                .Replace (setting.BlockEnd, "\\" + setting.BlockEnd);
 
             output.Write (builder.ToString ());
         }

@@ -37,7 +37,7 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
 
@@ -46,7 +46,7 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             bool    comma = false;
 
@@ -67,7 +67,7 @@ namespace   Cottle.Nodes
 
             output.Write ("): ");
 
-            this.body.Print (setting, output);
+            this.body.Source (setting, output);
 
             output.Write (setting.BlockEnd);
         }

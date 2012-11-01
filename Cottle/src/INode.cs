@@ -9,9 +9,9 @@ namespace   Cottle
     {
         #region Methods
 
-        bool    Apply (Scope scope, TextWriter output, out Value result);
+        bool    Render (Scope scope, TextWriter output, out Value result);
 
-        void    Print (ISetting setting, TextWriter output);
+        void    Source (ISetting setting, TextWriter output);
 
         #endregion
     }

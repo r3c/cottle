@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -12,19 +13,47 @@ namespace   Cottle.Commons
 {
     public static class CommonFunctions
     {
-        #region Attributes / Public
+        #region Properties
+        
+        public static bool  IncludeCacheEnable
+        {
+            get
+            {
+                return CommonFunctions.includeCacheEnable;
+            }
+            set
+            {
+                CommonFunctions.includeCacheEnable = value;
+            }
+        }
 
-        public static readonly IFunction    FunctionAbsolute = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        public static int   IncludeCacheSize
+        {
+            get
+            {
+                return CommonFunctions.includeCacheSize;
+            }
+            set
+            {
+                CommonFunctions.includeCacheSize = value;
+            }
+        }
+        
+        #endregion
+
+        #region Attributes / Instance
+
+        private static readonly IFunction   functionAbsolute = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return Math.Abs (values[0].AsNumber);
         }, 1);
 
-        public static readonly IFunction    FunctionAdd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionAdd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber + values[1].AsNumber;
         }, 2);
 
-        public static readonly IFunction    FunctionAnd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionAnd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             foreach (Value value in values)
             {
@@ -35,7 +64,7 @@ namespace   Cottle.Commons
             return true;
         });
 
-        public static readonly IFunction    FunctionCall = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionCall = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Value[]     arguments;
             IFunction   function;
@@ -55,7 +84,7 @@ namespace   Cottle.Commons
             return function.Execute(arguments, scope, output);
         }, 2);
 
-        public static readonly IFunction    FunctionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             StringBuilder                       builder;
             List<KeyValuePair<Value, Value>>    list;
@@ -80,7 +109,7 @@ namespace   Cottle.Commons
             }
         }, 1, -1);
 
-        public static readonly IFunction    FunctionChar = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionChar = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             try
             {
@@ -92,12 +121,12 @@ namespace   Cottle.Commons
             }
         }, 1);
 
-        public static readonly IFunction    FunctionCompare = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionCompare = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].CompareTo (values[1]);
         }, 2);
 
-        public static readonly IFunction    FunctionCross = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionCross = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int                         i;
             bool                        insert;
@@ -124,12 +153,12 @@ namespace   Cottle.Commons
             return result;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionDefault = new CallbackFunction(delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionDefault = new CallbackFunction(delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsBoolean ? values[0] : values[1];
         }, 2);
 
-        public static readonly IFunction    FunctionDiv = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionDiv = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal denominator = values[1].AsNumber;
 
@@ -139,7 +168,7 @@ namespace   Cottle.Commons
             return values[0].AsNumber / denominator;
         }, 2);
 
-        public static readonly IFunction    FunctionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Value   first = values[0];
             int     i;
@@ -151,7 +180,7 @@ namespace   Cottle.Commons
             return true;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionExcept = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionExcept = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int                         i;
             bool                        insert;
@@ -178,7 +207,7 @@ namespace   Cottle.Commons
             return result;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionFilter = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionFilter = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             List<Value>                         arguments = new List<Value> (values.Count - 1);
             IFunction                           callback = values[1].AsFunction;
@@ -202,7 +231,7 @@ namespace   Cottle.Commons
             return result;
         });
 
-        public static readonly IFunction    FunctionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionFind = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int     offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
             Value   search = values[1];
@@ -225,7 +254,7 @@ namespace   Cottle.Commons
                 return value.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
         }, 2, 3);
 
-        public static readonly IFunction    FunctionFlip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionFlip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             KeyValuePair<Value, Value>[]    flip;
             int                             i;
@@ -239,7 +268,7 @@ namespace   Cottle.Commons
             return flip;
         }, 1);
 
-        public static readonly IFunction    FunctionFormat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionFormat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             CultureInfo culture;
             string      format;
@@ -316,17 +345,17 @@ namespace   Cottle.Commons
             return string.Format (culture, "{0:" + format.Substring(index + 1) + "}", target);
         }, 2, 3);
 
-        public static readonly IFunction    FunctionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionGreater = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].CompareTo (values[1]) > 0;
         }, 2);
 
-        public static readonly IFunction    FunctionGreaterEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionGreaterEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].CompareTo (values[1]) >= 0;
         }, 2);
 
-        public static readonly IFunction    FunctionHas = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionHas = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Value   value = values[0];
             int     i;
@@ -338,47 +367,57 @@ namespace   Cottle.Commons
             return true;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionInclude = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionInclude = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            KeyValuePair<Document, DateTime>    compiled;
-            Scope                               inner;
-            DateTime                            modified;
-            string                              path;
-            FileStream                          stream;
-            int                                 i;
+            Document    document;
+            object      entry;
+            int         i;
+            Scope       inner;
+            string      path;
+            DateTime    write;
 
             path = Path.GetFullPath (values[0].AsString);
 
             if (!File.Exists (path))
-            	return UndefinedValue.Instance;
+                return UndefinedValue.Instance;
 
-            modified = File.GetLastWriteTime (path);
+            write = File.GetLastWriteTime (path);
 
-            lock (CommonFunctions.includes)
+            lock (CommonFunctions.includeCache)
             {
-                if (!CommonFunctions.includes.TryGetValue (path, out compiled) || compiled.Value < modified)
+                if (CommonFunctions.includeCacheEnable)
+                    entry = CommonFunctions.includeCache[path];
+                else
+                    entry = null;
+
+                if (entry != null && ((KeyValuePair<Document, DateTime>)entry).Value >= write)
+                    document = ((KeyValuePair<Document, DateTime>)entry).Key;
+                else
                 {
-                    using (stream = File.OpenRead (path))
+                    using (FileStream stream = File.OpenRead (path))
                     {
-                        compiled = new KeyValuePair<Document, DateTime> (new Document (new StreamReader (stream)), modified);
+                        document = new Document (new StreamReader (stream));
                     }
 
-                    CommonFunctions.includes[path] = compiled;
+                    CommonFunctions.includeCache[path] = new KeyValuePair<Document, DateTime> (document, write);
+
+                    while (CommonFunctions.includeCache.Count > CommonFunctions.includeCacheSize && CommonFunctions.includeCache.Count > 0)
+                        CommonFunctions.includeCache.RemoveAt (0);
                 }
             }
 
-            inner = new Scope();
+            inner = new Scope ();
 
             for (i = 1; i < values.Count; ++i)
             {
                 foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-                    inner.Set(pair.Key, pair.Value, ScopeMode.Closest);
+                    inner.Set (pair.Key, pair.Value, ScopeMode.Closest);
             }
 
-            return compiled.Key.Render (inner, output);
+            return document.Render (inner, output);
         }, 1, -1);
 
-        public static readonly IFunction    FunctionJoin = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionJoin = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             StringBuilder   builder = new StringBuilder ();
             bool            first = true;
@@ -402,7 +441,7 @@ namespace   Cottle.Commons
             return builder.ToString ();
         }, 1, 2);
 
-        public static readonly IFunction    FunctionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             if (values[0].Type == ValueContent.Array)
                 return values[0].Fields.Count;
@@ -410,22 +449,22 @@ namespace   Cottle.Commons
             return values[0].AsString.Length;
         }, 1);
 
-        public static readonly IFunction    FunctionLower = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionLower = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].CompareTo (values[1]) < 0;
         }, 2);
 
-        public static readonly IFunction    FunctionLowerCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionLowerCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsString.ToLowerInvariant ();
         }, 1);
 
-        public static readonly IFunction    FunctionLowerEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionLowerEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].CompareTo (values[1]) <= 0;
         }, 2);
 
-        public static readonly IFunction    FunctionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMap = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             List<Value>                     arguments = new List<Value> (values.Count - 1);
             IFunction                       callback = values[1].AsFunction;
@@ -449,7 +488,7 @@ namespace   Cottle.Commons
             return result;
         }, 2, -1);
 
-        public static readonly IFunction    FunctionMatch = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMatch = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             List<Value> groups;
             Match       match;
@@ -467,7 +506,7 @@ namespace   Cottle.Commons
             return groups;
         }, 2, 3);
 
-        public static readonly IFunction    FunctionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal max;
             int     i;
@@ -480,7 +519,7 @@ namespace   Cottle.Commons
             return max;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal min;
             int     i;
@@ -493,7 +532,7 @@ namespace   Cottle.Commons
             return min;
         }, 1, -1);
 
-        public static readonly IFunction    FunctionMod = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMod = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal denominator = values[1].AsNumber;
 
@@ -503,17 +542,17 @@ namespace   Cottle.Commons
             return values[0].AsNumber % denominator;
         }, 2);
 
-        public static readonly IFunction    FunctionMul = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionMul = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber * values[1].AsNumber;
         }, 2);
 
-        public static readonly IFunction    FunctionNot = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionNot = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return !values[0].AsBoolean;
         }, 1);
 
-        public static readonly IFunction    FunctionOr = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionOr = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             foreach (Value value in values)
             {
@@ -524,14 +563,14 @@ namespace   Cottle.Commons
             return false;
         });
 
-        public static readonly IFunction    FunctionOrd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionOrd = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             string  str = values[0].AsString;
 
             return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
         }, 1);
 
-        public static readonly IFunction    FunctionRandom = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionRandom = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             if (CommonFunctions.random == null)
                 CommonFunctions.random = new Random ();
@@ -549,7 +588,29 @@ namespace   Cottle.Commons
             }
         }, 0, 2);
 
-        public static readonly IFunction    FunctionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionRange = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            List<Value> array;
+            int         start;
+            int         step;
+            int         stop;
+
+            start = values.Count > 1 ? (int)values[0].AsNumber : 0;
+            step = values.Count > 2 ? (int)values[2].AsNumber : 1;
+            stop = values.Count > 1 ? (int)values[1].AsNumber : (int)values[0].AsNumber;
+
+            if (step == 0 || (start < stop && step < 0) || (start > stop && step > 0))
+                return UndefinedValue.Instance;
+
+            array = new List<Value> ();
+
+            for (; start < stop; start += step)
+                array.Add (start);
+
+            return array;
+        }, 1, 3);
+
+        private static readonly IFunction   functionSlice = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int                                     count;
             IEnumerator<KeyValuePair<Value, Value>> enumerator;
@@ -583,7 +644,7 @@ namespace   Cottle.Commons
             return source.AsString.Substring (offset, count);
         }, 2, 3);
 
-        public static readonly IFunction    FunctionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionSort = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             IFunction                           callback = values.Count > 1 ? values[1].AsFunction : null;
             List<KeyValuePair<Value, Value>>    sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
@@ -596,17 +657,17 @@ namespace   Cottle.Commons
             return sorted;
         }, 1, 2);
 
-        public static readonly IFunction    FunctionSplit = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionSplit = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return Array.ConvertAll (values[0].AsString.Split (new string[] {values[1].AsString}, StringSplitOptions.None), s => new StringValue (s));
         }, 2);
 
-        public static readonly IFunction    FunctionSub = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionSub = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsNumber - values[1].AsNumber;
         }, 2);
 
-        public static readonly IFunction    FunctionUnion = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionUnion = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
 
@@ -619,12 +680,12 @@ namespace   Cottle.Commons
             return result;
         }, 0, -1);
 
-        public static readonly IFunction    FunctionUpperCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionUpperCase = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             return values[0].AsString.ToUpperInvariant ();
         }, 1);
 
-        public static readonly IFunction    FunctionWhen = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionWhen = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             if (values[0].AsBoolean)
                 return values[1];
@@ -632,7 +693,7 @@ namespace   Cottle.Commons
             return values.Count > 2 ? values[2] : UndefinedValue.Instance;
         }, 2, 3);
 
-        public static readonly IFunction    FunctionXor = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        private static readonly IFunction   functionXor = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             int count = 0;
 
@@ -647,14 +708,18 @@ namespace   Cottle.Commons
 
         #endregion
 
-        #region Attributes / Private
+        #region Attributes / Static
 
-        private static readonly DateTime                                    epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime            epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private static Dictionary<string, KeyValuePair<Document, DateTime>> includes = new Dictionary<string, KeyValuePair<Document, DateTime>> ();
+        private static readonly OrderedDictionary   includeCache = new OrderedDictionary ();
+        
+        private static bool                         includeCacheEnable = true;
+
+        private static int                          includeCacheSize = 256;
 
         [ThreadStatic]
-        private static Random                                               random = null;
+        private static Random                       random = null;
 
         #endregion
 
@@ -662,49 +727,50 @@ namespace   Cottle.Commons
 
         public static void  Assign (Scope scope, ScopeMode mode = ScopeMode.Closest)
         {
-            scope.Set ("abs", new FunctionValue (CommonFunctions.FunctionAbsolute), mode);
-            scope.Set ("add", new FunctionValue (CommonFunctions.FunctionAdd), mode);
-            scope.Set ("and", new FunctionValue (CommonFunctions.FunctionAnd), mode);
-            scope.Set ("call", new FunctionValue (CommonFunctions.FunctionCall), mode);
-            scope.Set ("cat", new FunctionValue (CommonFunctions.FunctionCat), mode);
-            scope.Set ("char", new FunctionValue (CommonFunctions.FunctionChar), mode);
-            scope.Set ("cmp", new FunctionValue (CommonFunctions.FunctionCompare), mode);
-            scope.Set ("cross", new FunctionValue (CommonFunctions.FunctionCross), mode);
-            scope.Set ("default", new FunctionValue (CommonFunctions.FunctionDefault), mode);
-            scope.Set ("div", new FunctionValue (CommonFunctions.FunctionDiv), mode);
-            scope.Set ("eq", new FunctionValue (CommonFunctions.FunctionEqual), mode);
-            scope.Set ("except", new FunctionValue (CommonFunctions.FunctionExcept), mode);
-            scope.Set ("filter", new FunctionValue (CommonFunctions.FunctionFilter), mode);
-            scope.Set ("find", new FunctionValue (CommonFunctions.FunctionFind), mode);
-            scope.Set ("flip", new FunctionValue (CommonFunctions.FunctionFlip), mode);
-            scope.Set ("format", new FunctionValue (CommonFunctions.FunctionFormat), mode);
-            scope.Set ("ge", new FunctionValue (CommonFunctions.FunctionGreaterEqual), mode);
-            scope.Set ("gt", new FunctionValue (CommonFunctions.FunctionGreater), mode);
-            scope.Set ("has", new FunctionValue (CommonFunctions.FunctionHas), mode);
-            scope.Set ("include", new FunctionValue (CommonFunctions.FunctionInclude), mode);
-            scope.Set ("join", new FunctionValue (CommonFunctions.FunctionJoin), mode);
-            scope.Set ("lcase", new FunctionValue (CommonFunctions.FunctionLowerCase), mode);
-            scope.Set ("le", new FunctionValue (CommonFunctions.FunctionLowerEqual), mode);
-            scope.Set ("len", new FunctionValue (CommonFunctions.FunctionLength), mode);
-            scope.Set ("lt", new FunctionValue (CommonFunctions.FunctionLower), mode);
-            scope.Set ("map", new FunctionValue (CommonFunctions.FunctionMap), mode);
-            scope.Set ("match", new FunctionValue (CommonFunctions.FunctionMatch), mode);
-            scope.Set ("max", new FunctionValue (CommonFunctions.FunctionMaximum), mode);
-            scope.Set ("min", new FunctionValue (CommonFunctions.FunctionMinimum), mode);
-            scope.Set ("mod", new FunctionValue (CommonFunctions.FunctionMod), mode);
-            scope.Set ("mul", new FunctionValue (CommonFunctions.FunctionMul), mode);
-            scope.Set ("not", new FunctionValue (CommonFunctions.FunctionNot), mode);
-            scope.Set ("or", new FunctionValue (CommonFunctions.FunctionOr), mode);
-            scope.Set ("ord", new FunctionValue (CommonFunctions.FunctionOrd), mode);
-            scope.Set ("rand", new FunctionValue (CommonFunctions.FunctionRandom), mode);
-            scope.Set ("slice", new FunctionValue (CommonFunctions.FunctionSlice), mode);
-            scope.Set ("sort", new FunctionValue (CommonFunctions.FunctionSort), mode);
-            scope.Set ("split", new FunctionValue (CommonFunctions.FunctionSplit), mode);
-            scope.Set ("sub", new FunctionValue (CommonFunctions.FunctionSub), mode);
-            scope.Set ("ucase", new FunctionValue (CommonFunctions.FunctionUpperCase), mode);
-            scope.Set ("union", new FunctionValue (CommonFunctions.FunctionUnion), mode);
-            scope.Set ("when", new FunctionValue (CommonFunctions.FunctionWhen), mode);
-            scope.Set ("xor", new FunctionValue (CommonFunctions.FunctionXor), mode);
+            scope.Set ("abs", new FunctionValue (CommonFunctions.functionAbsolute), mode);
+            scope.Set ("add", new FunctionValue (CommonFunctions.functionAdd), mode);
+            scope.Set ("and", new FunctionValue (CommonFunctions.functionAnd), mode);
+            scope.Set ("call", new FunctionValue (CommonFunctions.functionCall), mode);
+            scope.Set ("cat", new FunctionValue (CommonFunctions.functionCat), mode);
+            scope.Set ("char", new FunctionValue (CommonFunctions.functionChar), mode);
+            scope.Set ("cmp", new FunctionValue (CommonFunctions.functionCompare), mode);
+            scope.Set ("cross", new FunctionValue (CommonFunctions.functionCross), mode);
+            scope.Set ("default", new FunctionValue (CommonFunctions.functionDefault), mode);
+            scope.Set ("div", new FunctionValue (CommonFunctions.functionDiv), mode);
+            scope.Set ("eq", new FunctionValue (CommonFunctions.functionEqual), mode);
+            scope.Set ("except", new FunctionValue (CommonFunctions.functionExcept), mode);
+            scope.Set ("filter", new FunctionValue (CommonFunctions.functionFilter), mode);
+            scope.Set ("find", new FunctionValue (CommonFunctions.functionFind), mode);
+            scope.Set ("flip", new FunctionValue (CommonFunctions.functionFlip), mode);
+            scope.Set ("format", new FunctionValue (CommonFunctions.functionFormat), mode);
+            scope.Set ("ge", new FunctionValue (CommonFunctions.functionGreaterEqual), mode);
+            scope.Set ("gt", new FunctionValue (CommonFunctions.functionGreater), mode);
+            scope.Set ("has", new FunctionValue (CommonFunctions.functionHas), mode);
+            scope.Set ("include", new FunctionValue (CommonFunctions.functionInclude), mode);
+            scope.Set ("join", new FunctionValue (CommonFunctions.functionJoin), mode);
+            scope.Set ("lcase", new FunctionValue (CommonFunctions.functionLowerCase), mode);
+            scope.Set ("le", new FunctionValue (CommonFunctions.functionLowerEqual), mode);
+            scope.Set ("len", new FunctionValue (CommonFunctions.functionLength), mode);
+            scope.Set ("lt", new FunctionValue (CommonFunctions.functionLower), mode);
+            scope.Set ("map", new FunctionValue (CommonFunctions.functionMap), mode);
+            scope.Set ("match", new FunctionValue (CommonFunctions.functionMatch), mode);
+            scope.Set ("max", new FunctionValue (CommonFunctions.functionMaximum), mode);
+            scope.Set ("min", new FunctionValue (CommonFunctions.functionMinimum), mode);
+            scope.Set ("mod", new FunctionValue (CommonFunctions.functionMod), mode);
+            scope.Set ("mul", new FunctionValue (CommonFunctions.functionMul), mode);
+            scope.Set ("not", new FunctionValue (CommonFunctions.functionNot), mode);
+            scope.Set ("or", new FunctionValue (CommonFunctions.functionOr), mode);
+            scope.Set ("ord", new FunctionValue (CommonFunctions.functionOrd), mode);
+            scope.Set ("rand", new FunctionValue (CommonFunctions.functionRandom), mode);
+            scope.Set ("range", new FunctionValue (CommonFunctions.functionRange), mode);
+            scope.Set ("slice", new FunctionValue (CommonFunctions.functionSlice), mode);
+            scope.Set ("sort", new FunctionValue (CommonFunctions.functionSort), mode);
+            scope.Set ("split", new FunctionValue (CommonFunctions.functionSplit), mode);
+            scope.Set ("sub", new FunctionValue (CommonFunctions.functionSub), mode);
+            scope.Set ("ucase", new FunctionValue (CommonFunctions.functionUpperCase), mode);
+            scope.Set ("union", new FunctionValue (CommonFunctions.functionUnion), mode);
+            scope.Set ("when", new FunctionValue (CommonFunctions.functionWhen), mode);
+            scope.Set ("xor", new FunctionValue (CommonFunctions.functionXor), mode);
         }
 
         #endregion

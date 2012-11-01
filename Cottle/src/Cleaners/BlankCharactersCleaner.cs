@@ -2,32 +2,39 @@
 
 namespace   Cottle.Cleaners
 {
-	public class    BlankCharactersCleaner : ICleaner
+    public class    BlankCharactersCleaner : ICleaner
     {
         #region Methods
         
-        public string   Clean (StringBuilder buffer)
+        public void GetRange (string text, out int start, out int length)
         {
-            int start;
-            int stop;
+            int from;
             int i;
+            int to;
 
             // Skip all leading blank characters
-            for (i = 0; i < buffer.Length && buffer[i] <= ' '; )
+            for (i = 0; i < text.Length && text[i] <= ' '; )
                 ++i;
 
-            start = i;
+            from = i;
 
             // Skip all trailing blank characters
-            for (i = buffer.Length - 1; i >= 0 && buffer[i] <= ' '; )
+            for (i = text.Length - 1; i >= 0 && text[i] <= ' '; )
                 --i;
 
-            stop = i + 1;
+            to = i + 1;
 
-            if (start < stop)
-                return buffer.ToString (start, stop - start);
-
-            return string.Empty;
+            // Select inner content if any, empty string else
+            if (from < to)
+            {
+                length = to - from;
+                start = from;
+            }
+            else
+            {
+                length = 0;
+                start = 0;
+            }
         }
         
         #endregion

@@ -44,7 +44,7 @@ namespace   Cottle.Functions
                 ++i;
             }
 
-            this.body.Apply (scope, output, out result);
+            this.body.Render (scope, output, out result);
 
             scope.Leave ();
 

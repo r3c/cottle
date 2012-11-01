@@ -12,8 +12,10 @@ namespace   Cottle
     class   Parser
     {
         #region Attributes / Instance
+        
+        private ICleaner    cleaner;
 
-        private Lexer   lexer;
+        private Lexer       lexer;
 
         #endregion
 
@@ -39,6 +41,7 @@ namespace   Cottle
 
         public  Parser (ISetting setting)
         {
+            this.cleaner = setting.Cleaner;
             this.lexer = new Lexer (setting);
         }
 
@@ -416,8 +419,11 @@ namespace   Cottle
 
         private INode   ParseRaw ()
         {
+            int         length;
             List<INode> nodes;
             INode       node;
+            int         start;
+            string      text;
 
             nodes = new List<INode> ();
 
@@ -441,8 +447,14 @@ namespace   Cottle
                         return nodes.Count != 1 ? new CompositeNode (nodes) : nodes[0];
 
                     case LexemType.Text:
-                        if (!string.IsNullOrEmpty (this.lexer.Current.Content))
-                            nodes.Add (new TextNode (this.lexer.Current.Content));
+                        text = this.lexer.Current.Content;
+
+                        this.cleaner.GetRange (text, out start, out length);
+
+                        start = Math.Max (Math.Min (start, text.Length - 1), 0);
+                        length = Math.Max (Math.Min (length, text.Length - start), 0);
+
+                        nodes.Add (new TextNode (text, start, length));
 
                         this.lexer.Next (LexerMode.Raw);
 

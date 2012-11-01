@@ -26,7 +26,7 @@ namespace   Demo
             foreach (KeyValuePair<string, ICleaner> cleaner in CleanerCollection.Cleaners)
                 this.comboBoxClean.Items.Add (cleaner.Key);
 
-			this.comboBoxClean.SelectedIndex = CleanerCollection.GetIndex (setting.Cleaner);
+            this.comboBoxClean.SelectedIndex = CleanerCollection.GetIndex (setting.Cleaner);
             this.textBoxBlockBegin.Text = setting.BlockBegin;
             this.textBoxBlockContinue.Text = setting.BlockContinue;
             this.textBoxBlockEnd.Text = setting.BlockEnd;

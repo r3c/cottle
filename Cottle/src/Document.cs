@@ -45,7 +45,7 @@ namespace   Cottle
 
         [Obsolete("Please replace LexerConfig by a CustomSetting instance")]
         public  Document (TextReader reader, LexerConfig config) :
-        	this (reader, (ISetting)config)
+            this (reader, (ISetting)config)
         {
         }
 
@@ -59,27 +59,11 @@ namespace   Cottle
 
         #region Methods
 
-        public void     Export (TextWriter writer)
-        {
-            this.root.Print (this.setting, writer);
-        }
-
-        public string   Export ()
-        {
-            StringWriter    writer;
-
-            writer = new StringWriter (CultureInfo.InvariantCulture);
-
-            this.Export (writer);
-
-            return writer.ToString ();
-        }
-
         public Value    Render (Scope scope, TextWriter writer)
         {
             Value   result;
 
-            this.root.Apply (scope, writer, out result);
+            this.root.Render (scope, writer, out result);
 
             return result;
         }
@@ -93,6 +77,34 @@ namespace   Cottle
             this.Render (scope, writer);
 
             return writer.ToString ();
+        }
+
+        public void     Source (TextWriter writer)
+        {
+            this.root.Source (this.setting, writer);
+        }
+
+        public string   Source ()
+        {
+            StringWriter    writer;
+
+            writer = new StringWriter (CultureInfo.InvariantCulture);
+
+            this.Source (writer);
+
+            return writer.ToString ();
+        }
+
+        [Obsolete("Please use Source(TextWriter writer) method")]
+        public void     Export (TextWriter writer)
+        {
+            this.Source (writer);
+        }
+
+        [Obsolete("Please use Source() method")]
+        public string   Export ()
+        {
+            return this.Source ();
         }
 
         #endregion

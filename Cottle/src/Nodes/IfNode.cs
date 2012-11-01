@@ -27,7 +27,7 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             bool    halt;
 
@@ -37,7 +37,7 @@ namespace   Cottle.Nodes
                 {
                     scope.Enter ();
 
-                    halt = branch.Body.Apply (scope, output, out result);
+                    halt = branch.Body.Render (scope, output, out result);
 
                     scope.Leave ();
 
@@ -49,7 +49,7 @@ namespace   Cottle.Nodes
             {
                 scope.Enter ();
 
-                halt = this.fallback.Apply (scope, output, out result);
+                halt = this.fallback.Render (scope, output, out result);
 
                 scope.Leave ();
 
@@ -61,7 +61,7 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             bool    first;
             
@@ -85,7 +85,7 @@ namespace   Cottle.Nodes
                 output.Write (branch.Test);
                 output.Write (":");
 
-                branch.Body.Print (setting, output);
+                branch.Body.Source (setting, output);
             }
 
             if (this.fallback != null)
@@ -93,7 +93,7 @@ namespace   Cottle.Nodes
                 output.Write (setting.BlockContinue);
                 output.Write ("else:");
 
-                this.fallback.Print (setting, output);
+                this.fallback.Source (setting, output);
             }
 
             output.Write (setting.BlockEnd);

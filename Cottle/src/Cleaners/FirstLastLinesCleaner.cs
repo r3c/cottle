@@ -2,42 +2,49 @@
 
 namespace   Cottle.Cleaners
 {
-	public class    FirstLastLinesCleaner : ICleaner
+    public class    FirstLastLinesCleaner : ICleaner
     {
         #region Methods
         
-        public string   Clean (StringBuilder buffer)
+        public void GetRange (string text, out int start, out int length)
         {
-            int start;
-            int stop;
+            int from;
             int i;
+            int to;
 
             // Skip first line if any
-            for (i = 0; i < buffer.Length && buffer[i] <= ' ' && buffer[i] != '\n' && buffer[i] != '\r'; )
+            for (i = 0; i < text.Length && text[i] <= ' ' && text[i] != '\n' && text[i] != '\r'; )
                 ++i;
 
-            if (i >= buffer.Length || (buffer[i] != '\n' && buffer[i] != '\r'))
-                start = 0;
-            else if (i + 1 >= buffer.Length || buffer[i] == buffer[i + 1] || (buffer[i + 1] != '\n' && buffer[i + 1] != '\r'))
-                start = i + 1;
+            if (i >= text.Length || (text[i] != '\n' && text[i] != '\r'))
+                from = 0;
+            else if (i + 1 >= text.Length || text[i] == text[i + 1] || (text[i + 1] != '\n' && text[i + 1] != '\r'))
+                from = i + 1;
             else
-                start = i + 2;
+                from = i + 2;
 
             // Skip last line if any
-            for (i = buffer.Length - 1; i >= 0 && buffer[i] <= ' ' && buffer[i] != '\n' && buffer[i] != '\r'; )
+            for (i = text.Length - 1; i >= 0 && text[i] <= ' ' && text[i] != '\n' && text[i] != '\r'; )
                 --i;
 
-            if (i < 0 || (buffer[i] != '\n' && buffer[i] != '\r'))
-                stop = buffer.Length;
-            else if (i < 1 || buffer[i] == buffer[i - 1] || (buffer[i - 1] != '\n' && buffer[i - 1] != '\r'))
-                stop = i;
+            if (i < 0 || (text[i] != '\n' && text[i] != '\r'))
+                to = text.Length;
+            else if (i < 1 || text[i] == text[i - 1] || (text[i - 1] != '\n' && text[i - 1] != '\r'))
+                to = i;
             else
-                stop = i - 1;
+                to = i - 1;
 
-            if (start < stop)
-                return buffer.ToString (start, stop - start);
-
-            return buffer.ToString ();
+            // Select inner content if any, whole text else
+            if (from < to)
+            {
+                length = to - from;
+                start = from;
+            }
+            else
+            {
+                length = text.Length;
+                start = 0;
+            }
         }
         
         #endregion

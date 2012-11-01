@@ -29,13 +29,13 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             while (this.test.Evaluate (scope, output).AsBoolean)
             {
                 scope.Enter ();
 
-                if (this.body.Apply (scope, output, out result))
+                if (this.body.Render (scope, output, out result))
                 {
                     scope.Leave ();
 
@@ -50,14 +50,14 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             output.Write (setting.BlockBegin);
             output.Write ("while ");
             output.Write (this.test);
             output.Write (":");
 
-            this.body.Print (setting, output);
+            this.body.Source (setting, output);
 
             output.Write (setting.BlockEnd);
         }

@@ -26,11 +26,11 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             foreach (INode node in this.nodes)
             {
-                if (node.Apply (scope, output, out result))
+                if (node.Render (scope, output, out result))
                     return true;
             }
 
@@ -39,10 +39,10 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             foreach (INode node in this.nodes)
-                node.Print (setting, output);
+                node.Source (setting, output);
         }
 
         #endregion

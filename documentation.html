@@ -788,18 +788,16 @@ document.Render(scope, Console.Out);</code>
 					such as HTML.</p>
 					<p>For that reason, you can change the way raw text is
 					transformed by Cottle before it is rendered through the use
-					of "cleaners". Cleaners are objects that implement the
-					<code>Cottle.ICleaner</code> interface, and are called for
-					each raw text block from input templates. Three default
-					cleaners are provided by Cottle, but you can write your
-					owns if needed. Available cleaners are:</p>
+					of "cleaners". Three default cleaners are provided by
+					Cottle, but you can write your own if needed. Available
+					cleaners are:</p>
 					<ul>
 						<li>BlankCharactersCleaner: remove all leading and
 						trailing blank characters from raw text blocks,</li>
 						<li>FirstLastLinesCleaner: remove first and last empty
 						lines from raw text blocks except for blocks that
 						contain only blank characters,</li>
-						<li>NothingCleaner: leave raw text untouched (this is
+						<li>NullCleaner: leave raw text untouched (this is
 						the default cleaner).</li>
 					</ul>
 					<p>Here are some simple templates and their rendered
@@ -809,12 +807,9 @@ document.Render(scope, Console.Out);</code>
 					<p>BlankCharactersCleaner:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>This is a line of text with {'inline'} Cottle code.
-
-{for s in ["normal", "exceptional", "elite"]:
-    - Length of string "{s}" is {len(s)} character(s).
-
-}</code>
+<code>{'white'} {'spaces '} around raw blocks are
+going to be
+{' collapsed'} .</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
@@ -822,8 +817,8 @@ document.Render(scope, Console.Out);</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>This is a line of text withinlineCottle code.- Length of string "normal" is6character(s).- Length of string "exceptional" is11character(s).- Length of string "elite" is5character(s).
-</code>
+<code>whitespaces around raw blocks are
+going to be collapsed.</code>
 					</div>
 					<p>FirstLastLinesCleaner:</p>
 					<div class="code">
@@ -846,32 +841,36 @@ document.Render(scope, Console.Out);</code>
     - Length of string "exceptional" is 11 character(s).
     - Length of string "elite" is 5 character(s).</code>
 					</div>
-					<p>NothingCleaner:</p>
+					<p>NullCleaner:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>This is a line of text with {'inline'} Cottle code.
+<code>Every {'white'}space from this template
 
-{for s in ["normal", "exceptional", "elite"]:
-    - Length of string "{s}" is {len(s)} character(s).
-}</code>
+{if 1:  will be}
+
+    preserved.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>setting.Cleaner = new NothingCleaner();</code>
+<code>setting.Cleaner = new NullCleaner();</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>This is a line of text with inline Cottle code.
+<code>Every whitespace from this template
 
+  will be
 
-    - Length of string "normal" is 6 character(s).
-
-
-    - Length of string "exceptional" is 11 character(s).
-
-
-    - Length of string "elite" is 5 character(s).</code>
+    preserved.</code>
 					</div>
+					<p>If you want to write your own cleaner, just inherit from
+					the <code>Cottle.ICleaner</code> interface and implement
+					required
+					<code>GetRange(string text, out int start, out int length)</code>
+					method. This method will be called on for each raw text
+					block from input templates (the <code>text</code> argument)
+					and should assign a start offset and a length which define
+					the text range to be extracted and printed when document is
+					rendered.</p>
 				</div>
 
 				<h3 id="block_delimiters_customization">Block delimiters customization</h3>
@@ -1207,8 +1206,8 @@ hello! hello! hello!
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
 <code>scope = new Scope();
-scope["is_admin"] = user.IsAdmin ();
-scope["log"] = () => log.BuildComplexAdministrationLogValue (); // implicit conversion to LazyValue
+scope["is_admin"] = user.IsAdmin();
+scope["log"] = () => log.BuildComplexAdministrationLogValue(); // implicit conversion to LazyValue
 
 document.Render(scope, Console.Out);</code>
 					</div>
@@ -1618,15 +1617,15 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Include and render template file: include(path[, vars[,
-				vars, ...]])</h3>
+				<h3>Include and render template file: include(path[, array[,
+				array, ...]])</h3>
 				<div class="section">
 					<p>Parse document from a template file and render it with
-					given variables. Variables should be array values, their
-					keys will be used as assigned variable names.</p>
-					<p>For the next example, we will assume that a file named
-					"article.cottle" is available in current directory and
-					contains this template code:</p>
+					variables extracted from given arrays. Keys from input
+					arrays will be used as variable names associated to their
+					respective values. For this example, we'll assume that a
+					file named "article.cottle" is available in current
+					directory and contains this template code:</p>
 					<div class="code">
 						<blockquote><span>Template
 						"article.cottle":</span></blockquote>
@@ -1674,6 +1673,15 @@ false</code>
 					template, you can pass a value to the calling template (it
 					will be available as the result of the call to function
 					<code>include</code>).</p>
+					<p>For performance reasons, included templates are stored
+					in an internal cache which keeps parsed versions of the
+					last 256 included documents. If you want to change cache
+					size, use the <code>CommonFunctions.IncludeCacheSize</code>
+					property. You can also disable the cache by setting the
+					<code>CommonFunctions.IncludeCacheEnabled</code> to
+					<code>false</code> ; be sure to set it back to
+					<code>true</code> before deploying your code to a
+					production environment.</p>
 				</div>
 
 				<h3>Join values from an array: join(array[, string])</h3>
@@ -1927,6 +1935,25 @@ true</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>542180393
 5</code>
+					</div>
+				</div>
+
+				<h3>Generate arithmetic progression: range([start, ]stop[, step])</h3>
+				<div class="section">
+					<p>Generate an array where value of the <em>i</em>-th pair
+					is <em>start + step * i</em> and last value is lower than
+					<code>stop</code>. Default base index is 0 if the
+					<code>start</code> argument is omitted, and default value
+					for <code>step</code> is 1.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{for v in range(5): {v}}
+{for v in range(2, 20, 3): {v}}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>0 1 2 3 4
+2 5 8 11 14 17</code>
 					</div>
 				</div>
 

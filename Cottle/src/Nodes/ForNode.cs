@@ -16,9 +16,9 @@ namespace   Cottle.Nodes
 
         private IExpression     from;
 
-        private NameExpression   key;
+        private NameExpression  key;
 
-        private NameExpression   value;
+        private NameExpression  value;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace   Cottle.Nodes
 
         #region Methods
 
-        public bool Apply (Scope scope, TextWriter output, out Value result)
+        public bool Render (Scope scope, TextWriter output, out Value result)
         {
             FieldMap    fields = this.from.Evaluate (scope, output).Fields;
 
@@ -53,7 +53,7 @@ namespace   Cottle.Nodes
                     if (this.value != null)
                         this.value.Set (scope, pair.Value, ScopeMode.Local);
 
-                    if (this.body.Apply (scope, output, out result))
+                    if (this.body.Render (scope, output, out result))
                     {
                         scope.Leave ();
 
@@ -67,7 +67,7 @@ namespace   Cottle.Nodes
             {
                 scope.Enter ();
 
-                if (this.empty.Apply (scope, output, out result))
+                if (this.empty.Render (scope, output, out result))
                 {
                     scope.Leave ();
 
@@ -82,7 +82,7 @@ namespace   Cottle.Nodes
             return false;
         }
 
-        public void Print (ISetting setting, TextWriter output)
+        public void Source (ISetting setting, TextWriter output)
         {
             output.Write (setting.BlockBegin);
             output.Write ("for ");
@@ -98,14 +98,14 @@ namespace   Cottle.Nodes
             output.Write (this.from);
             output.Write (":");
 
-            this.body.Print (setting, output);
+            this.body.Source (setting, output);
 
             if (this.empty != null)
             {
                 output.Write (setting.BlockContinue);
                 output.Write ("empty:");
 
-                this.empty.Print (setting, output);
+                this.empty.Source (setting, output);
             }
 
             output.Write (setting.BlockEnd);
