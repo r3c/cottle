@@ -706,6 +706,18 @@ namespace   Cottle.Commons
             return count == 1;
         });
 
+        private static readonly IFunction   functionZip = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            IEnumerator<KeyValuePair<Value, Value>> enumerator1 = values[0].Fields.GetEnumerator ();
+            IEnumerator<KeyValuePair<Value, Value>> enumerator2 = values[1].Fields.GetEnumerator ();
+            List<KeyValuePair<Value, Value>>        pairs = new List<KeyValuePair<Value, Value>> ();
+
+            while (enumerator1.MoveNext () && enumerator2.MoveNext ())
+            	pairs.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
+
+            return pairs;
+        }, 2);
+
         #endregion
 
         #region Attributes / Static
@@ -771,6 +783,7 @@ namespace   Cottle.Commons
             scope.Set ("union", new FunctionValue (CommonFunctions.functionUnion), mode);
             scope.Set ("when", new FunctionValue (CommonFunctions.functionWhen), mode);
             scope.Set ("xor", new FunctionValue (CommonFunctions.functionXor), mode);
+            scope.Set ("zip", new FunctionValue (CommonFunctions.functionZip), mode);
         }
 
         #endregion

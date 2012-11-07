@@ -2112,6 +2112,25 @@ length</code>
 <code>true</code>
 					</div>
 				</div>
+
+				<h3>Combine two arrays values into pairs: zip(a, b)</h3>
+				<div class="section">
+					<p>Combine given arrays to create a new one. The n-th pair
+					in result array will use the n-th value from first array as
+					its key and the n-th value of second array as its value. If
+					the two arrays don't have the same length, exceeding
+					elements from the longest array are ignored.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{set a to ["key1", "key2", "key3"]}
+{set b to ["value1", "value2", "value3"]}
+{dump zip(a, b)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>["key1": "value1", "key2": "value2", "key3": "value3"]</code>
+					</div>
+				</div>
 			</div>
 
 			<h2>Reference</h2>
