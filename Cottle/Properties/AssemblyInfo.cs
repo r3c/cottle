@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
 [assembly: AssemblyTitle ("Cottle")]
-[assembly: AssemblyDescription ("")]
+[assembly: AssemblyDescription ("Fast, lightweight &amp; extensible template engine for any text-based target format (e.g. HTML, JavaScript, CSS, plain text...). Its mini-language supports text substitution, functions &amp; variables, flow control and more.")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("Microsoft")]
+[assembly: AssemblyCompany ("Remi Caput")]
 [assembly: AssemblyProduct ("Cottle")]
-[assembly: AssemblyCopyright ("Copyright © Microsoft 2011")]
+[assembly: AssemblyCopyright ("Copyright r3c 2012")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 

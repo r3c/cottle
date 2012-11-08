@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>Cottle</id>
-    <version>1.0.2.0</version>
-    <authors>Remi Caput</authors>
+    <id>$id$</id>
+    <version>$version$</version>
+	<title>$title$</title>
+    <authors>$author$</authors>
     <owners>Remi Caput</owners>
     <licenseUrl>https://raw.github.com/r3c/Cottle/master/LICENSE</licenseUrl>
     <projectUrl>http://r3c.github.com/Cottle/</projectUrl>
     <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Fast, lightweight &amp; extensible template engine for any text-based target format (e.g. HTML, JavaScript, CSS, plain text...).</description>
+    <description>$description$</description>
+	<releaseNotes>Changed configuration API, automatic raw text cleaning can now be enabled.</releaseNotes>
+	<copyright>Copyright r3c 2012</copyright>
     <tags>Cottle Template Engine Text Transform Format</tags>
   </metadata>
-  <files>
-    <file src="bin\Release\*.dll" target="lib\net35" />
-  </files>
 </package>
