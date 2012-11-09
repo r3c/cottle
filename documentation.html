@@ -1360,6 +1360,30 @@ PropertyItems =</code>
 					</div>
 				</div>
 
+				<h3 id="function_cast">Convert value to a scalar type:
+				cast(value, type)</h3>
+				<div class="section">
+					<p>Get value converted to requested scalar type. Type must
+					be a string value specifying desired type:</p>
+					<ul>
+						<li>b: convert to boolean value</li>
+						<li>n: convert to numeric value</li>
+						<li>s: convert to string value</li>
+					</ul>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{dump eq(2, cast("2", "n"))}
+{dump ["value for key 0"][cast("0", "n")]}
+{dump cast("some string", "b")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>&lt;true&gt;
+"value for key 0"
+&lt;true&gt;</code>
+					</div>
+				</div>
+
 				<h3>Concatenate values: cat(a, b, ...)</h3>
 				<div class="section">
 					<p>Concatenate all input values into a single one. This
@@ -1569,10 +1593,11 @@ true</code>
 				culture])</h3>
 				<div class="section">
 					<p>Convert any <code>value</code> to a string using given
-					formatting from <code>format</code> argument. Format should
-					use syntax "expr" or "t:expr" where "t" indicates the type
-					of the formatter to use, and "expr" is the .NET format
-					specifier. Available formatter types are:</p>
+					formatting from <code>format</code> string expression.
+					Format should use syntax "expr" or "t:expr" where "t"
+					indicates the type of the formatter to use, and "expr" is
+					the .NET format specifier. Available formatter types
+					are:</p>
 					<ul>
 						<li>a: automatic (default, used if "t" is omitted)</li>
 						<li>b: System.Boolean</li>

@@ -84,6 +84,24 @@ namespace   Cottle.Commons
             return function.Execute(arguments, scope, output);
         }, 2);
 
+        private static readonly IFunction   functionCast = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
+        {
+            switch (values[1].AsString)
+            {
+                case "b":
+                    return values[0].AsBoolean;
+
+                case "n":
+                    return values[0].AsNumber;
+
+                case "s":
+                    return values[0].AsString;
+
+                default:
+                    return UndefinedValue.Instance;
+            }
+        }, 2);
+
         private static readonly IFunction   functionCat = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             StringBuilder                       builder;
@@ -743,6 +761,7 @@ namespace   Cottle.Commons
             scope.Set ("add", new FunctionValue (CommonFunctions.functionAdd), mode);
             scope.Set ("and", new FunctionValue (CommonFunctions.functionAnd), mode);
             scope.Set ("call", new FunctionValue (CommonFunctions.functionCall), mode);
+            scope.Set ("cast", new FunctionValue (CommonFunctions.functionCast), mode);
             scope.Set ("cat", new FunctionValue (CommonFunctions.functionCat), mode);
             scope.Set ("char", new FunctionValue (CommonFunctions.functionChar), mode);
             scope.Set ("cmp", new FunctionValue (CommonFunctions.functionCompare), mode);
