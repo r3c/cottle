@@ -9,7 +9,7 @@ namespace   Cottle.Values
     {
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
@@ -17,15 +17,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override IFunction   AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
@@ -35,7 +27,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
@@ -56,23 +48,21 @@ namespace   Cottle.Values
         #region Constructors
 
         public  StringValue (string value) :
-            base (value)
+            base (value, delegate (Value source)
+            {
+                return source.AsString;
+            })
         {
         }
 
         public  StringValue (char value) :
-            base (value.ToString ())
+            this (value.ToString ())
         {
         }
 
         #endregion
 
         #region Methods
-
-        public override int CompareTo (Value other)
-        {
-            return string.CompareOrdinal (this.value, other.AsString);
-        }
 
         public override string  ToString ()
         {

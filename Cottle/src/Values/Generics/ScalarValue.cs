@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+
+using Cottle.Maps;
 
 namespace   Cottle.Values.Generics
 {
@@ -6,11 +9,19 @@ namespace   Cottle.Values.Generics
     {
         #region Properties
 
-        public override FieldMap    Fields
+        public override IFunction   AsFunction
         {
             get
             {
-                return FieldMap.Empty;
+                return null;
+            }
+        }
+
+        public override IMap        Fields
+        {
+            get
+            {
+                return EmptyMap.Instance;
             }
         }
 
@@ -18,23 +29,33 @@ namespace   Cottle.Values.Generics
 
         #region Attributes
 
-        protected Comparer<T>   comparer;
+        protected Converter<Value, T>   converter;
 
-        protected T             value;
+        protected T                     value;
 
         #endregion
 
         #region Constructors
 
-        protected   ScalarValue (T value)
+        protected   ScalarValue (T value, Converter<Value, T> converter)
         {
-            this.comparer = Comparer<T>.Default;
+            this.converter = converter;
             this.value = value;
         }
 
         #endregion
 
         #region Methods
+
+        public override int CompareTo (Value other)
+        {
+            if (other == null)
+                return 1;
+            else if (this.Type != other.Type)
+                return ((int)this.Type).CompareTo ((int)other.Type);
+
+            return Comparer<T>.Default.Compare (this.converter (this), this.converter (other));
+        }
 
         public override int GetHashCode ()
         {

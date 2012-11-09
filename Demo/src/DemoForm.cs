@@ -315,7 +315,7 @@ namespace   Demo
 
                     node.Nodes.AddRange (range);
 
-                    this.NodeAssign (node, key, new ArrayValue ());
+                    this.NodeAssign (node, key, new MapValue ());
 
                     return node;
 

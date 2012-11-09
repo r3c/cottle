@@ -38,7 +38,7 @@ namespace   Cottle.Values.Generics
             }
         }
 
-        public override FieldMap        Fields
+        public override IMap            Fields
         {
             get
             {

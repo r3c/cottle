@@ -402,20 +402,20 @@
 					"<a href="#block_delimiters_customization">Block delimiters customization</a>".</p>
 				</div>
 
-				<h3>Using array values</h3>
+				<h3>Using map values</h3>
 				<div class="section">
-					<p>Array values contain multiple values stored as key/value
-					pairs. Keys and values can be scalar values, or other
-					nested array values. Values within an array value can be
-					accessed by their key, using either dotted or subscript
-					notation:</p>
+					<p>Map values are associative tables that contain multiple
+					values stored as key/value pairs. Keys and values can be
+					either scalar values or other nested map values. Values
+					within a map value can be accessed directly by their key,
+					using either dotted or subscript notation:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>You can use either {myarray.f1} or {myarray["f2"]} notations for array values.</code>
+<code>You can use either {mymap.f1} or {mymap["f2"]} notations for map values.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>scope["myarray"] = new Dictionary&lt;Value,Value&gt; // implicit conversion to ArrayValue
+<code>scope["mymap"] = new Dictionary&lt;Value,Value&gt; // implicit conversion to MapValue
 {
     {"f1", "dotted"},
     {"f2", "subscript"}
@@ -423,18 +423,18 @@
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>You can use either dotted or subscript notations for array values.</code>
+<code>You can use either dotted or subscript notations for map values.</code>
 					</div>
 					<p>Please node the quotes used in subscript notation.
-					Trying to access value of <code>{myarray[f2]}</code> will
+					Trying to access value of <code>{mymap[f2]}</code> will
 					result in a very different behavior, since it will search
 					for the value whose key is the value of <code>f2</code>
 					(which hasn't be defined), leading to an undefined
 					result.</p>
-					<p>It is valid to have an array in which two or more keys
+					<p>It is valid to have a map in which two or more keys
 					are equal, but you will only be able to access the last
 					one when using direct access. However, iteration through
-					the array's elements, as we'll see later, will show you
+					the map's elements, as we'll see later, will show you
 					its entire content.</p>
 				</div>
 
@@ -453,15 +453,15 @@
 {"Constant string value"}
 {'String with single quotes'}
 {["key1": "value1", "key2": "value2", 43: "value for key 43"]}
-{["constant", "array", "with", "auto-generated", "numeric", "keys"]}
-{[1: ["array", "with"], "mixed": "values"]}</code>
+{["constant", "map", "with", "auto-generated", "numeric", "keys"]}
+{[1: ["map", "with"], "mixed": "values"]}</code>
 					</div>
 					<p>As you can see in this example, literals can be:</p>
 					<ul>
 						<li>Integer or decimal numeric constants,</li>
 						<li>Character strings delimited by either single or
 						double quotes,</li>
-						<li>Arrays with either key/value pairs or values
+						<li>Maps with either key/value pairs or values
 						only (numeric keys starting at index 0 are generated in
 						this case)</li>
 					</ul>
@@ -535,24 +535,25 @@ Hello, World!</code>
 				<div class="section">
 					<p>You can write conditional statements by using the
 					<code>if</code> command which evaluates a value (which can
-					be a variable or the result of a function call) to check if
-					its body should be printed or not. A condition is satisfied
-					if the value evaluates to true : any undefined result,
-					empty string, 0 or empty array will evaluate to false where
-					any other value will evaluate to true.</p>
+					be a variable or the result of a function call) as a
+					boolean to check if its body should be printed or not.
+					A condition is satisfied if the value as a boolean is true:
+					any undefined result, empty string, 0 or empty map will be
+					converted to a boolean "false" value whereas any other
+					value will be converted to "true".</p>
 					<p>The <code>if</code> command also supports optional
 					<code>elif</code> (else if) and <code>else</code> blocks
 					that behave like in any programming language.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{if 1:
-    A condition on a numerical value is true if the value is non-zero.
+    A condition on a numeric value is true if the value is non-zero.
 }
 
 {if test: Variable "test" is true! |else: Variable "test" is false! }
 
 {if gt(len(items), 2):
-    There are more than two items in array ({len(items)}, actually).
+    There are more than two items in map ({len(items)}, actually).
 }
 
 {if lt(x, 0):
@@ -577,24 +578,24 @@ scope["x"] = -3;</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>A condition on a numerical value is true if the value is non-zero.
+<code>A condition on a numeric value is true if the value is non-zero.
 
 Variable "test" is true!
 
-There are more than two items in array (3, actually).
+There are more than two items in map (3, actually).
 
 X is negative.</code>
 					</div>
 				</div>
 
-				<h3>Arrays enumeration</h3>
+				<h3>Maps enumeration</h3>
 				<div class="section">
-					<p>Pairs contained within an array value can be enumerated
+					<p>Pairs contained within a map value can be enumerated
 					with the <code>for</code> command, that will print its body
 					for each key/value pair it found. An alternative syntax can
 					be used if you only want to iterate on values and don't
 					care about keys. The <code>for</code> command also supports
-					an optional <code>empty</code> block printed when the array
+					an optional <code>empty</code> block printed when the map
 					you tried to enumerate doesn't contain any key/value
 					pair.</p>
 					<div class="code">
@@ -681,8 +682,8 @@ Tags: action horror fantastic</code>
 					common scope. More advanced use of variable assignments
 					will be explained later in this document.</p>
 					<p>Variables in Cottle are immutable, so it's not possible
-					to assign some value to an array subscript. If you want to
-					append, replace or erase a value in an array, you'll have
+					to assign some value to a map subscript. If you want to
+					append, replace or erase a value in a map, you'll have
 					to build a new one and inject, filter out or replace
 					desired value. Common functions
 					"<a href="#function_union">union</a>" and
@@ -690,12 +691,12 @@ Tags: action horror fantastic</code>
 					easily achieve such operations:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{set my_array to ["delete_me": "TODO: delete this value", "let_me": "I shouldn't be touched"]}
+<code>{set my_map to ["delete_me": "TODO: delete this value", "let_me": "I shouldn't be touched"]}
 
-{set my_array to union(my_array, ["append_me": "I'm here!"])}
-{set my_array to except(my_array, ["delete_me": 0])}
+{set my_map to union(my_map, ["append_me": "I'm here!"])}
+{set my_map to except(my_map, ["delete_me": 0])}
 
-{dump my_array}</code>
+{dump my_map}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
@@ -889,7 +890,7 @@ going to be collapsed.</code>
 					should avoid anything ambiguous otherwise the parser may
 					not be able to understand your code. For example, choosing
 					the ] character as a delimiter is a bad idea, as it will
-					conflict with internal end-of-array delimiter.</p>
+					conflict with internal end-of-map delimiter.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>Block delimiters are now [[block_begin]], [[block_continue]] and [[block_end]].</code>
@@ -935,6 +936,36 @@ scope["block_end"] = "double right bracket (" + setting.BlockEnd + ")";</code>
 &lt;undefined&gt;
 [0: 856, 1: "hello", "x": 17]</code>
 					</div>
+				</div>
+
+				<h3>Understanding value types</h3>
+				<div class="section">
+					<p>Every value has a type in Cottle, even if you usually
+					don't have to worry about it since casts are performed
+					automatically when required. In some cases however, you may
+					have to force a cast to get desired result, for example
+					when accessing values from a map:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{set map to ["first", "second", "third"]}
+{set key to "1"}
+
+{dump map[key]}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>&lt;undefined&gt;</code>
+					</div>
+					<p>You could have expected this template to display
+					"second", but Cottle actually searches for the value
+					associated to key "1" (as a string) in <code>map</code>,
+					not key 1 (as a number). This can be explained by the fact
+					that <code>map</code> could contain different values for
+					both keys 1 and "1", and it would be perfectly valid, so no
+					automatic cast can be performed for you.</p>
+					<p>This can be solved by explicitely changing the type of
+					<code>key</code> to a number by using the
+					<a href="#function_cast">cast</a> common function.</p>
 				</div>
 
 				<h3>Functions declaration</h3>
@@ -1036,7 +1067,7 @@ Move one disk from A to C</code>
 					</div>
 					<p>The <code>depth</code> function is expected to return
 					the level of the deepest element in a value that contains
-					nested arrays. Of course it could be written in a much more
+					nested maps. Of course it could be written in a much more
 					efficient way without using non necessary temporary
 					variables, but it would hide the problem we want to
 					illustrate. Anyway, we want this code to return a valid
@@ -1228,7 +1259,7 @@ document.Render(scope, Console.Out);</code>
 					<p>To use reflection, create a new ReflectionValue from any
 					.NET object instance, and push it to your scope. Its fields
 					and properties will be accessible like if it were a Cottle
-					array:</p>
+					map:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>Your image has a size of {image.Width} x {image.Height} pixels.
@@ -1312,11 +1343,11 @@ PropertyItems =</code>
 					</div>
 				</div>
 
-				<h3>Use array values as another function's arguments:
-				call(func, array)</h3>
+				<h3>Use map values as another function's arguments:
+				call(func, map)</h3>
 				<div class="section">
 					<p>Call function <code>func</code> with values from given
-					array as arguments.</p>
+					map as arguments (keys are not used).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{call(cat, ["Hello", ", ", "World", "!"])}
@@ -1332,7 +1363,7 @@ PropertyItems =</code>
 				<h3>Concatenate values: cat(a, b, ...)</h3>
 				<div class="section">
 					<p>Concatenate all input values into a single one. This
-					function works on both strings and arrays.</p>
+					function works on both strings and maps.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{cat("Hello, ", "World!")}
@@ -1347,7 +1378,8 @@ PropertyItems =</code>
 
 				<h3>Get character from unicode value: char(int)</h3>
 				<div class="section">
-					<p>Get a 1-character string from its unicode value. See
+					<p>Get a 1-character string from its unicode numeric
+					value. See
 					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
 					Wikipedia</a> for details.</p>
 					<div class="code">
@@ -1367,8 +1399,9 @@ PropertyItems =</code>
 					0 if they're equal, or 1 else. When used on numeric
 					values, the <code>cmp</code> function uses numerical order.
 					When used on strings, it uses alphabetical order. When
-					used on arrays, it first compare their lengths then compare
-					their values if lengths are equal.</p>
+					used on maps, it first compare their lengths then compare
+					their values if lengths are equal. Two values of different
+					types are always different.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{cmp("abc", "bcd")}
@@ -1383,12 +1416,12 @@ PropertyItems =</code>
 					</div>
 				</div>
 
-				<h3>Cross-join pairs in an array: cross(array1, array2, ...)</h3>
+				<h3>Cross-join pairs in a map: cross(map1, map2, ...)</h3>
 				<div class="section">
-					<p>Return an array containing all pairs from
-					<code>array1</code> having a key that also exists in
-					<code>array2</code> and following arrays. Output pair
-					values will always be taken from <code>array1</code>.</p>
+					<p>Return a map containing all pairs from
+					<code>map1</code> having a key that also exists in
+					<code>map2</code> and following maps. Output pair
+					values will always be taken from <code>map1</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump cross([1: "a", 2: "b", 3: "c"], [1: "x", 3: "y"])}</code>
@@ -1422,7 +1455,8 @@ PropertyItems =</code>
 				<h3>Compute divide result of two values: div(a, b)</h3>
 				<div class="section">
 					<p>Return the numeric value of <code>a</code> divided by
-					the value of <code>b</code>.</p>
+					the numeric value of <code>b</code>. Result of a division
+					by zero is an undefined value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{div(5, 2)}</code>
@@ -1436,7 +1470,8 @@ PropertyItems =</code>
 				<h3>Test if values are equal: eq(a, b, ...)</h3>
 				<div class="section">
 					<p>Return true if all arguments are equal, or false
-					otherwise.</p>
+					otherwise. See <a href="#function_cmp">cmp</a> common
+					function for more information about comparisons.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{eq(7, 7)}
@@ -1451,13 +1486,13 @@ true</code>
 					</div>
 				</div>
 
-				<h3 id="function_except">Remove pairs from an array:
-				except(array1, array2, ...)</h3>
+				<h3 id="function_except">Remove pairs from a map:
+				except(map1, map2, ...)</h3>
 				<div class="section">
-					<p>Return an array containing all pairs from
-					<code>array1</code> having a key that does not exist in
-					<code>array2</code> and following arrays. This function can
-					also be used to remove a single element from an array.</p>
+					<p>Return a map containing all pairs from
+					<code>map1</code> having a key that does not exist in
+					<code>map2</code> and following maps. This function can
+					also be used to remove a single element from a map.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump except([1: "a", 2: "b", 3: "c"], [2: "x", 4: "y"])}</code>
@@ -1468,14 +1503,14 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Filter values from an array: filter(array, predicate[, a,
+				<h3>Filter values from a map: filter(map, predicate[, a,
 				b, ...])</h3>
 				<div class="section">
-					<p>Return an array containing all pairs having a value that
+					<p>Return a map containing all pairs having a value that
 					satisfies given predicate. Function <code>predicate</code>
-					is invoked for each value from <code>array</code> with this
+					is invoked for each value from <code>map</code> with this
 					value as its first argument, and pair is added to output
-					array if predicate result
+					map if predicate result
 					<a href="#conditional_statements">evaluates to true</a>.</p>
 					<p>Optional arguments can be specified when calling
 					<code>filter</code> and will be passed to each invocation
@@ -1495,7 +1530,7 @@ true</code>
 				<h3>Find index of element in a value: find(value, token[,
 				start])</h3>
 				<div class="section">
-					<p>Find the 0-based index of given token in an array, or
+					<p>Find the 0-based index of given token in a map, or
 					sub-string in a string. Search starts at index 0 unless
 					<code>start</code> argument is specified.</p>
 					<div class="code">
@@ -1510,14 +1545,14 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Swap keys and values in an array: flip(array)</h3>
+				<h3>Swap keys and values in a map: flip(map)</h3>
 				<div class="section">
-					<p>Return an array were pairs are created by swapping each
-					key and value pair from input array. Using resulting array
+					<p>Return a map were pairs are created by swapping each
+					key and value pair from input map. Using resulting map
 					with the <code>for</code> command will still iterate
 					through each pair even if there was duplicates, but only
 					the last occurrence of each duplicate can be accessed
-					using array subscript operator ([]).</p>
+					using map subscript operator ([]).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump flip([1: "hello,", 2: "world!"])}
@@ -1568,7 +1603,8 @@ True</code>
 				<h3>Test if a value is greater or equal to another: ge(a,
 				b)</h3>
 				<div class="section">
-					<p>Return true if <code>a</code> is greater or equal to
+					<p>Return true if the numeric value of <code>a</code> is
+					greater than or equal to the numeric value of
 					<code>b</code>, false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1586,8 +1622,9 @@ false</code>
 
 				<h3>Test if a value is greater than another: gt(a, b)</h3>
 				<div class="section">
-					<p>Return true if <code>a</code> is greater than
-					<code>b</code>, false otherwise.</p>
+					<p>Return true if the numeric value of <code>a</code> is
+					greater than the numeric value of  <code>b</code>, false
+					otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{gt(7, 3)}
@@ -1602,10 +1639,10 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Check if an array value contains given key: has(array,
+				<h3>Check if a map value contains given key: has(map,
 				key)</h3>
 				<div class="section">
-					<p>Return true if given array has a value associated to
+					<p>Return true if given map has a value associated to
 					given key, or false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1617,12 +1654,12 @@ false</code>
 					</div>
 				</div>
 
-				<h3>Include and render template file: include(path[, array[,
-				array, ...]])</h3>
+				<h3>Include and render template file: include(path[, map[,
+				map, ...]])</h3>
 				<div class="section">
 					<p>Parse document from a template file and render it with
-					variables extracted from given arrays. Keys from input
-					arrays will be used as variable names associated to their
+					variables extracted from given maps. Keys from input
+					maps will be used as variable names associated to their
 					respective values. For this example, we'll assume that a
 					file named "article.cottle" is available in current
 					directory and contains this template code:</p>
@@ -1684,9 +1721,9 @@ false</code>
 					production environment.</p>
 				</div>
 
-				<h3>Join values from an array: join(array[, string])</h3>
+				<h3>Join values from a map: join(map[, string])</h3>
 				<div class="section">
-					<p>Concatenate all values from given array pairs, using
+					<p>Concatenate all values from given map pairs, using
 					given string as a separator (or empty string if no
 					separator is provided).</p>
 					<div class="code">
@@ -1715,7 +1752,7 @@ false</code>
 				<h3>Get length of a value: len(a)</h3>
 				<div class="section">
 					<p>Return the length or given value, that is number pairs
-					if value was an array, or number of characters if value
+					if value was a map, or number of characters if value
 					was a string.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1731,8 +1768,9 @@ false</code>
 
 				<h3>Test if a value is lower or equal to another: le(a, b)</h3>
 				<div class="section">
-					<p>Return true if <code>a</code> is lower or equal to
-					<code>b</code>, false otherwise.</p>
+					<p>Return true if the numeric value of <code>a</code> is
+					lower than or equal to the numeric value of <code>b</code>,
+					false otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{le(3, 7)}
@@ -1749,8 +1787,9 @@ true</code>
 
 				<h3>Test if a value is lower than another: lt(a, b)</h3>
 				<div class="section">
-					<p>Return true if <code>a</code> is lower than
-					<code>b</code>, false otherwise.</p>
+					<p>Return true if the numeric value of <code>a</code> is
+					lower than the numeric value of <code>b</code>, false
+					otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{lt(3, 7)}
@@ -1765,13 +1804,13 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Applying function to each value in an array: map(array,
+				<h3>Applying function to each value in a map: map(map,
 				modifier[, a, b, ...])</h3>
 				<div class="section">
-					<p>Return an array where values are built by applying given
-					modifier to original array values, while preserving keys.
+					<p>Return a map where values are built by applying given
+					modifier to original map values, while preserving keys.
 					Function <code>modifier</code> is invoked for each value in
-					<code>array</code> with this value as its first
+					<code>map</code> with this value as its first
 					argument.</p>
 					<p>Optional arguments can be specified when calling
 					<code>map</code> and will be passed to each invocation of
@@ -1795,7 +1834,7 @@ true</code>
 				pattern)</h3>
 				<div class="section">
 					<p>Match <code>string</code> against given regular
-					expression pattern. If match is successful, an array
+					expression pattern. If match is successful, a map
 					containing each captured group is returned, otherwise
 					result is an undefined value. See
 					<a href="http://msdn.microsoft.com/en-us/library/hs600312(v=vs.71).aspx">.NET
@@ -1902,8 +1941,8 @@ true</code>
 
 				<h3>Get unicode value from character: ord(char)</h3>
 				<div class="section">
-					<p>Get the unicode value of the first character of given
-					string. See
+					<p>Get the numeric unicode value of the first character
+					of given string. See
 					<a href="http://en.wikipedia.org/wiki/Unicode">Unicode on
 					Wikipedia</a> for details.</p>
 					<div class="code">
@@ -1919,13 +1958,12 @@ true</code>
 				<h3>Generate pseudo-random value: rand([a[, b]])</h3>
 				<div class="section">
 					<p>Get a pseudo-random numeric value between 0 and
-					2.147.483.647 inclusive. If <code>a</code> is
-					specified, return a pseudo-random numeric value
-					between 0 and <code>a</code> exclusive. If both
-					<code>a</code> and <code>b</code> are specified,
+					2.147.483.647 inclusive. If numeric <code>a</code> value
+					is specified, return a pseudo-random numeric value
+					between 0 and <code>a</code> exclusive. If both numeric
+					values <code>a</code> and <code>b</code> are specified,
 					return a pseudo-random numeric value between
-					<code>a</code> inclusive and <code>b</code>
-					exclusive.</p>
+					<code>a</code> inclusive and <code>b</code> exclusive.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{rand()}
@@ -1940,7 +1978,7 @@ true</code>
 
 				<h3>Generate arithmetic progression: range([start, ]stop[, step])</h3>
 				<div class="section">
-					<p>Generate an array where value of the <em>i</em>-th pair
+					<p>Generate a map where value of the <em>i</em>-th pair
 					is <em>start + step * i</em> and last value is lower than
 					<code>stop</code>. Default base index is 0 if the
 					<code>start</code> argument is omitted, and default value
@@ -1959,10 +1997,10 @@ true</code>
 
 				<h3>Extract part of value: slice(value, index[, count])</h3>
 				<div class="section">
-					<p>Extact slice from an array, or sub-string from a
+					<p>Extact slice from a map, or sub-string from a
 					string. <code>count</code> pairs or characters are
-					extracted from given 0-based <code>index</code>. If no
-					<code>count</code> argument is specified, all elements
+					extracted from given 0-based numeric <code>index</code>. If
+					no <code>count</code> argument is specified, all elements
 					starting from given <code>index</code> are extracted.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1976,10 +2014,10 @@ hello</code>
 					</div>
 				</div>
 
-				<h3>Get sorted array: sort(array[, callback])</h3>
+				<h3>Get sorted map: sort(map[, callback])</h3>
 				<div class="section">
-					<p>Return a sorted copy of given array. First argument is
-					the input array, and will be sorted using natural order
+					<p>Return a sorted copy of given map. First argument is
+					the input map, and will be sorted using natural order
 					(numerical or alphabetical, depending on value types) by
 					default. You can specify a second argument as
 					comparison delegate, that should accept two arguments and
@@ -2017,11 +2055,11 @@ length</code>
 					</div>
 				</div>
 
-				<h3>Split string into array: split(input, separator)</h3>
+				<h3>Split string into map: split(input, separator)</h3>
 				<div class="section">
 					<p>Split string <code>input</code> according to given
 					string separator <code>separator</code>. Result is an
-					array where pair values contain split sub-strings.</p>
+					map where pair values contain split sub-strings.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump split("2011/01/01", "/")}</code>
@@ -2059,12 +2097,12 @@ length</code>
 					</div>
 				</div>
 
-				<h3 id="function_union">Get union of two arrays: union(array1,
-				array2, ...)</h3>
+				<h3 id="function_union">Get union of two maps: union(map1,
+				map2, ...)</h3>
 				<div class="section">
-					<p>Return an array containing all pairs from input arrays,
+					<p>Return a map containing all pairs from input maps,
 					but without duplicating any key. If a key exists in more
-					than one input array, the one from last array will
+					than one input map, the one from last map will
 					overwrite any previous one.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -2113,13 +2151,13 @@ length</code>
 					</div>
 				</div>
 
-				<h3>Combine two arrays values into pairs: zip(a, b)</h3>
+				<h3>Combine two maps values into pairs: zip(a, b)</h3>
 				<div class="section">
-					<p>Combine given arrays to create a new one. The n-th pair
-					in result array will use the n-th value from first array as
-					its key and the n-th value of second array as its value. If
-					the two arrays don't have the same length, exceeding
-					elements from the longest array are ignored.</p>
+					<p>Combine given maps to create a new one. The n-th pair
+					in result map will use the n-th value from first map as
+					its key and the n-th value of second map as its value. If
+					the two maps don't have the same length, exceeding
+					elements from the longest map are ignored.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set a to ["key1", "key2", "key3"]}
@@ -2158,6 +2196,13 @@ length</code>
 								<li><code>LexerConfig</code> must be replaced
 								by <code>CustomSetting</code> object to change
 								configuration.</li>
+								<li><code>FieldMap</code> has been replaced by
+								multiple implementations of the new
+								<code>IMap</code> interface.</li>
+								<li>Two values with different types are always
+								different, even if casts could have made them
+								equal (i.e. removed automatic casts when
+								comparing values).</li>
 							</ul>
 						</li>
 					</ul>

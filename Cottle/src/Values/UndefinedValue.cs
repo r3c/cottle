@@ -1,4 +1,5 @@
-﻿
+﻿using Cottle.Maps;
+
 namespace   Cottle.Values
 {
     public sealed class UndefinedValue : Value
@@ -37,11 +38,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override FieldMap        Fields
+        public override IMap            Fields
         {
             get
             {
-                return FieldMap.Empty;
+                return EmptyMap.Instance;
             }
         }
 
@@ -79,10 +80,10 @@ namespace   Cottle.Values
         {
             if (other == null)
                 return 1;
-            else if (other.Type != ValueContent.Undefined)
-                return -1;
-            else
-                return 0;
+            else if (this.Type != other.Type)
+                return ((int)this.Type).CompareTo ((int)other.Type);
+
+            return 0;
         }
 
         public override int GetHashCode()

@@ -14,7 +14,7 @@ namespace   Cottle.Values
 
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
@@ -22,15 +22,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override IFunction   AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
@@ -38,11 +30,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
-                return this.value ? "true" : "false";
+                return this.value ? "true" : string.Empty;
             }
         }
 
@@ -59,7 +51,10 @@ namespace   Cottle.Values
         #region Constructors
 
         public  BooleanValue (bool value) :
-            base (value)
+            base (value, delegate (Value source)
+            {
+                return source.AsBoolean;
+            })
         {
         }
 
@@ -67,14 +62,9 @@ namespace   Cottle.Values
 
         #region Methods
 
-        public override int CompareTo (Value other)
-        {
-            return other != null ? this.comparer.Compare (this.AsBoolean, other.AsBoolean) : 1;
-        }
-
         public override string  ToString ()
         {
-            return this.value ? "1" : "0";
+            return this.value ? "<true>" : "<false>";
         }
 
         #endregion

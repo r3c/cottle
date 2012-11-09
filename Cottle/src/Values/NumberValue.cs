@@ -8,7 +8,7 @@ namespace   Cottle.Values
     {
         #region Properties
 
-        public override bool        AsBoolean
+        public override bool            AsBoolean
         {
             get
             {
@@ -16,15 +16,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override IFunction   AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        public override decimal     AsNumber
+        public override decimal         AsNumber
         {
             get
             {
@@ -32,7 +24,7 @@ namespace   Cottle.Values
             }
         }
 
-        public override string      AsString
+        public override string          AsString
         {
             get
             {
@@ -50,51 +42,49 @@ namespace   Cottle.Values
 
         #endregion
 
-        #region Constructors
+        #region Constructors / Public
 
         public  NumberValue (byte value) :
-            base (value)
+            this ((decimal)value)
         {
         }
 
         public  NumberValue (decimal value) :
-            base (value)
+            base (value, delegate (Value source)
+            {
+                return source.AsNumber;
+            })
         {
         }
 
         public  NumberValue (double value) :
-            base ((decimal)value)
+            this ((decimal)value)
         {
         }
 
         public  NumberValue (float value) :
-            base ((decimal)value)
+            this ((decimal)value)
         {
         }
 
         public  NumberValue (int value) :
-            base (value)
+            this ((decimal)value)
         {
         }
 
         public  NumberValue (long value) :
-            base (value)
+            this ((decimal)value)
         {
         }
 
         public  NumberValue (short value) :
-            base (value)
+            this ((decimal)value)
         {
         }
 
         #endregion
 
         #region Methods
-
-        public override int CompareTo (Value other)
-        {
-            return other != null ? this.comparer.Compare (this.AsNumber, other.AsNumber) : 1;
-        }
 
         public override string  ToString ()
         {

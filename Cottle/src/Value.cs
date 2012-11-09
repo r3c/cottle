@@ -30,7 +30,7 @@ namespace   Cottle
             get;
         }
 
-        public abstract FieldMap        Fields
+        public abstract IMap            Fields
         {
             get;
         }
@@ -95,7 +95,7 @@ namespace   Cottle
         public static implicit operator Value (Dictionary<Value, Value> dictionary)
         {
             if (dictionary != null)
-                return new ArrayValue (dictionary);
+                return new MapValue (dictionary);
 
             return UndefinedValue.Instance;
         }
@@ -103,7 +103,7 @@ namespace   Cottle
         public static implicit operator Value (List<KeyValuePair<Value, Value>> pairs)
         {
             if (pairs != null)
-                return new ArrayValue (pairs);
+                return new MapValue (pairs);
 
             return UndefinedValue.Instance;
         }
@@ -111,7 +111,7 @@ namespace   Cottle
         public static implicit operator Value (KeyValuePair<Value, Value>[] pairs)
         {
             if (pairs != null)
-                return new ArrayValue (pairs);
+                return new MapValue (pairs);
 
             return UndefinedValue.Instance;
         }
@@ -119,7 +119,7 @@ namespace   Cottle
         public static implicit operator Value (List<Value> list)
         {
             if (list != null)
-                return new ArrayValue (list);
+                return new MapValue (list);
 
             return UndefinedValue.Instance;
         }
@@ -127,7 +127,7 @@ namespace   Cottle
         public static implicit operator Value (Value[] array)
         {
             if (array != null)
-                return new ArrayValue (array);
+                return new MapValue (array);
 
             return UndefinedValue.Instance;
         }
@@ -191,7 +191,7 @@ namespace   Cottle
 
         public abstract int CompareTo (Value other);
 
-        public virtual bool Equals(Value other)
+        public virtual bool Equals (Value other)
         {
             return this.CompareTo (other) == 0;
         }

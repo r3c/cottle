@@ -29,7 +29,7 @@ namespace   Cottle.Expressions
 
         public override Value  Evaluate (Scope scope, TextWriter writer)
         {
-            return new ArrayValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
+            return new MapValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
             {
                 Value  key = item.Key.Evaluate (scope, writer);
                 Value  value = item.Value.Evaluate (scope, writer);

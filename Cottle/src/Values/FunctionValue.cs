@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Cottle.Maps;
+
 namespace   Cottle.Values
 {
     public sealed class FunctionValue : Value
@@ -38,11 +40,11 @@ namespace   Cottle.Values
             }
         }
 
-        public override FieldMap        Fields
+        public override IMap            Fields
         {
             get
             {
-                return FieldMap.Empty;
+                return EmptyMap.Instance;
             }
         }
 
@@ -75,7 +77,10 @@ namespace   Cottle.Values
 
         public override int CompareTo (Value other)
         {
-            return 1;
+            if (other == null)
+                return 1;
+
+            return ((int)this.Type).CompareTo ((int)other.Type);
         }
 
         public override int GetHashCode ()

@@ -39,7 +39,7 @@ namespace   Cottle.Nodes
 
         public bool Render (Scope scope, TextWriter output, out Value result)
         {
-            FieldMap    fields = this.from.Evaluate (scope, output).Fields;
+            IMap    fields = this.from.Evaluate (scope, output).Fields;
 
             if (fields.Count > 0)
             {

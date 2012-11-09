@@ -86,7 +86,7 @@ namespace   Demo
             switch (this.ApplyType ())
             {
                 case ValueContent.Array:
-                    this.assign (key, new ArrayValue ());
+                    this.assign (key, new MapValue ());
 
                     break;
 
