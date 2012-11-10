@@ -23,8 +23,8 @@ namespace   Cottle.Maps.Generics
         
         #region Methods / Public
 
-		public int    CompareTo (IMap other)
-		{
+        public int    CompareTo (IMap other)
+        {
             int                                     compare;
             IEnumerator<KeyValuePair<Value, Value>> lhs;
             IEnumerator<KeyValuePair<Value, Value>> rhs;
@@ -49,14 +49,14 @@ namespace   Cottle.Maps.Generics
             }
 
             return 0;
-		}
-    	
-		public bool   Equals (IMap other)
-		{
+        }
+        
+        public bool   Equals (IMap other)
+        {
             IEnumerator<KeyValuePair<Value, Value>> lhs;
             IEnumerator<KeyValuePair<Value, Value>> rhs;
 
-		    if (this.Count != other.Count)
+            if (this.Count != other.Count)
                 return false;
 
             lhs = this.GetEnumerator ();
@@ -69,14 +69,14 @@ namespace   Cottle.Maps.Generics
             }
 
             return true;
-		}
+        }
         
-		public override bool  Equals (object obj)
-		{
-			IMap  other = obj as AbstractMap;
+        public override bool  Equals (object obj)
+        {
+            IMap  other = obj as AbstractMap;
 
-			return other != null && this.Equals (other);
-		}
+            return other != null && this.Equals (other);
+        }
 
         IEnumerator IEnumerable.GetEnumerator ()
         {
@@ -84,14 +84,14 @@ namespace   Cottle.Maps.Generics
         }
 
         public override int GetHashCode ()
-		{
+        {
             int hash = 0;
 
             foreach (KeyValuePair<Value, Value> item in this)
                 hash = (hash << 1) ^ item.Key.GetHashCode () ^ item.Value.GetHashCode ();
 
             return hash;
-		}
+        }
 
         #endregion
     }

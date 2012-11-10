@@ -107,7 +107,7 @@ namespace   Cottle.Commons
             StringBuilder                       builder;
             List<KeyValuePair<Value, Value>>    list;
 
-            if (values[0].Type == ValueContent.Array)
+            if (values[0].Type == ValueContent.Map)
             {
                 list = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count * 2 + 1);
 
@@ -146,15 +146,16 @@ namespace   Cottle.Commons
 
         private static readonly IFunction   functionCross = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            int                         i;
-            bool                        insert;
-            Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
+            bool                                insert;
+            List<KeyValuePair<Value, Value>>    pairs;
+
+            pairs = new List<KeyValuePair<Value, Value>> ();
 
             foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
             {
                 insert = true;
 
-                for (i = 1; i < values.Count; ++i)
+                for (int i = 1; i < values.Count; ++i)
                 {
                     if (!values[i].Fields.Contains (pair.Key))
                     {
@@ -165,10 +166,10 @@ namespace   Cottle.Commons
                 }
 
                 if (insert)
-                    result[pair.Key] = pair.Value;
+                    pairs.Add (pair);
             }
 
-            return result;
+            return pairs;
         }, 1, -1);
 
         private static readonly IFunction   functionDefault = new CallbackFunction(delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -189,9 +190,8 @@ namespace   Cottle.Commons
         private static readonly IFunction   functionEqual = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Value   first = values[0];
-            int     i;
 
-            for (i = 1; i < values.Count; ++i)
+            for (int i = 1; i < values.Count; ++i)
                 if (values[i].CompareTo (first) != 0)
                     return false;
 
@@ -200,15 +200,16 @@ namespace   Cottle.Commons
 
         private static readonly IFunction   functionExcept = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            int                         i;
-            bool                        insert;
-            Dictionary<Value, Value>    result = new Dictionary<Value, Value> ();
+            bool                                insert;
+            List<KeyValuePair<Value, Value>>    pairs;
+
+            pairs = new List<KeyValuePair<Value, Value>> ();
 
             foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
             {
                 insert = true;
 
-                for (i = 1; i < values.Count; ++i)
+                for (int i = 1; i < values.Count; ++i)
                 {
                     if (values[i].Fields.Contains (pair.Key))
                     {
@@ -219,10 +220,10 @@ namespace   Cottle.Commons
                 }
 
                 if (insert)
-                    result[pair.Key] = pair.Value;
+                    pairs.Add (pair);
             }
 
-            return result;
+            return pairs;
         }, 1, -1);
 
         private static readonly IFunction   functionFilter = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
@@ -256,13 +257,13 @@ namespace   Cottle.Commons
             Value   value = values[0];
             int     i;
 
-            if (value.Type == ValueContent.Array)
+            if (value.Type == ValueContent.Map)
             {
                 i = 0;
 
                 foreach (KeyValuePair<Value, Value> pair in value.Fields)
                 {
-                    if (++i > offset && pair.Value.CompareTo (search) == 0)
+                    if (++i > offset && pair.Value.Equals (search))
                         return i - 1;
                 }
 
@@ -293,7 +294,7 @@ namespace   Cottle.Commons
             int         index;
             object      target;
 
-            culture = values.Count > 2 ? CultureInfo.GetCultureInfo(values[2].AsString) : CultureInfo.CurrentCulture;
+            culture = values.Count > 2 ? CultureInfo.GetCultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
             format = values[1].AsString;
             index = format.IndexOf (':');
 
@@ -332,12 +333,12 @@ namespace   Cottle.Commons
 
                 case "d":
                 case "du":
-                    target = epoch.AddSeconds((double)values[0].AsNumber);
+                    target = epoch.AddSeconds ((double)values[0].AsNumber);
 
                     break;
 
                 case "dl":
-                    target = epoch.AddSeconds((double)values[0].AsNumber).ToLocalTime ();
+                    target = epoch.AddSeconds ((double)values[0].AsNumber).ToLocalTime ();
 
                     break;
 
@@ -376,9 +377,8 @@ namespace   Cottle.Commons
         private static readonly IFunction   functionHas = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             Value   value = values[0];
-            int     i;
 
-            for (i = 1; i < values.Count; ++i)
+            for (int i = 1; i < values.Count; ++i)
                 if (!value.Fields.Contains (values[i]))
                     return false;
 
@@ -389,7 +389,6 @@ namespace   Cottle.Commons
         {
             Document    document;
             object      entry;
-            int         i;
             Scope       inner;
             string      path;
             DateTime    write;
@@ -426,7 +425,7 @@ namespace   Cottle.Commons
 
             inner = new Scope ();
 
-            for (i = 1; i < values.Count; ++i)
+            for (int i = 1; i < values.Count; ++i)
             {
                 foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
                     inner.Set (pair.Key, pair.Value, ScopeMode.Closest);
@@ -461,7 +460,7 @@ namespace   Cottle.Commons
 
         private static readonly IFunction   functionLength = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
-            if (values[0].Type == ValueContent.Array)
+            if (values[0].Type == ValueContent.Map)
                 return values[0].Fields.Count;
 
             return values[0].AsString.Length;
@@ -527,11 +526,10 @@ namespace   Cottle.Commons
         private static readonly IFunction   functionMaximum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal max;
-            int     i;
 
             max = values[0].AsNumber;
 
-            for (i = 1; i < values.Count; ++i)
+            for (int i = 1; i < values.Count; ++i)
                 max = Math.Max (max, values[i].AsNumber);
 
             return max;
@@ -540,11 +538,10 @@ namespace   Cottle.Commons
         private static readonly IFunction   functionMinimum = new CallbackFunction (delegate (IList<Value> values, Scope scope, TextWriter output)
         {
             decimal min;
-            int     i;
 
             min = values[0].AsNumber;
 
-            for (i = 1; i < values.Count; ++i)
+            for (int i = 1; i < values.Count; ++i)
                 min = Math.Min (min, values[i].AsNumber);
 
             return min;
@@ -639,11 +636,11 @@ namespace   Cottle.Commons
             int                                     i;
 
             source = values[0];
-            length = source.Type == ValueContent.Array ? source.Fields.Count : source.AsString.Length;
+            length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
             offset = Math.Min ((int)values[1].AsNumber, length);
             count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, length - offset) : length - offset;
 
-            if (source.Type == ValueContent.Array)
+            if (source.Type == ValueContent.Map)
             {
                 enumerator = source.Fields.GetEnumerator ();
 
@@ -731,7 +728,7 @@ namespace   Cottle.Commons
             List<KeyValuePair<Value, Value>>        pairs = new List<KeyValuePair<Value, Value>> ();
 
             while (enumerator1.MoveNext () && enumerator2.MoveNext ())
-            	pairs.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
+                pairs.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
 
             return pairs;
         }, 2);

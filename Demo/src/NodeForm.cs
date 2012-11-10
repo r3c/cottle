@@ -34,14 +34,14 @@ namespace   Demo
 
                 switch (data.Value.Type)
                 {
-                    case ValueContent.Array:
-                        this.radioButtonValueArray.Checked = true;
-
-                        break;
-
                     case ValueContent.Boolean:
                         this.radioButtonValueBoolean.Checked = true;
                         this.checkBoxValueBoolean.Checked = data.Value.AsBoolean;
+
+                        break;
+
+                    case ValueContent.Map:
+                        this.radioButtonValueMap.Checked = true;
 
                         break;
 
@@ -85,13 +85,13 @@ namespace   Demo
 
             switch (this.ApplyType ())
             {
-                case ValueContent.Array:
-                    this.assign (key, new MapValue ());
+                case ValueContent.Boolean:
+                    this.assign (key, this.checkBoxValueBoolean.Checked);
 
                     break;
 
-                case ValueContent.Boolean:
-                    this.assign (key, this.checkBoxValueBoolean.Checked);
+                case ValueContent.Map:
+                    this.assign (key, new MapValue ());
 
                     break;
 
@@ -139,10 +139,10 @@ namespace   Demo
         {
             ValueContent  type;
 
-            if (this.radioButtonValueArray.Checked)
-                type = ValueContent.Array;
-            else if (this.radioButtonValueBoolean.Checked)
+            if (this.radioButtonValueBoolean.Checked)
                 type = ValueContent.Boolean;
+            else if (this.radioButtonValueMap.Checked)
+                type = ValueContent.Map;
             else if (this.radioButtonValueNumber.Checked)
                 type = ValueContent.Number;
             else if (this.radioButtonValueString.Checked)

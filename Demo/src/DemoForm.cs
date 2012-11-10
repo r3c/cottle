@@ -240,7 +240,7 @@ namespace   Demo
             NodeData    data = node != null ? node.Tag as NodeData : null;
 
             this.toolStripMenuItemNodeClone.Enabled = node != null && node.Parent != null;
-            this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Array);
+            this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Map);
             this.toolStripMenuItemNodeDelete.Enabled = node != null && node.Parent != null;
             this.toolStripMenuItemMoveDown.Enabled = node != null && node.Parent != null && node != null && node.NextNode != null;
             this.toolStripMenuItemMoveUp.Enabled = node != null && node.Parent != null && node != null && node.PrevNode != null;
@@ -263,7 +263,7 @@ namespace   Demo
 
             switch (value.Type)
             {
-                case ValueContent.Array:
+                case ValueContent.Map:
                     node.Text = string.Format (CultureInfo.InvariantCulture, "{0}", key);
 
                     break;
@@ -284,7 +284,7 @@ namespace   Demo
             {
                 copy = this.NodeCreate (data.Key, data.Value);
 
-                if (data.Value.Type == ValueContent.Array)
+                if (data.Value.Type == ValueContent.Map)
                 {
                     foreach (TreeNode child in node.Nodes)
                         copy.Nodes.Add (this.NodeClone (child));
@@ -306,7 +306,12 @@ namespace   Demo
 
             switch (value.Type)
             {
-                case ValueContent.Array:
+                case ValueContent.Boolean:
+                    this.NodeAssign (node, key, new BooleanValue (value.AsBoolean));
+
+                    return node;
+
+                case ValueContent.Map:
                     range = new TreeNode[value.Fields.Count];
                     i = 0;
 
@@ -316,11 +321,6 @@ namespace   Demo
                     node.Nodes.AddRange (range);
 
                     this.NodeAssign (node, key, new MapValue ());
-
-                    return node;
-
-                case ValueContent.Boolean:
-                    this.NodeAssign (node, key, new BooleanValue (value.AsBoolean));
 
                     return node;
 
@@ -441,7 +441,7 @@ namespace   Demo
                 {
                     switch (data.Value.Type)
                     {
-                        case ValueContent.Array:
+                        case ValueContent.Map:
                             collection.Add (new KeyValuePair<Value, Value> (data.Key, this.ValuesBuild (node.Nodes)));
 
                             break;

@@ -38,7 +38,7 @@
             this.radioButtonValueString = new System.Windows.Forms.RadioButton();
             this.radioButtonValueNumber = new System.Windows.Forms.RadioButton();
             this.radioButtonValueBoolean = new System.Windows.Forms.RadioButton();
-            this.radioButtonValueArray = new System.Windows.Forms.RadioButton();
+            this.radioButtonValueMap = new System.Windows.Forms.RadioButton();
             this.labelContent = new System.Windows.Forms.Label();
             this.labelName = new System.Windows.Forms.Label();
             this.buttonAccept = new System.Windows.Forms.Button();
@@ -64,7 +64,7 @@
             this.groupBox.Controls.Add(this.radioButtonValueString);
             this.groupBox.Controls.Add(this.radioButtonValueNumber);
             this.groupBox.Controls.Add(this.radioButtonValueBoolean);
-            this.groupBox.Controls.Add(this.radioButtonValueArray);
+            this.groupBox.Controls.Add(this.radioButtonValueMap);
             this.groupBox.Controls.Add(this.labelContent);
             this.groupBox.Controls.Add(this.labelName);
             this.groupBox.Controls.Add(this.buttonAccept);
@@ -168,15 +168,15 @@
             // 
             // radioButtonValueArray
             // 
-            this.radioButtonValueArray.AutoSize = true;
-            this.radioButtonValueArray.Location = new System.Drawing.Point(100, 48);
-            this.radioButtonValueArray.Name = "radioButtonValueArray";
-            this.radioButtonValueArray.Size = new System.Drawing.Size(78, 17);
-            this.radioButtonValueArray.TabIndex = 4;
-            this.radioButtonValueArray.TabStop = true;
-            this.radioButtonValueArray.Text = "Array value";
-            this.radioButtonValueArray.UseVisualStyleBackColor = true;
-            this.radioButtonValueArray.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
+            this.radioButtonValueMap.AutoSize = true;
+            this.radioButtonValueMap.Location = new System.Drawing.Point(100, 48);
+            this.radioButtonValueMap.Name = "radioButtonValueArray";
+            this.radioButtonValueMap.Size = new System.Drawing.Size(78, 17);
+            this.radioButtonValueMap.TabIndex = 4;
+            this.radioButtonValueMap.TabStop = true;
+            this.radioButtonValueMap.Text = "Array value";
+            this.radioButtonValueMap.UseVisualStyleBackColor = true;
+            this.radioButtonValueMap.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
             // 
             // labelContent
             // 
@@ -240,7 +240,7 @@
         private System.Windows.Forms.RadioButton radioButtonValueString;
         private System.Windows.Forms.RadioButton radioButtonValueNumber;
         private System.Windows.Forms.RadioButton radioButtonValueBoolean;
-        private System.Windows.Forms.RadioButton radioButtonValueArray;
+        private System.Windows.Forms.RadioButton radioButtonValueMap;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.TextBox textBoxValueString;
         private System.Windows.Forms.TextBox textBoxValueNumber;

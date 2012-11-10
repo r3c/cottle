@@ -53,7 +53,7 @@ namespace   Cottle.Values
         {
             get
             {
-                return ValueContent.Array;
+                return ValueContent.Map;
             }
         }
 

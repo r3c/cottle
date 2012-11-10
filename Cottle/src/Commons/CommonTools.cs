@@ -56,7 +56,17 @@ namespace   Cottle.Commons
 
             switch (type)
             {
-                case ValueContent.Array:
+                case ValueContent.Boolean:
+                    value = reader.ReadBoolean () ? BooleanValue.True : BooleanValue.False;
+
+                    break;
+
+                case ValueContent.Function:
+                    value = UndefinedValue.Instance;
+
+                    break;
+
+                case ValueContent.Map:
                     count = reader.ReadInt32 ();
                     array = new List<KeyValuePair<Value, Value>> (count);
 
@@ -73,16 +83,6 @@ namespace   Cottle.Commons
                     }
 
                     value = array;
-
-                    break;
-
-                case ValueContent.Boolean:
-                    value = reader.ReadBoolean () ? BooleanValue.True : BooleanValue.False;
-
-                    break;
-
-                case ValueContent.Function:
-                    value = UndefinedValue.Instance;
 
                     break;
 
@@ -116,7 +116,12 @@ namespace   Cottle.Commons
 
             switch (value.Type)
             {
-                case ValueContent.Array:
+                case ValueContent.Boolean:
+                    writer.Write (value.AsBoolean);
+
+                    break;
+
+                case ValueContent.Map:
                     writer.Write (value.Fields.Count);
 
                     foreach (KeyValuePair<Value, Value> pair in value.Fields)
@@ -124,11 +129,6 @@ namespace   Cottle.Commons
                         CommonTools.ValueSave (writer, pair.Key);
                         CommonTools.ValueSave (writer, pair.Value);
                     }
-
-                    break;
-
-                case ValueContent.Boolean:
-                    writer.Write (value.AsBoolean);
 
                     break;
 

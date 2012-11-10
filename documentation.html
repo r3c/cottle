@@ -686,21 +686,27 @@ Tags: action horror fantastic</code>
 					append, replace or erase a value in a map, you'll have
 					to build a new one and inject, filter out or replace
 					desired value. Common functions
-					"<a href="#function_union">union</a>" and
+					"<a href="#function_cat">cat</a>",
+					"<a href="#function_slice">slice</a>",
+					"<a href="#function_union">union</a>",
 					"<a href="#function_except">except</a>" can be used to
 					easily achieve such operations:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
-<code>{set my_map to ["delete_me": "TODO: delete this value", "let_me": "I shouldn't be touched"]}
+<code>{set my_array to [4, 8, 50, 90, 23, 42]}
+{set my_array to cat(slice(my_array, 0, 2), slice(my_array, 4))}
+{set my_array to cat(slice(my_array, 0, 2), [15, 16], slice(my_array, 2))}
+{dump my_array}
 
-{set my_map to union(my_map, ["append_me": "I'm here!"])}
-{set my_map to except(my_map, ["delete_me": 0])}
-
-{dump my_map}</code>
+{set my_hash to ["delete_me": "TODO: delete this value", "let_me": "I shouldn't be touched"]}
+{set my_hash to union(my_hash, ["append_me": "I'm here!"])}
+{set my_hash to except(my_hash, ["delete_me": 0])}
+{dump my_hash}</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>["let_me": "I shouldn't be touched", "append_me": "I'm here!"]</code>
+<code>[0: 4, 1: 8, 0: 15, 1: 16, 4: 23, 5: 42]
+["let_me": "I shouldn't be touched", "append_me": "I'm here!"]</code>
 					</div>					
 				</div>
 
@@ -1384,7 +1390,7 @@ PropertyItems =</code>
 					</div>
 				</div>
 
-				<h3>Concatenate values: cat(a, b, ...)</h3>
+				<h3 id="function_cat">Concatenate values: cat(a, b, ...)</h3>
 				<div class="section">
 					<p>Concatenate all input values into a single one. This
 					function works on both strings and maps.</p>
@@ -1444,7 +1450,7 @@ PropertyItems =</code>
 				<div class="section">
 					<p>Return a map containing all pairs from
 					<code>map1</code> having a key that also exists in
-					<code>map2</code> and following maps. Output pair
+					<code>map2</code> and all following maps. Output pair
 					values will always be taken from <code>map1</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
@@ -1513,10 +1519,12 @@ true</code>
 				<h3 id="function_except">Remove pairs from a map:
 				except(map1, map2, ...)</h3>
 				<div class="section">
-					<p>Return a map containing all pairs from
-					<code>map1</code> having a key that does not exist in
-					<code>map2</code> and following maps. This function can
-					also be used to remove a single element from a map.</p>
+					<p>Return a map containing all pairs from <code>map1</code>
+					having a key that does not exist in <code>map2</code> and
+					any of following maps. This function can also be used to
+					remove a single pair from a map (if you are sure that it's
+					key is not used by any other pair, otherwise all pairs
+					using that key would be removed also).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump except([1: "a", 2: "b", 3: "c"], [2: "x", 4: "y"])}</code>
@@ -2001,7 +2009,8 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Generate arithmetic progression: range([start, ]stop[, step])</h3>
+				<h3>Generate arithmetic progression: range([start, ]stop[,
+				step])</h3>
 				<div class="section">
 					<p>Generate a map where value of the <em>i</em>-th pair
 					is <em>start + step * i</em> and last value is lower than
@@ -2020,7 +2029,8 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Extract part of value: slice(value, index[, count])</h3>
+				<h3 id="function_slice">Extract part of value: slice(value,
+				index[, count])</h3>
 				<div class="section">
 					<p>Extact slice from a map, or sub-string from a
 					string. <code>count</code> pairs or characters are
@@ -2126,9 +2136,9 @@ length</code>
 				map2, ...)</h3>
 				<div class="section">
 					<p>Return a map containing all pairs from input maps,
-					but without duplicating any key. If a key exists in more
-					than one input map, the one from last map will
-					overwrite any previous one.</p>
+					but without duplicating any key. If a key exists more than
+					once in all input maps, the last one will overwrite any
+					previous pair using it.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump union([1: "a", 2: "b"], [2: "x", 3: "c"], [4: "d"])}</code>
@@ -2200,6 +2210,20 @@ length</code>
 			<div class="section">
 				<h3>Change log</h3>
 				<div class="section">
+					<p>Cottle version numbers use format A.B.C.D where:</p>
+					<ul>
+						<li>A changes when code base is entirely rewritten from
+						scratch, meaning that no compatibility exists with API
+						from the previous version (B, C and D are reset to 0)
+						;</li>
+						<li>B changes when backwards incompatible changes are
+						introduced to the API (C and D are reset to 0 );</li>
+						<li>C changes when significant new features are added
+						to the API without any loss of compatibility (D is
+						reset to 0) ;</li>
+						<li>D changes when a bugfix, patch or any other minor
+						change is released.</li>
+					</ul>
 					<p>Here is a summary of importantand potentially
 					backward-incompatible changes made to the library:</p>
 					<ul>
@@ -2216,7 +2240,7 @@ length</code>
 								functions).</li>
 							</ul>
 						</li>
-						<li>1.0.1.0 =&gt; 1.0.2.0:
+						<li>1.0.1.0 =&gt; 1.1.0.0:
 							<ul>
 								<li><code>LexerConfig</code> must be replaced
 								by <code>CustomSetting</code> object to change
@@ -2228,6 +2252,9 @@ length</code>
 								different, even if casts could have made them
 								equal (i.e. removed automatic casts when
 								comparing values).</li>
+								<li>Common functions <code>cross</code> and
+								<code>except</code> now preserve duplicated
+								keys.</li>
 							</ul>
 						</li>
 					</ul>

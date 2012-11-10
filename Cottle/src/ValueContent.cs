@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace   Cottle
 {
     public enum ValueContent
     {
-        Array,
+        Map,
         Boolean,
         Function,
         Number,
         String,
-        Undefined
+        Undefined,
+
+        [Obsolete("Please use Map value")]
+        Array = 0
     }
 }
