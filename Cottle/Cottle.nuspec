@@ -8,7 +8,7 @@
     <owners>Remi Caput</owners>
     <licenseUrl>https://raw.github.com/r3c/Cottle/master/LICENSE</licenseUrl>
     <projectUrl>http://r3c.github.com/Cottle/</projectUrl>
-    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <iconUrl>https://raw.github.com/r3c/Cottle/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
 	<releaseNotes>Changed configuration API, automatic raw text cleaning can now be enabled.</releaseNotes>
