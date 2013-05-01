@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace   Cottle
+namespace	Cottle
 {
-    interface   IExpression
-    {
-        #region Methods
+	interface	IExpression
+	{
+		#region Methods
 
-        Value   Evaluate (Scope scope, TextWriter output);
+		Value	Evaluate (IScope scope, TextWriter output);
 
-        string  ToString ();
+		string	ToString ();
 
-        #endregion
-    }
+		#endregion
+	}
 }

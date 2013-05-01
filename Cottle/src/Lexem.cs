@@ -3,46 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace   Cottle
+namespace	Cottle
 {
-    struct  Lexem
-    {
-        #region Properties
+	struct	Lexem
+	{
+		#region Properties
 
-        public string       Content
-        {
-            get
-            {
-                return this.content;
-            }
-        }
+		public string		Content
+		{
+			get
+			{
+				return this.content;
+			}
+		}
 
-        public LexemType    Type
-        {
-            get
-            {
-                return this.type;
-            }
-        }
+		public LexemType	Type
+		{
+			get
+			{
+				return this.type;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private string      content;
+		private string		content;
 
-        private LexemType   type;
+		private LexemType	type;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  Lexem (LexemType type, string content)
-        {
-            this.content = content;
-            this.type = type;
-        }
+		public	Lexem (LexemType type, string content)
+		{
+			this.content = content;
+			this.type = type;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

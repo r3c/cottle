@@ -1,30 +1,30 @@
 ﻿
-namespace  Cottle
+namespace	Cottle
 {
-    public interface    ISetting
-    {
-        #region Methods
-        
-        string      BlockBegin
-        {
-            get;
-        }
+	public interface	ISetting
+	{
+		#region Methods
+		
+		string		BlockBegin
+		{
+			get;
+		}
 
-        string      BlockContinue
-        {
-            get;
-        }
+		string		BlockContinue
+		{
+			get;
+		}
 
-        string      BlockEnd
-        {
-            get;
-        }
+		string		BlockEnd
+		{
+			get;
+		}
 
-        ICleaner    Cleaner
-        {
-            get;
-        }
-        
-        #endregion
-    }
+		ICleaner	Cleaner
+		{
+			get;
+		}
+		
+		#endregion
+	}
 }

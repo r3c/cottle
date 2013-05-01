@@ -5,44 +5,44 @@ using System.Text;
 
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    EchoNode : INode
-    {
-        #region Attributes
+	sealed class	EchoNode : INode
+	{
+		#region Attributes
 
-        private IExpression expression;
+		private IExpression expression;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  EchoNode (IExpression expression)
-        {
-            this.expression = expression;
-        }
+		public	EchoNode (IExpression expression)
+		{
+			this.expression = expression;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            output.Write (this.expression.Evaluate (scope, output).AsString);
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			output.Write (this.expression.Evaluate (scope, output).AsString);
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            output.Write (setting.BlockBegin);
-            output.Write ("echo ");
-            output.Write (this.expression);
-            output.Write (setting.BlockEnd);
-        }
+		public void Source (ISetting setting, TextWriter output)
+		{
+			output.Write (setting.BlockBegin);
+			output.Write ("echo ");
+			output.Write (this.expression);
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

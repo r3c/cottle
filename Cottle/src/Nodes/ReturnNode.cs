@@ -3,42 +3,42 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    ReturnNode : INode
-    {
-        #region Attributes
+	sealed class	ReturnNode : INode
+	{
+		#region Attributes
 
-        private IExpression expression;
+		private IExpression expression;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  ReturnNode (IExpression expression)
-        {
-            this.expression = expression;
-        }
+		public	ReturnNode (IExpression expression)
+		{
+			this.expression = expression;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            result = this.expression.Evaluate (scope, output);
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			result = this.expression.Evaluate (scope, output);
 
-            return true;
-        }
+			return true;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            output.Write (setting.BlockBegin);
-            output.Write ("return ");
-            output.Write (this.expression);
-            output.Write (setting.BlockEnd);
-        }
+		public void Source (ISetting setting, TextWriter output)
+		{
+			output.Write (setting.BlockBegin);
+			output.Write ("return ");
+			output.Write (this.expression);
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

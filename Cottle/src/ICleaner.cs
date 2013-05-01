@@ -1,13 +1,13 @@
 ﻿using System.Text;
 
-namespace   Cottle
+namespace	Cottle
 {
-    public interface    ICleaner
-    {
-        #region Methods
+	public interface	ICleaner
+	{
+		#region Methods
 
-        void    GetRange (string text, out int start, out int length);
+		void	GetRange (string text, out int start, out int length);
 
-        #endregion
-    }
+		#endregion
+	}
 }

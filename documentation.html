@@ -239,7 +239,7 @@
 						memory buffer, network socket...) as shown in the
 						example below.</li>
 						<li>An executable code that parses the template into a
-						<code>Cottle.Document</code> instance, then renders it
+						<code>Cottle.IDocument</code> instance, then renders it
 						into an output string or writer.</li>
 					</ul>
 					<p>Here is a simple use case:</p>
@@ -251,16 +251,15 @@
 						<blockquote><span>C# code:</span></blockquote>
 <code>private void   SomeFunction()
 {
-    Document   document;
-    Scope      scope;
+    IDocument  document;
+    IScope     scope;
 
     using (StreamReader template = new StreamReader(new FileStream("test.cottle", FileMode.Open), Encoding.UTF8))
     {
-        document = new Document(template); // may throw a ConfigException or DocumentException on error
+        document = new SimpleDocument(template); // may throw a ConfigException or DocumentException on error
     }
 
-    scope = new Scope(); // create a new empty scope to store values
-    CommonFunctions.Assign(scope); // see paragraph "<a href="#calling_functions">Calling functions</a>" about this line
+    scope = new DefaultScope(); // create a new scope to store values
 
     /* TODO: assign some values to scope */
 
@@ -341,7 +340,7 @@
 				<h3>Sending variables to a template</h3>
 				<div class="section">
 					<p>To send variables to parsed document so they can be used
-					while rendering, you must use a <code>Cottle.Scope</code>
+					while rendering, you must use a <code>Cottle.IScope</code>
 					instance that will hold them. This class behaves quite like
 					a <code>Dictionary&lt;Cottle.Value,Cottle.Value&gt;</code>,
 					where <code>Cottle.Value</code> is an internal Cottle type.
@@ -479,7 +478,9 @@
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>CommonFunctions.Assign(scope); // see below for details about this line
+<code>IScope  scope;
+
+scope = new DefaultScope(); // see below for details about this line
 
 scope["messages"] = new Dictionary&lt;Value,Value&gt;
 {
@@ -492,20 +493,15 @@ scope["messages"] = new Dictionary&lt;Value,Value&gt;
 						<blockquote><span>Result:</span></blockquote>
 <code>You have 3 new message(s) in your inbox.</code>
 					</div>
-					<p>Please note the use of
-					<code>CommonFunctions.Assign</code> method. When a new
-					<code>Scope</code> instance is created, it does not contain
-					any value (and does not contain any function either, since
-					functions are values). While this gives you full control of
-					which functions you want to make available from your
-					template files, you may want to start with a set of common
-					predefined functions, and that's what
-					<code>CommonFunctions.Assign</code> is made for: it just
-					fills given <code>Scope</code> object with some useful
-					functions, like <code>count</code> we used in previous
-					example.</p>
+					<p>Please note the use of a <code>DefaultScope</code>
+					object in this sample. This special sub-class of the
+					<code>IScope</code> interface comes with all Cottle
+					default functions assigned automatically. You could also
+					use another object if you don't need or don't want these
+					functions. For example, the <code>SimpleScope</code> class
+					as no default value assigned.</p>
 					<p>To get a description of each of the functions assigned
-					when calling <code>CommonFunctions.Assign</code>, see
+					when using a <code>DefaultScope</code> object, see
 					paragraph
 					"<a href="#common_functions">Common functions</a>". For all
 					following samples, we'll assume that common functions are
@@ -761,21 +757,21 @@ Your random password is: {password}.</code>
 					the interface yourself for more advanced uses:</p>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-					<code>Document        document;
-Scope           scope;
+					<code>IDocument       document;
+IScope          scope;
 CustomSetting   setting;
 
 setting = new CustomSetting();
 
 /* TODO: update setting properties */
 
-scope = new Scope();
+scope = new DefaultScope();
 
 /* TODO: assign some values to scope */
 
 using (StreamReader template = new StreamReader(new FileStream("test.cottle", FileMode.Open), Encoding.UTF8))
 {
-    document = new Document(template, setting);
+    document = new SimpleDocument(template, setting);
 }
 
 document.Render(scope, Console.Out);</code>
@@ -1142,11 +1138,11 @@ Move one disk from A to C</code>
 				<div class="section">
 					<p>If you need new features or improved performance, you
 					can assign your own .NET methods to template variables.
-					That's actually what Cottle does each time you call
-					<code>CommonFunctions.Assign</code>: a set of internal
-					.NET methods is assigned to predefined variables within
-					given scope, you can have a look at source code to see how
-					these methods work.</p>
+					That's actually what Cottle does when you use a
+					<code>DefaultScope</code> object in your code: a set of
+					internal .NET methods is assigned to predefined variables
+					within the scope, and you can have a look at source code to
+					see how these methods work.</p>
 					<p>To assign a method to a scope, just wrap it within a
 					<code>CallbackFunction</code> object contained by a
 					<code>FunctionValue</code> object, then add it to the
@@ -1162,7 +1158,7 @@ Move one disk from A to C</code>
 					</div>
 					<div class="code">
 					<blockquote><span>C# code:</span></blockquote>
-<code>scope["repeat"] = new FunctionValue(new CallbackFunction(delegate(IList&lt;Value&gt; values, Scope scope, TextWriter output)
+<code>scope["repeat"] = new FunctionValue(new CallbackFunction(delegate(IList&lt;Value&gt; values, IScope scope, TextWriter output)
 {
     StringBuilder builder = new StringBuilder();
     int           i;
@@ -1243,7 +1239,7 @@ hello! hello! hello!
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>scope = new Scope();
+<code>scope = new DefaultScope();
 scope["is_admin"] = user.IsAdmin();
 scope["log"] = () => log.BuildComplexAdministrationLogValue(); // implicit conversion to LazyValue
 
@@ -1271,7 +1267,7 @@ document.Render(scope, Console.Out);</code>
 						<blockquote><span>Template:</span></blockquote>
 <code>Your image has a size of {image.Width} x {image.Height} pixels.
 
-{for key, value in stream:
+{for key, value in image:
   {key} = {value}
 }</code>
 					</div>

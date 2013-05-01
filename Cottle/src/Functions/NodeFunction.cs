@@ -6,51 +6,51 @@ using System.Text;
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace   Cottle.Functions
+namespace	Cottle.Functions
 {
-    class   NodeFunction : IFunction
-    {
-        #region Attributes
+	class	NodeFunction : IFunction
+	{
+		#region Attributes
 
-        private List<NameExpression>    arguments;
+		private List<NameExpression>	arguments;
 
-        private INode                   body;
+		private INode					body;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  NodeFunction (IEnumerable<NameExpression> arguments, INode body)
-        {
-            this.arguments = new List<NameExpression> (arguments);
-            this.body = body;
-        }
+		public	NodeFunction (IEnumerable<NameExpression> arguments, INode body)
+		{
+			this.arguments = new List<NameExpression> (arguments);
+			this.body = body;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public Value    Execute (IList<Value> values, Scope scope, TextWriter output)
-        {
-            Value   result;
-            int     i = 0;
+		public Value	Execute (IList<Value> values, IScope scope, TextWriter output)
+		{
+			Value	result;
+			int		i = 0;
 
-            scope.Enter ();
+			scope.Enter ();
 
-            foreach (NameExpression argument in this.arguments)
-            {
-                argument.Set (scope, i < values.Count ? values[i] : UndefinedValue.Instance, ScopeMode.Local);
+			foreach (NameExpression argument in this.arguments)
+			{
+				argument.Set (scope, i < values.Count ? values[i] : UndefinedValue.Instance, ScopeMode.Local);
 
-                ++i;
-            }
+				++i;
+			}
 
-            this.body.Render (scope, output, out result);
+			this.body.Render (scope, output, out result);
 
-            scope.Leave ();
+			scope.Leave ();
 
-            return result;
-        }
+			return result;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

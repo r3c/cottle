@@ -2,58 +2,58 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace   Cottle.Exceptions
+namespace	Cottle.Exceptions
 {
-    public abstract class   DocumentException : Exception
-    {
-        #region Properties
+	public abstract class	DocumentException : Exception
+	{
+		#region Properties
 
-        public int  Column
-        {
-            get
-            {
-                return this.column;
-            }
-        }
+		public int	Column
+		{
+			get
+			{
+				return this.column;
+			}
+		}
 
-        public int  Index
-        {
-            get
-            {
-                return this.index;
-            }
-        }
+		public int	Index
+		{
+			get
+			{
+				return this.index;
+			}
+		}
 
-        public int  Line
-        {
-            get
-            {
-                return this.line;
-            }
-        }
+		public int	Line
+		{
+			get
+			{
+				return this.line;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        protected int   column;
+		protected int	column;
 
-        protected int   index;
+		protected int	index;
 
-        protected int   line;
+		protected int	line;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        internal    DocumentException (Lexer lexer, string message) :
-            base (message)
-        {
-            this.column = lexer.Column;
-            this.index = lexer.Index;
-            this.line = lexer.Line;
-        }
+		internal	DocumentException (Lexer lexer, string message) :
+			base (message)
+		{
+			this.column = lexer.Column;
+			this.index = lexer.Index;
+			this.line = lexer.Line;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

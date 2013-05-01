@@ -3,65 +3,65 @@ using System.Collections.Generic;
 
 using Cottle.Maps;
 
-namespace   Cottle.Values.Generics
+namespace	Cottle.Values.Generics
 {
-    public abstract class   ScalarValue<T> : Value
-    {
-        #region Properties
+	public abstract class	ScalarValue<T> : Value
+	{
+		#region Properties
 
-        public override IFunction   AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
+		public override IFunction	AsFunction
+		{
+			get
+			{
+				return null;
+			}
+		}
 
-        public override IMap        Fields
-        {
-            get
-            {
-                return EmptyMap.Instance;
-            }
-        }
+		public override IMap		Fields
+		{
+			get
+			{
+				return EmptyMap.Instance;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        protected Converter<Value, T>   converter;
+		protected Converter<Value, T>	converter;
 
-        protected T                     value;
+		protected T						value;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        protected   ScalarValue (T value, Converter<Value, T> converter)
-        {
-            this.converter = converter;
-            this.value = value;
-        }
+		protected	ScalarValue (T value, Converter<Value, T> converter)
+		{
+			this.converter = converter;
+			this.value = value;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override int CompareTo (Value other)
-        {
-            if (other == null)
-                return 1;
-            else if (this.Type != other.Type)
-                return ((int)this.Type).CompareTo ((int)other.Type);
+		public override int CompareTo (Value other)
+		{
+			if (other == null)
+				return 1;
+			else if (this.Type != other.Type)
+				return ((int)this.Type).CompareTo ((int)other.Type);
 
-            return Comparer<T>.Default.Compare (this.converter (this), this.converter (other));
-        }
+			return Comparer<T>.Default.Compare (this.converter (this), this.converter (other));
+		}
 
-        public override int GetHashCode ()
-        {
-            return this.value.GetHashCode ();
-        }
+		public override int GetHashCode ()
+		{
+			return this.value.GetHashCode ();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

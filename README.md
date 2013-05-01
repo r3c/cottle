@@ -23,8 +23,6 @@ with names, descriptions, quantities and prices).
 Template files must be written using Cottle's specific template language, as
 explained in the user manual (see "Installation" section).
 
-
-
 Installation
 ------------
 
@@ -39,15 +37,11 @@ User manual (the "manual.html" at repository root, also available through
 http://r3c.github.com/Cottle/) explains how to use the library, and contains a
 lot of code examples.
 
-
-
 Licence
 -------
 
 This project is open-source, released under BSD licence. See "LICENSE" file for
 more information. Any contribution would be of course highly welcomed!
-
-
 
 Author
 ------

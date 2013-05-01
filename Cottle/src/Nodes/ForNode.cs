@@ -4,113 +4,113 @@ using System.IO;
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    ForNode : INode
-    {
-        #region Attributes
+	sealed class	ForNode : INode
+	{
+		#region Attributes
 
-        private INode           body;
+		private INode			body;
 
-        private INode           empty;
+		private INode			empty;
 
-        private IExpression     from;
+		private IExpression		from;
 
-        private NameExpression  key;
+		private NameExpression	key;
 
-        private NameExpression  value;
+		private NameExpression	value;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  ForNode (IExpression from, NameExpression key, NameExpression value, INode body, INode empty)
-        {
-            this.body = body;
-            this.empty = empty;
-            this.from = from;
-            this.key = key;
-            this.value = value;
-        }
+		public	ForNode (IExpression from, NameExpression key, NameExpression value, INode body, INode empty)
+		{
+			this.body = body;
+			this.empty = empty;
+			this.from = from;
+			this.key = key;
+			this.value = value;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            IMap    fields = this.from.Evaluate (scope, output).Fields;
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			IMap	fields = this.from.Evaluate (scope, output).Fields;
 
-            if (fields.Count > 0)
-            {
-                foreach (KeyValuePair<Value, Value> pair in fields)
-                {
-                    scope.Enter ();
+			if (fields.Count > 0)
+			{
+				foreach (KeyValuePair<Value, Value> pair in fields)
+				{
+					scope.Enter ();
 
-                    if (this.key != null)
-                        this.key.Set (scope, pair.Key, ScopeMode.Local);
+					if (this.key != null)
+						this.key.Set (scope, pair.Key, ScopeMode.Local);
 
-                    if (this.value != null)
-                        this.value.Set (scope, pair.Value, ScopeMode.Local);
+					if (this.value != null)
+						this.value.Set (scope, pair.Value, ScopeMode.Local);
 
-                    if (this.body.Render (scope, output, out result))
-                    {
-                        scope.Leave ();
+					if (this.body.Render (scope, output, out result))
+					{
+						scope.Leave ();
 
-                        return true;
-                    }
+						return true;
+					}
 
-                    scope.Leave ();
-                }
-            }
-            else if (this.empty != null)
-            {
-                scope.Enter ();
+					scope.Leave ();
+				}
+			}
+			else if (this.empty != null)
+			{
+				scope.Enter ();
 
-                if (this.empty.Render (scope, output, out result))
-                {
-                    scope.Leave ();
+				if (this.empty.Render (scope, output, out result))
+				{
+					scope.Leave ();
 
-                    return true;
-                }
+					return true;
+				}
 
-                scope.Leave ();
-            }
+				scope.Leave ();
+			}
 
-            result = UndefinedValue.Instance;
-            
-            return false;
-        }
+			result = UndefinedValue.Instance;
+			
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            output.Write (setting.BlockBegin);
-            output.Write ("for ");
+		public void Source (ISetting setting, TextWriter output)
+		{
+			output.Write (setting.BlockBegin);
+			output.Write ("for ");
 
-            if (this.key != null)
-            {
-                output.Write (this.key);
-                output.Write (", ");
-            }
+			if (this.key != null)
+			{
+				output.Write (this.key);
+				output.Write (", ");
+			}
 
-            output.Write (this.value);
-            output.Write (" in ");
-            output.Write (this.from);
-            output.Write (":");
+			output.Write (this.value);
+			output.Write (" in ");
+			output.Write (this.from);
+			output.Write (":");
 
-            this.body.Source (setting, output);
+			this.body.Source (setting, output);
 
-            if (this.empty != null)
-            {
-                output.Write (setting.BlockContinue);
-                output.Write ("empty:");
+			if (this.empty != null)
+			{
+				output.Write (setting.BlockContinue);
+				output.Write ("empty:");
 
-                this.empty.Source (setting, output);
-            }
+				this.empty.Source (setting, output);
+			}
 
-            output.Write (setting.BlockEnd);
-        }
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

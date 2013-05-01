@@ -5,63 +5,63 @@ using System.Text;
 
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    WhileNode : INode
-    {
-        #region Attributes
+	sealed class	WhileNode : INode
+	{
+		#region Attributes
 
-        private INode       body;
+		private INode		body;
 
-        private IExpression test;
+		private IExpression	test;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  WhileNode (IExpression test, INode body)
-        {
-            this.body = body;
-            this.test = test;
-        }
+		public	WhileNode (IExpression test, INode body)
+		{
+			this.body = body;
+			this.test = test;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            while (this.test.Evaluate (scope, output).AsBoolean)
-            {
-                scope.Enter ();
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			while (this.test.Evaluate (scope, output).AsBoolean)
+			{
+				scope.Enter ();
 
-                if (this.body.Render (scope, output, out result))
-                {
-                    scope.Leave ();
+				if (this.body.Render (scope, output, out result))
+				{
+					scope.Leave ();
 
-                    return true;
-                }
+					return true;
+				}
 
-                scope.Leave ();
-            }
+				scope.Leave ();
+			}
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            output.Write (setting.BlockBegin);
-            output.Write ("while ");
-            output.Write (this.test);
-            output.Write (":");
+		public void Source (ISetting setting, TextWriter output)
+		{
+			output.Write (setting.BlockBegin);
+			output.Write ("while ");
+			output.Write (this.test);
+			output.Write (":");
 
-            this.body.Source (setting, output);
+			this.body.Source (setting, output);
 
-            output.Write (setting.BlockEnd);
-        }
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -1,110 +1,110 @@
 ﻿using System.Threading;
 
-namespace   Cottle.Values.Generics
+namespace	Cottle.Values.Generics
 {
-    public abstract class   ResolveValue : Value
-    {
-        #region Properties
+	public abstract class	ResolveValue : Value
+	{
+		#region Properties
 
-        public override bool            AsBoolean
-        {
-            get
-            {
-                return this.Acquire ().AsBoolean;
-            }
-        }
+		public override bool			AsBoolean
+		{
+			get
+			{
+				return this.Acquire ().AsBoolean;
+			}
+		}
 
-        public override IFunction       AsFunction
-        {
-            get
-            {
-                return this.Acquire ().AsFunction;
-            }
-        }
+		public override IFunction		AsFunction
+		{
+			get
+			{
+				return this.Acquire ().AsFunction;
+			}
+		}
 
-        public override decimal         AsNumber
-        {
-            get
-            {
-                return this.Acquire ().AsNumber;
-            }
-        }
+		public override decimal			AsNumber
+		{
+			get
+			{
+				return this.Acquire ().AsNumber;
+			}
+		}
 
-        public override string          AsString
-        {
-            get
-            {
-                return this.Acquire ().AsString;
-            }
-        }
+		public override string			AsString
+		{
+			get
+			{
+				return this.Acquire ().AsString;
+			}
+		}
 
-        public override IMap            Fields
-        {
-            get
-            {
-                return this.Acquire ().Fields;
-            }
-        }
+		public override IMap			Fields
+		{
+			get
+			{
+				return this.Acquire ().Fields;
+			}
+		}
 
-        public override ValueContent    Type
-        {
-            get
-            {
-                return this.Acquire ().Type;
-            }
-        }
+		public override ValueContent	Type
+		{
+			get
+			{
+				return this.Acquire ().Type;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private object  synchronize = new object ();
+		private object	mutex = new object ();
 
-        private Value   value = null;
+		private Value	value = null;
 
-        #endregion
+		#endregion
 
-        #region Methods / Abstract
+		#region Methods / Abstract
 
-        protected abstract Value    Resolve ();
+		protected abstract Value	Resolve ();
 
-        #endregion
+		#endregion
 
-        #region Methods / Public
+		#region Methods / Public
 
-        public override int CompareTo (Value other)
-        {
-            return this.Acquire ().CompareTo (other);
-        }
+		public override int CompareTo (Value other)
+		{
+			return this.Acquire ().CompareTo (other);
+		}
 
-        public override int GetHashCode ()
-        {
-            return this.Acquire ().GetHashCode ();
-        }
+		public override int GetHashCode ()
+		{
+			return this.Acquire ().GetHashCode ();
+		}
 
-        public override string  ToString ()
-        {
-            return this.Acquire ().ToString ();
-        }
+		public override string	ToString ()
+		{
+			return this.Acquire ().ToString ();
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods / Private
+		#region Methods / Private
 
-        private Value   Acquire ()
-        {
-            if (this.value == null)
-            {
-                lock (this.synchronize)
-                {
-                    if (this.value == null)
-                        Interlocked.Exchange (ref this.value, this.Resolve ());
-                }
-            }
+		private Value	Acquire ()
+		{
+			if (this.value == null)
+			{
+				lock (this.mutex)
+				{
+					if (this.value == null)
+						Interlocked.Exchange (ref this.value, this.Resolve ());
+				}
+			}
 
-            return this.value;
-        }
+			return this.value;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

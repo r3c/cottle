@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace   Cottle
+namespace	Cottle
 {
-    public enum ValueContent
-    {
-        Map,
-        Boolean,
-        Function,
-        Number,
-        String,
-        Undefined,
+	public enum ValueContent
+	{
+		Map,
+		Boolean,
+		Function,
+		Number,
+		String,
+		Undefined,
 
-        [Obsolete("Please use Map value")]
-        Array = 0
-    }
+		[Obsolete ("Please use Map value")]
+		Array = 0
+	}
 }

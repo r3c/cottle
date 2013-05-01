@@ -1,57 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-using Cottle.Maps.Generics;
+using Cottle.Maps.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Maps
+namespace	Cottle.Maps
 {
-    sealed class    HashMap : AbstractMap
-    {
-        #region Properties
+	sealed class	HashMap : AbstractMap
+	{
+		#region Properties
 
-        public override int Count
-        {
-            get
-            {
-                return this.hash.Count;
-            }
-        }
+		public override int Count
+		{
+			get
+			{
+				return this.hash.Count;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes / Instance
+		#region Attributes / Instance
 
-        private Dictionary<Value, Value>    hash;
+		private Dictionary<Value, Value>	hash;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  HashMap (IDictionary<Value, Value> hash)
-        {
-            this.hash = new Dictionary<Value, Value> (hash);
-        }
+		public	HashMap (IDictionary<Value, Value> hash)
+		{
+			this.hash = new Dictionary<Value, Value> (hash);
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
-        
-        public override bool   Contains (Value key)
-        {
-            return this.hash.ContainsKey (key);
-        }
+		#region Methods
+		
+		public override bool	Contains (Value key)
+		{
+			return this.hash.ContainsKey (key);
+		}
 
-        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-        {
-            return this.hash.GetEnumerator ();
-        }
+		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
+		{
+			return this.hash.GetEnumerator ();
+		}
 
-        public override bool   TryGet (Value key, out Value value)
-        {
-            return this.hash.TryGetValue (key, out value);
-        }
+		public override bool	TryGet (Value key, out Value value)
+		{
+			return this.hash.TryGetValue (key, out value);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

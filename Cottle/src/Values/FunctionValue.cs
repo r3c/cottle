@@ -2,97 +2,97 @@
 
 using Cottle.Maps;
 
-namespace   Cottle.Values
+namespace	Cottle.Values
 {
-    public sealed class FunctionValue : Value
-    {
-        #region Properties
+	public sealed class FunctionValue : Value
+	{
+		#region Properties
 
-        public override bool            AsBoolean
-        {
-            get
-            {
-                return false;
-            }
-        }
+		public override bool			AsBoolean
+		{
+			get
+			{
+				return false;
+			}
+		}
 
-        public override IFunction       AsFunction
-        {
-            get
-            {
-                return this.function;
-            }
-        }
+		public override IFunction		AsFunction
+		{
+			get
+			{
+				return this.function;
+			}
+		}
 
-        public override decimal         AsNumber
-        {
-            get
-            {
-                return 0;
-            }
-        }
+		public override decimal			AsNumber
+		{
+			get
+			{
+				return 0;
+			}
+		}
 
-        public override string          AsString
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
+		public override string			AsString
+		{
+			get
+			{
+				return string.Empty;
+			}
+		}
 
-        public override IMap            Fields
-        {
-            get
-            {
-                return EmptyMap.Instance;
-            }
-        }
+		public override IMap			Fields
+		{
+			get
+			{
+				return EmptyMap.Instance;
+			}
+		}
 
-        public override ValueContent    Type
-        {
-            get
-            {
-                return ValueContent.Function;
-            }
-        }
+		public override ValueContent	Type
+		{
+			get
+			{
+				return ValueContent.Function;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private IFunction   function;
+		private IFunction	function;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  FunctionValue (IFunction function)
-        {
-            this.function = function;
-        }
+		public	FunctionValue (IFunction function)
+		{
+			this.function = function;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override int CompareTo (Value other)
-        {
-            if (other == null)
-                return 1;
+		public override int CompareTo (Value other)
+		{
+			if (other == null)
+				return 1;
 
-            return ((int)this.Type).CompareTo ((int)other.Type);
-        }
+			return ((int)this.Type).CompareTo ((int)other.Type);
+		}
 
-        public override int GetHashCode ()
-        {
-            return this.function.GetHashCode ();
-        }
+		public override int GetHashCode ()
+		{
+			return this.function.GetHashCode ();
+		}
 
-        public override string  ToString ()
-        {
-            return "<function>";
-        }
+		public override string	ToString ()
+		{
+			return "<function>";
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

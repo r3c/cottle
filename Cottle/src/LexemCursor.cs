@@ -1,80 +1,80 @@
 ﻿
-namespace   Cottle
+namespace	Cottle
 {
-    class   LexemCursor
-    {
-        #region Properties
+	class	LexemCursor
+	{
+		#region Properties
 
-        public char         Character
-        {
-            get
-            {
-                return this.character;
-            }
-            set
-            {
-                this.character = value;
-            }
-        }
+		public char			Character
+		{
+			get
+			{
+				return this.character;
+			}
+			set
+			{
+				this.character = value;
+			}
+		}
 
-        public LexemState    State
-        {
-            get
-            {
-                return this.state;
-            }
-            set
-            {
-                this.state = value;
-            }
-        }
+		public LexemState	State
+		{
+			get
+			{
+				return this.state;
+			}
+			set
+			{
+				this.state = value;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private char        character;
+		private char		character;
 
-        private LexemState  state;
+		private LexemState	state;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  LexemCursor (char character, LexemState state)
-        {
-            this.character = character;
-            this.state = state;
-        }
+		public	LexemCursor (char character, LexemState state)
+		{
+			this.character = character;
+			this.state = state;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public void Cancel ()
-        {
-            this.state = null;
-        }
+		public void Cancel ()
+		{
+			this.state = null;
+		}
 
-        public bool Move (char character, out LexemType type)
-        {
-            if (this.state != null)
-            {
-                this.state = this.state.Follow (character);
+		public bool Move (char character, out LexemType type)
+		{
+			if (this.state != null)
+			{
+				this.state = this.state.Follow (character);
 
-                if (this.state != null && this.state.Type != LexemType.None)
-                {
-                    type = this.state.Type;
+				if (this.state != null && this.state.Type != LexemType.None)
+				{
+					type = this.state.Type;
 
-                    return true;
-                }
-            }
+					return true;
+				}
+			}
 
-            type = LexemType.None;
+			type = LexemType.None;
 
-            return false;
-        }
+			return false;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

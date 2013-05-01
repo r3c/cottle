@@ -2,32 +2,32 @@
 
 using Cottle.Values.Generics;
 
-namespace   Cottle.Values
+namespace	Cottle.Values
 {
-    public sealed class LazyValue : ResolveValue
-    {
-        #region Attributes
+	public sealed class LazyValue : ResolveValue
+	{
+		#region Attributes
 
-        private Func<Value> resolver;
+		private Func<Value> resolver;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  LazyValue (Func<Value> resolver)
-        {
-            this.resolver = resolver;
-        }
+		public	LazyValue (Func<Value> resolver)
+		{
+			this.resolver = resolver;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        protected override Value    Resolve()
-        {
-            return this.resolver ();
-        }
+		protected override Value	Resolve ()
+		{
+			return this.resolver ();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

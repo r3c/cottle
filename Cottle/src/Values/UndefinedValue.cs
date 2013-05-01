@@ -1,101 +1,101 @@
 ﻿using Cottle.Maps;
 
-namespace   Cottle.Values
+namespace	Cottle.Values
 {
-    public sealed class UndefinedValue : Value
-    {
-        #region Properties
+	public sealed class UndefinedValue : Value
+	{
+		#region Properties
 
-        public override bool            AsBoolean
-        {
-            get
-            {
-                return false;
-            }
-        }
+		public override bool			AsBoolean
+		{
+			get
+			{
+				return false;
+			}
+		}
 
-        public override IFunction       AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
+		public override IFunction		AsFunction
+		{
+			get
+			{
+				return null;
+			}
+		}
 
-        public override decimal         AsNumber
-        {
-            get
-            {
-                return 0;
-            }
-        }
+		public override decimal			AsNumber
+		{
+			get
+			{
+				return 0;
+			}
+		}
 
-        public override string          AsString
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
+		public override string			AsString
+		{
+			get
+			{
+				return string.Empty;
+			}
+		}
 
-        public override IMap            Fields
-        {
-            get
-            {
-                return EmptyMap.Instance;
-            }
-        }
+		public override IMap			Fields
+		{
+			get
+			{
+				return EmptyMap.Instance;
+			}
+		}
 
-        public override ValueContent    Type
-        {
-            get
-            {
-                return ValueContent.Undefined;
-            }
-        }
+		public override ValueContent	Type
+		{
+			get
+			{
+				return ValueContent.Undefined;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Properties / Static
+		#region Properties / Static
 
-        public static UndefinedValue    Instance
-        {
-            get
-            {
-                return UndefinedValue.instance;
-            }
-        }
+		public static UndefinedValue	Instance
+		{
+			get
+			{
+				return UndefinedValue.instance;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private static readonly UndefinedValue  instance = new UndefinedValue ();
+		private static readonly UndefinedValue	instance = new UndefinedValue ();
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override int CompareTo (Value other)
-        {
-            if (other == null)
-                return 1;
-            else if (this.Type != other.Type)
-                return ((int)this.Type).CompareTo ((int)other.Type);
+		public override int CompareTo (Value other)
+		{
+			if (other == null)
+				return 1;
+			else if (this.Type != other.Type)
+				return ((int)this.Type).CompareTo ((int)other.Type);
 
-            return 0;
-        }
+			return 0;
+		}
 
-        public override int GetHashCode()
-        {
-            return 0;
-        }
+		public override int GetHashCode ()
+		{
+			return 0;
+		}
 
-        public override string  ToString ()
-        {
-            return "<undefined>";
-        }
+		public override string	ToString ()
+		{
+			return "<undefined>";
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

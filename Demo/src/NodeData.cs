@@ -5,54 +5,54 @@ using System.Text;
 using Cottle;
 using System.Windows.Forms;
 
-namespace   Demo
+namespace	Demo
 {
-    public class    NodeData
-    {
-        #region Properties
+	public class	NodeData
+	{
+		#region Properties
 
-        public int      ImageIndex
-        {
-            get
-            {
-                return (int)this.value.Type;
-            }
-        }
+		public int		ImageIndex
+		{
+			get
+			{
+				return (int)this.value.Type;
+			}
+		}
 
-        public string   Key
-        {
-            get
-            {
-                return this.key;
-            }
-        }
+		public string	Key
+		{
+			get
+			{
+				return this.key;
+			}
+		}
 
-        public Value    Value
-        {
-            get
-            {
-                return this.value;
-            }
-        }
+		public Value	Value
+		{
+			get
+			{
+				return this.value;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private string  key;
+		private string	key;
 
-        private Value   value;
+		private Value	value;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  NodeData (string key, Value value)
-        {
-            this.key = key;
-            this.value = value;
-        }
+		public	NodeData (string key, Value value)
+		{
+			this.key = key;
+			this.value = value;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

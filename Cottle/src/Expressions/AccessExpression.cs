@@ -1,56 +1,56 @@
 ﻿using System.IO;
 using System.Text;
 
-using Cottle.Expressions.Generics;
+using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Expressions
+namespace	Cottle.Expressions
 {
-    class   AccessExpression : Expression
-    {
-        #region Attributes
+	class	AccessExpression : Expression
+	{
+		#region Attributes
 
-        private IExpression array;
+		private IExpression array;
 
-        private IExpression index;
+		private IExpression index;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  AccessExpression (IExpression array, IExpression index)
-        {
-            this.array = array;
-            this.index = index;
-        }
+		public	AccessExpression (IExpression array, IExpression index)
+		{
+			this.array = array;
+			this.index = index;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override Value   Evaluate (Scope scope, TextWriter output)
-        {
-            Value  array = this.array.Evaluate (scope, output);
-            Value  value;
+		public override Value	Evaluate (IScope scope, TextWriter output)
+		{
+			Value	array = this.array.Evaluate (scope, output);
+			Value	value;
 
-            if (array.Fields.TryGet (this.index.Evaluate (scope, output), out value))
-                return value;
+			if (array.Fields.TryGet (this.index.Evaluate (scope, output), out value))
+				return value;
 
-            return UndefinedValue.Instance;
-        }
+			return UndefinedValue.Instance;
+		}
 
-        public override string  ToString ()
-        {
-            StringBuilder   builder = new StringBuilder ();
+		public override string	ToString ()
+		{
+			StringBuilder	builder = new StringBuilder ();
 
-            builder.Append (this.array);
-            builder.Append ('[');
-            builder.Append (this.index);
-            builder.Append (']');
+			builder.Append (this.array);
+			builder.Append ('[');
+			builder.Append (this.index);
+			builder.Append (']');
 
-            return builder.ToString ();
-        }
+			return builder.ToString ();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

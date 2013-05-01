@@ -1,63 +1,63 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-using Cottle.Maps.Generics;
+using Cottle.Maps.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Maps
+namespace	Cottle.Maps
 {
-    sealed class    MixMap : AbstractMap
-    {
-        #region Properties
+	sealed class	MixMap : AbstractMap
+	{
+		#region Properties
 
-        public override int Count
-        {
-            get
-            {
-                return this.array.Count;
-            }
-        }
+		public override int Count
+		{
+			get
+			{
+				return this.array.Count;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private List<KeyValuePair<Value, Value>>    array;
+		private List<KeyValuePair<Value, Value>>	array;
 
-        private Dictionary<Value, Value>            hash;
+		private Dictionary<Value, Value>			hash;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  MixMap (IEnumerable<KeyValuePair<Value, Value>> pairs)
-        {
-            this.array = new List<KeyValuePair<Value, Value>> (pairs);
-            this.hash = new Dictionary<Value, Value> ();
+		public	MixMap (IEnumerable<KeyValuePair<Value, Value>> pairs)
+		{
+			this.array = new List<KeyValuePair<Value, Value>> (pairs);
+			this.hash = new Dictionary<Value, Value> ();
 
-            foreach (KeyValuePair<Value, Value> pair in pairs)
-                this.hash[pair.Key] = pair.Value;
-        }
+			foreach (KeyValuePair<Value, Value> pair in pairs)
+				this.hash[pair.Key] = pair.Value;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
-        
-        public override bool   Contains (Value key)
-        {
-            return this.hash.ContainsKey (key);
-        }
+		#region Methods
+		
+		public override bool	Contains (Value key)
+		{
+			return this.hash.ContainsKey (key);
+		}
 
-        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-        {
-            return this.array.GetEnumerator ();
-        }
+		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
+		{
+			return this.array.GetEnumerator ();
+		}
 
-        public override bool   TryGet (Value key, out Value value)
-        {
-            return this.hash.TryGetValue (key, out value);
-        }
+		public override bool	TryGet (Value key, out Value value)
+		{
+			return this.hash.TryGetValue (key, out value);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

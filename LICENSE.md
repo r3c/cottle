@@ -1,3 +1,6 @@
+Cottle LICENSE file
+===================
+
 Copyright (c) 2011 Remi Caput, http://remi.caput.fr/
 
 Permission is hereby granted, free of charge, to any person obtaining

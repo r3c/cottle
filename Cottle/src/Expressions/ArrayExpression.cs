@@ -3,65 +3,65 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using Cottle.Expressions.Generics;
+using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Expressions
+namespace	Cottle.Expressions
 {
-    sealed class    ArrayExpression : Expression
-    {
-        #region Attributes
+	sealed class	ArrayExpression : Expression
+	{
+		#region Attributes
 
-        private List<KeyValuePair<IExpression, IExpression>>    elements;
+		private List<KeyValuePair<IExpression, IExpression>>	elements;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
-        {
-            this.elements = new List<KeyValuePair<IExpression,IExpression>> (elements);
-        }
+		public	ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
+		{
+			this.elements = new List<KeyValuePair<IExpression,IExpression>> (elements);
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override Value  Evaluate (Scope scope, TextWriter writer)
-        {
-            return new MapValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
-            {
-                Value  key = item.Key.Evaluate (scope, writer);
-                Value  value = item.Value.Evaluate (scope, writer);
+		public override Value	Evaluate (IScope scope, TextWriter writer)
+		{
+			return new MapValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
+			{
+				Value	key = item.Key.Evaluate (scope, writer);
+				Value	value = item.Value.Evaluate (scope, writer);
 
-                return new KeyValuePair<Value, Value> (key, value);
-            }));
-        }
+				return new KeyValuePair<Value, Value> (key, value);
+			}));
+		}
 
-        public override string  ToString ()
-        {
-            StringBuilder   builder = new StringBuilder ();
-            bool            comma = false;
+		public override string	ToString ()
+		{
+			StringBuilder	builder = new StringBuilder ();
+			bool			comma = false;
 
-            builder.Append ('[');
+			builder.Append ('[');
 
-            foreach (KeyValuePair<IExpression, IExpression> element in this.elements)
-            {
-                if (comma)
-                    builder.Append (", ");
-                else
-                    comma = true;
+			foreach (KeyValuePair<IExpression, IExpression> element in this.elements)
+			{
+				if (comma)
+					builder.Append (", ");
+				else
+					comma = true;
 
-                builder.Append (element.Key);
-                builder.Append (": ");
-                builder.Append (element.Value);
-            }
+				builder.Append (element.Key);
+				builder.Append (": ");
+				builder.Append (element.Value);
+			}
 
-            builder.Append (']');
+			builder.Append (']');
 
-            return builder.ToString ();
-        }
+			return builder.ToString ();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

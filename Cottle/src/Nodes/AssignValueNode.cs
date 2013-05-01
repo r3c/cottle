@@ -6,65 +6,65 @@ using System.Text;
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    AssignValueNode : INode
-    {
-        #region Attributes
+	sealed class	AssignValueNode : INode
+	{
+		#region Attributes
 
-        private IExpression     expression;
+		private IExpression		expression;
 
-        private ScopeMode       mode;
+		private ScopeMode		mode;
 
-        private NameExpression  name;
+		private NameExpression	name;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  AssignValueNode (NameExpression name, IExpression expression, ScopeMode mode)
-        {
-            this.expression = expression;
-            this.mode = mode;
-            this.name = name;
-        }
+		public	AssignValueNode (NameExpression name, IExpression expression, ScopeMode mode)
+		{
+			this.expression = expression;
+			this.mode = mode;
+			this.name = name;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            this.name.Set (scope, this.expression.Evaluate (scope, output), this.mode);
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			this.name.Set (scope, this.expression.Evaluate (scope, output), this.mode);
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            output.Write (setting.BlockBegin);
-            output.Write ("set ");
-            output.Write (this.name);
+		public void Source (ISetting setting, TextWriter output)
+		{
+			output.Write (setting.BlockBegin);
+			output.Write ("set ");
+			output.Write (this.name);
 
-            switch (this.mode)
-            {
-                case ScopeMode.Closest:
-                    output.Write (" to ");
+			switch (this.mode)
+			{
+				case ScopeMode.Closest:
+					output.Write (" to ");
 
-                    break;
+					break;
 
-                case ScopeMode.Local:
-                    output.Write (" as ");
+				case ScopeMode.Local:
+					output.Write (" as ");
 
-                    break;
-            }
+					break;
+			}
 
-            output.Write (this.expression);
-            output.Write (setting.BlockEnd);
-        }
+			output.Write (this.expression);
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

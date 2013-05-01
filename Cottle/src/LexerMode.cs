@@ -1,9 +1,9 @@
 ﻿
-namespace   Cottle
+namespace	Cottle
 {
-    enum    LexerMode
-    {
-        Block,
-        Raw
-    }
+	enum	LexerMode
+	{
+		Block,
+		Raw
+	}
 }

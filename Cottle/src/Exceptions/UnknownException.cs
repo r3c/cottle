@@ -1,35 +1,35 @@
 ﻿using System.Globalization;
 
-namespace   Cottle.Exceptions
+namespace	Cottle.Exceptions
 {
-    public class    UnknownException : DocumentException
-    {
-        #region Properties
+	public class	UnknownException : DocumentException
+	{
+		#region Properties
 
-        public string   Token
-        {
-            get
-            {
-                return this.token;
-            }
-        }
+		public string	Token
+		{
+			get
+			{
+				return this.token;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private string  token;
+		private string	token;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        internal    UnknownException (Lexer lexer, string token) :
-            base (lexer, string.Format (CultureInfo.InvariantCulture, "found '{0}' at line {1}, column {2}", token, lexer.Line, lexer.Column))
-        {
-            this.token = token;
-        }
+		internal	UnknownException (Lexer lexer, string token) :
+			base (lexer, string.Format (CultureInfo.InvariantCulture, "found '{0}' at line {1}, column {2}", token, lexer.Line, lexer.Column))
+		{
+			this.token = token;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -3,147 +3,147 @@ using System.IO;
 
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    IfNode : INode
-    {
-        #region Attributes
+	sealed class	IfNode : INode
+	{
+		#region Attributes
 
-        private IEnumerable<Branch> branches;
+		private IEnumerable<Branch>	branches;
 
-        private INode               fallback;
+		private INode				fallback;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  IfNode (IEnumerable<Branch> branches, INode fallback)
-        {
-            this.branches = branches;
-            this.fallback = fallback;
-        }
+		public	IfNode (IEnumerable<Branch> branches, INode fallback)
+		{
+			this.branches = branches;
+			this.fallback = fallback;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            bool    halt;
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			bool	halt;
 
-            foreach (Branch branch in this.branches)
-            {
-                if (branch.Test.Evaluate (scope, output).AsBoolean)
-                {
-                    scope.Enter ();
+			foreach (Branch branch in this.branches)
+			{
+				if (branch.Test.Evaluate (scope, output).AsBoolean)
+				{
+					scope.Enter ();
 
-                    halt = branch.Body.Render (scope, output, out result);
+					halt = branch.Body.Render (scope, output, out result);
 
-                    scope.Leave ();
+					scope.Leave ();
 
-                    return halt;
-                }
-            }
+					return halt;
+				}
+			}
 
-            if (this.fallback != null)
-            {
-                scope.Enter ();
+			if (this.fallback != null)
+			{
+				scope.Enter ();
 
-                halt = this.fallback.Render (scope, output, out result);
+				halt = this.fallback.Render (scope, output, out result);
 
-                scope.Leave ();
+				scope.Leave ();
 
-                return halt;
-            }
+				return halt;
+			}
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            bool    first;
-            
-            first = true;
+		public void Source (ISetting setting, TextWriter output)
+		{
+			bool	first;
+			
+			first = true;
 
-            foreach (Branch branch in this.branches)
-            {
-                if (first)
-                {
-                    output.Write (setting.BlockBegin);
-                    output.Write ("if ");
+			foreach (Branch branch in this.branches)
+			{
+				if (first)
+				{
+					output.Write (setting.BlockBegin);
+					output.Write ("if ");
 
-                    first = false;
-                }
-                else
-                {
-                    output.Write (setting.BlockContinue);
-                    output.Write ("elif ");
-                }
+					first = false;
+				}
+				else
+				{
+					output.Write (setting.BlockContinue);
+					output.Write ("elif ");
+				}
 
-                output.Write (branch.Test);
-                output.Write (":");
+				output.Write (branch.Test);
+				output.Write (":");
 
-                branch.Body.Source (setting, output);
-            }
+				branch.Body.Source (setting, output);
+			}
 
-            if (this.fallback != null)
-            {
-                output.Write (setting.BlockContinue);
-                output.Write ("else:");
+			if (this.fallback != null)
+			{
+				output.Write (setting.BlockContinue);
+				output.Write ("else:");
 
-                this.fallback.Source (setting, output);
-            }
+				this.fallback.Source (setting, output);
+			}
 
-            output.Write (setting.BlockEnd);
-        }
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
+		#endregion
 
-        #region Types
+		#region Types
 
-        public class    Branch
-        {
-            #region Properties
+		public class	Branch
+		{
+			#region Properties
 
-            public INode        Body
-            {
-                get
-                {
-                    return this.body;
-                }
-            }
+			public INode		Body
+			{
+				get
+				{
+					return this.body;
+				}
+			}
 
-            public IExpression  Test
-            {
-                get
-                {
-                    return this.test;
-                }
-            }
+			public IExpression	Test
+			{
+				get
+				{
+					return this.test;
+				}
+			}
 
-            #endregion
+			#endregion
 
-            #region Attributes
+			#region Attributes
 
-            private INode       body;
+			private INode		body;
 
-            private IExpression test;
+			private IExpression test;
 
-            #endregion
+			#endregion
 
-            #region Constructors
+			#region Constructors
 
-            public  Branch (IExpression test, INode body)
-            {
-                this.body = body;
-                this.test = test;
-            }
+			public	Branch (IExpression test, INode body)
+			{
+				this.body = body;
+				this.test = test;
+			}
 
-            #endregion
-        }
+			#endregion
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

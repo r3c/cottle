@@ -53,9 +53,11 @@
     <Compile Include="src\Cleaners\NullCleaner.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Commons\CommonTools.cs" />
-    <Compile Include="src\Document.cs" />
+    <Compile Include="src\Documents\SimpleDocument.cs" />
     <Compile Include="src\ICleaner.cs" />
+    <Compile Include="src\IDocument.cs" />
     <Compile Include="src\IMap.cs" />
+    <Compile Include="src\IScope.cs" />
     <Compile Include="src\ISetting.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
     <Compile Include="src\Exceptions\DocumentException.cs" />
@@ -65,10 +67,10 @@
     <Compile Include="src\Expressions\AccessExpression.cs" />
     <Compile Include="src\Expressions\ArrayExpression.cs" />
     <Compile Include="src\Expressions\NumberExpression.cs" />
-    <Compile Include="src\Expressions\Generics\ConstantExpression.cs" />
+    <Compile Include="src\Expressions\Abstracts\ConstantExpression.cs" />
     <Compile Include="src\Expressions\StringExpression.cs" />
     <Compile Include="src\Expressions\CallExpression.cs" />
-    <Compile Include="src\Expressions\Generics\Expression.cs" />
+    <Compile Include="src\Expressions\Abstracts\Expression.cs" />
     <Compile Include="src\Expressions\NameExpression.cs" />
     <Compile Include="src\Expressions\UndefinedExpression.cs" />
     <Compile Include="src\Functions\NodeFunction.cs" />
@@ -76,15 +78,18 @@
     <Compile Include="src\IExpression.cs" />
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
+    <Compile Include="src\Obsoletes\ArrayValue.cs" />
+    <Compile Include="src\Obsoletes\Document.cs" />
+    <Compile Include="src\Obsoletes\LexerConfig.cs" />
+    <Compile Include="src\Obsoletes\Scope.cs" />
     <Compile Include="src\Lexem.cs" />
     <Compile Include="src\LexemCursor.cs" />
     <Compile Include="src\LexemState.cs" />
     <Compile Include="src\LexemType.cs" />
-    <Compile Include="src\LexerConfig.cs" />
     <Compile Include="src\LexerMode.cs" />
     <Compile Include="src\Maps\ArrayMap.cs" />
     <Compile Include="src\Maps\EmptyMap.cs" />
-    <Compile Include="src\Maps\Generics\AbstractMap.cs" />
+    <Compile Include="src\Maps\Abstracts\AbstractMap.cs" />
     <Compile Include="src\Maps\HashMap.cs" />
     <Compile Include="src\Maps\MixMap.cs" />
     <Compile Include="src\Nodes\AssignFunctionNode.cs" />
@@ -93,6 +98,10 @@
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Cleaners\BlankCharactersCleaner.cs" />
     <Compile Include="src\Cleaners\FirstLastLinesCleaner.cs" />
+    <Compile Include="src\Scopes\Abstracts\AbstractScope.cs" />
+    <Compile Include="src\Scopes\FallbackScope.cs" />
+    <Compile Include="src\Scopes\DefaultScope.cs" />
+    <Compile Include="src\Scopes\SimpleScope.cs" />
     <Compile Include="src\Settings\CustomSettings.cs" />
     <Compile Include="src\Settings\DefaultSetting.cs" />
     <Compile Include="src\Value.cs" />
@@ -105,7 +114,6 @@
     <Compile Include="src\Nodes\ReturnNode.cs" />
     <Compile Include="src\Nodes\WhileNode.cs" />
     <Compile Include="src\Parser.cs" />
-    <Compile Include="src\Scope.cs" />
     <Compile Include="src\ValueContent.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
     <Compile Include="src\Values\Generics\ResolveValue.cs" />
@@ -113,7 +121,6 @@
     <Compile Include="src\Values\MapValue.cs" />
     <Compile Include="src\Values\ReflectionValue.cs" />
     <Compile Include="src\Values\UndefinedValue.cs" />
-    <Compile Include="src\Values\ArrayValue.cs" />
     <Compile Include="src\Values\FunctionValue.cs" />
     <Compile Include="src\Values\Generics\ScalarValue.cs" />
     <Compile Include="src\Values\NumberValue.cs" />
@@ -122,7 +129,11 @@
   <ItemGroup>
     <Folder Include="src\Cleaners" />
     <Folder Include="src\Maps" />
-    <Folder Include="src\Maps\Generics" />
+    <Folder Include="src\Maps\Abstracts" />
+    <Folder Include="src\Documents" />
+    <Folder Include="src\Obsoletes" />
+    <Folder Include="src\Scopes" />
+    <Folder Include="src\Scopes\Abstracts" />
     <Folder Include="src\Settings" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

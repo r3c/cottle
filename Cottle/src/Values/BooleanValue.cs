@@ -1,72 +1,72 @@
 ﻿using Cottle.Values.Generics;
 
-namespace   Cottle.Values
+namespace	Cottle.Values
 {
-    public sealed class BooleanValue : ScalarValue<bool>
-    {
-        #region Constants
+	public sealed class BooleanValue : ScalarValue<bool>
+	{
+		#region Constants
 
-        public static readonly BooleanValue False = new BooleanValue (false);
+		public static readonly BooleanValue False = new BooleanValue (false);
 
-        public static readonly BooleanValue True = new BooleanValue (true);
+		public static readonly BooleanValue True = new BooleanValue (true);
 
-        #endregion
+		#endregion
 
-        #region Properties
+		#region Properties
 
-        public override bool            AsBoolean
-        {
-            get
-            {
-                return this.value;
-            }
-        }
+		public override bool			AsBoolean
+		{
+			get
+			{
+				return this.value;
+			}
+		}
 
-        public override decimal         AsNumber
-        {
-            get
-            {
-                return this.value ? 1 : 0;
-            }
-        }
+		public override decimal			AsNumber
+		{
+			get
+			{
+				return this.value ? 1 : 0;
+			}
+		}
 
-        public override string          AsString
-        {
-            get
-            {
-                return this.value ? "true" : string.Empty;
-            }
-        }
+		public override string			AsString
+		{
+			get
+			{
+				return this.value ? "true" : string.Empty;
+			}
+		}
 
-        public override ValueContent    Type
-        {
-            get
-            {
-                return ValueContent.Boolean;
-            }
-        }
+		public override ValueContent	Type
+		{
+			get
+			{
+				return ValueContent.Boolean;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  BooleanValue (bool value) :
-            base (value, delegate (Value source)
-            {
-                return source.AsBoolean;
-            })
-        {
-        }
+		public	BooleanValue (bool value) :
+			base (value, delegate (Value source)
+			{
+				return source.AsBoolean;
+			})
+		{
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override string  ToString ()
-        {
-            return this.value ? "<true>" : "<false>";
-        }
+		public override string	ToString ()
+		{
+			return this.value ? "<true>" : "<false>";
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

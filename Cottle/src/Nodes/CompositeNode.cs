@@ -5,46 +5,46 @@ using System.Text;
 
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    CompositeNode : INode
-    {
-        #region Attributes
+	sealed class	CompositeNode : INode
+	{
+		#region Attributes
 
-        private IEnumerable<INode>  nodes;
+		private IEnumerable<INode>	nodes;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  CompositeNode (IEnumerable<INode> nodes)
-        {
-            this.nodes = nodes;
-        }
+		public	CompositeNode (IEnumerable<INode> nodes)
+		{
+			this.nodes = nodes;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            foreach (INode node in this.nodes)
-            {
-                if (node.Render (scope, output, out result))
-                    return true;
-            }
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			foreach (INode node in this.nodes)
+			{
+				if (node.Render (scope, output, out result))
+					return true;
+			}
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            foreach (INode node in this.nodes)
-                node.Source (setting, output);
-        }
+		public void Source (ISetting setting, TextWriter output)
+		{
+			foreach (INode node in this.nodes)
+				node.Source (setting, output);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

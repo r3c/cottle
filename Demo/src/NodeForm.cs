@@ -10,159 +10,159 @@ using System.Windows.Forms;
 using Cottle;
 using Cottle.Values;
 
-namespace   Demo
+namespace	Demo
 {
-    public partial class    NodeForm : Form
-    {
-        #region Attributes
+	public partial class	NodeForm : Form
+	{
+		#region Attributes
 
-        private NodeAssignDelegate  assign;
+		private NodeAssignDelegate	assign;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  NodeForm (NodeData data, NodeAssignDelegate assign)
-        {
-            this.assign = assign;
+		public	NodeForm (NodeData data, NodeAssignDelegate assign)
+		{
+			this.assign = assign;
 
-            InitializeComponent ();
+			InitializeComponent ();
 
-            if (data != null)
-            {
-                this.textBoxName.Text = data.Key;
+			if (data != null)
+			{
+				this.textBoxName.Text = data.Key;
 
-                switch (data.Value.Type)
-                {
-                    case ValueContent.Boolean:
-                        this.radioButtonValueBoolean.Checked = true;
-                        this.checkBoxValueBoolean.Checked = data.Value.AsBoolean;
+				switch (data.Value.Type)
+				{
+					case ValueContent.Boolean:
+						this.radioButtonValueBoolean.Checked = true;
+						this.checkBoxValueBoolean.Checked = data.Value.AsBoolean;
 
-                        break;
+						break;
 
-                    case ValueContent.Map:
-                        this.radioButtonValueMap.Checked = true;
+					case ValueContent.Map:
+						this.radioButtonValueMap.Checked = true;
 
-                        break;
+						break;
 
-                    case ValueContent.Number:
-                        this.radioButtonValueNumber.Checked = true;
-                        this.textBoxValueNumber.Text = data.Value.AsNumber.ToString (CultureInfo.InvariantCulture);
+					case ValueContent.Number:
+						this.radioButtonValueNumber.Checked = true;
+						this.textBoxValueNumber.Text = data.Value.AsNumber.ToString (CultureInfo.InvariantCulture);
 
-                        break;
+						break;
 
-                    case ValueContent.String:
-                        this.radioButtonValueString.Checked = true;
-                        this.textBoxValueString.Text = data.Value.AsString;
+					case ValueContent.String:
+						this.radioButtonValueString.Checked = true;
+						this.textBoxValueString.Text = data.Value.AsString;
 
-                        break;
+						break;
 
-                    default:
-                        this.radioButtonValueUndefined.Checked = true;
+					default:
+						this.radioButtonValueUndefined.Checked = true;
 
-                        break;
-                }
-            }
+						break;
+				}
+			}
 
-            this.ApplyType ();
-        }
+			this.ApplyType ();
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods / Listeners
+		#region Methods / Listeners
 
-        private void    buttonAccept_Click (object sender, EventArgs e)
-        {
-            string  key = this.textBoxName.Text;
-            decimal number;
+		private void	buttonAccept_Click (object sender, EventArgs e)
+		{
+			string	key = this.textBoxName.Text;
+			decimal number;
 
-            if (string.IsNullOrEmpty (key))
-            {
-                MessageBox.Show (this, "Please enter a non-empty name for this value.", "Invalid name");
+			if (string.IsNullOrEmpty (key))
+			{
+				MessageBox.Show (this, "Please enter a non-empty name for this value.", "Invalid name");
 
-                return;
-            }
+				return;
+			}
 
-            switch (this.ApplyType ())
-            {
-                case ValueContent.Boolean:
-                    this.assign (key, this.checkBoxValueBoolean.Checked);
+			switch (this.ApplyType ())
+			{
+				case ValueContent.Boolean:
+					this.assign (key, this.checkBoxValueBoolean.Checked);
 
-                    break;
+					break;
 
-                case ValueContent.Map:
-                    this.assign (key, new MapValue ());
+				case ValueContent.Map:
+					this.assign (key, new MapValue ());
 
-                    break;
+					break;
 
-                case ValueContent.Number:
-                    if (!decimal.TryParse (this.textBoxValueNumber.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
-                    {
-                        MessageBox.Show (this, string.Format ("\"{0}\" is not a valid number, please enter a valid decimal value (e.g.: 5.0, 27, .897).", this.textBoxValueNumber.Text), "Invalid number");
+				case ValueContent.Number:
+					if (!decimal.TryParse (this.textBoxValueNumber.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
+					{
+						MessageBox.Show (this, string.Format ("\"{0}\" is not a valid number, please enter a valid decimal value (e.g.: 5.0, 27, .897).", this.textBoxValueNumber.Text), "Invalid number");
 
-                        return;
-                    }
+						return;
+					}
 
-                    this.assign (key, number);
+					this.assign (key, number);
 
-                    break;
+					break;
 
-                case ValueContent.String:
-                    this.assign (key, this.textBoxValueString.Text);
+				case ValueContent.String:
+					this.assign (key, this.textBoxValueString.Text);
 
-                    break;
+					break;
 
-                default:
-                    this.assign (key, UndefinedValue.Instance);
+				default:
+					this.assign (key, UndefinedValue.Instance);
 
-                    break;
-            }
+					break;
+			}
 
-            this.Close ();
-        }
+			this.Close ();
+		}
 
-        private void    buttonCancel_Click (object sender, EventArgs e)
-        {
-            this.Close ();
-        }
+		private void	buttonCancel_Click (object sender, EventArgs e)
+		{
+			this.Close ();
+		}
 
-        private void    radioButtonValue_CheckedChanged (object sender, EventArgs e)
-        {
-            this.ApplyType ();
-        }
+		private void	radioButtonValue_CheckedChanged (object sender, EventArgs e)
+		{
+			this.ApplyType ();
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods / Private
+		#region Methods / Private
 
-        private ValueContent  ApplyType ()
-        {
-            ValueContent  type;
+		private ValueContent	ApplyType ()
+		{
+			ValueContent	type;
 
-            if (this.radioButtonValueBoolean.Checked)
-                type = ValueContent.Boolean;
-            else if (this.radioButtonValueMap.Checked)
-                type = ValueContent.Map;
-            else if (this.radioButtonValueNumber.Checked)
-                type = ValueContent.Number;
-            else if (this.radioButtonValueString.Checked)
-                type = ValueContent.String;
-            else
-                type = ValueContent.Undefined;
+			if (this.radioButtonValueBoolean.Checked)
+				type = ValueContent.Boolean;
+			else if (this.radioButtonValueMap.Checked)
+				type = ValueContent.Map;
+			else if (this.radioButtonValueNumber.Checked)
+				type = ValueContent.Number;
+			else if (this.radioButtonValueString.Checked)
+				type = ValueContent.String;
+			else
+				type = ValueContent.Undefined;
 
-            this.checkBoxValueBoolean.Enabled = (type == ValueContent.Boolean);
-            this.textBoxValueNumber.Enabled = (type == ValueContent.Number);
-            this.textBoxValueString.Enabled = (type == ValueContent.String);
+			this.checkBoxValueBoolean.Enabled = (type == ValueContent.Boolean);
+			this.textBoxValueNumber.Enabled = (type == ValueContent.Number);
+			this.textBoxValueString.Enabled = (type == ValueContent.String);
 
-            return type;
-        }
+			return type;
+		}
 
-        #endregion
+		#endregion
 
-        #region Types
+		#region Types
 
-        public delegate void    NodeAssignDelegate (string key, Value value);
+		public delegate void	NodeAssignDelegate (string key, Value value);
 
-        #endregion
-    }
+		#endregion
+	}
 }

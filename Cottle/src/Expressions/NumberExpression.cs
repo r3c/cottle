@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Cottle.Expressions.Generics;
+using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Expressions
+namespace	Cottle.Expressions
 {
-    sealed class    NumberExpression : ConstantExpression<decimal>
-    {
-        #region Constructors
+	sealed class	NumberExpression : ConstantExpression<decimal>
+	{
+		#region Constructors
 
-        public  NumberExpression (decimal value) :
-            base (new NumberValue (value))
-        {
-        }
+		public	NumberExpression (decimal value) :
+			base (new NumberValue (value))
+		{
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

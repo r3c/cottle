@@ -3,133 +3,133 @@ using System.Text;
 
 using Cottle.Maps;
 
-namespace   Cottle.Values
+namespace	Cottle.Values
 {
-    public class    MapValue : Value
-    {
-        #region Properties
+	public class	MapValue : Value
+	{
+		#region Properties
 
-        public override bool            AsBoolean
-        {
-            get
-            {
-                return this.fields.Count > 0;
-            }
-        }
+		public override bool			AsBoolean
+		{
+			get
+			{
+				return this.fields.Count > 0;
+			}
+		}
 
-        public override IFunction       AsFunction
-        {
-            get
-            {
-                return null;
-            }
-        }
+		public override IFunction		AsFunction
+		{
+			get
+			{
+				return null;
+			}
+		}
 
-        public override decimal         AsNumber
-        {
-            get
-            {
-                return this.fields.Count;
-            }
-        }
+		public override decimal			AsNumber
+		{
+			get
+			{
+				return this.fields.Count;
+			}
+		}
 
-        public override string          AsString
-        {
-            get
-            {
-                return string.Empty;
-            }
-        }
+		public override string			AsString
+		{
+			get
+			{
+				return string.Empty;
+			}
+		}
 
-        public override IMap            Fields
-        {
-            get
-            {
-                return this.fields;
-            }
-        }
+		public override IMap			Fields
+		{
+			get
+			{
+				return this.fields;
+			}
+		}
 
-        public override ValueContent    Type
-        {
-            get
-            {
-                return ValueContent.Map;
-            }
-        }
+		public override ValueContent	Type
+		{
+			get
+			{
+				return ValueContent.Map;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private IMap    fields;
+		private IMap	fields;
 
-        #endregion
+		#endregion
 
-        #region Constructors
-        
-        public  MapValue (IDictionary<Value, Value> hash)
-        {
-            this.fields = new HashMap (hash);
-        }
+		#region Constructors
+		
+		public	MapValue (IDictionary<Value, Value> hash)
+		{
+			this.fields = new HashMap (hash);
+		}
 
-        public  MapValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
-        {
-            this.fields = new MixMap (pairs);
-        }
+		public	MapValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
+		{
+			this.fields = new MixMap (pairs);
+		}
 
-        public  MapValue (IEnumerable<Value> values)
-        {
-            this.fields = new ArrayMap (values);
-        }
+		public	MapValue (IEnumerable<Value> values)
+		{
+			this.fields = new ArrayMap (values);
+		}
 
-        public  MapValue ()
-        {
-            this.fields = EmptyMap.Instance;
-        }
+		public	MapValue ()
+		{
+			this.fields = EmptyMap.Instance;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public override int CompareTo (Value other)
-        {
-            if (other == null)
-                return 1;
-            else if (this.Type != other.Type)
-                return ((int)this.Type).CompareTo ((int)other.Type);
+		public override int CompareTo (Value other)
+		{
+			if (other == null)
+				return 1;
+			else if (this.Type != other.Type)
+				return ((int)this.Type).CompareTo ((int)other.Type);
 
-            return this.fields.CompareTo (other.Fields);
-        }
+			return this.fields.CompareTo (other.Fields);
+		}
 
-        public override int GetHashCode ()
-        {
-            return this.fields.GetHashCode ();
-        }
+		public override int GetHashCode ()
+		{
+			return this.fields.GetHashCode ();
+		}
 
-        public override string  ToString ()
-        {
-            StringBuilder   builder = new StringBuilder ();
-            bool            separator = false;
+		public override string	ToString ()
+		{
+			StringBuilder	builder = new StringBuilder ();
+			bool			separator = false;
 
-            builder.Append ('[');
+			builder.Append ('[');
 
-            foreach (KeyValuePair<Value, Value> pair in this.fields)
-            {
-                if (separator)
-                    builder.Append (", ");
-                else
-                    separator = true;
+			foreach (KeyValuePair<Value, Value> pair in this.fields)
+			{
+				if (separator)
+					builder.Append (", ");
+				else
+					separator = true;
 
-                builder.Append (pair.Key);
-                builder.Append (": ");
-                builder.Append (pair.Value);
-            }
+				builder.Append (pair.Key);
+				builder.Append (": ");
+				builder.Append (pair.Value);
+			}
 
-            builder.Append (']');
+			builder.Append (']');
 
-            return builder.ToString ();
-        }
+			return builder.ToString ();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

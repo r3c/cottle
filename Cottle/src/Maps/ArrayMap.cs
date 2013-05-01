@@ -1,91 +1,91 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-using Cottle.Maps.Generics;
+using Cottle.Maps.Abstracts;
 using Cottle.Values;
 
-namespace   Cottle.Maps
+namespace	Cottle.Maps
 {
-    sealed class    ArrayMap : AbstractMap
-    {
-        #region Properties
+	sealed class	ArrayMap : AbstractMap
+	{
+		#region Properties
 
-        public override int Count
-        {
-            get
-            {
-                return this.array.Count;
-            }
-        }
+		public override int Count
+		{
+			get
+			{
+				return this.array.Count;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private List<KeyValuePair<Value, Value>>   array;
+		private List<KeyValuePair<Value, Value>>	array;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  ArrayMap (IEnumerable<Value> array)
-        {
-            int key;
+		public	ArrayMap (IEnumerable<Value> array)
+		{
+			int key;
 
-            this.array = new List<KeyValuePair<Value, Value>> ();
+			this.array = new List<KeyValuePair<Value, Value>> ();
 
-            key = 0;
+			key = 0;
 
-            foreach (Value value in array)
-                this.array.Add (new KeyValuePair<Value, Value> (key++, value));
-        }
+			foreach (Value value in array)
+				this.array.Add (new KeyValuePair<Value, Value> (key++, value));
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
-        
-        public override bool    Contains (Value key)
-        {
-            int index;
+		#region Methods
+		
+		public override bool	Contains (Value key)
+		{
+			int index;
 
-            if (key.Type != ValueContent.Number)
-                return false;
+			if (key.Type != ValueContent.Number)
+				return false;
 
-            index = (int)key.AsNumber;
+			index = (int)key.AsNumber;
 
-            return index >= 0 && index < this.array.Count;
-        }
+			return index >= 0 && index < this.array.Count;
+		}
 
-        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-        {
-            return this.array.GetEnumerator ();
-        }
+		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
+		{
+			return this.array.GetEnumerator ();
+		}
 
-        public override bool   TryGet (Value key, out Value value)
-        {
-            int index;
+		public override bool	TryGet (Value key, out Value value)
+		{
+			int index;
 
-            if (key.Type != ValueContent.Number)
-            {
-                value = default (Value);
+			if (key.Type != ValueContent.Number)
+			{
+				value = default (Value);
 
-                return false;
-            }
+				return false;
+			}
 
-            index = (int)key.AsNumber;
+			index = (int)key.AsNumber;
 
-            if (index < 0 || index >= this.array.Count)
-            {
-                value = default (Value);
+			if (index < 0 || index >= this.array.Count)
+			{
+				value = default (Value);
 
-                return false;
-            }
+				return false;
+			}
 
-            value = this.array[index].Value;
+			value = this.array[index].Value;
 
-            return true;
-        }
+			return true;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

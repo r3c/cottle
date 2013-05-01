@@ -5,145 +5,145 @@ using System.Text;
 
 using Cottle.Values;
 
-namespace   Cottle.Commons
+namespace	Cottle.Commons
 {
-    public static class CommonTools
-    {
-        #region Methods / Public
+	public static class CommonTools
+	{
+		#region Methods / Public
 
-        public static bool  ValuesLoad (BinaryReader reader, IDictionary<string, Value> values)
-        {
-            int     count;
-            string  key;
-            Value   value;
+		public static bool	ValuesLoad (BinaryReader reader, IDictionary<string, Value> values)
+		{
+			int		count;
+			string	key;
+			Value	value;
 
-            for (count = reader.ReadInt32 (); count-- > 0; )
-            {
-                key = reader.ReadString ();
+			for (count = reader.ReadInt32 (); count-- > 0; )
+			{
+				key = reader.ReadString ();
 
-                if (!CommonTools.ValueLoad (reader, out value))
-                    return false;
+				if (!CommonTools.ValueLoad (reader, out value))
+					return false;
 
-                values[key] = value;
-            }
+				values[key] = value;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        public static void  ValuesSave (BinaryWriter writer, IDictionary<string, Value> values)
-        {
-            writer.Write (values.Count);
+		public static void	ValuesSave (BinaryWriter writer, IDictionary<string, Value> values)
+		{
+			writer.Write (values.Count);
 
-            foreach (KeyValuePair<string, Value> pair in values)
-            {
-                writer.Write (pair.Key);
+			foreach (KeyValuePair<string, Value> pair in values)
+			{
+				writer.Write (pair.Key);
 
-                CommonTools.ValueSave (writer, pair.Value);
-            }
-        }
+				CommonTools.ValueSave (writer, pair.Value);
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods / Private
+		#region Methods / Private
 
-        private static bool ValueLoad (BinaryReader reader, out Value value)
-        {
-            List<KeyValuePair<Value, Value>>    array;
-            Value                               arrayKey;
-            Value                               arrayValue;
-            int                                 count;
-            ValueContent                        type = (ValueContent)reader.ReadInt32 ();
+		private static bool ValueLoad (BinaryReader reader, out Value value)
+		{
+			List<KeyValuePair<Value, Value>>	array;
+			Value								arrayKey;
+			Value								arrayValue;
+			int									count;
+			ValueContent						type = (ValueContent)reader.ReadInt32 ();
 
-            switch (type)
-            {
-                case ValueContent.Boolean:
-                    value = reader.ReadBoolean () ? BooleanValue.True : BooleanValue.False;
+			switch (type)
+			{
+				case ValueContent.Boolean:
+					value = reader.ReadBoolean () ? BooleanValue.True : BooleanValue.False;
 
-                    break;
+					break;
 
-                case ValueContent.Function:
-                    value = UndefinedValue.Instance;
+				case ValueContent.Function:
+					value = UndefinedValue.Instance;
 
-                    break;
+					break;
 
-                case ValueContent.Map:
-                    count = reader.ReadInt32 ();
-                    array = new List<KeyValuePair<Value, Value>> (count);
+				case ValueContent.Map:
+					count = reader.ReadInt32 ();
+					array = new List<KeyValuePair<Value, Value>> (count);
 
-                    while (count-- > 0)
-                    {
-                        if (!CommonTools.ValueLoad (reader, out arrayKey) || !CommonTools.ValueLoad (reader, out arrayValue))
-                        {
-                            value = null;
+					while (count-- > 0)
+					{
+						if (!CommonTools.ValueLoad (reader, out arrayKey) || !CommonTools.ValueLoad (reader, out arrayValue))
+						{
+							value = null;
 
-                            return false;
-                        }
+							return false;
+						}
 
-                        array.Add (new KeyValuePair<Value, Value> (arrayKey, arrayValue));
-                    }
+						array.Add (new KeyValuePair<Value, Value> (arrayKey, arrayValue));
+					}
 
-                    value = array;
+					value = array;
 
-                    break;
+					break;
 
-                case ValueContent.Number:
-                    value = reader.ReadDecimal ();
+				case ValueContent.Number:
+					value = reader.ReadDecimal ();
 
-                    break;
+					break;
 
-                case ValueContent.String:
-                    value = reader.ReadString ();
+				case ValueContent.String:
+					value = reader.ReadString ();
 
-                    break;
+					break;
 
-                case ValueContent.Undefined:
-                    value = UndefinedValue.Instance;
+				case ValueContent.Undefined:
+					value = UndefinedValue.Instance;
 
-                    break;
+					break;
 
-                default:
-                    value = null;
+				default:
+					value = null;
 
-                    return false;
-            }
+					return false;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        private static void ValueSave (BinaryWriter writer, Value value)
-        {
-            writer.Write ((int)value.Type);
+		private static void ValueSave (BinaryWriter writer, Value value)
+		{
+			writer.Write ((int)value.Type);
 
-            switch (value.Type)
-            {
-                case ValueContent.Boolean:
-                    writer.Write (value.AsBoolean);
+			switch (value.Type)
+			{
+				case ValueContent.Boolean:
+					writer.Write (value.AsBoolean);
 
-                    break;
+					break;
 
-                case ValueContent.Map:
-                    writer.Write (value.Fields.Count);
+				case ValueContent.Map:
+					writer.Write (value.Fields.Count);
 
-                    foreach (KeyValuePair<Value, Value> pair in value.Fields)
-                    {
-                        CommonTools.ValueSave (writer, pair.Key);
-                        CommonTools.ValueSave (writer, pair.Value);
-                    }
+					foreach (KeyValuePair<Value, Value> pair in value.Fields)
+					{
+						CommonTools.ValueSave (writer, pair.Key);
+						CommonTools.ValueSave (writer, pair.Value);
+					}
 
-                    break;
+					break;
 
-                case ValueContent.Number:
-                    writer.Write (value.AsNumber);
+				case ValueContent.Number:
+					writer.Write (value.AsNumber);
 
-                    break;
+					break;
 
-                case ValueContent.String:
-                    writer.Write (value.AsString);
+				case ValueContent.String:
+					writer.Write (value.AsString);
 
-                    break;
-            }
-        }
+					break;
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

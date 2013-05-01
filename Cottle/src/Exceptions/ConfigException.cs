@@ -1,47 +1,47 @@
 ﻿using System;
 using System.Globalization;
 
-namespace   Cottle.Exceptions
+namespace	Cottle.Exceptions
 {
-    public class    ConfigException : Exception
-    {
-        #region Properties
+	public class	ConfigException : Exception
+	{
+		#region Properties
 
-        public string   Name
-        {
-            get
-            {
-                return this.name;
-            }
-        }
+		public string	Name
+		{
+			get
+			{
+				return this.name;
+			}
+		}
 
-        public string   Value
-        {
-            get
-            {
-                return this.value;
-            }
-        }
+		public string	Value
+		{
+			get
+			{
+				return this.value;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Attributes
+		#region Attributes
 
-        private string  name;
+		private string	name;
 
-        private string  value;
+		private string	value;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  ConfigException (string name, string value, string message) :
-            base (string.Format (CultureInfo.InvariantCulture, "configuration error for option '{0}' with value '{1}' ({2})'", name, value, message))
-        {
-            this.name = name;
-            this.value = value;
-        }
+		public	ConfigException (string name, string value, string message) :
+			base (string.Format (CultureInfo.InvariantCulture, "configuration error for option '{0}' with value '{1}' ({2})'", name, value, message))
+		{
+			this.name = name;
+			this.value = value;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

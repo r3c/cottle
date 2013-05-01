@@ -7,71 +7,71 @@ using Cottle.Expressions;
 using Cottle.Functions;
 using Cottle.Values;
 
-namespace   Cottle.Nodes
+namespace	Cottle.Nodes
 {
-    sealed class    AssignFunctionNode : INode
-    {
-        #region Attributes
+	sealed class	AssignFunctionNode : INode
+	{
+		#region Attributes
 
-        private List<NameExpression>    arguments;
+		private List<NameExpression>	arguments;
 
-        private INode                   body;
+		private INode					body;
 
-        private ScopeMode               mode;
+		private ScopeMode				mode;
 
-        private NameExpression          name;
+		private NameExpression			name;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  AssignFunctionNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeMode mode)
-        {
-            this.arguments = new List<NameExpression> (arguments);
-            this.body = body;
-            this.mode = mode;
-            this.name = name;
-        }
+		public	AssignFunctionNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeMode mode)
+		{
+			this.arguments = new List<NameExpression> (arguments);
+			this.body = body;
+			this.mode = mode;
+			this.name = name;
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public bool Render (Scope scope, TextWriter output, out Value result)
-        {
-            this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
+		public bool Render (IScope scope, TextWriter output, out Value result)
+		{
+			this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
 
-            result = UndefinedValue.Instance;
+			result = UndefinedValue.Instance;
 
-            return false;
-        }
+			return false;
+		}
 
-        public void Source (ISetting setting, TextWriter output)
-        {
-            bool    comma = false;
+		public void Source (ISetting setting, TextWriter output)
+		{
+			bool	comma = false;
 
-            output.Write (setting.BlockBegin);
-            output.Write ("define ");
-            output.Write (this.name);
-            output.Write ('(');
+			output.Write (setting.BlockBegin);
+			output.Write ("define ");
+			output.Write (this.name);
+			output.Write ('(');
 
-            foreach (NameExpression argument in this.arguments)
-            {
-                if (comma)
-                    output.Write (", ");
-                else
-                    comma = true;
+			foreach (NameExpression argument in this.arguments)
+			{
+				if (comma)
+					output.Write (", ");
+				else
+					comma = true;
 
-                output.Write (argument);
-            }
+				output.Write (argument);
+			}
 
-            output.Write ("): ");
+			output.Write ("): ");
 
-            this.body.Source (setting, output);
+			this.body.Source (setting, output);
 
-            output.Write (setting.BlockEnd);
-        }
+			output.Write (setting.BlockEnd);
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

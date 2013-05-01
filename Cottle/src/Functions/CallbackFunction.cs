@@ -6,57 +6,57 @@ using System.Text;
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace   Cottle.Functions
+namespace	Cottle.Functions
 {
-    public class    CallbackFunction : IFunction
-    {
-        #region Attributes
+	public class	CallbackFunction : IFunction
+	{
+		#region Attributes
 
-        private CallbackDelegate    callback;
+		private CallbackDelegate	callback;
 
-        private int                 max;
+		private int					max;
 
-        private int                 min;
+		private int					min;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public  CallbackFunction (CallbackDelegate callback, int min, int max)
-        {
-            this.callback = callback;
-            this.max = max;
-            this.min = min;
-        }
+		public	CallbackFunction (CallbackDelegate callback, int min, int max)
+		{
+			this.callback = callback;
+			this.max = max;
+			this.min = min;
+		}
 
-        public  CallbackFunction (CallbackDelegate callback, int exact) :
-            this (callback, exact, exact)
-        {
-        }
+		public	CallbackFunction (CallbackDelegate callback, int exact) :
+			this (callback, exact, exact)
+		{
+		}
 
-        public  CallbackFunction (CallbackDelegate callback) :
-            this (callback, 0, -1)
-        {
-        }
+		public	CallbackFunction (CallbackDelegate callback) :
+			this (callback, 0, -1)
+		{
+		}
 
-        #endregion
+		#endregion
 
-        #region Methods
+		#region Methods
 
-        public Value    Execute (IList<Value> values, Scope scope, TextWriter output)
-        {
-            if (this.callback == null || this.min > values.Count || (this.max >= 0 && this.max < values.Count))
-                return UndefinedValue.Instance;
+		public Value	Execute (IList<Value> values, IScope scope, TextWriter output)
+		{
+			if (this.callback == null || this.min > values.Count || (this.max >= 0 && this.max < values.Count))
+				return UndefinedValue.Instance;
 
-            return this.callback (values, scope, output);
-        }
+			return this.callback (values, scope, output);
+		}
 
-        #endregion
+		#endregion
 
-        #region Types
+		#region Types
 
-        public delegate Value   CallbackDelegate (IList<Value> values, Scope scope, TextWriter output);
+		public delegate Value	CallbackDelegate (IList<Value> values, IScope scope, TextWriter output);
 
-        #endregion
-    }
+		#endregion
+	}
 }

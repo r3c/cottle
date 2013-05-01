@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace   Cottle
+namespace	Cottle
 {
-    interface   INode
-    {
-        #region Methods
+	interface	INode
+	{
+		#region Methods
 
-        bool    Render (Scope scope, TextWriter output, out Value result);
+		bool	Render (IScope scope, TextWriter output, out Value result);
 
-        void    Source (ISetting setting, TextWriter output);
+		void	Source (ISetting setting, TextWriter output);
 
-        #endregion
-    }
+		#endregion
+	}
 }
