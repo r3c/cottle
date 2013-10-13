@@ -37,9 +37,16 @@ namespace	Cottle.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
+			string	expression;
+
+			expression = this.expression.ToString ();
+
 			output.Write (setting.BlockBegin);
-			output.Write ("echo ");
-			output.Write (this.expression);
+
+			if (expression.StartsWith ("echo"))
+				output.Write ("echo ");
+
+			output.Write (expression);
 			output.Write (setting.BlockEnd);
 		}
 

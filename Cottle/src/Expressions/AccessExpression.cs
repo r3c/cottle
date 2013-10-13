@@ -41,8 +41,9 @@ namespace	Cottle.Expressions
 
 		public override string	ToString ()
 		{
-			StringBuilder	builder = new StringBuilder ();
+			StringBuilder	builder;
 
+			builder = new StringBuilder ();
 			builder.Append (this.array);
 			builder.Append ('[');
 			builder.Append (this.index);

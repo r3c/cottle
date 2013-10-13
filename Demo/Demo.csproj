@@ -95,6 +95,7 @@
     <None Include="autoload.ctv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\button_clean.png" />
     <None Include="Resources\button_accept.png" />
     <None Include="Resources\button_cancel.png" />
     <None Include="Resources\button_submit.png" />
@@ -105,10 +106,6 @@
     <None Include="Resources\menu_move_up.png" />
     <None Include="Resources\menu_tree_collapse.png" />
     <None Include="Resources\menu_tree_expand.png" />
-    <None Include="Resources\menu_value_clone.png" />
-    <None Include="Resources\menu_value_delete.png" />
-    <None Include="Resources\menu_value_edit.png" />
-    <None Include="Resources\menu_value_insert.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

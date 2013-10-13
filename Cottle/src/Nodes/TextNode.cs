@@ -46,7 +46,7 @@ namespace	Cottle.Nodes
 			StringBuilder	builder;
 
 			builder = new StringBuilder ()
-				.Append (this.buffer)
+				.Append (this.buffer, this.start, this.length)
 				.Replace ("\\", "\\\\")
 				.Replace (setting.BlockBegin, "\\" + setting.BlockBegin)
 				.Replace (setting.BlockContinue, "\\" + setting.BlockContinue)

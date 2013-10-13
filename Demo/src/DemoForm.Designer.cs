@@ -51,8 +51,8 @@
 			this.toolStripMenuItemTreeExpand = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageListTree = new System.Windows.Forms.ImageList(this.components);
 			this.groupBoxResult = new System.Windows.Forms.GroupBox();
-			this.buttonDemo = new System.Windows.Forms.Button();
-			this.textBoxResult = new System.Windows.Forms.TextBox();
+			this.buttonClean = new System.Windows.Forms.Button();
+			this.buttonEvaluate = new System.Windows.Forms.Button();
 			this.groupBoxInput = new System.Windows.Forms.GroupBox();
 			this.textBoxInput = new System.Windows.Forms.TextBox();
 			this.groupBoxOutput = new System.Windows.Forms.GroupBox();
@@ -148,7 +148,7 @@
 									this.toolStripMenuItemTreeCollapse,
 									this.toolStripMenuItemTreeExpand});
 			this.contextMenuStripTree.Name = "contextMenuStripTree";
-			this.contextMenuStripTree.Size = new System.Drawing.Size(161, 286);
+			this.contextMenuStripTree.Size = new System.Drawing.Size(161, 264);
 			this.contextMenuStripTree.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTree_Opening);
 			// 
 			// toolStripMenuItemNodeCreate
@@ -270,35 +270,38 @@
 			// 
 			this.groupBoxResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBoxResult.Controls.Add(this.buttonDemo);
-			this.groupBoxResult.Controls.Add(this.textBoxResult);
+			this.groupBoxResult.Controls.Add(this.buttonClean);
+			this.groupBoxResult.Controls.Add(this.buttonEvaluate);
 			this.groupBoxResult.Location = new System.Drawing.Point(0, 353);
 			this.groupBoxResult.Name = "groupBoxResult";
 			this.groupBoxResult.Size = new System.Drawing.Size(385, 48);
 			this.groupBoxResult.TabIndex = 4;
 			this.groupBoxResult.TabStop = false;
-			this.groupBoxResult.Text = "Validate && debug:";
+			this.groupBoxResult.Text = "Control:";
 			// 
-			// buttonDemo
+			// buttonClean
 			// 
-			this.buttonDemo.Image = global::Demo.Properties.Resources.button_submit;
-			this.buttonDemo.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonDemo.Location = new System.Drawing.Point(6, 19);
-			this.buttonDemo.Name = "buttonDemo";
-			this.buttonDemo.Size = new System.Drawing.Size(80, 23);
-			this.buttonDemo.TabIndex = 1;
-			this.buttonDemo.Text = "OK";
-			this.buttonDemo.UseVisualStyleBackColor = true;
-			this.buttonDemo.Click += new System.EventHandler(this.buttonDemo_Click);
+			this.buttonClean.Image = global::Demo.Properties.Resources.button_clean;
+			this.buttonClean.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonClean.Location = new System.Drawing.Point(112, 19);
+			this.buttonClean.Name = "buttonClean";
+			this.buttonClean.Size = new System.Drawing.Size(100, 23);
+			this.buttonClean.TabIndex = 2;
+			this.buttonClean.Text = "Auto-indent";
+			this.buttonClean.UseVisualStyleBackColor = true;
+			this.buttonClean.Click += new System.EventHandler(this.buttonClean_Click);
 			// 
-			// textBoxResult
+			// buttonEvaluate
 			// 
-			this.textBoxResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxResult.Location = new System.Drawing.Point(92, 21);
-			this.textBoxResult.Name = "textBoxResult";
-			this.textBoxResult.Size = new System.Drawing.Size(286, 20);
-			this.textBoxResult.TabIndex = 2;
+			this.buttonEvaluate.Image = global::Demo.Properties.Resources.button_submit;
+			this.buttonEvaluate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonEvaluate.Location = new System.Drawing.Point(6, 19);
+			this.buttonEvaluate.Name = "buttonEvaluate";
+			this.buttonEvaluate.Size = new System.Drawing.Size(100, 23);
+			this.buttonEvaluate.TabIndex = 1;
+			this.buttonEvaluate.Text = "Evaluate";
+			this.buttonEvaluate.UseVisualStyleBackColor = true;
+			this.buttonEvaluate.Click += new System.EventHandler(this.buttonEvaluate_Click);
 			// 
 			// groupBoxInput
 			// 
@@ -369,20 +372,19 @@
 			this.groupBoxValue.ResumeLayout(false);
 			this.contextMenuStripTree.ResumeLayout(false);
 			this.groupBoxResult.ResumeLayout(false);
-			this.groupBoxResult.PerformLayout();
 			this.groupBoxInput.ResumeLayout(false);
 			this.groupBoxInput.PerformLayout();
 			this.groupBoxOutput.ResumeLayout(false);
 			this.groupBoxOutput.PerformLayout();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button buttonClean;
 
 		#endregion
 
 		private System.Windows.Forms.SplitContainer splitContainer;
 		private System.Windows.Forms.TextBox textBoxInput;
-		private System.Windows.Forms.Button buttonDemo;
-		private System.Windows.Forms.TextBox textBoxResult;
+		private System.Windows.Forms.Button buttonEvaluate;
 		private System.Windows.Forms.TextBox textBoxPrint;
 		private System.Windows.Forms.GroupBox groupBoxOutput;
 		private System.Windows.Forms.GroupBox groupBoxResult;

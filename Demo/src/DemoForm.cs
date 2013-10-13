@@ -47,7 +47,33 @@ namespace	Demo
 
 		#region Methods / Listeners
 
-		private void	buttonDemo_Click (object sender, EventArgs e)
+		private void	buttonClean_Click (object sender, EventArgs e)
+		{
+			IDocument	document;
+
+			try
+			{
+				document = new SimpleDocument (this.textBoxInput.Text, this.setting);
+
+				this.textBoxInput.Text = document.Source ();
+			}
+			catch (UnexpectedException exception)
+			{
+				this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
+				this.textBoxInput.SelectionLength = exception.Lexem.Length;
+
+				throw;
+			}
+			catch (UnknownException exception)
+			{
+				this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
+				this.textBoxInput.SelectionLength = 1;
+
+				throw;
+			}
+		}
+
+		private void	buttonEvaluate_Click (object sender, EventArgs e)
 		{
 			IDocument	document;
 			IScope		scope;
@@ -65,10 +91,8 @@ namespace	Demo
 							scope.Set (pair.Key, pair.Value, ScopeMode.Closest);
 					}
 
+					this.textBoxPrint.BackColor = Color.LightGreen;
 					this.textBoxPrint.Text = document.Render (scope);
-
-					this.textBoxResult.BackColor = Color.LightGreen;
-					this.textBoxResult.Text = "Document parsed & rendered successfully";
 				}
 				catch (UnexpectedException exception)
 				{
@@ -87,15 +111,14 @@ namespace	Demo
 			}
 			catch (DocumentException exception)
 			{
-				this.textBoxResult.BackColor = Color.LightPink;
-				this.textBoxResult.Text = "Document error: " + exception.Message;
-
 				this.textBoxInput.Focus ();
+				this.textBoxPrint.BackColor = Color.LightPink;
+				this.textBoxPrint.Text = "Document error: " + exception.Message;
 			}
 			catch (RenderException exception)
 			{
-				this.textBoxResult.BackColor = Color.LightSalmon;
-				this.textBoxResult.Text = "Render error: " + exception.Message;
+				this.textBoxPrint.BackColor = Color.LightSalmon;
+				this.textBoxPrint.Text = "Render error: " + exception.Message;
 			}
 		}
 
