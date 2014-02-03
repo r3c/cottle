@@ -1403,6 +1403,21 @@ PropertyItems =</code>
 					</div>
 				</div>
 
+				<h3>Returns the smallest integer greater than or equal to the
+				specified number: ceil(x)</h3>
+				<div class="section">
+					<p>Returns the smallest integer greater than or equal to
+					decimal value <code>x</code>.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{ceil(2.7)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>3</code>
+					</div>
+				</div>
+
 				<h3>Get character from unicode value: char(int)</h3>
 				<div class="section">
 					<p>Get a 1-character string from its unicode numeric
@@ -1440,6 +1455,19 @@ PropertyItems =</code>
 <code>-1
 1
 0</code>
+					</div>
+				</div>
+
+				<h3>Compute cosine of an angle: cos(x)</h3>
+				<div class="section">
+					<p>Get the cosine of angle <code>x</code> in radians.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{cos(-1.57)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>0.000796326710733263</code>
 					</div>
 				</div>
 
@@ -1591,6 +1619,21 @@ true</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>["hello,": 1, "world!": 2]
 [0: "a", 0: "b"]</code>
+					</div>
+				</div>
+
+				<h3>Returns the largest integer less than or equal to the
+				specified number: floor(x)</h3>
+				<div class="section">
+					<p>Returns the largest integer less than or equal to
+					decimal value <code>x</code>.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{floor(2.7)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>2</code>
 					</div>
 				</div>
 
@@ -1985,6 +2028,20 @@ true</code>
 					</div>
 				</div>
 
+				<h3>Raise a number to a power: pow(x, y)</h3>
+				<div class="section">
+					<p>Get specified number <code>x</code> raised to the power
+					<code>y</code>.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{pow(2, 10)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>1024</code>
+					</div>
+				</div>
+
 				<h3>Generate pseudo-random value: rand([a[, b]])</h3>
 				<div class="section">
 					<p>Get a pseudo-random numeric value between 0 and
@@ -2023,6 +2080,37 @@ true</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>0 1 2 3 4
 2 5 8 11 14 17</code>
+					</div>
+				</div>
+
+				<h3>Rounds a value to the nearest integer or specified number
+				of decimal places: round(x[, y])</h3>
+				<div class="section">
+					<p>Rounds a decimal value to a specified number of
+					fractional digits <code>y</code>, or to the nearest
+					integral value if <code>y</code> is not specified.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{round(1.57)}
+{round(1.57, 1)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>2
+1.6</code>
+					</div>
+				</div>
+
+				<h3>Compute sine of an angle: sin(x)</h3>
+				<div class="section">
+					<p>Get the sine of angle <code>x</code> in radians.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{sin(1.57)}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>0.999999682931835</code>
 					</div>
 				</div>
 

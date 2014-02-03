@@ -53,23 +53,37 @@ namespace	Demo
 
 			try
 			{
-				document = new SimpleDocument (this.textBoxInput.Text, this.setting);
+				try
+				{
+					document = new SimpleDocument (this.textBoxInput.Text, this.setting);
 
-				this.textBoxInput.Text = document.Source ();
+					this.textBoxInput.Text = document.Source ();
+				}
+				catch (UnexpectedException exception)
+				{
+					this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
+					this.textBoxInput.SelectionLength = exception.Lexem.Length;
+
+					throw;
+				}
+				catch (UnknownException exception)
+				{
+					this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
+					this.textBoxInput.SelectionLength = 1;
+
+					throw;
+				}
 			}
-			catch (UnexpectedException exception)
+			catch (DocumentException exception)
 			{
-				this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
-				this.textBoxInput.SelectionLength = exception.Lexem.Length;
-
-				throw;
+				this.textBoxInput.Focus ();
+				this.textBoxPrint.BackColor = Color.LightPink;
+				this.textBoxPrint.Text = "Document error: " + exception.Message;
 			}
-			catch (UnknownException exception)
+			catch (RenderException exception)
 			{
-				this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
-				this.textBoxInput.SelectionLength = 1;
-
-				throw;
+				this.textBoxPrint.BackColor = Color.LightSalmon;
+				this.textBoxPrint.Text = "Render error: " + exception.Message;
 			}
 		}
 

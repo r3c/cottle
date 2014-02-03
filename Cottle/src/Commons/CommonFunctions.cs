@@ -129,6 +129,11 @@ namespace	Cottle.Commons
 			}
 		}, 1, -1);
 
+		private static readonly IFunction	functionCeiling = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			return Math.Ceiling (values[0].AsNumber);
+		}, 1);
+
 		private static readonly IFunction	functionChar = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
 			try
@@ -145,6 +150,11 @@ namespace	Cottle.Commons
 		{
 			return values[0].CompareTo (values[1]);
 		}, 2);
+
+		private static readonly IFunction	functionCosine = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			return Math.Cos ((double)values[0].AsNumber);
+		}, 1);
 
 		private static readonly IFunction	functionCross = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
@@ -287,6 +297,11 @@ namespace	Cottle.Commons
 				flip[i++] = new KeyValuePair<Value, Value> (pair.Value, pair.Key);
 
 			return flip;
+		}, 1);
+
+		private static readonly IFunction	functionFloor = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			return Math.Floor (values[0].AsNumber);
 		}, 1);
 
 		private static readonly IFunction	functionFormat = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
@@ -587,6 +602,11 @@ namespace	Cottle.Commons
 			return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
 		}, 1);
 
+		private static readonly IFunction	functionPower = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			return Math.Pow ((double)values[0].AsNumber, (double)values[1].AsNumber);
+		}, 2);
+
 		private static readonly IFunction	functionRandom = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
 			if (CommonFunctions.random == null)
@@ -626,6 +646,19 @@ namespace	Cottle.Commons
 
 			return array;
 		}, 1, 3);
+
+		private static readonly IFunction	functionRound = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			if (values.Count > 1)
+				return Math.Round (values[0].AsNumber, (int)values[1].AsNumber);
+
+			return Math.Round (values[0].AsNumber);
+		}, 1, 2);
+
+		private static readonly IFunction	functionSine = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			return Math.Sin ((double)values[0].AsNumber);
+		}, 1);
 
 		private static readonly IFunction	functionSlice = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
@@ -762,8 +795,10 @@ namespace	Cottle.Commons
 			scope.Set ("call", new FunctionValue (CommonFunctions.functionCall), mode);
 			scope.Set ("cast", new FunctionValue (CommonFunctions.functionCast), mode);
 			scope.Set ("cat", new FunctionValue (CommonFunctions.functionCat), mode);
+			scope.Set ("ceil", new FunctionValue (CommonFunctions.functionCeiling), mode);
 			scope.Set ("char", new FunctionValue (CommonFunctions.functionChar), mode);
 			scope.Set ("cmp", new FunctionValue (CommonFunctions.functionCompare), mode);
+			scope.Set ("cos", new FunctionValue (CommonFunctions.functionCosine), mode);
 			scope.Set ("cross", new FunctionValue (CommonFunctions.functionCross), mode);
 			scope.Set ("default", new FunctionValue (CommonFunctions.functionDefault), mode);
 			scope.Set ("div", new FunctionValue (CommonFunctions.functionDiv), mode);
@@ -772,6 +807,7 @@ namespace	Cottle.Commons
 			scope.Set ("filter", new FunctionValue (CommonFunctions.functionFilter), mode);
 			scope.Set ("find", new FunctionValue (CommonFunctions.functionFind), mode);
 			scope.Set ("flip", new FunctionValue (CommonFunctions.functionFlip), mode);
+			scope.Set ("floor", new FunctionValue (CommonFunctions.functionFloor), mode);
 			scope.Set ("format", new FunctionValue (CommonFunctions.functionFormat), mode);
 			scope.Set ("ge", new FunctionValue (CommonFunctions.functionGreaterEqual), mode);
 			scope.Set ("gt", new FunctionValue (CommonFunctions.functionGreater), mode);
@@ -791,8 +827,11 @@ namespace	Cottle.Commons
 			scope.Set ("not", new FunctionValue (CommonFunctions.functionNot), mode);
 			scope.Set ("or", new FunctionValue (CommonFunctions.functionOr), mode);
 			scope.Set ("ord", new FunctionValue (CommonFunctions.functionOrd), mode);
+			scope.Set ("pow", new FunctionValue (CommonFunctions.functionPower), mode);
 			scope.Set ("rand", new FunctionValue (CommonFunctions.functionRandom), mode);
 			scope.Set ("range", new FunctionValue (CommonFunctions.functionRange), mode);
+			scope.Set ("round", new FunctionValue (CommonFunctions.functionRound), mode);
+			scope.Set ("sin", new FunctionValue (CommonFunctions.functionSine), mode);
 			scope.Set ("slice", new FunctionValue (CommonFunctions.functionSlice), mode);
 			scope.Set ("sort", new FunctionValue (CommonFunctions.functionSort), mode);
 			scope.Set ("split", new FunctionValue (CommonFunctions.functionSplit), mode);
