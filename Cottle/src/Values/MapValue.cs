@@ -5,7 +5,7 @@ using Cottle.Maps;
 
 namespace	Cottle.Values
 {
-	public class	MapValue : Value
+	public sealed class	MapValue : Value
 	{
 		#region Properties
 

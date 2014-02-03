@@ -54,6 +54,7 @@
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Commons\CommonTools.cs" />
     <Compile Include="src\Documents\SimpleDocument.cs" />
+    <Compile Include="src\Expressions\VoidExpression.cs" />
     <Compile Include="src\ICleaner.cs" />
     <Compile Include="src\IDocument.cs" />
     <Compile Include="src\IMap.cs" />
@@ -72,7 +73,6 @@
     <Compile Include="src\Expressions\CallExpression.cs" />
     <Compile Include="src\Expressions\Abstracts\Expression.cs" />
     <Compile Include="src\Expressions\NameExpression.cs" />
-    <Compile Include="src\Expressions\UndefinedExpression.cs" />
     <Compile Include="src\Functions\NodeFunction.cs" />
     <Compile Include="src\Functions\CallbackFunction.cs" />
     <Compile Include="src\IExpression.cs" />
@@ -95,6 +95,7 @@
     <Compile Include="src\Nodes\AssignFunctionNode.cs" />
     <Compile Include="src\Nodes\AssignValueNode.cs" />
     <Compile Include="src\Nodes\DumpNode.cs" />
+    <Compile Include="src\Obsoletes\UndefinedValue.cs" />
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Cleaners\BlankCharactersCleaner.cs" />
     <Compile Include="src\Cleaners\FirstLastLinesCleaner.cs" />
@@ -120,11 +121,11 @@
     <Compile Include="src\Values\LazyValue.cs" />
     <Compile Include="src\Values\MapValue.cs" />
     <Compile Include="src\Values\ReflectionValue.cs" />
-    <Compile Include="src\Values\UndefinedValue.cs" />
     <Compile Include="src\Values\FunctionValue.cs" />
     <Compile Include="src\Values\Generics\ScalarValue.cs" />
     <Compile Include="src\Values\NumberValue.cs" />
     <Compile Include="src\Values\StringValue.cs" />
+    <Compile Include="src\Values\VoidValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\Cleaners" />

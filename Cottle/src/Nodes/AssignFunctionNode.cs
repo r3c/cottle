@@ -41,19 +41,39 @@ namespace	Cottle.Nodes
 		{
 			this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
 
-			result = UndefinedValue.Instance;
+			result = VoidValue.Instance;
 
 			return false;
 		}
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			bool	comma = false;
+			bool	comma;
+			string	keyword;
+			string	link;
+
+			switch (this.mode)
+			{
+				case ScopeMode.Local:
+					keyword = "declare";
+					link = "as";
+
+					break;
+
+				default:
+					keyword = "set";
+					link = "to";
+
+					break;
+			}
 
 			output.Write (setting.BlockBegin);
-			output.Write ("define ");
+			output.Write (keyword);
+			output.Write (' ');
 			output.Write (this.name);
 			output.Write ('(');
+
+			comma = false;
 
 			foreach (NameExpression argument in this.arguments)
 			{
@@ -65,7 +85,9 @@ namespace	Cottle.Nodes
 				output.Write (argument);
 			}
 
-			output.Write ("): ");
+			output.Write (") ");
+			output.Write (link);
+			output.Write (": ");
 
 			this.body.Source (setting, output);
 

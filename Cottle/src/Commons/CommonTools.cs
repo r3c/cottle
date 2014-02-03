@@ -61,11 +61,6 @@ namespace	Cottle.Commons
 
 					break;
 
-				case ValueContent.Function:
-					value = UndefinedValue.Instance;
-
-					break;
-
 				case ValueContent.Map:
 					count = reader.ReadInt32 ();
 					array = new List<KeyValuePair<Value, Value>> (count);
@@ -96,8 +91,8 @@ namespace	Cottle.Commons
 
 					break;
 
-				case ValueContent.Undefined:
-					value = UndefinedValue.Instance;
+				case ValueContent.Void:
+					value = VoidValue.Instance;
 
 					break;
 

@@ -15,7 +15,7 @@ namespace	Cottle.Scopes.Abstracts
 				if (this.Get (name, out value))
 					return value;
 
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 			}
 			set
 			{

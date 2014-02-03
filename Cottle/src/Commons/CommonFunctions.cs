@@ -75,7 +75,7 @@ namespace	Cottle.Commons
 			function = values[0].AsFunction;
 
 			if (function == null)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			arguments = new Value[values[1].Fields.Count];
 			i = 0;
@@ -100,7 +100,7 @@ namespace	Cottle.Commons
 					return values[0].AsString;
 
 				default:
-					return UndefinedValue.Instance;
+					return VoidValue.Instance;
 			}
 		}, 2);
 
@@ -184,7 +184,7 @@ namespace	Cottle.Commons
 			decimal denominator = values[1].AsNumber;
 
 			if (denominator == 0)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			return values[0].AsNumber / denominator;
 		}, 2);
@@ -235,7 +235,7 @@ namespace	Cottle.Commons
 			List<KeyValuePair<Value, Value>>	result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
 
 			if (callback == null)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
 			{
@@ -360,7 +360,7 @@ namespace	Cottle.Commons
 					break;
 
 				default:
-					return UndefinedValue.Instance;
+					return VoidValue.Instance;
 			}
 
 			return string.Format (culture, "{0:" + format.Substring (index + 1) + "}", target);
@@ -398,7 +398,7 @@ namespace	Cottle.Commons
 			path = Path.GetFullPath (values[0].AsString);
 
 			if (!File.Exists (path))
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			write = File.GetLastWriteTime (path);
 
@@ -491,7 +491,7 @@ namespace	Cottle.Commons
 			int								i = 0;
 
 			if (callback == null)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
 			{
@@ -515,7 +515,7 @@ namespace	Cottle.Commons
 			match = Regex.Match (values[0].AsString, values[1].AsString);
 
 			if (!match.Success)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			groups = new List<Value> (match.Groups.Count);
 
@@ -554,7 +554,7 @@ namespace	Cottle.Commons
 			decimal denominator = values[1].AsNumber;
 
 			if (denominator == 0)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			return values[0].AsNumber % denominator;
 		}, 2);
@@ -617,7 +617,7 @@ namespace	Cottle.Commons
 			stop = values.Count > 1 ? (int)values[1].AsNumber : (int)values[0].AsNumber;
 
 			if (step == 0 || (start < stop && step < 0) || (start > stop && step > 0))
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			array = new List<Value> ();
 
@@ -707,7 +707,7 @@ namespace	Cottle.Commons
 			if (values[0].AsBoolean)
 				return values[1];
 
-			return values.Count > 2 ? values[2] : UndefinedValue.Instance;
+			return values.Count > 2 ? values[2] : VoidValue.Instance;
 		}, 2, 3);
 
 		private static readonly IFunction	functionXor = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)

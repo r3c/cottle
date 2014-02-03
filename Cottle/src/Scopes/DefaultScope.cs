@@ -8,7 +8,7 @@ namespace	Cottle.Scopes
 	public class	DefaultScope : FallbackScope
 	{
 		#region Attributes
-		
+
 		private static IScope	constant = null;
 
 		private static object	mutex = new object ();

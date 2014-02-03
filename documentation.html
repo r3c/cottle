@@ -429,7 +429,7 @@
 					Trying to access value of <code>{mymap[f2]}</code> will
 					result in a very different behavior, since it will search
 					for the value whose key is the value of <code>f2</code>
-					(which hasn't be defined), leading to an undefined
+					(which hasn't be defined), leading to an undefined (void)
 					result.</p>
 					<p>It is valid to have a map in which two or more keys
 					are equal, but you will only be able to access the last
@@ -535,8 +535,8 @@ Hello, World!</code>
 					be a variable or the result of a function call) as a
 					boolean to check if its body should be printed or not.
 					A condition is satisfied if the value as a boolean is true:
-					any undefined result, empty string, 0 or empty map will be
-					converted to a boolean "false" value whereas any other
+					any void value, empty string, zero number or empty map will
+					be converted to a boolean "false" value whereas any other
 					value will be converted to "true".</p>
 					<p>The <code>if</code> command also supports optional
 					<code>elif</code> (else if) and <code>else</code> blocks
@@ -924,7 +924,7 @@ scope["block_end"] = "double right bracket (" + setting.BlockEnd + ")";</code>
 					by showing value in a "printable" form. Undefined values,
 					for example, won't print anything when passed through the
 					<code>echo</code> command, but will appear as
-					<code>&lt;undefined&gt;</code> with <code>dump</code>.</p>
+					<code>&lt;void&gt;</code> with <code>dump</code>.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{dump "string"}
@@ -936,7 +936,7 @@ scope["block_end"] = "double right bracket (" + setting.BlockEnd + ")";</code>
 						<blockquote><span>Result:</span></blockquote>
 <code>"string"
 42
-&lt;undefined&gt;
+&lt;void&gt;
 [0: 856, 1: "hello", "x": 17]</code>
 					</div>
 				</div>
@@ -957,7 +957,7 @@ scope["block_end"] = "double right bracket (" + setting.BlockEnd + ")";</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
-<code>&lt;undefined&gt;</code>
+<code>&lt;void&gt;</code>
 					</div>
 					<p>You could have expected this template to display
 					"second", but Cottle actually searches for the value
@@ -1131,7 +1131,7 @@ Move one disk from A to C</code>
 					</div>
 					<p>Note that the <code>set</code> command can also be used
 					without a value. Declaring or setting a variable without a
-					value is equivalent to asigning it an undefined value.</p>
+					value is equivalent to asigning it a void value.</p>
 				</div>
 
 				<h3>Custom .NET methods</h3>
@@ -1464,8 +1464,8 @@ PropertyItems =</code>
 				<div class="section">
 					<p>Return <code>test</code> if it
 					<a href="#conditional_statements">evaluates to true</a>, or
-					<code>fallback</code> otherwise (or an undefined value
-					if <code>fallback</code> is missing).</p>
+					<code>fallback</code> otherwise (or a void value if
+					<code>fallback</code> is missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{set x to 3}
@@ -1483,7 +1483,7 @@ PropertyItems =</code>
 				<div class="section">
 					<p>Return the numeric value of <code>a</code> divided by
 					the numeric value of <code>b</code>. Result of a division
-					by zero is an undefined value.</p>
+					by zero is a void value.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{div(5, 2)}</code>
@@ -1866,7 +1866,7 @@ true</code>
 					<p>Match <code>string</code> against given regular
 					expression pattern. If match is successful, a map
 					containing each captured group is returned, otherwise
-					result is an undefined value. See
+					result is a void value. See
 					<a href="http://msdn.microsoft.com/en-us/library/hs600312(v=vs.71).aspx">.NET
 					Framework Regular Expressions</a> for more information.</p>
 					<div class="code">
@@ -1877,7 +1877,7 @@ true</code>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>[0: "abc123", 1: "123"]
-&lt;undefined&gt;</code>
+&lt;void&gt;</code>
 					</div>
 				</div>
 
@@ -2152,7 +2152,7 @@ length</code>
 					<p>Return <code>true_part</code> if <code>test</code>
 					<a href="#conditional_statements">evaluates to true</a>, or
 					<code>false_part</code> otherwise
-					(or a undefined value if <code>false_part</code> is
+					(or a void value if <code>false_part</code> is
 					missing).</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>

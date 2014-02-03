@@ -52,7 +52,7 @@ namespace	Cottle.Expressions
 				}
 			}
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public override string	ToString ()

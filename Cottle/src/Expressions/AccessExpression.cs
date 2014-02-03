@@ -36,7 +36,7 @@ namespace	Cottle.Expressions
 			if (array.Fields.TryGet (this.index.Evaluate (scope, output), out value))
 				return value;
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public override string	ToString ()

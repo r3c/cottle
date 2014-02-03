@@ -5,11 +5,11 @@ using Cottle.Values;
 
 namespace	Cottle.Expressions
 {
-	sealed class	UndefinedExpression : Expression
+	sealed class	VoidExpression : Expression
 	{
 		#region Attributes
 
-		public static readonly UndefinedExpression	Instance = new UndefinedExpression ();
+		public static readonly VoidExpression	Instance = new VoidExpression ();
 
 		#endregion
 
@@ -17,12 +17,12 @@ namespace	Cottle.Expressions
 
 		public override Value	Evaluate (IScope scope, TextWriter output)
 		{
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public override string	ToString ()
 		{
-			return UndefinedValue.Instance.ToString ();
+			return VoidValue.Instance.ToString ();
 		}
 
 		#endregion

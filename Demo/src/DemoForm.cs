@@ -358,7 +358,7 @@ namespace	Demo
 					return node;
 
 				default:
-					this.NodeAssign (node, key, UndefinedValue.Instance);
+					this.NodeAssign (node, key, VoidValue.Instance);
 
 					return node;
 			}

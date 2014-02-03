@@ -2,7 +2,7 @@
 
 namespace	Cottle.Values
 {
-	public sealed class UndefinedValue : Value
+	public sealed class	VoidValue : Value
 	{
 		#region Properties
 
@@ -50,7 +50,7 @@ namespace	Cottle.Values
 		{
 			get
 			{
-				return ValueContent.Undefined;
+				return ValueContent.Void;
 			}
 		}
 
@@ -58,11 +58,11 @@ namespace	Cottle.Values
 
 		#region Properties / Static
 
-		public static UndefinedValue	Instance
+		public static VoidValue	Instance
 		{
 			get
 			{
-				return UndefinedValue.instance;
+				return VoidValue.instance;
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace	Cottle.Values
 
 		#region Attributes
 
-		private static readonly UndefinedValue	instance = new UndefinedValue ();
+		private static readonly VoidValue	instance = new VoidValue ();
 
 		#endregion
 
@@ -93,7 +93,7 @@ namespace	Cottle.Values
 
 		public override string	ToString ()
 		{
-			return "<undefined>";
+			return "<void>";
 		}
 
 		#endregion

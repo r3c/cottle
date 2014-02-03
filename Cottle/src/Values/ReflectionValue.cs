@@ -72,7 +72,7 @@ namespace	Cottle.Values
 
 			// Return undefined value for other primitive types
 			else if (type.IsPrimitive)
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			// Convert elements to array if source object is enumerable
 			else if (this.source is IEnumerable)
@@ -171,7 +171,7 @@ namespace	Cottle.Values
 				if (value != null)
 					return new ReflectionValue (value, this.binding);
 
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 			}
 
 			#endregion

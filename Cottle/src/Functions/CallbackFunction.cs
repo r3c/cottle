@@ -46,7 +46,7 @@ namespace	Cottle.Functions
 		public Value	Execute (IList<Value> values, IScope scope, TextWriter output)
 		{
 			if (this.callback == null || this.min > values.Count || (this.max >= 0 && this.max < values.Count))
-				return UndefinedValue.Instance;
+				return VoidValue.Instance;
 
 			return this.callback (values, scope, output);
 		}

@@ -89,7 +89,7 @@ namespace	Cottle
 			if (resolver != null)
 				return new LazyValue (resolver);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (Dictionary<Value, Value> dictionary)
@@ -97,7 +97,7 @@ namespace	Cottle
 			if (dictionary != null)
 				return new MapValue (dictionary);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (List<KeyValuePair<Value, Value>> pairs)
@@ -105,7 +105,7 @@ namespace	Cottle
 			if (pairs != null)
 				return new MapValue (pairs);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (KeyValuePair<Value, Value>[] pairs)
@@ -113,7 +113,7 @@ namespace	Cottle
 			if (pairs != null)
 				return new MapValue (pairs);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (List<Value> list)
@@ -121,7 +121,7 @@ namespace	Cottle
 			if (list != null)
 				return new MapValue (list);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (Value[] array)
@@ -129,7 +129,7 @@ namespace	Cottle
 			if (array != null)
 				return new MapValue (array);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public static implicit operator Value (bool value)
@@ -182,7 +182,7 @@ namespace	Cottle
 			if (value != null)
 				return new StringValue (value);
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		#endregion

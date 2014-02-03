@@ -39,7 +39,7 @@ namespace	Cottle.Functions
 
 			foreach (NameExpression argument in this.arguments)
 			{
-				argument.Set (scope, i < values.Count ? values[i] : UndefinedValue.Instance, ScopeMode.Local);
+				argument.Set (scope, i < values.Count ? values[i] : VoidValue.Instance, ScopeMode.Local);
 
 				++i;
 			}

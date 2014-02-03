@@ -113,7 +113,7 @@ namespace	Demo
 					break;
 
 				default:
-					this.assign (key, UndefinedValue.Instance);
+					this.assign (key, VoidValue.Instance);
 
 					break;
 			}
@@ -148,7 +148,7 @@ namespace	Demo
 			else if (this.radioButtonValueString.Checked)
 				type = ValueContent.String;
 			else
-				type = ValueContent.Undefined;
+				type = ValueContent.Void;
 
 			this.checkBoxValueBoolean.Enabled = (type == ValueContent.Boolean);
 			this.textBoxValueNumber.Enabled = (type == ValueContent.Number);

@@ -125,7 +125,7 @@ namespace	Cottle
 				default:
 					this.lexer.Next (LexerMode.Raw);
 
-					return new AssignValueNode (name, UndefinedExpression.Instance, mode);
+					return new AssignValueNode (name, VoidExpression.Instance, mode);
 			}
 		}
 

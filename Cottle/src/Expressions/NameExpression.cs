@@ -34,7 +34,7 @@ namespace	Cottle.Expressions
 			if (scope.Get (this.name, out value))
 				return value;
 
-			return UndefinedValue.Instance;
+			return VoidValue.Instance;
 		}
 
 		public bool Set (IScope scope, Value value, ScopeMode mode)

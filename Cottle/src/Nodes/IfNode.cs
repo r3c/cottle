@@ -56,7 +56,7 @@ namespace	Cottle.Nodes
 				return halt;
 			}
 
-			result = UndefinedValue.Instance;
+			result = VoidValue.Instance;
 
 			return false;
 		}

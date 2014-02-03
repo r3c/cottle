@@ -37,30 +37,38 @@ namespace	Cottle.Nodes
 		{
 			this.name.Set (scope, this.expression.Evaluate (scope, output), this.mode);
 
-			result = UndefinedValue.Instance;
+			result = VoidValue.Instance;
 
 			return false;
 		}
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			output.Write (setting.BlockBegin);
-			output.Write ("set ");
-			output.Write (this.name);
+			string	keyword;
+			string	link;
 
 			switch (this.mode)
 			{
-				case ScopeMode.Closest:
-					output.Write (" to ");
+				case ScopeMode.Local:
+					keyword = "declare";
+					link = "as";
 
 					break;
 
-				case ScopeMode.Local:
-					output.Write (" as ");
+				default:
+					keyword = "set";
+					link = "to";
 
 					break;
 			}
 
+			output.Write (setting.BlockBegin);
+			output.Write (keyword);
+			output.Write (' ');
+			output.Write (this.name);
+			output.Write (' ');
+			output.Write (link);
+			output.Write (' ');
 			output.Write (this.expression);
 			output.Write (setting.BlockEnd);
 		}
