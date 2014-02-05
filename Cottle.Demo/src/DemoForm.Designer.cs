@@ -1,4 +1,4 @@
-﻿namespace Demo
+﻿namespace Cottle.Demo
 {
 	partial class DemoForm
 	{

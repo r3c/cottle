@@ -1,6 +1,9 @@
-/Demo/bin/
-/Demo/obj/
 /Cottle/bin/
 /Cottle/obj/
+/Cottle.Demo/bin/
+/Cottle.Demo/obj/
+/Cottle.Test/bin/
+/Cottle.Test/obj/
+/packages/
 *.suo
 *.user

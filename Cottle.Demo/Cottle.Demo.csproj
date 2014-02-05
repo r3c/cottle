@@ -29,7 +29,7 @@
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>Demo</RootNamespace>
+    <RootNamespace>Cottle.Demo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-using Cottle;
 using Cottle.Settings;
 
-namespace	Demo
+namespace	Cottle.Demo
 {
 	public partial class	SettingForm : Form
 	{

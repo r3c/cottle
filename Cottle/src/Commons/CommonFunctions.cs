@@ -191,7 +191,9 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionDiv = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			decimal denominator = values[1].AsNumber;
+			decimal denominator;
+
+			denominator = values[1].AsNumber;
 
 			if (denominator == 0)
 				return VoidValue.Instance;
@@ -201,7 +203,9 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionEqual = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			Value	first = values[0];
+			Value	first;
+
+			first = values[0];
 
 			for (int i = 1; i < values.Count; ++i)
 				if (values[i].CompareTo (first) != 0)
@@ -240,12 +244,17 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionFilter = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			List<Value>							arguments = new List<Value> (values.Count - 1);
-			IFunction							callback = values[1].AsFunction;
-			List<KeyValuePair<Value, Value>>	result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
+			List<Value>							arguments;
+			IFunction							callback;
+			List<KeyValuePair<Value, Value>>	result;
+
+			callback = values[1].AsFunction;
 
 			if (callback == null)
 				return VoidValue.Instance;
+
+			arguments = new List<Value> (values.Count - 1);
+			result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
 
 			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
 			{
@@ -264,25 +273,29 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionFind = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			int		offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
-			Value	search = values[1];
-			Value	value = values[0];
-			int		i;
+			int		index;
+			int		offset;
+			Value	search;
+			Value	source;
 
-			if (value.Type == ValueContent.Map)
+			offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
+			search = values[1];
+			source = values[0];
+
+			if (source.Type == ValueContent.Map)
 			{
-				i = 0;
+				index = 0;
 
-				foreach (KeyValuePair<Value, Value> pair in value.Fields)
+				foreach (KeyValuePair<Value, Value> pair in source.Fields)
 				{
-					if (++i > offset && pair.Value.Equals (search))
-						return i - 1;
+					if (++index > offset && pair.Value.Equals (search))
+						return index - 1;
 				}
 
 				return -1;
 			}
 			else
-				return value.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
+				return source.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
 		}, 2, 3);
 
 		private static readonly IFunction	functionFlip = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
@@ -393,10 +406,12 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionHas = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			Value	value = values[0];
+			Value	source;
+
+			source = values[0];
 
 			for (int i = 1; i < values.Count; ++i)
-				if (!value.Fields.Contains (values[i]))
+				if (!source.Fields.Contains (values[i]))
 					return false;
 
 			return true;
@@ -453,21 +468,24 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionJoin = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			StringBuilder	builder = new StringBuilder ();
-			bool			first = true;
-			string			sep;
+			StringBuilder	builder;
+			bool			first;
+			string			split;
 
 			if (values.Count > 1)
-				sep = values[1].AsString;
+				split = values[1].AsString;
 			else
-				sep = string.Empty;
+				split = string.Empty;
+
+			builder = new StringBuilder ();
+			first = true;
 
 			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
 			{
 				if (first)
 					first = false;
 				else
-					builder.Append (sep);
+					builder.Append (split);
 
 				builder.Append (pair.Value.AsString);
 			}
@@ -500,13 +518,19 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionMap = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			List<Value>						arguments = new List<Value> (values.Count - 1);
-			IFunction						callback = values[1].AsFunction;
-			KeyValuePair<Value, Value>[]	result = new KeyValuePair<Value, Value>[values[0].Fields.Count];
-			int								i = 0;
+			List<Value>						arguments;
+			IFunction						callback;
+			KeyValuePair<Value, Value>[]	result;
+			int								i;
+
+			callback = values[1].AsFunction;
 
 			if (callback == null)
 				return VoidValue.Instance;
+
+			arguments = new List<Value> (values.Count - 1);
+			i = 0;
+			result = new KeyValuePair<Value, Value>[values[0].Fields.Count];
 
 			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
 			{
@@ -566,7 +590,9 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionMod = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			decimal denominator = values[1].AsNumber;
+			decimal denominator;
+
+			denominator = values[1].AsNumber;
 
 			if (denominator == 0)
 				return VoidValue.Instance;
@@ -597,7 +623,9 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionOrd = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			string	str = values[0].AsString;
+			string	str;
+
+			str = values[0].AsString;
 
 			return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
 		}, 1);
@@ -696,8 +724,11 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionSort = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			IFunction							callback = values.Count > 1 ? values[1].AsFunction : null;
-			List<KeyValuePair<Value, Value>>	sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
+			IFunction							callback;
+			List<KeyValuePair<Value, Value>>	sorted;
+
+			callback = values.Count > 1 ? values[1].AsFunction : null;
+			sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
 
 			if (callback != null)
 				sorted.Sort ((a, b) => (int)callback.Execute (new Value[] {a.Value, b.Value}, scope, output).AsNumber);
@@ -717,9 +748,56 @@ namespace	Cottle.Commons
 			return values[0].AsNumber - values[1].AsNumber;
 		}, 2);
 
+		private static readonly IFunction	functionToken = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
+		{
+			string	search;
+			string	source;
+			int		start;
+			int		stop;
+
+			search = values[1].AsString;
+			source = values[0].AsString;
+			start = 0;
+			stop = source.IndexOf (search);
+
+			for (int i = Math.Max ((int)values[2].AsNumber, 0); i > 0; --i)
+			{
+				if (stop == -1)
+				{
+					start = -1;
+
+					break;
+				}
+
+				start = stop + search.Length;
+				stop = source.IndexOf (search, start);
+			}
+
+			if (values.Count < 4)
+			{
+				if (start < 0)
+					return string.Empty;
+				else if (stop < 0)
+					return source.Substring (start);
+				else
+					return source.Substring (start, stop - start);
+			}
+			else
+			{
+				if (start < 0)
+					return source + search + values[3].AsString;
+				else if (stop < 0)
+					return source.Substring (0, start) + values[3].AsString;
+				else
+					return source.Substring (0, start) + values[3].AsString + source.Substring (stop);
+			}
+        }, 3, 4);
+
 		private static readonly IFunction	functionUnion = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			Dictionary<Value, Value>	result = new Dictionary<Value, Value> ();
+			Dictionary<Value, Value>	result;
+
+			result = new Dictionary<Value, Value> ();
 
 			foreach (Value value in values)
 			{
@@ -745,7 +823,9 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionXor = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			int count = 0;
+			int count;
+
+			count = 0;
 
 			foreach (Value value in values)
 			{
@@ -758,14 +838,23 @@ namespace	Cottle.Commons
 
 		private static readonly IFunction	functionZip = new CallbackFunction (delegate (IList<Value> values, IScope scope, TextWriter output)
 		{
-			IEnumerator<KeyValuePair<Value, Value>> enumerator1 = values[0].Fields.GetEnumerator ();
-			IEnumerator<KeyValuePair<Value, Value>> enumerator2 = values[1].Fields.GetEnumerator ();
-			List<KeyValuePair<Value, Value>>		pairs = new List<KeyValuePair<Value, Value>> ();
+			IEnumerator<KeyValuePair<Value, Value>> enumerator1;
+			IEnumerator<KeyValuePair<Value, Value>> enumerator2;
+			IMap									map1;
+			IMap									map2;
+			List<KeyValuePair<Value, Value>>		result;
+
+			map1 = values[0].Fields;
+			map2 = values[1].Fields;
+
+			enumerator1 = map1.GetEnumerator ();
+			enumerator2 = map2.GetEnumerator ();
+			result = new List<KeyValuePair<Value, Value>> (Math.Min (map1.Count, map2.Count));
 
 			while (enumerator1.MoveNext () && enumerator2.MoveNext ())
-				pairs.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
+				result.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
 
-			return pairs;
+			return result;
 		}, 2);
 
 		#endregion
@@ -836,6 +925,7 @@ namespace	Cottle.Commons
 			scope.Set ("sort", new FunctionValue (CommonFunctions.functionSort), mode);
 			scope.Set ("split", new FunctionValue (CommonFunctions.functionSplit), mode);
 			scope.Set ("sub", new FunctionValue (CommonFunctions.functionSub), mode);
+			scope.Set ("token", new FunctionValue (CommonFunctions.functionToken), mode);
 			scope.Set ("ucase", new FunctionValue (CommonFunctions.functionUpperCase), mode);
 			scope.Set ("union", new FunctionValue (CommonFunctions.functionUnion), mode);
 			scope.Set ("when", new FunctionValue (CommonFunctions.functionWhen), mode);

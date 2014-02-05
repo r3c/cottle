@@ -2203,6 +2203,30 @@ length</code>
 					</div>
 				</div>
 
+				<h3>Search or replace section delimited by characters: token(string, search, index[, replace])</h3>
+				<div class="section">
+					<p>Either return the n-th section of a string delimited by
+					separator substring <code>search</code> if no
+					<code>replace</code> argument is provided, or replace this
+					section by <code>replace</code> else. This function can be
+					used as a faster alteranative to combined split/slice/join
+					calls in some cases.</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>{token("First.Second.Third", ".", 1)}
+{token("A//B//C//D", "//", 2)}
+{token("XX-??-ZZ", "-", 1, "YY")}
+{token("1;2;3", ";", 3, "4")}</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>Second
+C
+XX-YY-ZZ
+1;2;3;4</code>
+					</div>
+				</div>
+
 				<h3>Convert string to uppercase: ucase(string)</h3>
 				<div class="section">
 					<p>Return an uppercase conversion of given string

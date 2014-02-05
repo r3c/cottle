@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
-using Cottle;
 using System.Windows.Forms;
 
-namespace	Demo
+namespace	Cottle.Demo
 {
 	public class	NodeData
 	{

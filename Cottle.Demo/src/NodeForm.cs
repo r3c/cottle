@@ -7,10 +7,9 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 
-using Cottle;
 using Cottle.Values;
 
-namespace	Demo
+namespace	Cottle.Demo
 {
 	public partial class	NodeForm : Form
 	{

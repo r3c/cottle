@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-using Cottle;
 using Cottle.Commons;
 using Cottle.Documents;
 using Cottle.Exceptions;
@@ -15,7 +14,7 @@ using Cottle.Scopes;
 using Cottle.Settings;
 using Cottle.Values;
 
-namespace	Demo
+namespace	Cottle.Demo
 {
 	public partial class	DemoForm : Form
 	{

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Cottle;
 using Cottle.Cleaners;
 
-namespace	Demo
+namespace	Cottle.Demo
 {
 	public static class CleanerCollection
 	{
