@@ -4,15 +4,15 @@ using System.Text;
 using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	class	AccessExpression : Expression
+	class AccessExpression : Expression
 	{
 		#region Attributes
 
-		private IExpression array;
+		private readonly IExpression	array;
 
-		private IExpression index;
+		private readonly IExpression	index;
 
 		#endregion
 
@@ -30,10 +30,12 @@ namespace	Cottle.Expressions
 
 		public override Value	Evaluate (IScope scope, TextWriter output)
 		{
-			Value	array = this.array.Evaluate (scope, output);
+			Value	source;
 			Value	value;
 
-			if (array.Fields.TryGet (this.index.Evaluate (scope, output), out value))
+			source = this.array.Evaluate (scope, output);
+
+			if (source.Fields.TryGet (this.index.Evaluate (scope, output), out value))
 				return value;
 
 			return VoidValue.Instance;
@@ -41,15 +43,12 @@ namespace	Cottle.Expressions
 
 		public override string	ToString ()
 		{
-			StringBuilder	builder;
-
-			builder = new StringBuilder ();
-			builder.Append (this.array);
-			builder.Append ('[');
-			builder.Append (this.index);
-			builder.Append (']');
-
-			return builder.ToString ();
+			return new StringBuilder ()
+				.Append (this.array)
+				.Append ('[')
+				.Append (this.index)
+				.Append (']')
+				.ToString ();
 		}
 
 		#endregion

@@ -12,10 +12,10 @@ namespace	Cottle
 	class	Parser
 	{
 		#region Attributes / Instance
-		
-		private ICleaner	cleaner;
 
-		private Lexer		lexer;
+		private readonly Lexer		lexer;
+
+		private readonly Trimmer	trimmer;
 
 		#endregion
 
@@ -41,8 +41,8 @@ namespace	Cottle
 
 		public	Parser (ISetting setting)
 		{
-			this.cleaner = setting.Cleaner;
-			this.lexer = new Lexer (setting);
+			this.lexer = new Lexer (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
+			this.trimmer = setting.Trimmer;
 		}
 
 		#endregion
@@ -70,10 +70,11 @@ namespace	Cottle
 
 		private INode	ParseAssignment (ScopeMode mode)
 		{
-			List<NameExpression>	arguments = new List<NameExpression> ();
+			List<NameExpression>	arguments;
 			Func<ScopeMode, INode>	build;
 			NameExpression			name;
 
+			arguments = new List<NameExpression> ();
 			name = this.ParseName ();
 
 			switch (this.lexer.Current.Type)
@@ -348,10 +349,12 @@ namespace	Cottle
 
 		private INode	ParseKeywordIf ()
 		{
-			List<IfNode.Branch>	branches = new List<IfNode.Branch> ();
-			INode				fallback = null;
+			List<IfNode.Branch>	branches;
+			INode				fallback;
 			IExpression			test;
 
+			branches = new List<IfNode.Branch> ();
+			fallback = null;
 			test = this.ParseExpression ();
 
 			branches.Add (new IfNode.Branch (test, this.ParseBody ()));
@@ -419,10 +422,8 @@ namespace	Cottle
 
 		private INode	ParseRaw ()
 		{
-			int			length;
 			List<INode>	nodes;
 			INode		node;
-			int			start;
 			string		text;
 
 			nodes = new List<INode> ();
@@ -447,14 +448,9 @@ namespace	Cottle
 						return nodes.Count != 1 ? new CompositeNode (nodes) : nodes[0];
 
 					case LexemType.Text:
-						text = this.lexer.Current.Content;
+						text = this.trimmer (this.lexer.Current.Content);
 
-						this.cleaner.GetRange (text, out start, out length);
-
-						start = Math.Max (Math.Min (start, text.Length - 1), 0);
-						length = Math.Max (Math.Min (length, text.Length - start), 0);
-
-						nodes.Add (new TextNode (text, start, length));
+						nodes.Add (new TextNode (text));
 
 						this.lexer.Next (LexerMode.Raw);
 

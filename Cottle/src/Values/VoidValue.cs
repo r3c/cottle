@@ -1,8 +1,8 @@
 ﻿using Cottle.Maps;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
-	public sealed class	VoidValue : Value
+	public sealed class VoidValue : Value
 	{
 		#region Properties
 
@@ -80,7 +80,8 @@ namespace	Cottle.Values
 		{
 			if (other == null)
 				return 1;
-			else if (this.Type != other.Type)
+
+			if (this.Type != other.Type)
 				return ((int)this.Type).CompareTo ((int)other.Type);
 
 			return 0;

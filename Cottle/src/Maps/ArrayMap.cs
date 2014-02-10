@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Cottle.Maps.Abstracts;
-using Cottle.Values;
 
-namespace	Cottle.Maps
+namespace Cottle.Maps
 {
-	sealed class	ArrayMap : AbstractMap
+	sealed class ArrayMap : AbstractMap
 	{
 		#region Properties
 
@@ -22,7 +20,7 @@ namespace	Cottle.Maps
 
 		#region Attributes
 
-		private List<KeyValuePair<Value, Value>>	array;
+		private readonly List<KeyValuePair<Value, Value>>	array;
 
 		#endregion
 

@@ -3,15 +3,15 @@ using System.Threading;
 
 using Cottle.Commons;
 
-namespace	Cottle.Scopes
+namespace Cottle.Scopes
 {
-	public class	DefaultScope : FallbackScope
+	public sealed class DefaultScope : FallbackScope
 	{
 		#region Attributes
 
-		private static IScope	constant = null;
+		private static IScope			constant = null;
 
-		private static object	mutex = new object ();
+		private static readonly object	mutex = new object ();
 		
 		#endregion
 

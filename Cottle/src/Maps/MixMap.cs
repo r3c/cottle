@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Cottle.Maps.Abstracts;
-using Cottle.Values;
 
-namespace	Cottle.Maps
+namespace Cottle.Maps
 {
-	sealed class	MixMap : AbstractMap
+	sealed class MixMap : AbstractMap
 	{
 		#region Properties
 
@@ -22,9 +20,9 @@ namespace	Cottle.Maps
 
 		#region Attributes
 
-		private List<KeyValuePair<Value, Value>>	array;
+		private readonly List<KeyValuePair<Value, Value>>	array;
 
-		private Dictionary<Value, Value>			hash;
+		private readonly Dictionary<Value, Value>			hash;
 
 		#endregion
 

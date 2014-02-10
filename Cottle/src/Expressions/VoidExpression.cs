@@ -3,9 +3,9 @@
 using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	sealed class	VoidExpression : Expression
+	sealed class VoidExpression : Expression
 	{
 		#region Attributes
 

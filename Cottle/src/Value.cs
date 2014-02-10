@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Cottle.Values;
 
@@ -204,6 +203,22 @@ namespace	Cottle
 		}
 
 		public abstract override int	GetHashCode ();
+
+		#endregion
+
+		#region Obsoletes
+
+		[Obsolete("Use TryGet method from Fields property")]
+		public bool Find (Value key, out Value value)
+		{
+			return this.Fields.TryGet (key, out value);
+		}
+
+		[Obsolete("Use Contains method from Fields property")]
+		public bool Has (Value key)
+		{
+			return this.Fields.Contains (key);
+		}
 
 		#endregion
 	}

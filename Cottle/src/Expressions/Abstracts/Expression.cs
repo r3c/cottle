@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace	Cottle.Expressions.Abstracts
+namespace Cottle.Expressions.Abstracts
 {
-	abstract class	Expression : IExpression
+	abstract class Expression : IExpression
 	{
 		#region Methods
 

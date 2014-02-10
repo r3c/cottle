@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-
-using Cottle.Settings;
 
 namespace	Cottle.Demo
 {
@@ -10,25 +7,25 @@ namespace	Cottle.Demo
 	{
 		#region Attributes
 
-		private ConfigApplyDelegate apply;
+		private ApplyCallback	apply;
 
 		#endregion
 
 		#region Constructors
 
-		public	SettingForm (ISetting setting, ConfigApplyDelegate apply)
+		public	SettingForm (ApplyCallback apply, Parameters parameters)
 		{
 			this.apply = apply;
 
 			InitializeComponent ();
 
-			foreach (KeyValuePair<string, ICleaner> cleaner in CleanerCollection.Cleaners)
-				this.comboBoxClean.Items.Add (cleaner.Key);
+			foreach (string name in TrimmerCollection.TrimmerNames)
+				this.comboBoxTrimmer.Items.Add (name);
 
-			this.comboBoxClean.SelectedIndex = CleanerCollection.GetIndex (setting.Cleaner);
-			this.textBoxBlockBegin.Text = setting.BlockBegin;
-			this.textBoxBlockContinue.Text = setting.BlockContinue;
-			this.textBoxBlockEnd.Text = setting.BlockEnd;
+			this.comboBoxTrimmer.SelectedIndex = parameters.TrimmerIndex;
+			this.textBoxBlockBegin.Text = parameters.BlockBegin;
+			this.textBoxBlockContinue.Text = parameters.BlockContinue;
+			this.textBoxBlockEnd.Text = parameters.BlockEnd;
 		}
 
 		#endregion
@@ -37,15 +34,17 @@ namespace	Cottle.Demo
 
 		private void	buttonAccept_Click (object sender, EventArgs e)
 		{
-			CustomSetting	setting;
+			Parameters	parameters;
 
-			setting = new CustomSetting ();
-			setting.BlockBegin = this.textBoxBlockBegin.Text;
-			setting.BlockContinue = this.textBoxBlockContinue.Text;
-			setting.BlockEnd = this.textBoxBlockEnd.Text;
-			setting.Cleaner = CleanerCollection.GetCleaner (this.comboBoxClean.SelectedIndex);
+			parameters = new Parameters
+			{
+				BlockBegin		= this.textBoxBlockBegin.Text,
+				BlockContinue	= this.textBoxBlockContinue.Text,
+				BlockEnd		= this.textBoxBlockEnd.Text,
+				TrimmerIndex	= this.comboBoxTrimmer.SelectedIndex
+			};
 
-			this.apply (setting);
+			this.apply (parameters);
 
 			this.Close ();
 		}
@@ -59,7 +58,15 @@ namespace	Cottle.Demo
 
 		#region Types
 
-		public delegate void	ConfigApplyDelegate (ISetting setting);
+		public delegate void	ApplyCallback (Parameters config);
+
+		public struct	Parameters
+		{
+			public string	BlockBegin;
+			public string	BlockContinue;
+			public string	BlockEnd;
+			public int		TrimmerIndex;
+		}
 
 		#endregion
 	}

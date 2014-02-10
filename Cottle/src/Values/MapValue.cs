@@ -3,7 +3,7 @@ using System.Text;
 
 using Cottle.Maps;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class	MapValue : Value
 	{
@@ -61,7 +61,7 @@ namespace	Cottle.Values
 
 		#region Attributes
 
-		private IMap	fields;
+		private readonly IMap	fields;
 
 		#endregion
 
@@ -95,7 +95,8 @@ namespace	Cottle.Values
 		{
 			if (other == null)
 				return 1;
-			else if (this.Type != other.Type)
+
+			if (this.Type != other.Type)
 				return ((int)this.Type).CompareTo ((int)other.Type);
 
 			return this.fields.CompareTo (other.Fields);
@@ -108,10 +109,13 @@ namespace	Cottle.Values
 
 		public override string	ToString ()
 		{
-			StringBuilder	builder = new StringBuilder ();
-			bool			separator = false;
+			StringBuilder	builder;
+			bool			separator;
 
+			builder = new StringBuilder ();
 			builder.Append ('[');
+
+			separator = false;
 
 			foreach (KeyValuePair<Value, Value> pair in this.fields)
 			{

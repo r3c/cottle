@@ -1,8 +1,8 @@
-﻿using Cottle.Cleaners;
+﻿using System;
 
 namespace Cottle.Settings
 {
-	public class	DefaultSetting : ISetting
+	public sealed class DefaultSetting : ISetting
 	{
 		#region Properties / Instance
 
@@ -30,11 +30,11 @@ namespace Cottle.Settings
 			}
 		}
 
-		public ICleaner	Cleaner
+		public Trimmer	Trimmer
 		{
 			get
 			{
-				return DefaultSetting.cleaner;
+				return (t) => t;
 			}
 		}
 
@@ -53,10 +53,21 @@ namespace Cottle.Settings
 		#endregion
 
 		#region Attributes
-		
-		private static readonly NullCleaner		cleaner = new NullCleaner ();
 
 		private static readonly DefaultSetting	instance = new DefaultSetting ();
+
+		#endregion
+
+		#region Obsolete
+
+		[Obsolete ("Use Trimmer property")]
+		public ICleaner	Cleaner
+		{
+			get
+			{
+				throw new InvalidOperationException ();
+			}
+		}
 
 		#endregion
 	}

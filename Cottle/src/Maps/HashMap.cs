@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Cottle.Maps.Abstracts;
-using Cottle.Values;
 
-namespace	Cottle.Maps
+namespace Cottle.Maps
 {
-	sealed class	HashMap : AbstractMap
+	sealed class HashMap : AbstractMap
 	{
 		#region Properties
 

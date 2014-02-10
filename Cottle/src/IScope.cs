@@ -1,8 +1,7 @@
-﻿using Cottle.Values;
-
-namespace	Cottle
+﻿
+namespace Cottle
 {
-	public interface	IScope
+	public interface IScope
 	{
 		#region Properties
 		

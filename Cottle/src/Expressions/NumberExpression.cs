@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	sealed class	NumberExpression : ConstantExpression<decimal>
+	sealed class NumberExpression : ConstantExpression<decimal>
 	{
 		#region Constructors
 

@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	sealed class	NameExpression : Expression
+	sealed class NameExpression : Expression
 	{
 		#region Attributes
 
-		private string	name;
+		private readonly string	name;
 
 		#endregion
 

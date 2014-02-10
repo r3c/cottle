@@ -29,8 +29,8 @@
 		private void InitializeComponent()
 		{
 			this.groupBox = new System.Windows.Forms.GroupBox();
-			this.comboBoxClean = new System.Windows.Forms.ComboBox();
-			this.labelClean = new System.Windows.Forms.Label();
+			this.comboBoxTrimmer = new System.Windows.Forms.ComboBox();
+			this.labelTrimmer = new System.Windows.Forms.Label();
 			this.textBoxBlockContinue = new System.Windows.Forms.TextBox();
 			this.labelBlockContinue = new System.Windows.Forms.Label();
 			this.textBoxBlockEnd = new System.Windows.Forms.TextBox();
@@ -44,8 +44,8 @@
 			// 
 			// groupBox
 			// 
-			this.groupBox.Controls.Add(this.comboBoxClean);
-			this.groupBox.Controls.Add(this.labelClean);
+			this.groupBox.Controls.Add(this.comboBoxTrimmer);
+			this.groupBox.Controls.Add(this.labelTrimmer);
 			this.groupBox.Controls.Add(this.textBoxBlockContinue);
 			this.groupBox.Controls.Add(this.labelBlockContinue);
 			this.groupBox.Controls.Add(this.textBoxBlockEnd);
@@ -64,23 +64,23 @@
 			// 
 			// comboBoxClean
 			// 
-			this.comboBoxClean.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.comboBoxTrimmer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.comboBoxClean.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBoxClean.FormattingEnabled = true;
-			this.comboBoxClean.Location = new System.Drawing.Point(120, 99);
-			this.comboBoxClean.Name = "comboBoxClean";
-			this.comboBoxClean.Size = new System.Drawing.Size(144, 21);
-			this.comboBoxClean.TabIndex = 3;
+			this.comboBoxTrimmer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxTrimmer.FormattingEnabled = true;
+			this.comboBoxTrimmer.Location = new System.Drawing.Point(120, 99);
+			this.comboBoxTrimmer.Name = "comboBoxTrimmer";
+			this.comboBoxTrimmer.Size = new System.Drawing.Size(144, 21);
+			this.comboBoxTrimmer.TabIndex = 3;
 			// 
 			// labelClean
 			// 
-			this.labelClean.AutoSize = true;
-			this.labelClean.Location = new System.Drawing.Point(8, 102);
-			this.labelClean.Name = "labelClean";
-			this.labelClean.Size = new System.Drawing.Size(80, 13);
-			this.labelClean.TabIndex = 17;
-			this.labelClean.Text = "Cleaning mode:";
+			this.labelTrimmer.AutoSize = true;
+			this.labelTrimmer.Location = new System.Drawing.Point(8, 102);
+			this.labelTrimmer.Name = "labelClean";
+			this.labelTrimmer.Size = new System.Drawing.Size(80, 13);
+			this.labelTrimmer.TabIndex = 17;
+			this.labelTrimmer.Text = "Trimming mode:";
 			// 
 			// textBoxBlockContinue
 			// 
@@ -122,7 +122,7 @@
 			// 
 			this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.Image = global::Demo.Properties.Resources.button_cancel;
+			this.buttonCancel.Image = global::Cottle.Demo.Properties.Resources.button_cancel;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(140, 128);
 			this.buttonCancel.Name = "buttonCancel";
@@ -144,7 +144,7 @@
 			// buttonAccept
 			// 
 			this.buttonAccept.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.buttonAccept.Image = global::Demo.Properties.Resources.button_accept;
+			this.buttonAccept.Image = global::Cottle.Demo.Properties.Resources.button_accept;
 			this.buttonAccept.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonAccept.Location = new System.Drawing.Point(34, 128);
 			this.buttonAccept.Name = "buttonAccept";
@@ -181,8 +181,8 @@
 			this.groupBox.PerformLayout();
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.Label labelClean;
-		private System.Windows.Forms.ComboBox comboBoxClean;
+		private System.Windows.Forms.Label labelTrimmer;
+		private System.Windows.Forms.ComboBox comboBoxTrimmer;
 
 		#endregion
 

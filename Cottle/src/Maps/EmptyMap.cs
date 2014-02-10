@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Cottle.Maps.Abstracts;
 
-namespace	Cottle.Maps
+namespace Cottle.Maps
 {
-	sealed class	EmptyMap : AbstractMap
+	sealed class EmptyMap : AbstractMap
 	{
 		#region Properties / Instance
 

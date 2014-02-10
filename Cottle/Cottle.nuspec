@@ -11,8 +11,8 @@
     <iconUrl>https://raw.github.com/r3c/Cottle/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-	<releaseNotes>Changed configuration API, automatic raw text cleaning can now be enabled.</releaseNotes>
-	<copyright>Copyright r3c 2012</copyright>
+	<releaseNotes>Replace "ICleaner" interface by "Trimmer" callback, optimize rendering.</releaseNotes>
+	<copyright>$copyright$</copyright>
     <tags>Cottle Template Engine Text Transform Format</tags>
   </metadata>
 </package>

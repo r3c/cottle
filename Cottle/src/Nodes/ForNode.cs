@@ -10,15 +10,15 @@ namespace	Cottle.Nodes
 	{
 		#region Attributes
 
-		private INode			body;
+		private readonly INode			body;
 
-		private INode			empty;
+		private readonly INode			empty;
 
-		private IExpression		from;
+		private readonly IExpression	from;
 
-		private NameExpression	key;
+		private readonly NameExpression	key;
 
-		private NameExpression	value;
+		private readonly NameExpression	value;
 
 		#endregion
 

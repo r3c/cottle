@@ -1,6 +1,6 @@
 ﻿using Cottle.Values.Generics;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class BooleanValue : ScalarValue<bool>
 	{
@@ -51,10 +51,7 @@ namespace	Cottle.Values
 		#region Constructors
 
 		public	BooleanValue (bool value) :
-			base (value, delegate (Value source)
-			{
-				return source.AsBoolean;
-			})
+			base (value, (source) => source.AsBoolean)
 		{
 		}
 

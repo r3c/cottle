@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace	Cottle
 {
@@ -29,9 +27,9 @@ namespace	Cottle
 
 		#region Attributes
 
-		private string		content;
+		private readonly string		content;
 
-		private LexemType	type;
+		private readonly LexemType	type;
 
 		#endregion
 

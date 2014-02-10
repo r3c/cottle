@@ -2,7 +2,7 @@
 
 using Cottle.Values.Generics;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class NumberValue : ScalarValue<decimal>
 	{
@@ -50,10 +50,7 @@ namespace	Cottle.Values
 		}
 
 		public	NumberValue (decimal value) :
-			base (value, delegate (Value source)
-			{
-				return source.AsNumber;
-			})
+			base (value, (source) => source.AsNumber)
 		{
 		}
 

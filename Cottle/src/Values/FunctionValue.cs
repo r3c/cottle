@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Cottle.Maps;
 
-using Cottle.Maps;
-
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class FunctionValue : Value
 	{
@@ -60,7 +58,7 @@ namespace	Cottle.Values
 
 		#region Attributes
 
-		private IFunction	function;
+		private readonly IFunction	function;
 
 		#endregion
 

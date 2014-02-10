@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	ReturnNode : INode
+	sealed class ReturnNode : INode
 	{
 		#region Attributes
 
-		private IExpression expression;
+		private readonly IExpression	expression;
 
 		#endregion
 

@@ -18,9 +18,9 @@ namespace	Cottle
 
 		#region Attributes
 
-		private Dictionary<char, LexemState>	branches = new Dictionary<char, LexemState> ();
+		private readonly Dictionary<char, LexemState>	branches = new Dictionary<char, LexemState> ();
 
-		private LexemType						type = LexemType.None;
+		private LexemType								type = LexemType.None;
 
 		#endregion
 

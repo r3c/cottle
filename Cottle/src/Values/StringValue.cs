@@ -3,7 +3,7 @@ using System.Text;
 
 using Cottle.Values.Generics;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class StringValue : ScalarValue<string>
 	{
@@ -48,10 +48,7 @@ namespace	Cottle.Values
 		#region Constructors
 
 		public	StringValue (string value) :
-			base (value, delegate (Value source)
-			{
-				return source.AsString;
-			})
+			base (value, (source) => source.AsString)
 		{
 		}
 
@@ -66,8 +63,9 @@ namespace	Cottle.Values
 
 		public override string	ToString ()
 		{
-			StringBuilder	builder = new StringBuilder ();
+			StringBuilder	builder;
 
+			builder = new StringBuilder ();
 			builder.Append ('"');
 
 			foreach (char c in this.value)

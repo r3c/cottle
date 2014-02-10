@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Cottle.Scopes.Abstracts;
-using Cottle.Values;
 
-namespace	Cottle.Scopes
+namespace Cottle.Scopes
 {
-	public class	SimpleScope : AbstractScope
+	public sealed class SimpleScope : AbstractScope
 	{
 		#region Attributes
 
-		private Stack<HashSet<Value>>			levels = new Stack<HashSet<Value>> ();
+		private readonly Stack<HashSet<Value>>				levels;
 
-		private Dictionary<Value, Stack<Value>>	stacks = new Dictionary<Value, Stack<Value>> ();
+		private readonly Dictionary<Value, Stack<Value>>	stacks;
 
 		#endregion
 
@@ -21,7 +19,9 @@ namespace	Cottle.Scopes
 
 		public	SimpleScope ()
 		{
+			this.levels = new Stack<HashSet<Value>> ();
 			this.levels.Push (new HashSet<Value> ());
+			this.stacks = new Dictionary<Value, Stack<Value>> ();
 		}
 
 		#endregion

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace	Cottle.Expressions.Abstracts
+namespace Cottle.Expressions.Abstracts
 {
-	abstract class	ConstantExpression<T> : Expression
+	abstract class ConstantExpression<T> : Expression
 	{
 		#region Attributes
 
-		private Value	value;
+		private readonly Value	value;
 
 		#endregion
 

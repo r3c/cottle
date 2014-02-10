@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-using Cottle.Cleaners;
 using Cottle.Exceptions;
 
 namespace	Cottle
@@ -48,44 +47,44 @@ namespace	Cottle
 
 		#region Attributes
 
-		private int					column;
+		private int							column;
 
-		private Lexem				current;
+		private Lexem						current;
 
-		private Queue<LexemCursor>	cursors;
+		private readonly Queue<LexemCursor>	cursors;
 
-		private bool				eof;
+		private bool						eof;
 
-		private int					index;
+		private int							index;
 
-		private char				last;
+		private char						last;
 
-		private int					line;
+		private int							line;
 
-		private Lexem				pending;
+		private Lexem						pending;
 
-		private TextReader			reader;
+		private TextReader					reader;
 
-		private LexemState			root;
+		private readonly LexemState			root;
 
 		#endregion
 
 		#region Constructors
 
-		public	Lexer (ISetting setting)
+		public	Lexer (string blockBegin, string blockContinue, string blockEnd)
 		{
 			this.cursors = new Queue<LexemCursor> ();
 			this.pending = new Lexem (LexemType.None, string.Empty);
 			this.root = new LexemState ();
 
-			if (!this.root.Store (LexemType.BlockBegin, setting.BlockBegin))
-				throw new ConfigException ("BlockBegin", setting.BlockBegin, "token used twice");
+			if (!this.root.Store (LexemType.BlockBegin, blockBegin))
+				throw new ConfigException ("BlockBegin", blockBegin, "token used twice");
 
-			if (!this.root.Store (LexemType.BlockContinue, setting.BlockContinue))
-				throw new ConfigException ("BlockContinue", setting.BlockContinue, "token used twice");
+			if (!this.root.Store (LexemType.BlockContinue, blockContinue))
+				throw new ConfigException ("BlockContinue", blockContinue, "token used twice");
 
-			if (!this.root.Store (LexemType.BlockEnd, setting.BlockEnd))
-				throw new ConfigException ("BlockEnd", setting.BlockEnd, "token used twice");
+			if (!this.root.Store (LexemType.BlockEnd, blockEnd))
+				throw new ConfigException ("BlockEnd", blockEnd, "token used twice");
 		}
 
 		#endregion

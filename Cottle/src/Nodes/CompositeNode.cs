@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	CompositeNode : INode
+	sealed class CompositeNode : INode
 	{
 		#region Attributes
 
-		private IEnumerable<INode>	nodes;
+		private readonly INode[]	nodes;
 
 		#endregion
 
@@ -19,7 +18,7 @@ namespace	Cottle.Nodes
 
 		public	CompositeNode (IEnumerable<INode> nodes)
 		{
-			this.nodes = nodes;
+			this.nodes = new List<INode> (nodes).ToArray ();
 		}
 
 		#endregion

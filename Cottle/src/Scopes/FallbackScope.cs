@@ -2,9 +2,9 @@
 
 using Cottle.Scopes.Abstracts;
 
-namespace	Cottle.Scopes
+namespace Cottle.Scopes
 {
-	public class	FallbackScope : AbstractScope
+	public class FallbackScope : AbstractScope
 	{
 		#region Properties
 
@@ -28,9 +28,9 @@ namespace	Cottle.Scopes
 		
 		#region Attributes
 
-		private IScope	constant;
+		private readonly IScope	constant;
 
-		private IScope	front;
+		private readonly IScope	front;
 
 		#endregion
 		

@@ -1,8 +1,8 @@
 ﻿using Cottle.Values;
 
-namespace	Cottle.Scopes.Abstracts
+namespace Cottle.Scopes.Abstracts
 {
-	public abstract class	AbstractScope : IScope
+	public abstract class AbstractScope : IScope
 	{
 		#region Properties
 

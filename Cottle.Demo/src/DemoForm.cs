@@ -26,7 +26,13 @@ namespace	Cottle.Demo
 
 		#region Attributes / Instance
 
-		private ISetting	setting = DefaultSetting.Instance;
+		private SettingForm.Parameters	parameters = new SettingForm.Parameters
+		{
+			BlockBegin		= DefaultSetting.Instance.BlockBegin,
+			BlockContinue	= DefaultSetting.Instance.BlockContinue,
+			BlockEnd		= DefaultSetting.Instance.BlockEnd,
+			TrimmerIndex	= TrimmerCollection.DEFAULT_INDEX
+		};
 
 		#endregion
 
@@ -49,12 +55,15 @@ namespace	Cottle.Demo
 		private void	buttonClean_Click (object sender, EventArgs e)
 		{
 			IDocument	document;
+			ISetting	setting;
+
+			setting = this.SettingCreate ();
 
 			try
 			{
 				try
 				{
-					document = new SimpleDocument (this.textBoxInput.Text, this.setting);
+					document = new SimpleDocument (this.textBoxInput.Text, setting);
 
 					this.textBoxInput.Text = document.Source ();
 				}
@@ -90,12 +99,15 @@ namespace	Cottle.Demo
 		{
 			IDocument	document;
 			IScope		scope;
+			ISetting	setting;
+
+			setting = this.SettingCreate ();
 
 			try
 			{
 				try
 				{
-					document = new SimpleDocument (this.textBoxInput.Text, this.setting);
+					document = new SimpleDocument (this.textBoxInput.Text, setting);
 					scope = new DefaultScope ();
 
 					foreach (TreeNode root in this.treeViewValue.Nodes)
@@ -139,7 +151,7 @@ namespace	Cottle.Demo
 		{
 			Form	form;
 
-			form = new SettingForm (this.setting, (setting) => this.setting = setting);
+			form = new SettingForm ((p) => this.parameters = p, this.parameters);
 			form.ShowDialog (this);
 		}
 
@@ -377,10 +389,22 @@ namespace	Cottle.Demo
 			}
 		}
 
+		private ISetting	SettingCreate ()
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.BlockBegin = this.parameters.BlockBegin;
+			setting.BlockContinue = this.parameters.BlockContinue;
+			setting.BlockEnd = this.parameters.BlockEnd;
+			setting.Trimmer = TrimmerCollection.GetTrimmer (this.parameters.TrimmerIndex);
+
+			return setting;
+		}
+
 		private void	StateLoad (string path, bool dialog)
 		{
 			TreeNode					root;
-			CustomSetting				setting;
 			Dictionary<string, Value>   values;
 			int						 	version;
 
@@ -410,13 +434,14 @@ namespace	Cottle.Demo
 							root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
 					}
 
-					setting = new CustomSetting ();
-					setting.BlockBegin = reader.ReadString ();
-					setting.BlockContinue = reader.ReadString ();
-					setting.BlockEnd = reader.ReadString ();
-					setting.Cleaner = CleanerCollection.GetCleaner (version > 1 ? reader.ReadInt32 () : -1);
+					this.parameters = new SettingForm.Parameters
+					{
+						BlockBegin		= reader.ReadString (),
+						BlockContinue	= reader.ReadString (),
+						BlockEnd		= reader.ReadString (),
+						TrimmerIndex	= version > 1 ? reader.ReadInt32 () : TrimmerCollection.DEFAULT_INDEX
+					};
 
-					this.setting = setting;
 					this.textBoxInput.Text = reader.ReadString ();
 				}
 
@@ -449,10 +474,10 @@ namespace	Cottle.Demo
 
 					CommonTools.ValuesSave (writer, values);
 
-					writer.Write (this.setting.BlockBegin);
-					writer.Write (this.setting.BlockContinue);
-					writer.Write (this.setting.BlockEnd);
-					writer.Write (CleanerCollection.GetIndex (this.setting.Cleaner));
+					writer.Write (this.parameters.BlockBegin);
+					writer.Write (this.parameters.BlockContinue);
+					writer.Write (this.parameters.BlockEnd);
+					writer.Write (this.parameters.TrimmerIndex);
 					writer.Write (this.textBoxInput.Text);
 				}
 

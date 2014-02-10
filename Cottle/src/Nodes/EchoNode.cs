@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Text;
 
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	EchoNode : INode
+	sealed class EchoNode : INode
 	{
 		#region Attributes
 
-		private IExpression expression;
+		private readonly IExpression	expression;
 
 		#endregion
 
@@ -37,16 +36,16 @@ namespace	Cottle.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			string	expression;
+			string	source;
 
-			expression = this.expression.ToString ();
+			source = this.expression.ToString ();
 
 			output.Write (setting.BlockBegin);
 
-			if (expression.StartsWith ("echo"))
+			if (source.StartsWith ("echo", StringComparison.InvariantCulture))
 				output.Write ("echo ");
 
-			output.Write (expression);
+			output.Write (source);
 			output.Write (setting.BlockEnd);
 		}
 

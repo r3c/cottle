@@ -153,7 +153,7 @@
 			// 
 			// toolStripMenuItemNodeCreate
 			// 
-			this.toolStripMenuItemNodeCreate.Image = global::Demo.Properties.Resources.menu_node_create;
+			this.toolStripMenuItemNodeCreate.Image = global::Cottle.Demo.Properties.Resources.menu_node_create;
 			this.toolStripMenuItemNodeCreate.Name = "toolStripMenuItemNodeCreate";
 			this.toolStripMenuItemNodeCreate.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemNodeCreate.Text = "Insert value here";
@@ -166,7 +166,7 @@
 			// 
 			// toolStripMenuItemNodeClone
 			// 
-			this.toolStripMenuItemNodeClone.Image = global::Demo.Properties.Resources.menu_node_clone;
+			this.toolStripMenuItemNodeClone.Image = global::Cottle.Demo.Properties.Resources.menu_node_clone;
 			this.toolStripMenuItemNodeClone.Name = "toolStripMenuItemNodeClone";
 			this.toolStripMenuItemNodeClone.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemNodeClone.Text = "Clone value";
@@ -174,7 +174,7 @@
 			// 
 			// toolStripMenuItemNodeUpdate
 			// 
-			this.toolStripMenuItemNodeUpdate.Image = global::Demo.Properties.Resources.menu_node_update;
+			this.toolStripMenuItemNodeUpdate.Image = global::Cottle.Demo.Properties.Resources.menu_node_update;
 			this.toolStripMenuItemNodeUpdate.Name = "toolStripMenuItemNodeUpdate";
 			this.toolStripMenuItemNodeUpdate.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemNodeUpdate.Text = "Modify value";
@@ -182,7 +182,7 @@
 			// 
 			// toolStripMenuItemNodeDelete
 			// 
-			this.toolStripMenuItemNodeDelete.Image = global::Demo.Properties.Resources.menu_node_delete;
+			this.toolStripMenuItemNodeDelete.Image = global::Cottle.Demo.Properties.Resources.menu_node_delete;
 			this.toolStripMenuItemNodeDelete.Name = "toolStripMenuItemNodeDelete";
 			this.toolStripMenuItemNodeDelete.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemNodeDelete.Text = "Delete value";
@@ -190,7 +190,7 @@
 			// 
 			// toolStripMenuItemMoveUp
 			// 
-			this.toolStripMenuItemMoveUp.Image = global::Demo.Properties.Resources.menu_move_up;
+			this.toolStripMenuItemMoveUp.Image = global::Cottle.Demo.Properties.Resources.menu_move_up;
 			this.toolStripMenuItemMoveUp.Name = "toolStripMenuItemMoveUp";
 			this.toolStripMenuItemMoveUp.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemMoveUp.Text = "Move up";
@@ -198,7 +198,7 @@
 			// 
 			// toolStripMenuItemMoveDown
 			// 
-			this.toolStripMenuItemMoveDown.Image = global::Demo.Properties.Resources.menu_move_down;
+			this.toolStripMenuItemMoveDown.Image = global::Cottle.Demo.Properties.Resources.menu_move_down;
 			this.toolStripMenuItemMoveDown.Name = "toolStripMenuItemMoveDown";
 			this.toolStripMenuItemMoveDown.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemMoveDown.Text = "Move down";
@@ -211,7 +211,7 @@
 			// 
 			// toolStripMenuItemFileLoad
 			// 
-			this.toolStripMenuItemFileLoad.Image = global::Demo.Properties.Resources.menu_file_load;
+			this.toolStripMenuItemFileLoad.Image = global::Cottle.Demo.Properties.Resources.menu_file_load;
 			this.toolStripMenuItemFileLoad.Name = "toolStripMenuItemFileLoad";
 			this.toolStripMenuItemFileLoad.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemFileLoad.Text = "Load state...";
@@ -219,7 +219,7 @@
 			// 
 			// toolStripMenuItemFileSave
 			// 
-			this.toolStripMenuItemFileSave.Image = global::Demo.Properties.Resources.menu_file_save;
+			this.toolStripMenuItemFileSave.Image = global::Cottle.Demo.Properties.Resources.menu_file_save;
 			this.toolStripMenuItemFileSave.Name = "toolStripMenuItemFileSave";
 			this.toolStripMenuItemFileSave.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemFileSave.Text = "Save state...";
@@ -227,7 +227,7 @@
 			// 
 			// toolStripMenuItemSetting
 			// 
-			this.toolStripMenuItemSetting.Image = global::Demo.Properties.Resources.menu_config;
+			this.toolStripMenuItemSetting.Image = global::Cottle.Demo.Properties.Resources.menu_config;
 			this.toolStripMenuItemSetting.Name = "toolStripMenuItemSetting";
 			this.toolStripMenuItemSetting.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemSetting.Text = "Setting...";
@@ -240,7 +240,7 @@
 			// 
 			// toolStripMenuItemTreeCollapse
 			// 
-			this.toolStripMenuItemTreeCollapse.Image = global::Demo.Properties.Resources.menu_tree_collapse;
+			this.toolStripMenuItemTreeCollapse.Image = global::Cottle.Demo.Properties.Resources.menu_tree_collapse;
 			this.toolStripMenuItemTreeCollapse.Name = "toolStripMenuItemTreeCollapse";
 			this.toolStripMenuItemTreeCollapse.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemTreeCollapse.Text = "Collapse all";
@@ -248,7 +248,7 @@
 			// 
 			// toolStripMenuItemTreeExpand
 			// 
-			this.toolStripMenuItemTreeExpand.Image = global::Demo.Properties.Resources.menu_tree_expand;
+			this.toolStripMenuItemTreeExpand.Image = global::Cottle.Demo.Properties.Resources.menu_tree_expand;
 			this.toolStripMenuItemTreeExpand.Name = "toolStripMenuItemTreeExpand";
 			this.toolStripMenuItemTreeExpand.Size = new System.Drawing.Size(160, 22);
 			this.toolStripMenuItemTreeExpand.Text = "Expand all";
@@ -281,7 +281,7 @@
 			// 
 			// buttonClean
 			// 
-			this.buttonClean.Image = global::Demo.Properties.Resources.button_clean;
+			this.buttonClean.Image = global::Cottle.Demo.Properties.Resources.button_clean;
 			this.buttonClean.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonClean.Location = new System.Drawing.Point(112, 19);
 			this.buttonClean.Name = "buttonClean";
@@ -293,7 +293,7 @@
 			// 
 			// buttonEvaluate
 			// 
-			this.buttonEvaluate.Image = global::Demo.Properties.Resources.button_submit;
+			this.buttonEvaluate.Image = global::Cottle.Demo.Properties.Resources.button_submit;
 			this.buttonEvaluate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonEvaluate.Location = new System.Drawing.Point(6, 19);
 			this.buttonEvaluate.Name = "buttonEvaluate";

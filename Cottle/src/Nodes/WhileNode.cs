@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	WhileNode : INode
+	sealed class WhileNode : INode
 	{
 		#region Attributes
 
-		private INode		body;
+		private readonly INode			body;
 
-		private IExpression	test;
+		private readonly IExpression	test;
 
 		#endregion
 

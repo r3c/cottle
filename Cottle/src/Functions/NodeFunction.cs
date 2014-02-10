@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace	Cottle.Functions
+namespace Cottle.Functions
 {
-	class	NodeFunction : IFunction
+	sealed class NodeFunction : IFunction
 	{
 		#region Attributes
 
-		private List<NameExpression>	arguments;
+		private readonly List<NameExpression>	arguments;
 
-		private INode					body;
+		private readonly INode					body;
 
 		#endregion
 

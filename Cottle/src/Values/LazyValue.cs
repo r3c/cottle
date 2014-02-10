@@ -2,13 +2,13 @@
 
 using Cottle.Values.Generics;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class LazyValue : ResolveValue
 	{
 		#region Attributes
 
-		private Func<Value> resolver;
+		private readonly Func<Value>	resolver;
 
 		#endregion
 

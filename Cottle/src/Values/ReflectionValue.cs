@@ -5,15 +5,15 @@ using System.Reflection;
 
 using Cottle.Values.Generics;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	public sealed class ReflectionValue : ResolveValue
 	{
 		#region Attributes / Instance
 
-		private BindingFlags	binding;
+		private readonly BindingFlags	binding;
 
-		private object			source;
+		private readonly object			source;
 
 		#endregion
 
@@ -71,11 +71,11 @@ namespace	Cottle.Values
 				return converter (this.source);
 
 			// Return undefined value for other primitive types
-			else if (type.IsPrimitive)
+			if (type.IsPrimitive)
 				return VoidValue.Instance;
 
 			// Convert elements to array if source object is enumerable
-			else if (this.source is IEnumerable)
+			if (this.source is IEnumerable)
 			{
 				elements = new List<Value> ();
 
@@ -130,11 +130,11 @@ namespace	Cottle.Values
 
 			#region Attributes
 
-			private BindingFlags			binding;
+			private readonly BindingFlags			binding;
 
-			private Func<object, object>	extractor;
+			private readonly Func<object, object>	extractor;
 
-			private string					name;
+			private readonly string					name;
 
 			#endregion
 
@@ -143,7 +143,7 @@ namespace	Cottle.Values
 			public	MemberReader (FieldInfo field, BindingFlags binding)
 			{
 				this.binding = binding;
-				this.extractor = (s) => field.GetValue (s);
+				this.extractor = field.GetValue;
 				this.name = field.Name;
 			}
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Cottle.Maps;
 
-namespace	Cottle.Values.Generics
+namespace Cottle.Values.Generics
 {
-	public abstract class	ScalarValue<T> : Value
+	public abstract class ScalarValue<T> : Value
 	{
 		#region Properties
 
@@ -29,9 +29,9 @@ namespace	Cottle.Values.Generics
 
 		#region Attributes
 
-		protected Converter<Value, T>	converter;
+		protected readonly Converter<Value, T>	converter;
 
-		protected T						value;
+		protected readonly T					value;
 
 		#endregion
 
@@ -51,7 +51,8 @@ namespace	Cottle.Values.Generics
 		{
 			if (other == null)
 				return 1;
-			else if (this.Type != other.Type)
+
+			if (this.Type != other.Type)
 				return ((int)this.Type).CompareTo ((int)other.Type);
 
 			return Comparer<T>.Default.Compare (this.converter (this), this.converter (other));

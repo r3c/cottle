@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Cottle.Expressions;
 using Cottle.Functions;
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	AssignFunctionNode : INode
+	sealed class AssignFunctionNode : INode
 	{
 		#region Attributes
 
-		private List<NameExpression>	arguments;
+		private readonly List<NameExpression>	arguments;
 
-		private INode					body;
+		private readonly INode					body;
 
-		private ScopeMode				mode;
+		private readonly ScopeMode				mode;
 
-		private NameExpression			name;
+		private readonly NameExpression			name;
 
 		#endregion
 

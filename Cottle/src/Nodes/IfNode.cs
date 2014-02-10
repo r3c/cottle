@@ -3,15 +3,15 @@ using System.IO;
 
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	IfNode : INode
+	sealed class IfNode : INode
 	{
 		#region Attributes
 
-		private IEnumerable<Branch>	branches;
+		private readonly Branch[]	branches;
 
-		private INode				fallback;
+		private readonly INode		fallback;
 
 		#endregion
 
@@ -19,7 +19,7 @@ namespace	Cottle.Nodes
 
 		public	IfNode (IEnumerable<Branch> branches, INode fallback)
 		{
-			this.branches = branches;
+			this.branches = new List<Branch> (branches).ToArray ();
 			this.fallback = fallback;
 		}
 
@@ -103,7 +103,7 @@ namespace	Cottle.Nodes
 
 		#region Types
 
-		public class	Branch
+		public class Branch
 		{
 			#region Properties
 
@@ -127,9 +127,9 @@ namespace	Cottle.Nodes
 
 			#region Attributes
 
-			private INode		body;
+			private readonly INode			body;
 
-			private IExpression test;
+			private readonly IExpression	test;
 
 			#endregion
 

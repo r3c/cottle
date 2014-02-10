@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace	Cottle.Maps.Abstracts
+namespace Cottle.Maps.Abstracts
 {
-	abstract class	AbstractMap : IMap
+	abstract class AbstractMap : IMap
 	{
 		public abstract int Count
 		{

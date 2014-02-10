@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 
-namespace	Cottle.Values.Generics
+namespace Cottle.Values.Generics
 {
-	public abstract class	ResolveValue : Value
+	public abstract class ResolveValue : Value
 	{
 		#region Properties
 
@@ -58,9 +58,9 @@ namespace	Cottle.Values.Generics
 
 		#region Attributes
 
-		private object	mutex = new object ();
+		private readonly object	mutex = new object ();
 
-		private Value	value = null;
+		private Value			value = null;
 
 		#endregion
 

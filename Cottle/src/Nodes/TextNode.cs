@@ -1,31 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	TextNode : INode
+	sealed class TextNode : INode
 	{
 		#region Attributes
 
-		private char[]	buffer;
+		private readonly string	text;
 		
-		private int		length;
-		
-		private int		start;
-
 		#endregion
 
 		#region Constructors
 
-		public	TextNode (string text, int start, int length)
+		public	TextNode (string text)
 		{
-			this.buffer = text.ToCharArray ();
-			this.length = length;
-			this.start = start;
+			this.text = text;
 		}
 
 		#endregion
@@ -34,7 +27,7 @@ namespace	Cottle.Nodes
 
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			output.Write (this.buffer, this.start, this.length);
+			output.Write (this.text);
 
 			result = VoidValue.Instance;
 
@@ -46,13 +39,13 @@ namespace	Cottle.Nodes
 			StringBuilder	builder;
 
 			builder = new StringBuilder ()
-				.Append (this.buffer, this.start, this.length)
+				.Append (this.text)
 				.Replace ("\\", "\\\\")
 				.Replace (setting.BlockBegin, "\\" + setting.BlockBegin)
 				.Replace (setting.BlockContinue, "\\" + setting.BlockContinue)
 				.Replace (setting.BlockEnd, "\\" + setting.BlockEnd);
 
-			output.Write (builder.ToString ());
+			output.Write (builder);
 		}
 
 		#endregion

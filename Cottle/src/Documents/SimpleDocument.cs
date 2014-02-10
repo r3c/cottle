@@ -4,15 +4,15 @@ using System.IO;
 
 using Cottle.Settings;
 
-namespace	Cottle.Documents
+namespace Cottle.Documents
 {
-	public class	SimpleDocument : IDocument
+	public sealed class SimpleDocument : IDocument
 	{
 		#region Attributes
 
-		private INode		root;
+		private readonly INode		root;
 
-		private ISetting	setting;
+		private readonly ISetting	setting;
 
 		#endregion
 

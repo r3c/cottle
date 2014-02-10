@@ -1,30 +1,40 @@
-﻿
+﻿using System;
+
 namespace	Cottle
 {
 	public interface	ISetting
 	{
 		#region Methods
 		
-		string		BlockBegin
+		string	BlockBegin
 		{
 			get;
 		}
 
-		string		BlockContinue
+		string	BlockContinue
 		{
 			get;
 		}
 
-		string		BlockEnd
+		string	BlockEnd
 		{
 			get;
 		}
+
+		Trimmer	Trimmer
+		{
+			get;
+		}
+		
+		#endregion
+
+		#region Obsoletes
 
 		ICleaner	Cleaner
 		{
 			get;
 		}
-		
+
 		#endregion
 	}
 }

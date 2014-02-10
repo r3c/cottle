@@ -7,15 +7,15 @@ using Cottle.Exceptions;
 using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	sealed class	CallExpression : Expression
+	sealed class CallExpression : Expression
 	{
 		#region Attributes
 
-		private List<IExpression>	arguments;
+		private readonly List<IExpression>	arguments;
 
-		private IExpression			caller;
+		private readonly IExpression		caller;
 
 		#endregion
 
