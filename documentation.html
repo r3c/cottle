@@ -782,7 +782,7 @@ document.Render(scope, Console.Out);</code>
 					sections.</p>
 				</div>
 
-				<h3>Raw text whitespaces cleaning</h3>
+				<h3>Raw text cleaning</h3>
 				<div class="section">
 					<p>Cottle's default behavior for raw text is to render it
 					without any modification. While this gives you a perfect
@@ -792,23 +792,46 @@ document.Render(scope, Console.Out);</code>
 					such as HTML.</p>
 					<p>For that reason, you can change the way raw text is
 					transformed by Cottle before it is rendered through the use
-					of "cleaners". Three default cleaners are provided by
-					Cottle, but you can write your own if needed. Available
-					cleaners are:</p>
+					of "trimmers". Some default trimmers are bundled with the
+					library but you can write your own if needed. Available
+					trimmers are:</p>
 					<ul>
-						<li>BlankCharactersCleaner: remove all leading and
-						trailing blank characters from raw text blocks,</li>
-						<li>FirstLastLinesCleaner: remove first and last empty
+						<li>CollapseBlankCharacters: replace all sequences of
+						white characters (spaces, line breaks, etc.) by a
+						single space. This can be handy for targetting
+						languages that ignore consecutive whitespaces such as
+						HTML or XML.</li>
+						<li>LeadingAndTrailingBlankCharacters: remove all
+						leading and trailing blank characters from raw text
+						blocks.</li>
+						<li>FirstAndLastBlankLines: remove first and last empty
 						lines from raw text blocks except for blocks that
-						contain only blank characters,</li>
-						<li>NullCleaner: leave raw text untouched (this is
-						the default cleaner).</li>
+						contain only blank characters.</li>
 					</ul>
 					<p>Here are some simple templates and their rendered
 					results using different cleaners. Unlike other examples in
 					this document, exact white spaces are preserved in
 					results.</p>
-					<p>BlankCharactersCleaner:</p>
+					<p>CollapseBlankCharacters:</p>
+					<div class="code">
+						<blockquote><span>Template:</span></blockquote>
+<code>&lt;ul&gt;
+    {for s in ["First", "Second", "Third"]:
+        &lt;li&gt;
+            {s}
+        &lt;/li&gt;
+    }
+&lt;/ul&gt;</code>
+					</div>
+					<div class="code">
+						<blockquote><span>C# code:</span></blockquote>
+<code>setting.Trimmer = Trimmers.CollapseBlankCharacters;</code>
+					</div>
+					<div class="code">
+						<blockquote><span>Result:</span></blockquote>
+<code>&lt;ul&gt;  &lt;li&gt; First &lt;/li&gt;  &lt;li&gt; Second &lt;/li&gt;  &lt;li&gt; Third &lt;/li&gt;  &lt;/ul&gt;</code>
+					</div>
+					<p>LeadingAndTrailingBlankCharacters:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{'white'} {'spaces '} around raw blocks are
@@ -817,14 +840,14 @@ going to be
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>setting.Cleaner = new BlankCharactersCleaner();</code>
+<code>setting.Trimmer = Trimmers.LeadingAndTrailingBlankCharacters;</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
 <code>whitespaces around raw blocks are
 going to be collapsed.</code>
 					</div>
-					<p>FirstLastLinesCleaner:</p>
+					<p>FirstAndLastBlankLines:</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>This is a line of text with {'inline'} Cottle code.
@@ -836,7 +859,7 @@ going to be collapsed.</code>
 					</div>
 					<div class="code">
 						<blockquote><span>C# code:</span></blockquote>
-<code>setting.Cleaner = new FirstLastLinesCleaner();</code>
+<code>setting.Trimmer = Trimmers.FirstAndLastBlankLines;</code>
 					</div>
 					<div class="code">
 						<blockquote><span>Result:</span></blockquote>
@@ -845,35 +868,11 @@ going to be collapsed.</code>
     - Length of string "exceptional" is 11 character(s).
     - Length of string "elite" is 5 character(s).</code>
 					</div>
-					<p>NullCleaner:</p>
-					<div class="code">
-						<blockquote><span>Template:</span></blockquote>
-<code>Every {'white'}space from this template
-
-{if 1:  will be}
-
-    preserved.</code>
-					</div>
-					<div class="code">
-						<blockquote><span>C# code:</span></blockquote>
-<code>setting.Cleaner = new NullCleaner();</code>
-					</div>
-					<div class="code">
-						<blockquote><span>Result:</span></blockquote>
-<code>Every whitespace from this template
-
-  will be
-
-    preserved.</code>
-					</div>
-					<p>If you want to write your own cleaner, just inherit from
-					the <code>Cottle.ICleaner</code> interface and implement
-					required
-					<code>GetRange(string text, out int start, out int length)</code>
-					method. This method will be called on for each raw text
-					block from input templates (the <code>text</code> argument)
-					and should assign a start offset and a length which define
-					the text range to be extracted and printed when document is
+					<p>If you want to write your own trimmer, assign a method
+					taking a <code>string</code> as its only argument and
+					returning the "trimmed" text. This method will be called on
+					for each raw text block from input templates should return
+					the text you want to appear when printed document is
 					rendered.</p>
 				</div>
 
