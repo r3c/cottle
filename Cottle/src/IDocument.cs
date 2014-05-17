@@ -1,10 +1,8 @@
 ﻿using System.IO;
 
-using Cottle.Settings;
-
-namespace	Cottle
+namespace Cottle
 {
-	public interface	IDocument
+	public interface IDocument
 	{
 		#region Methods
 

@@ -4,9 +4,9 @@ using System.IO;
 using Cottle.Expressions;
 using Cottle.Values;
 
-namespace	Cottle.Nodes
+namespace Cottle.Nodes
 {
-	sealed class	ForNode : INode
+	sealed class ForNode : INode
 	{
 		#region Attributes
 

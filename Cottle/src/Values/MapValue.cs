@@ -5,7 +5,7 @@ using Cottle.Maps;
 
 namespace Cottle.Values
 {
-	public sealed class	MapValue : Value
+	public sealed class MapValue : Value
 	{
 		#region Properties
 
@@ -67,22 +67,22 @@ namespace Cottle.Values
 
 		#region Constructors
 		
-		public	MapValue (IDictionary<Value, Value> hash)
+		public MapValue (IDictionary<Value, Value> hash)
 		{
 			this.fields = new HashMap (hash);
 		}
 
-		public	MapValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
+		public MapValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
 		{
 			this.fields = new MixMap (pairs);
 		}
 
-		public	MapValue (IEnumerable<Value> values)
+		public MapValue (IEnumerable<Value> values)
 		{
 			this.fields = new ArrayMap (values);
 		}
 
-		public	MapValue ()
+		public MapValue ()
 		{
 			this.fields = EmptyMap.Instance;
 		}

@@ -4,13 +4,13 @@ using System.IO;
 
 using Cottle.Values;
 
-namespace	Cottle.Commons
+namespace Cottle.Demo
 {
-	public static class CommonTools
+	public static class ValueAccessor
 	{
 		#region Methods / Public
 
-		public static bool	ValuesLoad (BinaryReader reader, IDictionary<string, Value> values)
+		public static bool	Load (BinaryReader reader, IDictionary<string, Value> values)
 		{
 			int		count;
 			string	key;
@@ -20,7 +20,7 @@ namespace	Cottle.Commons
 			{
 				key = reader.ReadString ();
 
-				if (!CommonTools.ValueLoad (reader, out value))
+				if (!ValueAccessor.Load (reader, out value))
 					return false;
 
 				values[key] = value;
@@ -29,7 +29,7 @@ namespace	Cottle.Commons
 			return true;
 		}
 
-		public static void	ValuesSave (BinaryWriter writer, IDictionary<string, Value> values)
+		public static void	Save (BinaryWriter writer, IDictionary<string, Value> values)
 		{
 			writer.Write (values.Count);
 
@@ -37,7 +37,7 @@ namespace	Cottle.Commons
 			{
 				writer.Write (pair.Key);
 
-				CommonTools.ValueSave (writer, pair.Value);
+				ValueAccessor.Save (writer, pair.Value);
 			}
 		}
 
@@ -45,13 +45,15 @@ namespace	Cottle.Commons
 
 		#region Methods / Private
 
-		private static bool ValueLoad (BinaryReader reader, out Value value)
+		private static bool Load (BinaryReader reader, out Value value)
 		{
 			List<KeyValuePair<Value, Value>>	array;
 			Value								arrayKey;
 			Value								arrayValue;
 			int									count;
-			ValueContent						type = (ValueContent)reader.ReadInt32 ();
+			ValueContent						type;
+
+			type = (ValueContent)reader.ReadInt32 ();
 
 			switch (type)
 			{
@@ -66,7 +68,7 @@ namespace	Cottle.Commons
 
 					while (count-- > 0)
 					{
-						if (!CommonTools.ValueLoad (reader, out arrayKey) || !CommonTools.ValueLoad (reader, out arrayValue))
+						if (!ValueAccessor.Load (reader, out arrayKey) || !ValueAccessor.Load (reader, out arrayValue))
 						{
 							value = null;
 
@@ -104,7 +106,7 @@ namespace	Cottle.Commons
 			return true;
 		}
 
-		private static void ValueSave (BinaryWriter writer, Value value)
+		private static void Save (BinaryWriter writer, Value value)
 		{
 			writer.Write ((int)value.Type);
 
@@ -120,8 +122,8 @@ namespace	Cottle.Commons
 
 					foreach (KeyValuePair<Value, Value> pair in value.Fields)
 					{
-						CommonTools.ValueSave (writer, pair.Key);
-						CommonTools.ValueSave (writer, pair.Value);
+						ValueAccessor.Save (writer, pair.Key);
+						ValueAccessor.Save (writer, pair.Value);
 					}
 
 					break;

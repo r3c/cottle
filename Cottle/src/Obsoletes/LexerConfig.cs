@@ -2,10 +2,10 @@
 
 using Cottle.Settings;
 
-namespace	Cottle
+namespace Cottle
 {
 	[Obsolete ("Use CustomSetting")]
-	public sealed class	LexerConfig : ISetting
+	public sealed class LexerConfig : ISetting
 	{
 		public string BlockBegin
 		{

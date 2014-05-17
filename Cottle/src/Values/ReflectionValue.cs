@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Cottle.Values.Generics;
-
 namespace Cottle.Values
 {
 	public sealed class ReflectionValue : ResolveValue

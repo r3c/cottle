@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	[Obsolete ("Use MapValue")]
 	public sealed class ArrayValue : Value

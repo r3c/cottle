@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Cottle.Maps.Abstracts
+namespace Cottle.Maps
 {
 	abstract class AbstractMap : IMap
 	{
@@ -13,17 +13,17 @@ namespace Cottle.Maps.Abstracts
 		
 		#region Methods / Abstract
 		
-		public abstract bool	Contains (Value key);
+		public abstract bool Contains (Value key);
 
 		public abstract IEnumerator<KeyValuePair<Value, Value>>	GetEnumerator ();
 		
-		public abstract bool	TryGet (Value key, out Value value);
+		public abstract bool TryGet (Value key, out Value value);
 
 		#endregion
 		
 		#region Methods / Public
 
-		public int	CompareTo (IMap other)
+		public int CompareTo (IMap other)
 		{
 			int										compare;
 			IEnumerator<KeyValuePair<Value, Value>>	lhs;
@@ -71,7 +71,7 @@ namespace Cottle.Maps.Abstracts
 			return true;
 		}
 		
-		public override bool	Equals (object obj)
+		public override bool Equals (object obj)
 		{
 			IMap	other = obj as AbstractMap;
 

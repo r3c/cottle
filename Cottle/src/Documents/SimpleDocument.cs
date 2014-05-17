@@ -18,7 +18,7 @@ namespace Cottle.Documents
 
 		#region Constructors
 
-		public	SimpleDocument (TextReader reader, ISetting setting)
+		public SimpleDocument (TextReader reader, ISetting setting)
 		{
 			Parser	parser;
 
@@ -28,17 +28,17 @@ namespace Cottle.Documents
 			this.setting = setting;
 		}
 
-		public	SimpleDocument (TextReader reader) :
+		public SimpleDocument (TextReader reader) :
 			this (reader, DefaultSetting.Instance)
 		{
 		}
 
-		public	SimpleDocument (string template, ISetting setting) :
+		public SimpleDocument (string template, ISetting setting) :
 			this (new StringReader (template), setting)
 		{
 		}
 
-		public	SimpleDocument (string template) :
+		public SimpleDocument (string template) :
 			this (new StringReader (template), DefaultSetting.Instance)
 		{
 		}
@@ -47,7 +47,7 @@ namespace Cottle.Documents
 
 		#region Methods
 
-		public Value	Render (IScope scope, TextWriter writer)
+		public Value Render (IScope scope, TextWriter writer)
 		{
 			Value	result;
 
@@ -56,7 +56,7 @@ namespace Cottle.Documents
 			return result;
 		}
 
-		public string	Render (IScope scope)
+		public string Render (IScope scope)
 		{
 			StringWriter	writer;
 
@@ -72,7 +72,7 @@ namespace Cottle.Documents
 			this.root.Source (this.setting, writer);
 		}
 
-		public string	Source ()
+		public string Source ()
 		{
 			StringWriter	writer;
 

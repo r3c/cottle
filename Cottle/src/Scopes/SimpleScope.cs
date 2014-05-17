@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Cottle.Scopes.Abstracts;
-
 namespace Cottle.Scopes
 {
 	public sealed class SimpleScope : AbstractScope
@@ -17,7 +15,7 @@ namespace Cottle.Scopes
 
 		#region Constructors
 
-		public	SimpleScope ()
+		public SimpleScope ()
 		{
 			this.levels = new Stack<HashSet<Value>> ();
 			this.levels.Push (new HashSet<Value> ());
@@ -28,12 +26,12 @@ namespace Cottle.Scopes
 
 		#region Methods
 
-		public override void	Enter ()
+		public override void Enter ()
 		{
 			this.levels.Push (new HashSet<Value> ());
 		}
 
-		public override bool	Get (Value name, out Value value)
+		public override bool Get (Value name, out Value value)
 		{
 			Stack<Value>	stack;
 
@@ -49,7 +47,7 @@ namespace Cottle.Scopes
 			return false;
 		}
 
-		public override bool	Leave ()
+		public override bool Leave ()
 		{
 			Stack<Value>	stack;
 
@@ -59,13 +57,18 @@ namespace Cottle.Scopes
 			foreach (Value name in this.levels.Pop ())
 			{
 				if (this.stacks.TryGetValue (name, out stack))
-					stack.Pop ();
+				{
+					if (stack.Count < 2)
+						this.stacks.Remove (name);
+					else
+						stack.Pop ();						
+				}
 			}
 
 			return true;
 		}
 
-		public override bool	Set (Value name, Value value, ScopeMode mode)
+		public override bool Set (Value name, Value value, ScopeMode mode)
 		{
 			HashSet<Value>	level;
 			Stack<Value>	stack;

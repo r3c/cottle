@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace	Cottle.Demo
+namespace Cottle.Demo
 {
-	public partial class	SettingForm : Form
+	public partial class SettingForm : Form
 	{
 		#region Attributes
 

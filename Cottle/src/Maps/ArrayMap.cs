@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using Cottle.Maps.Abstracts;
-
 namespace Cottle.Maps
 {
-	sealed class ArrayMap : AbstractMap
+	class ArrayMap : AbstractMap
 	{
 		#region Properties
 
@@ -26,7 +24,7 @@ namespace Cottle.Maps
 
 		#region Constructors
 
-		public	ArrayMap (IEnumerable<Value> array)
+		public ArrayMap (IEnumerable<Value> array)
 		{
 			int key;
 
@@ -42,7 +40,7 @@ namespace Cottle.Maps
 
 		#region Methods
 		
-		public override bool	Contains (Value key)
+		public override bool Contains (Value key)
 		{
 			int index;
 
@@ -59,7 +57,7 @@ namespace Cottle.Maps
 			return this.array.GetEnumerator ();
 		}
 
-		public override bool	TryGet (Value key, out Value value)
+		public override bool TryGet (Value key, out Value value)
 		{
 			int index;
 

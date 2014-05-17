@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 using Cottle.Values;
 
-namespace	Cottle.Demo
+namespace Cottle.Demo
 {
-	public partial class	NodeForm : Form
+	public partial class NodeForm : Form
 	{
 		#region Attributes
 

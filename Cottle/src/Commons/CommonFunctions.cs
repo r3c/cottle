@@ -11,9 +11,9 @@ using Cottle.Functions;
 using Cottle.Scopes;
 using Cottle.Values;
 
-namespace	Cottle.Commons
+namespace Cottle.Commons
 {
-	public static class	CommonFunctions
+	public static class CommonFunctions
 	{
 		#region Properties
 

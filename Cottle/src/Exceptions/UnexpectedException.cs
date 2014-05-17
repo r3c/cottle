@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
-namespace	Cottle.Exceptions
+namespace Cottle.Exceptions
 {
-	public class	UnexpectedException : DocumentException
+	public class UnexpectedException : DocumentException
 	{
 		#region Properties
 

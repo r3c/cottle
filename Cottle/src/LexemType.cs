@@ -1,5 +1,5 @@
 ﻿
-namespace	Cottle
+namespace Cottle
 {
 	enum	LexemType
 	{

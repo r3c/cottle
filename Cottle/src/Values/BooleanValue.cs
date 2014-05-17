@@ -1,5 +1,4 @@
-﻿using Cottle.Values.Generics;
-
+﻿
 namespace Cottle.Values
 {
 	public sealed class BooleanValue : ScalarValue<bool>

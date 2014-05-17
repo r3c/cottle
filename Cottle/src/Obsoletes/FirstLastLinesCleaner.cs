@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace	Cottle.Cleaners
+namespace Cottle.Cleaners
 {
-	public class	FirstLastLinesCleaner : ICleaner
+	public class FirstLastLinesCleaner : ICleaner
 	{
 		#region Methods
 		

@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using Cottle.Exceptions;
-using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
 namespace Cottle.Expressions
 {
-	sealed class CallExpression : Expression
+	class CallExpression : IExpression
 	{
 		#region Attributes
 
@@ -21,7 +19,7 @@ namespace Cottle.Expressions
 
 		#region Constructors
 
-		public	CallExpression (IExpression caller, IEnumerable<IExpression> arguments)
+		public CallExpression (IExpression caller, IEnumerable<IExpression> arguments)
 		{
 			this.arguments = new List<IExpression> (arguments);
 			this.caller = caller;
@@ -31,7 +29,7 @@ namespace Cottle.Expressions
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			IFunction	function = this.caller.Evaluate (scope, output).AsFunction;
 			Value[]		values = new Value[this.arguments.Count];
@@ -48,6 +46,7 @@ namespace Cottle.Expressions
 				}
 				catch (Exception exception)
 				{
+					#warning should raise event
 					throw new RenderException ("function call raised an exception", exception);
 				}
 			}
@@ -55,20 +54,20 @@ namespace Cottle.Expressions
 			return VoidValue.Instance;
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			StringBuilder	builder = new StringBuilder ();
-			bool			dot = false;
+			bool			comma = false;
 
 			builder.Append (this.caller);
 			builder.Append ('(');
 
 			foreach (IExpression argument in this.arguments)
 			{
-				if (dot)
+				if (comma)
 					builder.Append (", ");
 				else
-					dot = true;
+					comma = true;
 
 				builder.Append (argument);
 			}

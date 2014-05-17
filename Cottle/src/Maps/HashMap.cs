@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using Cottle.Maps.Abstracts;
-
 namespace Cottle.Maps
 {
-	sealed class HashMap : AbstractMap
+	class HashMap : AbstractMap
 	{
 		#region Properties
 
@@ -18,7 +16,7 @@ namespace Cottle.Maps
 
 		#endregion
 
-		#region Attributes / Instance
+		#region Attributes
 
 		private Dictionary<Value, Value>	hash;
 
@@ -26,7 +24,7 @@ namespace Cottle.Maps
 
 		#region Constructors
 
-		public	HashMap (IDictionary<Value, Value> hash)
+		public HashMap (IDictionary<Value, Value> hash)
 		{
 			this.hash = new Dictionary<Value, Value> (hash);
 		}
@@ -35,7 +33,7 @@ namespace Cottle.Maps
 
 		#region Methods
 		
-		public override bool	Contains (Value key)
+		public override bool Contains (Value key)
 		{
 			return this.hash.ContainsKey (key);
 		}
@@ -45,7 +43,7 @@ namespace Cottle.Maps
 			return this.hash.GetEnumerator ();
 		}
 
-		public override bool	TryGet (Value key, out Value value)
+		public override bool TryGet (Value key, out Value value)
 		{
 			return this.hash.TryGetValue (key, out value);
 		}

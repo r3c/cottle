@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Cottle.Cleaners;
 using Cottle.Settings;
 
-namespace	Cottle.Demo
+namespace Cottle.Demo
 {
 	public static class TrimmerCollection
 	{

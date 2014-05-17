@@ -1,12 +1,10 @@
 ﻿using System.IO;
 using System.Text;
-
-using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
 namespace Cottle.Expressions
 {
-	class AccessExpression : Expression
+	class AccessExpression : IExpression
 	{
 		#region Attributes
 
@@ -18,7 +16,7 @@ namespace Cottle.Expressions
 
 		#region Constructors
 
-		public	AccessExpression (IExpression array, IExpression index)
+		public AccessExpression (IExpression array, IExpression index)
 		{
 			this.array = array;
 			this.index = index;
@@ -28,7 +26,7 @@ namespace Cottle.Expressions
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			Value	source;
 			Value	value;
@@ -41,7 +39,7 @@ namespace Cottle.Expressions
 			return VoidValue.Instance;
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return new StringBuilder ()
 				.Append (this.array)

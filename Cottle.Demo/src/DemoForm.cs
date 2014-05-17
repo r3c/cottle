@@ -7,16 +7,15 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-using Cottle.Commons;
 using Cottle.Documents;
 using Cottle.Exceptions;
 using Cottle.Scopes;
 using Cottle.Settings;
 using Cottle.Values;
 
-namespace	Cottle.Demo
+namespace Cottle.Demo
 {
-	public partial class	DemoForm : Form
+	public partial class DemoForm : Form
 	{
 		#region Constants
 
@@ -428,7 +427,7 @@ namespace	Cottle.Demo
 						return;
 					}
 
-					if (CommonTools.ValuesLoad (reader, values))
+					if (ValueAccessor.Load (reader, values))
 					{
 						foreach (KeyValuePair<string, Value> pair in values)
 							root.Nodes.Add (this.NodeCreate (pair.Key, pair.Value));
@@ -472,7 +471,7 @@ namespace	Cottle.Demo
 				{
 					writer.Write (2);
 
-					CommonTools.ValuesSave (writer, values);
+					ValueAccessor.Save (writer, values);
 
 					writer.Write (this.parameters.BlockBegin);
 					writer.Write (this.parameters.BlockContinue);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace	Cottle
+namespace Cottle
 {
-	interface	INode
+	interface INode
 	{
 		#region Methods
 

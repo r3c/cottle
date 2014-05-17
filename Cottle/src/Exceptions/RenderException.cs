@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace	Cottle.Exceptions
+namespace Cottle.Exceptions
 {
-	public class	RenderException : Exception
+	public class RenderException : Exception
 	{
 		#region Constructors
 

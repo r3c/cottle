@@ -5,9 +5,9 @@ using System.Text;
 
 using Cottle.Exceptions;
 
-namespace	Cottle
+namespace Cottle
 {
-	class	Lexer
+	class Lexer
 	{
 		#region Properties
 

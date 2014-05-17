@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 
-namespace	Cottle.Demo
+namespace Cottle.Demo
 {
-	public class	NodeData
+	public class NodeData
 	{
 		#region Properties
 

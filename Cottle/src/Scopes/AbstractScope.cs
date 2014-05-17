@@ -1,6 +1,6 @@
 ﻿using Cottle.Values;
 
-namespace Cottle.Scopes.Abstracts
+namespace Cottle.Scopes
 {
 	public abstract class AbstractScope : IScope
 	{

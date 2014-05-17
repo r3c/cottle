@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace	Cottle
+namespace Cottle
 {
-	public interface	ICleaner
+	public interface ICleaner
 	{
 		#region Methods
 

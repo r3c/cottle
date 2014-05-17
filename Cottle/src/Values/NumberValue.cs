@@ -1,7 +1,5 @@
 ﻿using System.Globalization;
 
-using Cottle.Values.Generics;
-
 namespace Cottle.Values
 {
 	public sealed class NumberValue : ScalarValue<decimal>

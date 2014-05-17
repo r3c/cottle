@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using Cottle.Values;
 
-namespace	Cottle
+namespace Cottle
 {
-	public abstract class	Value : IComparable<Value>, IEquatable<Value>
+	public abstract class Value : IComparable<Value>, IEquatable<Value>
 	{
 		#region Properties
 

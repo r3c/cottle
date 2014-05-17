@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Cottle.Maps;
 
 namespace Cottle.Values.Generics
 {
+	[Obsolete("Use Cottle.Values.ScalarValue")]
 	public abstract class ScalarValue<T> : Value
 	{
 		#region Properties
@@ -37,7 +37,7 @@ namespace Cottle.Values.Generics
 
 		#region Constructors
 
-		protected	ScalarValue (T value, Converter<Value, T> converter)
+		protected ScalarValue (T value, Converter<Value, T> converter)
 		{
 			this.converter = converter;
 			this.value = value;

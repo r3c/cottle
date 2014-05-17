@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using Cottle.Maps.Abstracts;
-
 namespace Cottle.Maps
 {
-	sealed class MixMap : AbstractMap
+	class MixMap : AbstractMap
 	{
 		#region Properties
 
@@ -41,7 +39,7 @@ namespace Cottle.Maps
 
 		#region Methods
 		
-		public override bool	Contains (Value key)
+		public override bool Contains (Value key)
 		{
 			return this.hash.ContainsKey (key);
 		}
@@ -51,7 +49,7 @@ namespace Cottle.Maps
 			return this.array.GetEnumerator ();
 		}
 
-		public override bool	TryGet (Value key, out Value value)
+		public override bool TryGet (Value key, out Value value)
 		{
 			return this.hash.TryGetValue (key, out value);
 		}

@@ -1,7 +1,7 @@
 ﻿
-namespace	Cottle
+namespace Cottle
 {
-	class	LexemCursor
+	class LexemCursor
 	{
 		#region Properties
 

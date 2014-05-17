@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
-using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
-namespace	Cottle.Expressions
+namespace Cottle.Expressions
 {
-	sealed class	ArrayExpression : Expression
+	class ArrayExpression : IExpression
 	{
 		#region Attributes
 
@@ -18,7 +16,7 @@ namespace	Cottle.Expressions
 
 		#region Constructors
 
-		public	ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
+		public ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
 		{
 			this.elements = new List<KeyValuePair<IExpression,IExpression>> (elements);
 		}
@@ -27,7 +25,7 @@ namespace	Cottle.Expressions
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter writer)
+		public Value Evaluate (IScope scope, TextWriter writer)
 		{
 			return new MapValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
 			{
@@ -38,7 +36,7 @@ namespace	Cottle.Expressions
 			}));
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			StringBuilder	builder = new StringBuilder ();
 			bool			comma = false;

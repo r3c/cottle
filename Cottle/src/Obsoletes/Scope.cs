@@ -2,7 +2,7 @@
 
 using Cottle.Scopes;
 
-namespace	Cottle
+namespace Cottle
 {
 	public class Scope : IScope
 	{

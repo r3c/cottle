@@ -1,8 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
 
-using Cottle.Values.Generics;
-
 namespace Cottle.Values
 {
 	public sealed class StringValue : ScalarValue<string>

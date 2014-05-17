@@ -2,7 +2,7 @@
 
 using Cottle.Maps;
 
-namespace	Cottle.Values
+namespace Cottle.Values
 {
 	[Obsolete ("Use VoidValue")]
 	public sealed class UndefinedValue : Value

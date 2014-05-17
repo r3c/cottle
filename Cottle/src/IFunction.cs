@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace	Cottle
+namespace Cottle
 {
-	public interface	IFunction
+	public interface IFunction
 	{
 		#region Methods
 

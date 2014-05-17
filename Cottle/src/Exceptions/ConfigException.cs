@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
 
-namespace	Cottle.Exceptions
+namespace Cottle.Exceptions
 {
-	public class	ConfigException : Exception
+	public class ConfigException : Exception
 	{
 		#region Properties
 

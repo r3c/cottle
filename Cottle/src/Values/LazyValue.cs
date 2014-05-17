@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Cottle.Values.Generics;
-
 namespace Cottle.Values
 {
 	public sealed class LazyValue : ResolveValue
@@ -14,7 +12,7 @@ namespace Cottle.Values
 
 		#region Constructors
 
-		public	LazyValue (Func<Value> resolver)
+		public LazyValue (Func<Value> resolver)
 		{
 			this.resolver = resolver;
 		}
@@ -23,7 +21,7 @@ namespace Cottle.Values
 
 		#region Methods
 
-		protected override Value	Resolve ()
+		protected override Value Resolve ()
 		{
 			return this.resolver ();
 		}

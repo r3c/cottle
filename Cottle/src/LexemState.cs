@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace	Cottle
+namespace Cottle
 {
-	class	LexemState
+	class LexemState
 	{
 		#region Properties
 

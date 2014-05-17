@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace	Cottle.Exceptions
+namespace Cottle.Exceptions
 {
-	public abstract class	DocumentException : Exception
+	public abstract class DocumentException : Exception
 	{
 		#region Properties
 

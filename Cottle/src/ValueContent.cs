@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace	Cottle
+namespace Cottle
 {
 	public enum ValueContent
 	{

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace	Cottle
+namespace Cottle
 {
-	interface	IExpression
+	interface IExpression
 	{
 		#region Methods
 

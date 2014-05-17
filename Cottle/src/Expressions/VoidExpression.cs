@@ -1,11 +1,9 @@
 ﻿using System.IO;
-
-using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
 namespace Cottle.Expressions
 {
-	sealed class VoidExpression : Expression
+	class VoidExpression : IExpression
 	{
 		#region Attributes
 
@@ -15,12 +13,12 @@ namespace Cottle.Expressions
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			return VoidValue.Instance;
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return VoidValue.Instance.ToString ();
 		}

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Cottle.Maps.Abstracts;
-
 namespace Cottle.Maps
 {
-	sealed class EmptyMap : AbstractMap
+	class EmptyMap : AbstractMap
 	{
 		#region Properties / Instance
 
@@ -41,12 +39,12 @@ namespace Cottle.Maps
 		
 		#region Methods
 
-		public override bool	Contains (Value key)
+		public override bool Contains (Value key)
 		{
 			return false;
 		}
 		
-		public override bool	TryGet (Value key, out Value value)
+		public override bool TryGet (Value key, out Value value)
 		{
 			value = default (Value);
 

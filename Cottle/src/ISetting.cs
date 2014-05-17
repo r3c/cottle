@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace	Cottle
+namespace Cottle
 {
-	public interface	ISetting
+	public interface ISetting
 	{
 		#region Methods
 		

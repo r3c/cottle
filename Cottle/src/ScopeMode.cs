@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
-
-namespace	Cottle
+﻿
+namespace Cottle
 {
 	public enum ScopeMode
 	{

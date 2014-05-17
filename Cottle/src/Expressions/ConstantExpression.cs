@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace Cottle.Expressions.Abstracts
+namespace Cottle.Expressions
 {
-	abstract class ConstantExpression<T> : Expression
+	abstract class ConstantExpression<T> : IExpression
 	{
 		#region Attributes
 
@@ -13,7 +13,7 @@ namespace Cottle.Expressions.Abstracts
 
 		#region Constructors
 
-		protected	ConstantExpression (Value value)
+		protected ConstantExpression (Value value)
 		{
 			this.value = value;
 		}
@@ -22,12 +22,12 @@ namespace Cottle.Expressions.Abstracts
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			return this.value;
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return this.value.ToString ();
 		}

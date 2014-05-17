@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-
-using Cottle.Expressions.Abstracts;
 using Cottle.Values;
 
 namespace Cottle.Expressions
 {
-	sealed class NameExpression : Expression
+	class NameExpression : IExpression
 	{
 		#region Attributes
 
@@ -25,7 +23,7 @@ namespace Cottle.Expressions
 
 		#region Methods
 
-		public override Value	Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			Value	value;
 
@@ -40,7 +38,7 @@ namespace Cottle.Expressions
 			return scope.Set (this.name, value, mode);
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return this.name;
 		}

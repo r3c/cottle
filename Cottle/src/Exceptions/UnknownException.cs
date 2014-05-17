@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 
-namespace	Cottle.Exceptions
+namespace Cottle.Exceptions
 {
-	public class	UnknownException : DocumentException
+	public class UnknownException : DocumentException
 	{
 		#region Properties
 

@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace	Cottle.Cleaners
+namespace Cottle.Cleaners
 {
-	public class	NullCleaner : ICleaner
+	public class NullCleaner : ICleaner
 	{
 		#region Methods
 		
