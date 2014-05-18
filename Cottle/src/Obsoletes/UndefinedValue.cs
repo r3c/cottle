@@ -4,7 +4,7 @@ using Cottle.Maps;
 
 namespace Cottle.Values
 {
-	[Obsolete ("Use VoidValue")]
+	[Obsolete ("Use Cottle.Values.VoidValue")]
 	public sealed class UndefinedValue : Value
 	{
 		#region Properties

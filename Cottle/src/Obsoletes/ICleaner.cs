@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Cottle
 {
 	public interface ICleaner

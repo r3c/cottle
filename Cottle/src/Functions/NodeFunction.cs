@@ -7,7 +7,7 @@ using Cottle.Values;
 
 namespace Cottle.Functions
 {
-	sealed class NodeFunction : IFunction
+	class NodeFunction : IFunction
 	{
 		#region Attributes
 

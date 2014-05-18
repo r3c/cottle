@@ -4,7 +4,7 @@ using Cottle.Settings;
 
 namespace Cottle
 {
-	[Obsolete ("Use CustomSetting")]
+	[Obsolete ("Use Cottle.Settings.CustomSetting")]
 	public sealed class LexerConfig : ISetting
 	{
 		public string BlockBegin

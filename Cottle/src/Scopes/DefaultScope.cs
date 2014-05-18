@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-
 using Cottle.Commons;
 
 namespace Cottle.Scopes
@@ -9,7 +7,7 @@ namespace Cottle.Scopes
 	{
 		#region Attributes
 
-		private static IScope			constant = null;
+		private static volatile IScope	constant = null;
 
 		private static readonly object	mutex = new object ();
 		
@@ -40,7 +38,7 @@ namespace Cottle.Scopes
 
 						CommonFunctions.Assign (scope, ScopeMode.Closest);
 
-						Interlocked.Exchange (ref DefaultScope.constant, scope);
+						DefaultScope.constant = scope;
 					}
 				}
 			}

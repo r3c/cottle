@@ -1,5 +1,4 @@
-﻿using System.Text;
-
+﻿
 namespace Cottle.Cleaners
 {
 	public class FirstLastLinesCleaner : ICleaner

@@ -4,6 +4,7 @@ using Cottle.Scopes;
 
 namespace Cottle
 {
+	[Obsolete ("Use either Cottle.Scopes.DefaultScope or Cottle.Scopes.SimpleScope")]
 	public class Scope : IScope
 	{
 		public Value	this[Value name]
@@ -20,7 +21,6 @@ namespace Cottle
 
 		private readonly IScope	scope;
 
-		[Obsolete ("Use either DefaultScope or SimpleScope")]
 		public	Scope ()
 		{
 			this.scope = new SimpleScope ();

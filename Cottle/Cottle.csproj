@@ -54,6 +54,7 @@
     <Compile Include="src\Documents\SimpleDocument.cs" />
     <Compile Include="src\Expressions\ConstantExpression.cs" />
     <Compile Include="src\Expressions\VoidExpression.cs" />
+    <Compile Include="src\Functions\NativeFunction.cs" />
     <Compile Include="src\IDocument.cs" />
     <Compile Include="src\IMap.cs" />
     <Compile Include="src\IScope.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="src\Expressions\CallExpression.cs" />
     <Compile Include="src\Expressions\NameExpression.cs" />
     <Compile Include="src\Functions\NodeFunction.cs" />
-    <Compile Include="src\Functions\CallbackFunction.cs" />
     <Compile Include="src\IExpression.cs" />
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
@@ -79,6 +79,7 @@
     <Compile Include="src\Obsoletes\AbstractScope..cs" />
     <Compile Include="src\Obsoletes\ArrayValue.cs" />
     <Compile Include="src\Obsoletes\BlankCharactersCleaner.cs" />
+    <Compile Include="src\Obsoletes\CallbackFunction.cs" />
     <Compile Include="src\Obsoletes\Document.cs" />
     <Compile Include="src\Obsoletes\FirstLastLinesCleaner.cs" />
     <Compile Include="src\Obsoletes\ICleaner.cs" />

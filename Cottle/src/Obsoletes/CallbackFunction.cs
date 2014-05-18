@@ -6,6 +6,7 @@ using Cottle.Values;
 
 namespace Cottle.Functions
 {
+	[Obsolete ("Use Cottle.Functions.NativeFunction")]
 	public sealed class CallbackFunction : IFunction
 	{
 		#region Attributes
@@ -54,6 +55,31 @@ namespace Cottle.Functions
 		#region Types
 
 		public delegate Value CallbackDelegate (IList<Value> values, IScope scope, TextWriter output);
+
+		#endregion
+
+
+		#region Obsoletes
+
+		[Obsolete ("Callback should expect an IScope as its second parameter")]
+		public	CallbackFunction (LegacyCallbackDelegate callback, int min, int max) :
+			this ((IList<Value> values, IScope scope, TextWriter writer) => callback (values, new Scope (scope), writer), min, max)
+		{
+		}
+
+		[Obsolete ("Callback should expect an IScope as its second parameter")]
+		public	CallbackFunction (LegacyCallbackDelegate callback, int exact) :
+			this (callback, exact, exact)
+		{
+		}
+
+		[Obsolete ("Callback should expect an IScope as its second parameter")]
+		public	CallbackFunction (LegacyCallbackDelegate callback) :
+			this (callback, 0, -1)
+		{
+		}
+
+		public delegate Value	LegacyCallbackDelegate (IList<Value> values, Scope scope, TextWriter output);
 
 		#endregion
 	}

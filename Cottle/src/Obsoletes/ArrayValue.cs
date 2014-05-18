@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Cottle.Values
 {
-	[Obsolete ("Use MapValue")]
+	[Obsolete ("Use Cottle.Values.MapValue")]
 	public sealed class ArrayValue : Value
 	{
 		#region Properties
@@ -61,7 +60,7 @@ namespace Cottle.Values
 
 		#region Attributes
 
-		private MapValue	value;
+		private readonly MapValue	value;
 
 		#endregion
 

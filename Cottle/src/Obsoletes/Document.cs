@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-
 using Cottle.Documents;
-using Cottle.Settings;
 
 namespace Cottle
 {
-	[Obsolete ("Use SimpleDocument")]
+	[Obsolete ("Use Cottle.Documents.SimpleDocument")]
 	public sealed class Document : IDocument
 	{
 		#region Attributes
