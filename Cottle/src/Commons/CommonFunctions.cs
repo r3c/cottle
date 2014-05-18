@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
+using System.Runtime.Remoting.Activation;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -45,17 +46,17 @@ namespace Cottle.Commons
 
 		#region Attributes / Instance
 
-		private static readonly IFunction	functionAbsolute = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionAbsolute = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Abs (values[0].AsNumber);
 		}, 1);
 
-		private static readonly IFunction	functionAdd = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionAdd = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsNumber + values[1].AsNumber;
 		}, 2);
 
-		private static readonly IFunction	functionAnd = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionAnd = new CallbackFunction ((values, scope, output) =>
 		{
 			foreach (Value value in values)
 			{
@@ -66,7 +67,7 @@ namespace Cottle.Commons
 			return true;
 		});
 
-		private static readonly IFunction	functionCall = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCall = new CallbackFunction ((values, scope, output) =>
 		{
 			Value[]		arguments;
 			IFunction	function;
@@ -86,7 +87,7 @@ namespace Cottle.Commons
 			return function.Execute (arguments, scope, output);
 		}, 2);
 
-		private static readonly IFunction	functionCast = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCast = new CallbackFunction ((values, scope, output) =>
 		{
 			switch (values[1].AsString)
 			{
@@ -104,7 +105,7 @@ namespace Cottle.Commons
 			}
 		}, 2);
 
-		private static readonly IFunction	functionCat = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCat = new CallbackFunction ((values, scope, output) =>
 		{
 			StringBuilder						builder;
 			List<KeyValuePair<Value, Value>>	list;
@@ -129,12 +130,12 @@ namespace Cottle.Commons
 			}
 		}, 1, -1);
 
-		private static readonly IFunction	functionCeiling = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCeiling = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Ceiling (values[0].AsNumber);
 		}, 1);
 
-		private static readonly IFunction	functionChar = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionChar = new CallbackFunction ((values, scope, output) =>
 		{
 			try
 			{
@@ -146,17 +147,17 @@ namespace Cottle.Commons
 			}
 		}, 1);
 
-		private static readonly IFunction	functionCompare = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCompare = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].CompareTo (values[1]);
 		}, 2);
 
-		private static readonly IFunction	functionCosine = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCosine = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Cos ((double)values[0].AsNumber);
 		}, 1);
 
-		private static readonly IFunction	functionCross = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionCross = new CallbackFunction ((values, scope, output) =>
 		{
 			bool								insert;
 			List<KeyValuePair<Value, Value>>	pairs;
@@ -184,12 +185,12 @@ namespace Cottle.Commons
 			return pairs;
 		}, 1, -1);
 
-		private static readonly IFunction	functionDefault = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionDefault = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsBoolean ? values[0] : values[1];
 		}, 2);
 
-		private static readonly IFunction	functionDiv = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionDiv = new CallbackFunction ((values, scope, output) =>
 		{
 			decimal denominator;
 
@@ -201,7 +202,7 @@ namespace Cottle.Commons
 			return values[0].AsNumber / denominator;
 		}, 2);
 
-		private static readonly IFunction	functionEqual = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionEqual = new CallbackFunction ((values, scope, output) =>
 		{
 			Value	first;
 
@@ -214,7 +215,7 @@ namespace Cottle.Commons
 			return true;
 		}, 1, -1);
 
-		private static readonly IFunction	functionExcept = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionExcept = new CallbackFunction ((values, scope, output) =>
 		{
 			bool								insert;
 			List<KeyValuePair<Value, Value>>	pairs;
@@ -242,7 +243,7 @@ namespace Cottle.Commons
 			return pairs;
 		}, 1, -1);
 
-		private static readonly IFunction	functionFilter = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionFilter = new CallbackFunction ((values, scope, output) =>
 		{
 			List<Value>							arguments;
 			IFunction							callback;
@@ -271,7 +272,7 @@ namespace Cottle.Commons
 			return result;
 		});
 
-		private static readonly IFunction	functionFind = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionFind = new CallbackFunction ((values, scope, output) =>
 		{
 			int		index;
 			int		offset;
@@ -298,7 +299,7 @@ namespace Cottle.Commons
 				return source.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
 		}, 2, 3);
 
-		private static readonly IFunction	functionFlip = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionFlip = new CallbackFunction ((values, scope, output) =>
 		{
 			KeyValuePair<Value, Value>[]	flip;
 			int								i;
@@ -312,12 +313,12 @@ namespace Cottle.Commons
 			return flip;
 		}, 1);
 
-		private static readonly IFunction	functionFloor = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionFloor = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Floor (values[0].AsNumber);
 		}, 1);
 
-		private static readonly IFunction	functionFormat = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionFormat = new CallbackFunction ((values, scope, output) =>
 		{
 			CultureInfo	culture;
 			string		format;
@@ -394,17 +395,17 @@ namespace Cottle.Commons
 			return string.Format (culture, "{0:" + format.Substring (index + 1) + "}", target);
 		}, 2, 3);
 
-		private static readonly IFunction	functionGreater = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionGreater = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].CompareTo (values[1]) > 0;
 		}, 2);
 
-		private static readonly IFunction	functionGreaterEqual = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionGreaterEqual = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].CompareTo (values[1]) >= 0;
 		}, 2);
 
-		private static readonly IFunction	functionHas = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionHas = new CallbackFunction ((values, scope, output) =>
 		{
 			Value	source;
 
@@ -417,7 +418,7 @@ namespace Cottle.Commons
 			return true;
 		}, 1, -1);
 
-		private static readonly IFunction	functionInclude = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionInclude = new CallbackFunction ((values, scope, output) =>
 		{
 			IDocument	document;
 			object		entry;
@@ -466,7 +467,7 @@ namespace Cottle.Commons
 			return document.Render (inner, output);
 		}, 1, -1);
 
-		private static readonly IFunction	functionJoin = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionJoin = new CallbackFunction ((values, scope, output) =>
 		{
 			StringBuilder	builder;
 			bool			first;
@@ -493,7 +494,7 @@ namespace Cottle.Commons
 			return builder.ToString ();
 		}, 1, 2);
 
-		private static readonly IFunction	functionLength = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionLength = new CallbackFunction ((values, scope, output) =>
 		{
 			if (values[0].Type == ValueContent.Map)
 				return values[0].Fields.Count;
@@ -501,22 +502,22 @@ namespace Cottle.Commons
 			return values[0].AsString.Length;
 		}, 1);
 
-		private static readonly IFunction	functionLower = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionLower = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].CompareTo (values[1]) < 0;
 		}, 2);
 
-		private static readonly IFunction	functionLowerCase = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionLowerCase = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsString.ToLowerInvariant ();
 		}, 1);
 
-		private static readonly IFunction	functionLowerEqual = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionLowerEqual = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].CompareTo (values[1]) <= 0;
 		}, 2);
 
-		private static readonly IFunction	functionMap = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMap = new CallbackFunction ((values, scope, output) =>
 		{
 			List<Value>						arguments;
 			IFunction						callback;
@@ -546,7 +547,7 @@ namespace Cottle.Commons
 			return result;
 		}, 2, -1);
 
-		private static readonly IFunction	functionMatch = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMatch = new CallbackFunction ((values, scope, output) =>
 		{
 			List<Value>	groups;
 			Match		match;
@@ -564,7 +565,7 @@ namespace Cottle.Commons
 			return groups;
 		}, 2, 3);
 
-		private static readonly IFunction	functionMaximum = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMaximum = new CallbackFunction ((values, scope, output) =>
 		{
 			decimal max;
 
@@ -576,7 +577,7 @@ namespace Cottle.Commons
 			return max;
 		}, 1, -1);
 
-		private static readonly IFunction	functionMinimum = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMinimum = new CallbackFunction ((values, scope, output) =>
 		{
 			decimal min;
 
@@ -588,7 +589,7 @@ namespace Cottle.Commons
 			return min;
 		}, 1, -1);
 
-		private static readonly IFunction	functionMod = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMod = new CallbackFunction ((values, scope, output) =>
 		{
 			decimal denominator;
 
@@ -600,17 +601,17 @@ namespace Cottle.Commons
 			return values[0].AsNumber % denominator;
 		}, 2);
 
-		private static readonly IFunction	functionMul = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionMul = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsNumber * values[1].AsNumber;
 		}, 2);
 
-		private static readonly IFunction	functionNot = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionNot = new CallbackFunction ((values, scope, output) =>
 		{
 			return !values[0].AsBoolean;
 		}, 1);
 
-		private static readonly IFunction	functionOr = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionOr = new CallbackFunction ((values, scope, output) =>
 		{
 			foreach (Value value in values)
 			{
@@ -621,7 +622,7 @@ namespace Cottle.Commons
 			return false;
 		});
 
-		private static readonly IFunction	functionOrd = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionOrd = new CallbackFunction ((values, scope, output) =>
 		{
 			string	str;
 
@@ -630,12 +631,12 @@ namespace Cottle.Commons
 			return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
 		}, 1);
 
-		private static readonly IFunction	functionPower = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionPower = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Pow ((double)values[0].AsNumber, (double)values[1].AsNumber);
 		}, 2);
 
-		private static readonly IFunction	functionRandom = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionRandom = new CallbackFunction ((values, scope, output) =>
 		{
 			if (CommonFunctions.random == null)
 				CommonFunctions.random = new Random ();
@@ -653,29 +654,39 @@ namespace Cottle.Commons
 			}
 		}, 0, 2);
 
-		private static readonly IFunction	functionRange = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionRange = new CallbackFunction ((values, scope, output) =>
 		{
-			List<Value>	array;
-			int			start;
-			int			step;
-			int			stop;
+			int sign;
+			int	start;
+			int	step;
+			int	stop;
 
 			start = values.Count > 1 ? (int)values[0].AsNumber : 0;
 			step = values.Count > 2 ? (int)values[2].AsNumber : 1;
 			stop = values.Count > 1 ? (int)values[1].AsNumber : (int)values[0].AsNumber;
 
-			if (step == 0 || (start < stop && step < 0) || (start > stop && step > 0))
-				return VoidValue.Instance;
+			if (step == 0)
+				return MapValue.Empty;
 
-			array = new List<Value> ();
+			if (step < 0)
+			{
+				if (start < stop)
+					return MapValue.Empty;
 
-			for (; start < stop; start += step)
-				array.Add (start);
+				sign = 1;
+			}
+			else
+			{
+				if (start > stop)
+					return MapValue.Empty;
 
-			return array;
+				sign = -1;
+			}
+
+			return new MapValue ((i) => start + step * i, (stop - start + step + sign) / step);
 		}, 1, 3);
 
-		private static readonly IFunction	functionRound = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionRound = new CallbackFunction ((values, scope, output) =>
 		{
 			if (values.Count > 1)
 				return Math.Round (values[0].AsNumber, (int)values[1].AsNumber);
@@ -683,12 +694,12 @@ namespace Cottle.Commons
 			return Math.Round (values[0].AsNumber);
 		}, 1, 2);
 
-		private static readonly IFunction	functionSine = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionSine = new CallbackFunction ((values, scope, output) =>
 		{
 			return Math.Sin ((double)values[0].AsNumber);
 		}, 1);
 
-		private static readonly IFunction	functionSlice = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionSlice = new CallbackFunction ((values, scope, output) =>
 		{
 			int										count;
 			IEnumerator<KeyValuePair<Value, Value>>	enumerator;
@@ -722,7 +733,7 @@ namespace Cottle.Commons
 			return source.AsString.Substring (offset, count);
 		}, 2, 3);
 
-		private static readonly IFunction	functionSort = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionSort = new CallbackFunction ((values, scope, output) =>
 		{
 			IFunction							callback;
 			List<KeyValuePair<Value, Value>>	sorted;
@@ -738,17 +749,17 @@ namespace Cottle.Commons
 			return sorted;
 		}, 1, 2);
 
-		private static readonly IFunction	functionSplit = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionSplit = new CallbackFunction ((values, scope, output) =>
 		{
-			return Array.ConvertAll (values[0].AsString.Split (new string[] {values[1].AsString}, StringSplitOptions.None), s => new StringValue (s));
+			return Array.ConvertAll (values[0].AsString.Split (new [] {values[1].AsString}, StringSplitOptions.None), s => new StringValue (s));
 		}, 2);
 
-		private static readonly IFunction	functionSub = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionSub = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsNumber - values[1].AsNumber;
 		}, 2);
 
-		private static readonly IFunction	functionToken = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionToken = new CallbackFunction ((values, scope, output) =>
 		{
 			string	search;
 			string	source;
@@ -770,7 +781,7 @@ namespace Cottle.Commons
 				}
 
 				start = stop + search.Length;
-				stop = source.IndexOf (search, start);
+				stop = source.IndexOf (search, start, StringComparison.InvariantCulture);
 			}
 
 			if (values.Count < 4)
@@ -793,7 +804,7 @@ namespace Cottle.Commons
 			}
         }, 3, 4);
 
-		private static readonly IFunction	functionUnion = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionUnion = new CallbackFunction ((values, scope, output) =>
 		{
 			Dictionary<Value, Value>	result;
 
@@ -808,12 +819,12 @@ namespace Cottle.Commons
 			return result;
 		}, 0, -1);
 
-		private static readonly IFunction	functionUpperCase = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionUpperCase = new CallbackFunction ((values, scope, output) =>
 		{
 			return values[0].AsString.ToUpperInvariant ();
 		}, 1);
 
-		private static readonly IFunction	functionWhen = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionWhen = new CallbackFunction ((values, scope, output) =>
 		{
 			if (values[0].AsBoolean)
 				return values[1];
@@ -821,7 +832,7 @@ namespace Cottle.Commons
 			return values.Count > 2 ? values[2] : VoidValue.Instance;
 		}, 2, 3);
 
-		private static readonly IFunction	functionXor = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionXor = new CallbackFunction ((values, scope, output) =>
 		{
 			int count;
 
@@ -836,7 +847,7 @@ namespace Cottle.Commons
 			return count == 1;
 		});
 
-		private static readonly IFunction	functionZip = new CallbackFunction ((IList<Value> values, IScope scope, TextWriter output) =>
+		private static readonly IFunction	functionZip = new CallbackFunction ((values, scope, output) =>
 		{
 			IEnumerator<KeyValuePair<Value, Value>> enumerator1;
 			IEnumerator<KeyValuePair<Value, Value>> enumerator2;

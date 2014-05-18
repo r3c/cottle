@@ -38,10 +38,15 @@ namespace Cottle.Maps
 				return 1;
 
 			lhs = this.GetEnumerator ();
-			rhs = this.GetEnumerator ();
+			rhs = other.GetEnumerator ();
 
 			while (lhs.MoveNext () && rhs.MoveNext ())
 			{
+				compare = lhs.Current.Key.CompareTo (rhs.Current.Key);
+
+				if (compare != 0)
+					return compare;
+
 				compare = lhs.Current.Value.CompareTo (rhs.Current.Value);
 
 				if (compare != 0)
@@ -60,7 +65,7 @@ namespace Cottle.Maps
 				return false;
 
 			lhs = this.GetEnumerator ();
-			rhs = this.GetEnumerator ();
+			rhs = other.GetEnumerator ();
 
 			while (lhs.MoveNext () && rhs.MoveNext ())
 			{

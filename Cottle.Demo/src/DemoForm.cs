@@ -367,7 +367,7 @@ namespace Cottle.Demo
 
 					node.Nodes.AddRange (range);
 
-					this.NodeAssign (node, key, new MapValue ());
+					this.NodeAssign (node, key, MapValue.Empty);
 
 					return node;
 

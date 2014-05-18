@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 using Cottle.Maps;
@@ -7,7 +8,7 @@ namespace Cottle.Values
 {
 	public sealed class MapValue : Value
 	{
-		#region Properties
+		#region Properties / Instance
 
 		public override bool			AsBoolean
 		{
@@ -59,13 +60,36 @@ namespace Cottle.Values
 
 		#endregion
 
-		#region Attributes
+		#region Properties / Static
+
+		public static MapValue	Empty
+		{
+			get
+			{
+				return MapValue.empty;
+			}
+		}
+
+		#endregion
+
+		#region Attributes / Instance
 
 		private readonly IMap	fields;
 
 		#endregion
 
+		#region Attributes / Static
+
+		private static readonly MapValue	empty = new MapValue ();
+
+		#endregion
+
 		#region Constructors
+
+		public MapValue (Func<int, Value> generator, int count)
+		{
+			this.fields = new GeneratorMap (generator, count);
+		}
 		
 		public MapValue (IDictionary<Value, Value> hash)
 		{

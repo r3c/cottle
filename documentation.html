@@ -320,7 +320,7 @@
 					results in a constant string, but we'll see more realistic
 					examples in following sections.</p>
 					<p>You'll see later that some commands, such as the
-					<code>if</code> comamnd, also require a body which must
+					<code>if</code> command, also require a body which must
 					appear between a ":" (colon) character and the "}" at the
 					end of the command:</p>
 					<div class="code">
@@ -1876,13 +1876,13 @@ true</code>
 					</div>
 				</div>
 
-				<h3>Applying function to each value in a map: map(map,
+				<h3>Applying function to each value in a map: map(source,
 				modifier[, a, b, ...])</h3>
 				<div class="section">
 					<p>Return a map where values are built by applying given
-					modifier to original map values, while preserving keys.
-					Function <code>modifier</code> is invoked for each value in
-					<code>map</code> with this value as its first
+					modifier to map values, while preserving keys. Function
+					<code>modifier</code> is invoked for each value in
+					<code>source</code> with this value as its first
 					argument.</p>
 					<p>Optional arguments can be specified when calling
 					<code>map</code> and will be passed to each invocation of
@@ -2066,10 +2066,12 @@ true</code>
 				step])</h3>
 				<div class="section">
 					<p>Generate a map where value of the <em>i</em>-th pair
-					is <em>start + step * i</em> and last value is lower than
+					is <em>start + step * i</em> and last value is lower (or
+					higher if <code>step</code> is a negative integer) than
 					<code>stop</code>. Default base index is 0 if the
 					<code>start</code> argument is omitted, and default value
-					for <code>step</code> is 1.</p>
+					for <code>step</code> is 1 if <code>start</code> &lt;
+					<code>stop</code> or -1 otherwise.</p>
 					<div class="code">
 						<blockquote><span>Template:</span></blockquote>
 <code>{for v in range(5): {v}}

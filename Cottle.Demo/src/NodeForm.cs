@@ -90,7 +90,7 @@ namespace Cottle.Demo
 					break;
 
 				case ValueContent.Map:
-					this.assign (key, new MapValue ());
+					this.assign (key, MapValue.Empty);
 
 					break;
 

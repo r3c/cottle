@@ -75,6 +75,7 @@
     <Compile Include="src\IFunction.cs" />
     <Compile Include="src\INode.cs" />
     <Compile Include="src\Maps\AbstractMap.cs" />
+    <Compile Include="src\Maps\GeneratorMap.cs" />
     <Compile Include="src\Obsoletes\AbstractScope..cs" />
     <Compile Include="src\Obsoletes\ArrayValue.cs" />
     <Compile Include="src\Obsoletes\BlankCharactersCleaner.cs" />
