@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cottle
+namespace Cottle.Parsers.Default
 {
 	class LexemState
 	{

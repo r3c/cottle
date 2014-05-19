@@ -50,13 +50,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\BlockBranch.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\Documents\SimpleDocument.cs" />
+    <Compile Include="src\Expression.cs" />
     <Compile Include="src\Expressions\ConstantExpression.cs" />
     <Compile Include="src\Expressions\VoidExpression.cs" />
+    <Compile Include="src\ExpressionType.cs" />
     <Compile Include="src\Functions\NativeFunction.cs" />
     <Compile Include="src\IDocument.cs" />
     <Compile Include="src\IMap.cs" />
+    <Compile Include="src\IParser.cs" />
     <Compile Include="src\IScope.cs" />
     <Compile Include="src\ISetting.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
@@ -88,11 +92,6 @@
     <Compile Include="src\Obsoletes\ResolveValue.cs" />
     <Compile Include="src\Obsoletes\ScalarValue.cs" />
     <Compile Include="src\Obsoletes\Scope.cs" />
-    <Compile Include="src\Lexem.cs" />
-    <Compile Include="src\LexemCursor.cs" />
-    <Compile Include="src\LexemState.cs" />
-    <Compile Include="src\LexemType.cs" />
-    <Compile Include="src\LexerMode.cs" />
     <Compile Include="src\Maps\ArrayMap.cs" />
     <Compile Include="src\Maps\EmptyMap.cs" />
     <Compile Include="src\Maps\HashMap.cs" />
@@ -101,6 +100,13 @@
     <Compile Include="src\Nodes\AssignValueNode.cs" />
     <Compile Include="src\Nodes\DumpNode.cs" />
     <Compile Include="src\Obsoletes\UndefinedValue.cs" />
+    <Compile Include="src\Parsers\DefaultParser.cs" />
+    <Compile Include="src\Parsers\Default\Lexem.cs" />
+    <Compile Include="src\Parsers\Default\LexemCursor.cs" />
+    <Compile Include="src\Parsers\Default\LexemState.cs" />
+    <Compile Include="src\Parsers\Default\LexemType.cs" />
+    <Compile Include="src\Parsers\Default\Lexer.cs" />
+    <Compile Include="src\Parsers\Default\LexerMode.cs" />
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Scopes\AbstractScope.cs" />
     <Compile Include="src\Scopes\FallbackScope.cs" />
@@ -108,9 +114,10 @@
     <Compile Include="src\Scopes\SimpleScope.cs" />
     <Compile Include="src\Settings\CustomSetting.cs" />
     <Compile Include="src\Settings\DefaultSetting.cs" />
+    <Compile Include="src\Block.cs" />
+    <Compile Include="src\BlockType.cs" />
     <Compile Include="src\Trimmer.cs" />
     <Compile Include="src\Value.cs" />
-    <Compile Include="src\Lexer.cs" />
     <Compile Include="src\Nodes\CompositeNode.cs" />
     <Compile Include="src\Nodes\EchoNode.cs" />
     <Compile Include="src\Nodes\ForNode.cs" />
@@ -134,7 +141,9 @@
   <ItemGroup>
     <Folder Include="src\Maps" />
     <Folder Include="src\Documents" />
+    <Folder Include="src\Parsers" />
     <Folder Include="src\Obsoletes" />
+    <Folder Include="src\Parsers\Default" />
     <Folder Include="src\Scopes" />
     <Folder Include="src\Settings" />
   </ItemGroup>

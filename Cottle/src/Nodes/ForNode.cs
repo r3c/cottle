@@ -16,15 +16,15 @@ namespace Cottle.Nodes
 
 		private readonly IExpression	from;
 
-		private readonly NameExpression	key;
+		private readonly string			key;
 
-		private readonly NameExpression	value;
+		private readonly string			value;
 
 		#endregion
 
 		#region Constructors
 
-		public	ForNode (IExpression from, NameExpression key, NameExpression value, INode body, INode empty)
+		public	ForNode (IExpression from, string key, string value, INode body, INode empty)
 		{
 			this.body = body;
 			this.empty = empty;
@@ -39,7 +39,9 @@ namespace Cottle.Nodes
 
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			IMap	fields = this.from.Evaluate (scope, output).Fields;
+			IMap	fields;
+
+			fields = this.from.Evaluate (scope, output).Fields;
 
 			if (fields.Count > 0)
 			{
@@ -47,11 +49,10 @@ namespace Cottle.Nodes
 				{
 					scope.Enter ();
 
-					if (this.key != null)
-						this.key.Set (scope, pair.Key, ScopeMode.Local);
+					if (!string.IsNullOrEmpty (this.key))
+						scope.Set (this.key, pair.Key, ScopeMode.Local);
 
-					if (this.value != null)
-						this.value.Set (scope, pair.Value, ScopeMode.Local);
+					scope.Set (this.value, pair.Value, ScopeMode.Local);
 
 					if (this.body.Render (scope, output, out result))
 					{
@@ -87,7 +88,7 @@ namespace Cottle.Nodes
 			output.Write (setting.BlockBegin);
 			output.Write ("for ");
 
-			if (this.key != null)
+			if (!string.IsNullOrEmpty (this.key))
 			{
 				output.Write (this.key);
 				output.Write (", ");

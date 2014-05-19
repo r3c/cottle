@@ -12,21 +12,21 @@ namespace Cottle.Nodes
 	{
 		#region Attributes
 
-		private readonly List<NameExpression>	arguments;
+		private readonly List<string>	arguments;
 
-		private readonly INode					body;
+		private readonly INode			body;
 
-		private readonly ScopeMode				mode;
+		private readonly ScopeMode		mode;
 
-		private readonly NameExpression			name;
+		private readonly string			name;
 
 		#endregion
 
 		#region Constructors
 
-		public	AssignFunctionNode (NameExpression name, IEnumerable<NameExpression> arguments, INode body, ScopeMode mode)
+		public	AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
 		{
-			this.arguments = new List<NameExpression> (arguments);
+			this.arguments = new List<string> (arguments);
 			this.body = body;
 			this.mode = mode;
 			this.name = name;
@@ -38,7 +38,7 @@ namespace Cottle.Nodes
 
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			this.name.Set (scope, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
+			scope.Set (this.name, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
 
 			result = VoidValue.Instance;
 
@@ -74,7 +74,7 @@ namespace Cottle.Nodes
 
 			comma = false;
 
-			foreach (NameExpression argument in this.arguments)
+			foreach (string argument in this.arguments)
 			{
 				if (comma)
 					output.Write (", ");

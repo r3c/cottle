@@ -1,5 +1,5 @@
 ﻿
-namespace Cottle
+namespace Cottle.Parsers.Default
 {
 	class LexemCursor
 	{

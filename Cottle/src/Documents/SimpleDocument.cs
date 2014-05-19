@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-
+using Cottle.Parsers;
 using Cottle.Settings;
 
 namespace Cottle.Documents
@@ -20,6 +20,13 @@ namespace Cottle.Documents
 
 		public SimpleDocument (TextReader reader, ISetting setting)
 		{
+/*
+			IParser	parser;
+			Block	root;
+
+			parser = new DefaultParser (setting);
+			root = parser.Parse (reader);
+*/
 			Parser	parser;
 
 			parser = new Parser (setting);

@@ -1,7 +1,7 @@
 ﻿
-namespace Cottle
+namespace Cottle.Parsers.Default
 {
-	enum	LexemType
+	enum LexemType
 	{
 		None,
 		BlockBegin,
@@ -13,11 +13,11 @@ namespace Cottle
 		Colon,
 		Dot,
 		EndOfFile,
-		Literal,
 		Number,
 		ParenthesisBegin,
 		ParenthesisEnd,
 		String,
+		Symbol,
 		Text
 	}
 }

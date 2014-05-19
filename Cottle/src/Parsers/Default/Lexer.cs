@@ -5,7 +5,7 @@ using System.Text;
 
 using Cottle.Exceptions;
 
-namespace Cottle
+namespace Cottle.Parsers.Default
 {
 	class Lexer
 	{
@@ -234,7 +234,7 @@ namespace Cottle
 						                        (this.last >= 'a' && this.last <= 'z') ||
 						                        (this.last == '_')));
 
-						return new Lexem (LexemType.Literal, buffer.ToString ());
+						return new Lexem (LexemType.Symbol, buffer.ToString ());
 
 					case '-':
 					case '0':

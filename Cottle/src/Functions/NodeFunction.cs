@@ -11,17 +11,17 @@ namespace Cottle.Functions
 	{
 		#region Attributes
 
-		private readonly List<NameExpression>	arguments;
+		private readonly List<string>	arguments;
 
-		private readonly INode					body;
+		private readonly INode			body;
 
 		#endregion
 
 		#region Constructors
 
-		public	NodeFunction (IEnumerable<NameExpression> arguments, INode body)
+		public	NodeFunction (IEnumerable<string> arguments, INode body)
 		{
-			this.arguments = new List<NameExpression> (arguments);
+			this.arguments = new List<string> (arguments);
 			this.body = body;
 		}
 
@@ -36,9 +36,9 @@ namespace Cottle.Functions
 
 			scope.Enter ();
 
-			foreach (NameExpression argument in this.arguments)
+			foreach (string argument in this.arguments)
 			{
-				argument.Set (scope, i < values.Count ? values[i] : VoidValue.Instance, ScopeMode.Local);
+				scope.Set (argument, i < values.Count ? values[i] : VoidValue.Instance, ScopeMode.Local);
 
 				++i;
 			}

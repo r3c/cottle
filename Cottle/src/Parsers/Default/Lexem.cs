@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Cottle
+namespace Cottle.Parsers.Default
 {
 	struct	Lexem
 	{

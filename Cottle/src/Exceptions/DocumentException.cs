@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Cottle.Parsers.Default;
 
 namespace Cottle.Exceptions
 {

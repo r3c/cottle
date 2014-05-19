@@ -14,13 +14,13 @@ namespace Cottle.Nodes
 
 		private readonly ScopeMode		mode;
 
-		private readonly NameExpression	name;
+		private readonly string			name;
 
 		#endregion
 
 		#region Constructors
 
-		public	AssignValueNode (NameExpression name, IExpression expression, ScopeMode mode)
+		public	AssignValueNode (string name, IExpression expression, ScopeMode mode)
 		{
 			this.expression = expression;
 			this.mode = mode;
@@ -33,7 +33,7 @@ namespace Cottle.Nodes
 
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			this.name.Set (scope, this.expression.Evaluate (scope, output), this.mode);
+			scope.Set (this.name, this.expression.Evaluate (scope, output), this.mode);
 
 			result = VoidValue.Instance;
 
