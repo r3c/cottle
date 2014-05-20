@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Cottle.Exceptions;
-using Cottle.Expressions;
 using Cottle.Parsers.Default;
 
 namespace Cottle.Parsers
@@ -12,9 +11,7 @@ namespace Cottle.Parsers
 	{
 		#region Attributes / Instance
 
-		private readonly Lexer		lexer;
-
-		private readonly Trimmer	trimmer;
+		private readonly Lexer	lexer;
 
 		#endregion
 
@@ -38,10 +35,9 @@ namespace Cottle.Parsers
 
 		#region Constructors
 
-		public DefaultParser (ISetting setting)
+		public DefaultParser (string blockBegin, string blockContinue, string blockEnd)
 		{
-			this.lexer = new Lexer (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
-			this.trimmer = setting.Trimmer;
+			this.lexer = new Lexer (blockBegin, blockContinue, blockEnd);
 		}
 
 		#endregion
@@ -74,7 +70,7 @@ namespace Cottle.Parsers
 			string					name;
 
 			arguments = new List<string> ();
-			name = this.ParseName ();
+			name = this.ParseSymbol ();
 
 			switch (this.lexer.Current.Type)
 			{
@@ -83,7 +79,7 @@ namespace Cottle.Parsers
 
 					for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
 					{
-						arguments.Add (this.ParseName ());
+						arguments.Add (this.ParseSymbol ());
 
 						if (this.lexer.Current.Type == LexemType.Comma)
 							this.lexer.Next (LexerMode.Block);
@@ -189,18 +185,18 @@ namespace Cottle.Parsers
 
 		private Expression ParseExpression ()
 		{
-			List<Expression>							arguments;
-			List<KeyValuePair<Expression, Expression>>	elements;
-			Expression									expression;
-			int											index;
-			Expression									key;
-			decimal										number;
-			Expression									value;
+			List<Expression>		arguments;
+			List<ExpressionElement>	elements;
+			Expression				expression;
+			int						index;
+			Expression				key;
+			decimal					number;
+			Expression				value;
 
 			switch (this.lexer.Current.Type)
 			{
 				case LexemType.BracketBegin:
-					elements = new List<KeyValuePair<Expression, Expression>> ();
+					elements = new List<ExpressionElement> ();
 					index = 0;
 
 					for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.BracketEnd; )
@@ -223,7 +219,11 @@ namespace Cottle.Parsers
 							};
 						}
 
-						elements.Add (new KeyValuePair<Expression, Expression> (key, value));
+						elements.Add (new ExpressionElement
+						{
+							Key		= key,
+							Value	= value
+						});
 
 						if (this.lexer.Current.Type == LexemType.Comma)
 							this.lexer.Next (LexerMode.Block);
@@ -232,7 +232,7 @@ namespace Cottle.Parsers
 					expression = new Expression
 					{
 						Elements	= elements.ToArray (),
-						Type		= ExpressionType.Array
+						Type		= ExpressionType.Map
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -339,6 +339,7 @@ namespace Cottle.Parsers
 						expression = new Expression
 						{
 							Arguments	= arguments.ToArray (),
+							Source		= expression,
 							Type		= ExpressionType.Invoke
 						};
 
@@ -358,7 +359,7 @@ namespace Cottle.Parsers
 			}
 			while (this.lexer.Current.Type == LexemType.Text);
 
-			return Block.Empty;
+			return null;
 		}
 
 		private Block ParseKeywordDeclare ()
@@ -392,13 +393,13 @@ namespace Cottle.Parsers
 			string		key;
 			string		value;
 
-			key = this.ParseName ();
+			key = this.ParseSymbol ();
 
 			if (this.lexer.Current.Type == LexemType.Comma)
 			{
 				this.lexer.Next (LexerMode.Block);
 
-				value = this.ParseName ();
+				value = this.ParseSymbol ();
 			}
 			else
 			{
@@ -420,7 +421,7 @@ namespace Cottle.Parsers
 				empty = this.ParseBody ();
 			}
 			else
-				empty = Block.Empty;
+				empty = null;
 
 			return new Block
 			{
@@ -428,6 +429,7 @@ namespace Cottle.Parsers
 				Key		= key,
 				Next	= empty,
 				Source	= from,
+				Type	= BlockType.For,
 				Value	= value
 			};
 		}
@@ -439,7 +441,7 @@ namespace Cottle.Parsers
 			Block				fallback;
 
 			branches = new List<BlockBranch> ();
-			fallback = Block.Empty;
+			fallback = null;
 			condition = this.ParseExpression ();
 
 			branches.Add (new BlockBranch
@@ -448,7 +450,7 @@ namespace Cottle.Parsers
 				Condition	= condition 
 			});
 
-			while (fallback.Type == BlockType.Void && this.lexer.Current.Type == LexemType.BlockContinue)
+			while (fallback == null && this.lexer.Current.Type == LexemType.BlockContinue)
 			{
 				this.lexer.Next (LexerMode.Block);
 
@@ -483,7 +485,7 @@ namespace Cottle.Parsers
 			{
 				Body		= fallback,
 				Branches	= branches.ToArray (),
-				Type		= BlockType.If
+				Type		= BlockType.Test
 			};
 		}
 
@@ -523,9 +525,15 @@ namespace Cottle.Parsers
 			Block	first;
 			Block	parent;
 			int		state;
+			Block	swap;
 
-			first = Block.Empty;
-			parent = Block.Empty;
+			first = new Block
+			{
+				Text	= string.Empty,
+				Type	= BlockType.Literal
+			};
+
+			parent = null;
 			state = 0;
 
 			while (true)
@@ -548,7 +556,7 @@ namespace Cottle.Parsers
 					case LexemType.Text:
 						current = new Block
 						{
-							Text	= this.trimmer (this.lexer.Current.Content),
+							Text	= this.lexer.Current.Content,
 							Type	= BlockType.Literal 
 						};
 
@@ -559,6 +567,10 @@ namespace Cottle.Parsers
 					default:
 						throw new UnexpectedException (this.lexer, "text or block begin ('{')");
 				}
+
+				// Ignore empty blocks
+				if (current == null)
+					continue;
 
 				// Chain current block to parent
 				switch (state)
@@ -583,32 +595,19 @@ namespace Cottle.Parsers
 						break;
 
 					default:
-						parent.Next = new Block
+						swap = new Block
 						{
 							Body	= parent.Next,
 							Next	= current,
 							Type	= BlockType.Composite
 						};
-	
+
+						parent.Next = swap;
 						parent = parent.Next;
 
 						break;
 				}
 			}
-		}
-
-		private string ParseName ()
-		{
-			string	name;
-
-			if (this.lexer.Current.Type != LexemType.Symbol)
-				throw new UnexpectedException (this.lexer, "variable name");
-
-			name = this.lexer.Current.Content;
-
-			this.lexer.Next (LexerMode.Block);
-
-			return name;
 		}
 
 		private Expression ParseStatement ()
@@ -620,6 +619,20 @@ namespace Cottle.Parsers
 			this.lexer.Next (LexerMode.Raw);
 
 			return expression;
+		}
+
+		private string ParseSymbol ()
+		{
+			string	name;
+
+			if (this.lexer.Current.Type != LexemType.Symbol)
+				throw new UnexpectedException (this.lexer, "variable name");
+
+			name = this.lexer.Current.Content;
+
+			this.lexer.Next (LexerMode.Block);
+
+			return name;
 		}
 
 		#endregion

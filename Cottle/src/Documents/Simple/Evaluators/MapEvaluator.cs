@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Cottle.Values;
 
-namespace Cottle.Expressions
+namespace Cottle.Documents.Simple.Evaluators
 {
-	class ArrayExpression : IExpression
+	class MapEvaluator : IEvaluator
 	{
 		#region Attributes
 
-		private List<KeyValuePair<IExpression, IExpression>>	elements;
+		private KeyValuePair<IEvaluator, IEvaluator>[]	elements;
 
 		#endregion
 
 		#region Constructors
 
-		public ArrayExpression (IEnumerable<KeyValuePair<IExpression, IExpression>> elements)
+		public MapEvaluator (IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
 		{
-			this.elements = new List<KeyValuePair<IExpression,IExpression>> (elements);
+			this.elements = elements.ToArray ();
 		}
 
 		#endregion
@@ -27,10 +28,13 @@ namespace Cottle.Expressions
 
 		public Value Evaluate (IScope scope, TextWriter writer)
 		{
-			return new MapValue (this.elements.ConvertAll (delegate (KeyValuePair<IExpression, IExpression> item)
+			return new MapValue (Array.ConvertAll (this.elements, (element) =>
 			{
-				Value	key = item.Key.Evaluate (scope, writer);
-				Value	value = item.Value.Evaluate (scope, writer);
+				Value	key;
+				Value	value;
+
+				key = element.Key.Evaluate (scope, writer);
+				value = element.Value.Evaluate (scope, writer);
 
 				return new KeyValuePair<Value, Value> (key, value);
 			}));
@@ -38,12 +42,15 @@ namespace Cottle.Expressions
 
 		public override string ToString ()
 		{
-			StringBuilder	builder = new StringBuilder ();
-			bool			comma = false;
+			StringBuilder	builder;
+			bool			comma;
 
+			builder = new StringBuilder ();
 			builder.Append ('[');
 
-			foreach (KeyValuePair<IExpression, IExpression> element in this.elements)
+			comma = false;
+
+			foreach (KeyValuePair<IEvaluator, IEvaluator> element in this.elements)
 			{
 				if (comma)
 					builder.Append (", ");

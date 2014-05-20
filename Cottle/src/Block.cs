@@ -27,14 +27,5 @@ namespace Cottle
 		public string			Value;
 
 		#endregion
-
-		#region Attributes / Static
-
-		public static readonly Block	Empty = new Block
-		{
-			Type	= BlockType.Void
-		};
-
-		#endregion
 	}
 }

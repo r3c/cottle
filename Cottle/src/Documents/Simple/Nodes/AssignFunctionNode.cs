@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Cottle.Expressions;
-using Cottle.Functions;
+using System.Linq;
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class AssignFunctionNode : INode
+	class AssignFunctionNode : IFunction, INode
 	{
 		#region Attributes
 
-		private readonly List<string>	arguments;
+		private readonly string[]	arguments;
 
-		private readonly INode			body;
+		private readonly INode		body;
 
-		private readonly ScopeMode		mode;
+		private readonly ScopeMode	mode;
 
-		private readonly string			name;
+		private readonly string		name;
 
 		#endregion
 
@@ -26,7 +24,7 @@ namespace Cottle.Nodes
 
 		public	AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
 		{
-			this.arguments = new List<string> (arguments);
+			this.arguments = arguments.ToArray ();
 			this.body = body;
 			this.mode = mode;
 			this.name = name;
@@ -36,9 +34,30 @@ namespace Cottle.Nodes
 
 		#region Methods
 
+		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
+		{
+			Value	result;
+			int		i = 0;
+
+			scope.Enter ();
+
+			foreach (string argument in this.arguments)
+			{
+				scope.Set (argument, i < arguments.Count ? arguments[i] : VoidValue.Instance, ScopeMode.Local);
+
+				++i;
+			}
+
+			this.body.Render (scope, output, out result);
+
+			scope.Leave ();
+
+			return result;
+		}
+
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			scope.Set (this.name, new FunctionValue (new NodeFunction (this.arguments, this.body)), mode);
+			scope.Set (this.name, new FunctionValue (this), mode);
 
 			result = VoidValue.Instance;
 

@@ -1,30 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
-using Cottle.Expressions;
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class ForNode : INode
+	class ForNode : INode
 	{
 		#region Attributes
 
-		private readonly INode			body;
+		private readonly INode		body;
 
-		private readonly INode			empty;
+		private readonly INode		empty;
 
-		private readonly IExpression	from;
+		private readonly IEvaluator	from;
 
-		private readonly string			key;
+		private readonly string		key;
 
-		private readonly string			value;
+		private readonly string		value;
 
 		#endregion
 
 		#region Constructors
 
-		public	ForNode (IExpression from, string key, string value, INode body, INode empty)
+		public	ForNode (IEvaluator from, string key, string value, INode body, INode empty)
 		{
 			this.body = body;
 			this.empty = empty;

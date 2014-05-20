@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Cottle.Exceptions;
 using Cottle.Values;
 
-namespace Cottle.Expressions
+namespace Cottle.Documents.Simple.Evaluators
 {
-	class CallExpression : IExpression
+	class InvokeEvaluator : IEvaluator
 	{
 		#region Attributes
 
-		private readonly List<IExpression>	arguments;
+		private readonly IEvaluator[]	arguments;
 
-		private readonly IExpression		caller;
+		private readonly IEvaluator		caller;
 
 		#endregion
 
 		#region Constructors
 
-		public CallExpression (IExpression caller, IEnumerable<IExpression> arguments)
+		public InvokeEvaluator (IEvaluator caller, IEnumerable<IEvaluator> arguments)
 		{
-			this.arguments = new List<IExpression> (arguments);
+			this.arguments = arguments.ToArray ();
 			this.caller = caller;
 		}
 
@@ -31,14 +32,16 @@ namespace Cottle.Expressions
 
 		public Value Evaluate (IScope scope, TextWriter output)
 		{
-			IFunction	function = this.caller.Evaluate (scope, output).AsFunction;
-			Value[]		values = new Value[this.arguments.Count];
-			int			i = 0;
+			IFunction	function;
+			Value[]		values;
+
+			function = this.caller.Evaluate (scope, output).AsFunction;
+			values = new Value[this.arguments.Length];
 
 			if (function != null)
 			{
-				foreach (IExpression argument in this.arguments)
-					values[i++] = argument.Evaluate (scope, output);
+				for (int i = 0; i < this.arguments.Length; ++i)
+					values[i] = arguments[i].Evaluate (scope, output);
 
 				try
 				{
@@ -56,13 +59,16 @@ namespace Cottle.Expressions
 
 		public override string ToString ()
 		{
-			StringBuilder	builder = new StringBuilder ();
-			bool			comma = false;
+			StringBuilder	builder;
+			bool			comma;
 
+			builder = new StringBuilder ();
 			builder.Append (this.caller);
 			builder.Append ('(');
 
-			foreach (IExpression argument in this.arguments)
+			comma = false;
+
+			foreach (IEvaluator argument in this.arguments)
 			{
 				if (comma)
 					builder.Append (", ");

@@ -74,12 +74,12 @@ namespace Cottle.Functions
 
 		#region Methods
 
-		public Value Execute (IList<Value> values, IScope scope, TextWriter output)
+		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
 		{
-			if (this.min > values.Count || (this.max >= 0 && this.max < values.Count))
+			if (this.min > arguments.Count || (this.max >= 0 && this.max < arguments.Count))
 				return VoidValue.Instance;
 
-			return this.callback (values, scope, output);
+			return this.callback (arguments, scope, output);
 		}
 
 		#endregion

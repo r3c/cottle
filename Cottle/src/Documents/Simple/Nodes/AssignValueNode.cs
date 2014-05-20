@@ -1,26 +1,24 @@
 ﻿using System;
 using System.IO;
-
-using Cottle.Expressions;
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class AssignValueNode : INode
+	class AssignValueNode : INode
 	{
 		#region Attributes
 
-		private readonly IExpression	expression;
+		private readonly IEvaluator	expression;
 
-		private readonly ScopeMode		mode;
+		private readonly ScopeMode	mode;
 
-		private readonly string			name;
+		private readonly string		name;
 
 		#endregion
 
 		#region Constructors
 
-		public	AssignValueNode (string name, IExpression expression, ScopeMode mode)
+		public	AssignValueNode (string name, IEvaluator expression, ScopeMode mode)
 		{
 			this.expression = expression;
 			this.mode = mode;

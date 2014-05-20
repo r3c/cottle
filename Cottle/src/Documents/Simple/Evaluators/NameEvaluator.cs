@@ -2,9 +2,9 @@
 using System.IO;
 using Cottle.Values;
 
-namespace Cottle.Expressions
+namespace Cottle.Documents.Simple.Evaluators
 {
-	class NameExpression : IExpression
+	class NameEvaluator : IEvaluator
 	{
 		#region Attributes
 
@@ -14,7 +14,7 @@ namespace Cottle.Expressions
 
 		#region Constructors
 
-		public	NameExpression (string name)
+		public	NameEvaluator (string name)
 		{
 			this.name = name;
 		}

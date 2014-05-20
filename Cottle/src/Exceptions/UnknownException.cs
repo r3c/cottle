@@ -26,7 +26,7 @@ namespace Cottle.Exceptions
 		#region Constructors
 
 		internal	UnknownException (Lexer lexer, string token) :
-			base (lexer, string.Format (CultureInfo.InvariantCulture, "found '{0}' at line {1}, column {2}", token, lexer.Line, lexer.Column))
+			base (lexer.Column, lexer.Line, string.Format (CultureInfo.InvariantCulture, "found '{0}' at line {1}, column {2}", token, lexer.Line, lexer.Column))
 		{
 			this.token = token;
 		}

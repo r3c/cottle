@@ -1,21 +1,20 @@
 ﻿using System;
 using System.IO;
-
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class DumpNode : INode
+	class DumpNode : INode
 	{
 		#region Attributes
 
-		private readonly IExpression expression;
+		private readonly IEvaluator expression;
 
 		#endregion
 
 		#region Constructors
 
-		public	DumpNode (IExpression expression)
+		public	DumpNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}

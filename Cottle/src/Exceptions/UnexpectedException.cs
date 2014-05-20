@@ -39,7 +39,7 @@ namespace Cottle.Exceptions
 		#region Constructors
 
 		internal	UnexpectedException (Lexer lexer, string expected) :
-			base (lexer, string.Format (CultureInfo.InvariantCulture, "unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Current.Content, expected, lexer.Line, lexer.Column))
+			base (lexer.Column, lexer.Line, string.Format (CultureInfo.InvariantCulture, "unexpected '{0}', expected {1} at line {2}, column {3}", lexer.Current.Content, expected, lexer.Line, lexer.Column))
 		{
 			this.expected = expected;
 			this.lexem = lexer.Current.Content;

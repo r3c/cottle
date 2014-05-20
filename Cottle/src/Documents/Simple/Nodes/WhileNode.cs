@@ -1,26 +1,25 @@
 ﻿using System;
 using System.IO;
-
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class WhileNode : INode
+	class WhileNode : INode
 	{
 		#region Attributes
 
-		private readonly INode			body;
+		private readonly INode		body;
 
-		private readonly IExpression	test;
+		private readonly IEvaluator	condition;
 
 		#endregion
 
 		#region Constructors
 
-		public	WhileNode (IExpression test, INode body)
+		public	WhileNode (IEvaluator condition, INode body)
 		{
 			this.body = body;
-			this.test = test;
+			this.condition = condition;
 		}
 
 		#endregion
@@ -29,7 +28,7 @@ namespace Cottle.Nodes
 
 		public bool Render (IScope scope, TextWriter output, out Value result)
 		{
-			while (this.test.Evaluate (scope, output).AsBoolean)
+			while (this.condition.Evaluate (scope, output).AsBoolean)
 			{
 				scope.Enter ();
 
@@ -52,7 +51,7 @@ namespace Cottle.Nodes
 		{
 			output.Write (setting.BlockBegin);
 			output.Write ("while ");
-			output.Write (this.test);
+			output.Write (this.condition);
 			output.Write (":");
 
 			this.body.Source (setting, output);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace Cottle.Expressions
+namespace Cottle.Documents.Simple.Evaluators
 {
-	abstract class ConstantExpression<T> : IExpression
+	class ConstantEvaluator : IEvaluator
 	{
 		#region Attributes
 
@@ -13,7 +13,7 @@ namespace Cottle.Expressions
 
 		#region Constructors
 
-		protected ConstantExpression (Value value)
+		public ConstantEvaluator (Value value)
 		{
 			this.value = value;
 		}

@@ -7,19 +7,19 @@ namespace Cottle
 	{
 		#region Attributes / Instance
 
-		public Expression[]								Arguments;
+		public Expression[]			Arguments;
 
-		public KeyValuePair<Expression, Expression>[]	Elements;
+		public ExpressionElement[]	Elements;
 
-		public decimal									Number;
+		public decimal				Number;
 
-		public Expression								Source;
+		public Expression			Source;
 
-		public string									String;
+		public string				String;
 
-		public Expression								Subscript;
+		public Expression			Subscript;
 
-		public ExpressionType							Type;
+		public ExpressionType		Type;
 
 		#endregion
 

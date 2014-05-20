@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class EchoNode : INode
+	class EchoNode : INode
 	{
 		#region Attributes
 
-		private readonly IExpression	expression;
+		private readonly IEvaluator	expression;
 
 		#endregion
 
 		#region Constructors
 
-		public	EchoNode (IExpression expression)
+		public	EchoNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}

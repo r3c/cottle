@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace Cottle
+namespace Cottle.Documents.Simple
 {
-	interface IExpression
+	interface IEvaluator
 	{
 		#region Methods
 

@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class IfNode : INode
+	class TestNode : INode
 	{
 		#region Attributes
 
-		private readonly Branch[]	branches;
+		private readonly KeyValuePair<IEvaluator, INode>[]	branches;
 
-		private readonly INode		fallback;
+		private readonly INode								fallback;
 
 		#endregion
 
 		#region Constructors
 
-		public	IfNode (IEnumerable<Branch> branches, INode fallback)
+		public TestNode (IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
 		{
-			this.branches = new List<Branch> (branches).ToArray ();
+			this.branches = branches.ToArray ();
 			this.fallback = fallback;
 		}
 
@@ -31,13 +31,13 @@ namespace Cottle.Nodes
 		{
 			bool	halt;
 
-			foreach (Branch branch in this.branches)
+			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
 			{
-				if (branch.Test.Evaluate (scope, output).AsBoolean)
+				if (branch.Key.Evaluate (scope, output).AsBoolean)
 				{
 					scope.Enter ();
 
-					halt = branch.Body.Render (scope, output, out result);
+					halt = branch.Value.Render (scope, output, out result);
 
 					scope.Leave ();
 
@@ -67,7 +67,7 @@ namespace Cottle.Nodes
 			
 			first = true;
 
-			foreach (Branch branch in this.branches)
+			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
 			{
 				if (first)
 				{
@@ -82,10 +82,10 @@ namespace Cottle.Nodes
 					output.Write ("elif ");
 				}
 
-				output.Write (branch.Test);
+				output.Write (branch.Key);
 				output.Write (":");
 
-				branch.Body.Source (setting, output);
+				branch.Value.Source (setting, output);
 			}
 
 			if (this.fallback != null)
@@ -97,51 +97,6 @@ namespace Cottle.Nodes
 			}
 
 			output.Write (setting.BlockEnd);
-		}
-
-		#endregion
-
-		#region Types
-
-		public class Branch
-		{
-			#region Properties
-
-			public INode		Body
-			{
-				get
-				{
-					return this.body;
-				}
-			}
-
-			public IExpression	Test
-			{
-				get
-				{
-					return this.test;
-				}
-			}
-
-			#endregion
-
-			#region Attributes
-
-			private readonly INode			body;
-
-			private readonly IExpression	test;
-
-			#endregion
-
-			#region Constructors
-
-			public	Branch (IExpression test, INode body)
-			{
-				this.body = body;
-				this.test = test;
-			}
-
-			#endregion
 		}
 
 		#endregion

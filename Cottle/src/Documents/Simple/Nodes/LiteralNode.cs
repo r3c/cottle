@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-
 using Cottle.Values;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class TextNode : INode
+	class LiteralNode : INode
 	{
 		#region Attributes
 
@@ -16,7 +15,7 @@ namespace Cottle.Nodes
 
 		#region Constructors
 
-		public	TextNode (string text)
+		public LiteralNode (string text)
 		{
 			this.text = text;
 		}

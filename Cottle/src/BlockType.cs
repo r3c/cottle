@@ -8,10 +8,10 @@ namespace Cottle
 		Composite,
 		Dump,
 		Echo,
-		If,
+		For,
 		Literal,
 		Return,
-		Void,
+		Test,
 		While
 	}
 }

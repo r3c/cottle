@@ -4,8 +4,8 @@ namespace Cottle
 	enum ExpressionType
 	{
 		Access,
-		Array,
 		Invoke,
+		Map,
 		Name,
 		Number,
 		String,

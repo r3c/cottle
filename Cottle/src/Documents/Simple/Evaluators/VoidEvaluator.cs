@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using Cottle.Values;
 
-namespace Cottle.Expressions
+namespace Cottle.Documents.Simple.Evaluators
 {
-	class VoidExpression : IExpression
+	class VoidEvaluator : IEvaluator
 	{
 		#region Attributes
 
-		public static readonly VoidExpression	Instance = new VoidExpression ();
+		public static readonly VoidEvaluator	Instance = new VoidEvaluator ();
 
 		#endregion
 

@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
 
-namespace Cottle.Nodes
+namespace Cottle.Documents.Simple.Nodes
 {
-	sealed class ReturnNode : INode
+	class ReturnNode : INode
 	{
 		#region Attributes
 
-		private readonly IExpression	expression;
+		private readonly IEvaluator	expression;
 
 		#endregion
 
 		#region Constructors
 
-		public	ReturnNode (IExpression expression)
+		public	ReturnNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}
