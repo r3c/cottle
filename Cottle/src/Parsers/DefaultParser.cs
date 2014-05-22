@@ -54,7 +54,7 @@ namespace Cottle.Parsers
 			statement = this.ParseLiteral ();
 
 			if (this.lexer.Current.Type != LexemType.EndOfFile)
-				throw new UnexpectedException (this.lexer, "end of file");
+				throw this.Raise ("end of file");
 
 			return statement;
 		}
@@ -158,7 +158,7 @@ namespace Cottle.Parsers
 			block = parse (this);
 
 			if (this.lexer.Current.Type != LexemType.BlockEnd)
-				throw new UnexpectedException (this.lexer, "end of block");
+				throw this.Raise ("end of block");
 
 			this.lexer.Next (LexerMode.Raw);
 
@@ -168,7 +168,7 @@ namespace Cottle.Parsers
 		private Block ParseBody ()
 		{
 			if (this.lexer.Current.Type != LexemType.Colon)
-				throw new UnexpectedException (this.lexer, "body separator (':')");
+				throw this.Raise ("body separator (':')");
 
 			this.lexer.Next (LexerMode.Raw);
 
@@ -178,7 +178,7 @@ namespace Cottle.Parsers
 		private void ParseExpected (LexemType type, string value, string expected)
 		{
 			if (this.lexer.Current.Type != type || this.lexer.Current.Content != value)
-				throw new UnexpectedException (this.lexer, expected);
+				throw this.Raise (expected);
 
 			this.lexer.Next (LexerMode.Block);
 		}
@@ -276,7 +276,7 @@ namespace Cottle.Parsers
 					break;
 
 				default:
-					throw new UnexpectedException (this.lexer, "expression");
+					throw this.Raise ("expression");
 			}
 
 			while (true)
@@ -289,7 +289,7 @@ namespace Cottle.Parsers
 						value = this.ParseExpression ();
 
 						if (this.lexer.Current.Type != LexemType.BracketEnd)
-							throw new UnexpectedException (this.lexer, "array index end (']')");
+							throw this.Raise ("array index end (']')");
 
 						this.lexer.Next (LexerMode.Block);
 
@@ -306,7 +306,7 @@ namespace Cottle.Parsers
 						this.lexer.Next (LexerMode.Block);
 
 						if (this.lexer.Current.Type != LexemType.Symbol)
-							throw new UnexpectedException (this.lexer, "field name");
+							throw this.Raise ("field name");
 
 						expression = new Expression
 						{
@@ -477,7 +477,7 @@ namespace Cottle.Parsers
 						break;
 
 					default:
-						throw new UnexpectedException (this.lexer, "'elif' or 'else' keyword");
+						throw this.Raise ("'elif' or 'else' keyword");
 				}
 			}
 
@@ -565,7 +565,7 @@ namespace Cottle.Parsers
 						break;
 
 					default:
-						throw new UnexpectedException (this.lexer, "text or block begin ('{')");
+						throw this.Raise ("text or block begin ('{')");
 				}
 
 				// Ignore empty blocks
@@ -626,13 +626,18 @@ namespace Cottle.Parsers
 			string	name;
 
 			if (this.lexer.Current.Type != LexemType.Symbol)
-				throw new UnexpectedException (this.lexer, "variable name");
+				throw this.Raise ("variable name");
 
 			name = this.lexer.Current.Content;
 
 			this.lexer.Next (LexerMode.Block);
 
 			return name;
+		}
+
+		private Exception Raise (string expected)
+		{
+			return new ParseException (this.lexer.Column, this.lexer.Line, this.lexer.Current.Content, expected);
 		}
 
 		#endregion

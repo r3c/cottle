@@ -81,7 +81,7 @@ namespace Cottle.Demo
 					throw;
 				}
 			}
-			catch (DocumentException exception)
+			catch (ParseException exception)
 			{
 				this.textBoxInput.Focus ();
 				this.textBoxPrint.BackColor = Color.LightPink;
@@ -133,7 +133,7 @@ namespace Cottle.Demo
 					throw;
 				}
 			}
-			catch (DocumentException exception)
+			catch (ParseException exception)
 			{
 				this.textBoxInput.Focus ();
 				this.textBoxPrint.BackColor = Color.LightPink;
@@ -347,9 +347,11 @@ namespace Cottle.Demo
 
 		private TreeNode	NodeCreate (string key, Value value)
 		{
-			TreeNode	node = new TreeNode ();
+			TreeNode	node;
 			TreeNode[]	range;
 			int			i;
+
+			node = new TreeNode ();
 
 			switch (value.Type)
 			{

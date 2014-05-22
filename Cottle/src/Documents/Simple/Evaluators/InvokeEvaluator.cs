@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Cottle.Exceptions;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
 	class InvokeEvaluator : IEvaluator
 	{
+		#region Events
+
+		public event DocumentError	Error;
+
+		#endregion
+
 		#region Attributes
 
 		private readonly IEvaluator[]	arguments;
@@ -28,7 +33,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#endregion
 
-		#region Methods
+		#region Methods / Public
 
 		public Value Evaluate (IScope scope, TextWriter output)
 		{
@@ -49,8 +54,7 @@ namespace Cottle.Documents.Simple.Evaluators
 				}
 				catch (Exception exception)
 				{
-					#warning should raise event
-					throw new RenderException ("function call raised an exception", exception);
+					this.OnError (this.caller.ToString (), "function call raised an exception", exception);
 				}
 			}
 
@@ -81,6 +85,20 @@ namespace Cottle.Documents.Simple.Evaluators
 			builder.Append (')');
 
 			return builder.ToString ();
+		}
+
+		#endregion
+
+		#region Methods / Private
+
+		private void OnError (string source, string message, Exception exception)
+		{
+			DocumentError	error;
+
+			error = this.Error;
+
+			if (error != null)
+				error (source, message, exception);
 		}
 
 		#endregion

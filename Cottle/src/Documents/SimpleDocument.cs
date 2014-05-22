@@ -5,7 +5,6 @@ using System.IO;
 using Cottle.Documents.Simple;
 using Cottle.Documents.Simple.Evaluators;
 using Cottle.Documents.Simple.Nodes;
-using Cottle.Exceptions;
 using Cottle.Parsers;
 using Cottle.Settings;
 
@@ -13,6 +12,12 @@ namespace Cottle.Documents
 {
 	public sealed class SimpleDocument : IDocument
 	{
+		#region Events
+
+		public event DocumentError	Error;
+
+		#endregion
+
 		#region Attributes
 
 		private readonly INode		node;
@@ -98,6 +103,7 @@ namespace Cottle.Documents
 		{
 			IEvaluator[]							arguments;
 			KeyValuePair<IEvaluator, IEvaluator>[]	elements;
+			InvokeEvaluator							invoke;
 			IEvaluator								key;
 			IEvaluator								value;
 
@@ -125,7 +131,10 @@ namespace Cottle.Documents
 					for (int i = 0; i < arguments.Length; ++i)
 						arguments[i] = this.CompileEvaluator (expression.Arguments[i]);
 
-					return new InvokeEvaluator (this.CompileEvaluator (expression.Source), arguments);
+					invoke = new InvokeEvaluator (this.CompileEvaluator (expression.Source), arguments);
+					invoke.Error += this.OnError;
+
+					return invoke;
 
 				case ExpressionType.Name:
 					return new NameEvaluator (expression.String);
@@ -136,11 +145,8 @@ namespace Cottle.Documents
 				case ExpressionType.String:
 					return new ConstantEvaluator (expression.String);
 
-				case ExpressionType.Void:
-					return VoidEvaluator.Instance;
-
 				default:
-					throw new DocumentException (0, 0, "unknown expression type");
+					return VoidEvaluator.Instance;
 			}
 		}
 
@@ -194,8 +200,18 @@ namespace Cottle.Documents
 					return new WhileNode (this.CompileEvaluator (block.Source), this.CompileNode (block.Body));
 
 				default:
-					throw new DocumentException (0, 0, "unknown block type");
+					return new LiteralNode (string.Empty);
 			}
+		}
+
+		private void OnError (string source, string message, Exception exception)
+		{
+			DocumentError	error;
+
+			error = this.Error;
+
+			if (error != null)
+				error (source, message, exception);
 		}
 
 		#endregion

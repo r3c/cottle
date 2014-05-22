@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
 using Cottle.Exceptions;
 
 namespace Cottle.Parsers.Default
@@ -11,7 +11,7 @@ namespace Cottle.Parsers.Default
 	{
 		#region Properties
 
-		public int			Column
+		public int		Column
 		{
 			get
 			{
@@ -19,7 +19,7 @@ namespace Cottle.Parsers.Default
 			}
 		}
 
-		public Lexem		Current
+		public Lexem	Current
 		{
 			get
 			{
@@ -27,15 +27,7 @@ namespace Cottle.Parsers.Default
 			}
 		}
 
-		public int			Index
-		{
-			get
-			{
-				return this.index;
-			}
-		}
-
-		public int			Line
+		public int		Line
 		{
 			get
 			{
@@ -55,8 +47,6 @@ namespace Cottle.Parsers.Default
 
 		private bool						eof;
 
-		private int							index;
-
 		private char						last;
 
 		private int							line;
@@ -71,20 +61,20 @@ namespace Cottle.Parsers.Default
 
 		#region Constructors
 
-		public	Lexer (string blockBegin, string blockContinue, string blockEnd)
+		public Lexer (string blockBegin, string blockContinue, string blockEnd)
 		{
 			this.cursors = new Queue<LexemCursor> ();
 			this.pending = new Lexem (LexemType.None, string.Empty);
 			this.root = new LexemState ();
 
 			if (!this.root.Store (LexemType.BlockBegin, blockBegin))
-				throw new ConfigException ("BlockBegin", blockBegin, "token used twice");
+				throw new ConfigException ("blockBegin", blockBegin, "block delimiter used twice");
 
 			if (!this.root.Store (LexemType.BlockContinue, blockContinue))
-				throw new ConfigException ("BlockContinue", blockContinue, "token used twice");
+				throw new ConfigException ("blockContinue", blockContinue, "block delimiter used twice");
 
 			if (!this.root.Store (LexemType.BlockEnd, blockEnd))
-				throw new ConfigException ("BlockEnd", blockEnd, "token used twice");
+				throw new ConfigException ("blockEnd", blockEnd, "block delimiter used twice");
 		}
 
 		#endregion
@@ -106,7 +96,7 @@ namespace Cottle.Parsers.Default
 					break;
 
 				default:
-					throw new UnknownException (this, "invalid mode");
+					throw new ParseException (this.column, this.line, "<?>", "block or raw text");
 			}
 		}
 
@@ -115,7 +105,6 @@ namespace Cottle.Parsers.Default
 			this.column = 1;
 			this.current = new Lexem ();
 			this.eof = false;
-			this.index = 0;
 			this.last = '\0';
 			this.line = 1;
 			this.reader = reader;
@@ -127,7 +116,7 @@ namespace Cottle.Parsers.Default
 
 		#region Methods / Private
 
-		private Lexem	NextBlock ()
+		private Lexem NextBlock ()
 		{
 			StringBuilder	buffer;
 			bool			dot;
@@ -252,8 +241,7 @@ namespace Cottle.Parsers.Default
 
 						do
 						{
-							if (this.last == '.')
-								dot = true;
+							dot |= this.last == '.';
 
 							buffer.Append (this.last);
 						}
@@ -274,7 +262,7 @@ namespace Cottle.Parsers.Default
 						}
 
 						if (this.eof)
-							throw new UnknownException (this, "unfinished string");
+							throw new ParseException (this.column, this.line, "<eof>", "end of string");
 
 						this.Read ();
 
@@ -286,7 +274,7 @@ namespace Cottle.Parsers.Default
 			}
 		}
 
-		private Lexem	NextChar (LexemType type)
+		private Lexem NextChar (LexemType type)
 		{
 			Lexem	lexem;
 
@@ -297,7 +285,7 @@ namespace Cottle.Parsers.Default
 			return lexem;
 		}
 
-		private Lexem	NextRaw ()
+		private Lexem NextRaw ()
 		{
 			StringBuilder	buffer;
 			bool			cancel;
@@ -372,7 +360,7 @@ namespace Cottle.Parsers.Default
 			return new Lexem (LexemType.EndOfFile, "<EOF>");
 		}
 
-		private bool	Read ()
+		private bool Read ()
 		{
 			int value;
 
@@ -389,8 +377,6 @@ namespace Cottle.Parsers.Default
 				}
 				else
 					++this.column;
-
-				++this.index;
 			}
 			else
 				this.eof = true;

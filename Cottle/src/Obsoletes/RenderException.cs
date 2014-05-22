@@ -2,6 +2,7 @@
 
 namespace Cottle.Exceptions
 {
+	[Obsolete ("Not thrown anymore, connect to IDocument's Error event")]
 	public class RenderException : Exception
 	{
 		#region Constructors

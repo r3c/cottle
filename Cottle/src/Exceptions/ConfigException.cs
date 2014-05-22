@@ -27,16 +27,16 @@ namespace Cottle.Exceptions
 
 		#region Attributes
 
-		private string	name;
+		private readonly string	name;
 
-		private string	value;
+		private readonly string	value;
 
 		#endregion
 
 		#region Constructors
 
-		public	ConfigException (string name, string value, string message) :
-			base (string.Format (CultureInfo.InvariantCulture, "configuration error for option '{0}' with value '{1}' ({2})'", name, value, message))
+		public ConfigException (string name, string value, string message) :
+			base (string.Format (CultureInfo.InvariantCulture, "{2} (option '{0}', value '{1}')", name, value, message))
 		{
 			this.name = name;
 			this.value = value;
