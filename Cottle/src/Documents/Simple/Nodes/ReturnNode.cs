@@ -13,7 +13,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	ReturnNode (IEvaluator expression)
+		public ReturnNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}

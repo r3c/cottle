@@ -22,7 +22,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	ForNode (IEvaluator from, string key, string value, INode body, INode empty)
+		public ForNode (IEvaluator from, string key, string value, INode body, INode empty)
 		{
 			this.body = body;
 			this.empty = empty;

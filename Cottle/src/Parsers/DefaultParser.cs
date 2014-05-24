@@ -314,7 +314,7 @@ namespace Cottle.Parsers
 							Subscript	= new Expression
 							{
 								String	= this.lexer.Current.Content,
-								Type	= ExpressionType.Name
+								Type	= ExpressionType.String
 							},
 							Type		= ExpressionType.Access 
 						};

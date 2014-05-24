@@ -3,7 +3,7 @@ using Cottle.Documents;
 using Cottle.Scopes;
 using NUnit.Framework;
 
-namespace Cottle.UTest.Commons
+namespace Cottle.Test.Commons
 {
 	[TestFixture]
 	public class CommonFunctionsTester

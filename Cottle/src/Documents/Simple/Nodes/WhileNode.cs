@@ -16,7 +16,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	WhileNode (IEvaluator condition, INode body)
+		public WhileNode (IEvaluator condition, INode body)
 		{
 			this.body = body;
 			this.condition = condition;

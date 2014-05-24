@@ -5,40 +5,20 @@ namespace Cottle.Parsers.Default
 {
 	struct	Lexem
 	{
-		#region Properties
-
-		public string		Content
-		{
-			get
-			{
-				return this.content;
-			}
-		}
-
-		public LexemType	Type
-		{
-			get
-			{
-				return this.type;
-			}
-		}
-
-		#endregion
-
 		#region Attributes
 
-		private readonly string		content;
+		public readonly string		Content;
 
-		private readonly LexemType	type;
+		public readonly LexemType	Type;
 
 		#endregion
 
 		#region Constructors
 
-		public	Lexem (LexemType type, string content)
+		public Lexem (LexemType type, string content)
 		{
-			this.content = content;
-			this.type = type;
+			this.Content = content;
+			this.Type = type;
 		}
 
 		#endregion

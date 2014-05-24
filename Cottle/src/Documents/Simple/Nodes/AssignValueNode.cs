@@ -18,7 +18,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	AssignValueNode (string name, IEvaluator expression, ScopeMode mode)
+		public AssignValueNode (string name, IEvaluator expression, ScopeMode mode)
 		{
 			this.expression = expression;
 			this.mode = mode;

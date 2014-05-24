@@ -16,7 +16,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	CompositeNode (IEnumerable<INode> nodes)
+		public CompositeNode (IEnumerable<INode> nodes)
 		{
 			this.nodes = nodes.ToArray ();
 		}

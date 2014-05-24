@@ -14,7 +14,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	DumpNode (IEvaluator expression)
+		public DumpNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}

@@ -22,7 +22,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
+		public AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
 		{
 			this.arguments = arguments.ToArray ();
 			this.body = body;
@@ -37,16 +37,11 @@ namespace Cottle.Documents.Simple.Nodes
 		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
 		{
 			Value	result;
-			int		i = 0;
 
 			scope.Enter ();
 
-			foreach (string argument in this.arguments)
-			{
-				scope.Set (argument, i < arguments.Count ? arguments[i] : VoidValue.Instance, ScopeMode.Local);
-
-				++i;
-			}
+			for (int i = 0; i < this.arguments.Length; ++i)
+				scope.Set (this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, ScopeMode.Local);
 
 			this.body.Render (scope, output, out result);
 

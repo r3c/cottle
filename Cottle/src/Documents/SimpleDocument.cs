@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using Cottle.Documents.Simple;
 using Cottle.Documents.Simple.Evaluators;
@@ -10,17 +9,16 @@ using Cottle.Settings;
 
 namespace Cottle.Documents
 {
-	public sealed class SimpleDocument : IDocument
+	/// <summary>
+	/// Simple document renders templates using an interpreter. If offers
+	/// better garbage collection and easier debugging but average rendering
+	/// performance.
+	/// </summary>
+	public sealed class SimpleDocument : AbstractDocument
 	{
-		#region Events
-
-		public event DocumentError	Error;
-
-		#endregion
-
 		#region Attributes
 
-		private readonly INode		node;
+		private readonly INode		renderer;
 
 		private readonly ISetting	setting;
 
@@ -36,8 +34,8 @@ namespace Cottle.Documents
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 			root = parser.Parse (reader);
 
-			this.node = this.CompileNode (root);
 			this.setting = setting;
+			this.renderer = this.CompileBlock (root);
 		}
 
 		public SimpleDocument (TextReader reader) :
@@ -59,47 +57,79 @@ namespace Cottle.Documents
 
 		#region Methods / Public
 
-		public Value Render (IScope scope, TextWriter writer)
+		public override Value Render (IScope scope, TextWriter writer)
 		{
 			Value	result;
 
-			this.node.Render (scope, writer, out result);
+			this.renderer.Render (scope, writer, out result);
 
 			return result;
 		}
 
-		public string Render (IScope scope)
+		public override void Source (TextWriter writer)
 		{
-			StringWriter	writer;
-
-			writer = new StringWriter (CultureInfo.InvariantCulture);
-
-			this.Render (scope, writer);
-
-			return writer.ToString ();
-		}
-
-		public void	Source (TextWriter writer)
-		{
-			this.node.Source (this.setting, writer);
-		}
-
-		public string Source ()
-		{
-			StringWriter	writer;
-
-			writer = new StringWriter (CultureInfo.InvariantCulture);
-
-			this.Source (writer);
-
-			return writer.ToString ();
+			this.renderer.Source (this.setting, writer);
 		}
 
 		#endregion
 
 		#region Methods / Private
 
-		private IEvaluator CompileEvaluator (Expression expression)
+		private INode CompileBlock (Block block)
+		{
+			KeyValuePair<IEvaluator, INode>[]	branches;
+			List<INode>							nodes;
+
+			switch (block.Type)
+			{
+				case BlockType.AssignFunction:
+					return new AssignFunctionNode (block.Value, block.Arguments, this.CompileBlock (block.Body), block.Mode);
+
+				case BlockType.AssignValue:
+					return new AssignValueNode (block.Value, this.CompileExpression (block.Source), block.Mode);
+
+				case BlockType.Composite:
+					nodes = new List<INode> ();
+
+					for (; block.Type == BlockType.Composite; block = block.Next)
+						nodes.Add (this.CompileBlock (block.Body));
+
+					nodes.Add (this.CompileBlock (block));
+
+					return new CompositeNode (nodes);
+
+				case BlockType.Dump:
+					return new DumpNode (this.CompileExpression (block.Source));
+
+				case BlockType.Echo:
+					return new EchoNode (this.CompileExpression (block.Source));
+
+				case BlockType.For:
+					return new ForNode (this.CompileExpression (block.Source), block.Key, block.Value, this.CompileBlock (block.Body), block.Next != null ? this.CompileBlock (block.Next) : null);
+
+				case BlockType.Literal:
+					return new LiteralNode (this.setting.Trimmer (block.Text));
+
+				case BlockType.Return:
+					return new ReturnNode (this.CompileExpression (block.Source));
+
+				case BlockType.Test:
+					branches = new KeyValuePair<IEvaluator, INode>[block.Branches.Length];
+
+					for (int i = 0; i < branches.Length; ++i)
+						branches[i] = new KeyValuePair<IEvaluator, INode> (this.CompileExpression (block.Branches[i].Condition), this.CompileBlock (block.Branches[i].Body));
+
+					return new TestNode (branches, block.Next != null ? this.CompileBlock (block.Next) : null);
+
+				case BlockType.While:
+					return new WhileNode (this.CompileExpression (block.Source), this.CompileBlock (block.Body));
+
+				default:
+					return new LiteralNode (string.Empty);
+			}
+		}
+
+		private IEvaluator CompileExpression (Expression expression)
 		{
 			IEvaluator[]							arguments;
 			KeyValuePair<IEvaluator, IEvaluator>[]	elements;
@@ -110,15 +140,15 @@ namespace Cottle.Documents
 			switch (expression.Type)
 			{
 				case ExpressionType.Access:
-					return new AccessEvaluator (this.CompileEvaluator (expression.Source), this.CompileEvaluator (expression.Subscript));
+					return new AccessEvaluator (this.CompileExpression (expression.Source), this.CompileExpression (expression.Subscript));
 
 				case ExpressionType.Map:
 					elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
 
 					for (int i = 0; i < elements.Length; ++i)
 					{
-						key = this.CompileEvaluator (expression.Elements[i].Key);
-						value = this.CompileEvaluator (expression.Elements[i].Value);
+						key = this.CompileExpression (expression.Elements[i].Key);
+						value = this.CompileExpression (expression.Elements[i].Value);
 
 						elements[i] = new KeyValuePair<IEvaluator, IEvaluator> (key, value);
 					}
@@ -129,9 +159,9 @@ namespace Cottle.Documents
 					arguments = new IEvaluator[expression.Arguments.Length];
 
 					for (int i = 0; i < arguments.Length; ++i)
-						arguments[i] = this.CompileEvaluator (expression.Arguments[i]);
+						arguments[i] = this.CompileExpression (expression.Arguments[i]);
 
-					invoke = new InvokeEvaluator (this.CompileEvaluator (expression.Source), arguments);
+					invoke = new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);
 					invoke.Error += this.OnError;
 
 					return invoke;
@@ -148,70 +178,6 @@ namespace Cottle.Documents
 				default:
 					return VoidEvaluator.Instance;
 			}
-		}
-
-		private INode CompileNode (Block block)
-		{
-			KeyValuePair<IEvaluator, INode>[]	branches;
-			List<INode>							nodes;
-
-			switch (block.Type)
-			{
-				case BlockType.AssignFunction:
-					return new AssignFunctionNode (block.Value, block.Arguments, this.CompileNode (block.Body), block.Mode);
-
-				case BlockType.AssignValue:
-					return new AssignValueNode (block.Value, this.CompileEvaluator (block.Source), block.Mode);
-
-				case BlockType.Composite:
-					nodes = new List<INode> ();
-
-					for (; block.Type == BlockType.Composite; block = block.Next)
-						nodes.Add (this.CompileNode (block.Body));
-
-					nodes.Add (this.CompileNode (block));
-
-					return new CompositeNode (nodes);
-
-				case BlockType.Dump:
-					return new DumpNode (this.CompileEvaluator (block.Source));
-
-				case BlockType.Echo:
-					return new EchoNode (this.CompileEvaluator (block.Source));
-
-				case BlockType.For:
-					return new ForNode (this.CompileEvaluator (block.Source), block.Key, block.Value, this.CompileNode (block.Body), block.Next != null ? this.CompileNode (block.Next) : null);
-
-				case BlockType.Literal:
-					return new LiteralNode (this.setting.Trimmer (block.Text));
-
-				case BlockType.Return:
-					return new ReturnNode (this.CompileEvaluator (block.Source));
-
-				case BlockType.Test:
-					branches = new KeyValuePair<IEvaluator, INode>[block.Branches.Length];
-
-					for (int i = 0; i < branches.Length; ++i)
-						branches[i] = new KeyValuePair<IEvaluator, INode> (this.CompileEvaluator (block.Branches[i].Condition), this.CompileNode (block.Branches[i].Body));
-
-					return new TestNode (branches, block.Next != null ? this.CompileNode (block.Next) : null);
-
-				case BlockType.While:
-					return new WhileNode (this.CompileEvaluator (block.Source), this.CompileNode (block.Body));
-
-				default:
-					return new LiteralNode (string.Empty);
-			}
-		}
-
-		private void OnError (string source, string message, Exception exception)
-		{
-			DocumentError	error;
-
-			error = this.Error;
-
-			if (error != null)
-				error (source, message, exception);
 		}
 
 		#endregion

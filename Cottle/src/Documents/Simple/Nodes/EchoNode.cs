@@ -14,7 +14,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public	EchoNode (IEvaluator expression)
+		public EchoNode (IEvaluator expression)
 		{
 			this.expression = expression;
 		}

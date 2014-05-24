@@ -3,48 +3,20 @@ namespace Cottle.Parsers.Default
 {
 	class LexemCursor
 	{
-		#region Properties
-
-		public char			Character
-		{
-			get
-			{
-				return this.character;
-			}
-			set
-			{
-				this.character = value;
-			}
-		}
-
-		public LexemState	State
-		{
-			get
-			{
-				return this.state;
-			}
-			set
-			{
-				this.state = value;
-			}
-		}
-
-		#endregion
-
 		#region Attributes
 
-		private char		character;
+		public readonly char	Character;
 
-		private LexemState	state;
+		public LexemState		State;
 
 		#endregion
 
 		#region Constructors
 
-		public	LexemCursor (char character, LexemState state)
+		public LexemCursor (char character, LexemState state)
 		{
-			this.character = character;
-			this.state = state;
+			this.Character = character;
+			this.State = state;
 		}
 
 		#endregion
@@ -53,18 +25,18 @@ namespace Cottle.Parsers.Default
 
 		public void Cancel ()
 		{
-			this.state = null;
+			this.State = null;
 		}
 
 		public bool Move (char character, out LexemType type)
 		{
-			if (this.state != null)
+			if (this.State != null)
 			{
-				this.state = this.state.Follow (character);
+				this.State = this.State.Follow (character);
 
-				if (this.state != null && this.state.Type != LexemType.None)
+				if (this.State != null && this.State.Type != LexemType.None)
 				{
-					type = this.state.Type;
+					type = this.State.Type;
 
 					return true;
 				}

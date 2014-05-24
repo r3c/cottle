@@ -53,6 +53,11 @@
     <Compile Include="src\BlockBranch.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\DocumentError.cs" />
+    <Compile Include="src\Documents\AbstractDocument.cs" />
+    <Compile Include="src\Documents\DynamicDocument.cs" />
+    <Compile Include="src\Documents\Dynamic\Allocator.cs" />
+    <Compile Include="src\Documents\Dynamic\Renderer.cs" />
+    <Compile Include="src\Documents\Dynamic\Resolver.cs" />
     <Compile Include="src\Documents\SimpleDocument.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\AccessEvaluator.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\ConstantEvaluator.cs" />
@@ -138,6 +143,7 @@
     <Compile Include="src\Values\VoidValue.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="src\Documents\Dynamic" />
     <Folder Include="src\Documents\Simple" />
     <Folder Include="src\Documents\Simple\Evaluators" />
     <Folder Include="src\Documents\Simple\Nodes" />
