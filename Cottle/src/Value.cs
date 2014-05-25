@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Cottle.Functions;
 using Cottle.Values;
 
 namespace Cottle
@@ -127,6 +127,14 @@ namespace Cottle
 		{
 			if (array != null)
 				return new MapValue (array);
+
+			return VoidValue.Instance;
+		}
+
+		public static implicit operator Value (NativeFunction function)
+		{
+			if (function != null)
+				return new FunctionValue (function);
 
 			return VoidValue.Instance;
 		}

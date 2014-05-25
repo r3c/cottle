@@ -159,8 +159,9 @@ namespace Cottle.Documents
 
 		private void CompileExpression (Allocator allocator, Expression expression)
 		{
+			LocalBuilder	array;
 			ConstructorInfo	constructor;
-			LocalBuilder	localPairs;
+			Label			failure;
 			Label			success;
 
 			switch (expression.Type)
@@ -168,22 +169,27 @@ namespace Cottle.Documents
 				case ExpressionType.Access:
 					success = allocator.Generator.DefineLabel ();
 
+					// Evaluate source expression and get fields
 					this.CompileExpression (allocator, expression.Source);
 
 					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>> ((value) => value.Fields).GetGetMethod ());
 
+					// Evaluate subscript expression
 					this.CompileExpression (allocator, expression.Subscript);
 
-					allocator.Generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
+					// Use subscript to get value from fields
+					allocator.Generator.Emit (OpCodes.Ldloca, allocator.LocalValue);
 					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
 					allocator.Generator.Emit (OpCodes.Brtrue, success);
 
+					// Emit void value on error
 					this.EmitVoid (allocator);
 
-					allocator.Generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
 
+					// Push value on stack
 					allocator.Generator.MarkLabel (success);
-					allocator.Generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
 
 					break;
 
@@ -193,22 +199,75 @@ namespace Cottle.Documents
 					break;
 
 				case ExpressionType.Invoke:
-					// FIXME
+					array = allocator.Generator.DeclareLocal (typeof (Value[]));
+					failure = allocator.Generator.DefineLabel ();
+					success = allocator.Generator.DefineLabel ();
+
+					// Evaluate source expression as a function
+					this.CompileExpression (allocator, expression.Source);
+
+					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IFunction>> ((value) => value.AsFunction).GetGetMethod ());
+					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalFunction);
+					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalFunction);
+					allocator.Generator.Emit (OpCodes.Brfalse, failure);
+
+					// Create array to store evaluated values 
+					allocator.Generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
+					allocator.Generator.Emit (OpCodes.Newarr, typeof (Value));
+					allocator.Generator.Emit (OpCodes.Stloc, array);
+
+					// Evaluate arguments and store into array
+					for (int i = 0; i < expression.Arguments.Length; ++i)
+					{
+						allocator.Generator.Emit (OpCodes.Ldloc, array);
+						allocator.Generator.Emit (OpCodes.Ldc_I4, i);
+
+						this.CompileExpression (allocator, expression.Arguments[i]);
+
+						allocator.Generator.Emit (OpCodes.Stelem_Ref);
+					}
+
+					// Invoke function delegate
+					allocator.Generator.BeginExceptionBlock ();
+					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalFunction);
+					allocator.Generator.Emit (OpCodes.Ldloc, array);
+					allocator.Generator.Emit (OpCodes.Ldarg_2);
+					allocator.Generator.Emit (OpCodes.Ldarg_3);
+					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IScope, TextWriter, Value>> ((function, arguments, scope, output) => function.Execute (arguments, scope, output)));
+					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
+					allocator.Generator.BeginCatchBlock (typeof (Exception));
+					allocator.Generator.Emit (OpCodes.Pop); // FIXME: trigger event
+					allocator.Generator.Emit (OpCodes.Leave_S, failure);
+					allocator.Generator.EndExceptionBlock ();
+					allocator.Generator.Emit (OpCodes.Br, success);
+
+					// Emit void value on error
+					allocator.Generator.MarkLabel (failure);
+
+					this.EmitVoid (allocator);
+
+					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
+
+					// Value is already available on stack
+					allocator.Generator.MarkLabel (success);
+					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
 
 					break;
 
 				case ExpressionType.Map:
-					localPairs = allocator.Generator.DeclareLocal (typeof (KeyValuePair<Value, Value>[]));
+					array = allocator.Generator.DeclareLocal (typeof (KeyValuePair<Value, Value>[]));
 
+					// Create array to store evaluated pairs
 					allocator.Generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
 					allocator.Generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
-					allocator.Generator.Emit (OpCodes.Stloc, localPairs);
+					allocator.Generator.Emit (OpCodes.Stloc, array);
 
+					// Evaluate elements and store into array 
 					constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>> ((key, value) => new KeyValuePair<Value, Value> (key, value));
 
 					for (int i = 0; i < expression.Elements.Length; ++i)
 					{
-						allocator.Generator.Emit (OpCodes.Ldloc, localPairs);
+						allocator.Generator.Emit (OpCodes.Ldloc, array);
 						allocator.Generator.Emit (OpCodes.Ldc_I4, i);
 						allocator.Generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
 
@@ -219,9 +278,10 @@ namespace Cottle.Documents
 						allocator.Generator.Emit (OpCodes.Stobj, typeof (KeyValuePair<Value, Value>));
 					}
 
+					// Create value from array
 					constructor = Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>> ((pairs) => new MapValue (pairs));
 
-					allocator.Generator.Emit (OpCodes.Ldloc, localPairs);
+					allocator.Generator.Emit (OpCodes.Ldloc, array);
 					allocator.Generator.Emit (OpCodes.Newobj, constructor);
 
 					break;
@@ -229,20 +289,23 @@ namespace Cottle.Documents
 				case ExpressionType.Symbol:
 					success = allocator.Generator.DefineLabel ();
 
+					// Get variable from scope
 					allocator.Generator.Emit (OpCodes.Ldarg_2);
 
 					this.EmitValue (allocator, expression.Value);
 
-					allocator.Generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Ldloca, allocator.LocalValue);
 					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IScope).GetMethod ("Get"));
 					allocator.Generator.Emit (OpCodes.Brtrue, success);
 
+					// Emit void value on error
 					this.EmitVoid (allocator);
 
-					allocator.Generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
 
+					// Push value on stack
 					allocator.Generator.MarkLabel (success);
-					allocator.Generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
 
 					break;
 

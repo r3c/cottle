@@ -16,6 +16,17 @@ namespace Cottle.Documents.Dynamic
 			}
 		}
 
+		public LocalBuilder			LocalFunction
+		{
+			get
+			{
+				if (this.localFunction == null)
+					this.localFunction = this.generator.DeclareLocal (typeof (IFunction));
+
+				return this.localFunction;
+			}
+		}
+
 		public LocalBuilder			LocalValue
 		{
 			get
@@ -49,6 +60,8 @@ namespace Cottle.Documents.Dynamic
 
 		public readonly ILGenerator		generator;
 
+		private LocalBuilder			localFunction;
+
 		private LocalBuilder			localValue;
 
 		private readonly List<string>	strings;
@@ -62,6 +75,7 @@ namespace Cottle.Documents.Dynamic
 		public Allocator (ILGenerator generator)
 		{
 			this.generator = generator;
+			this.localFunction = null;
 			this.localValue = null;
 			this.strings = new List<string> ();
 			this.values = new List<Value> ();

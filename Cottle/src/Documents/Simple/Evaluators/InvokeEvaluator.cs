@@ -40,12 +40,13 @@ namespace Cottle.Documents.Simple.Evaluators
 			Value[]		values;
 
 			function = this.caller.Evaluate (scope, output).AsFunction;
-			values = new Value[this.arguments.Length];
 
 			if (function != null)
 			{
+				values = new Value[this.arguments.Length];
+
 				for (int i = 0; i < this.arguments.Length; ++i)
-					values[i] = arguments[i].Evaluate (scope, output);
+					values[i] = this.arguments[i].Evaluate (scope, output);
 
 				try
 				{
