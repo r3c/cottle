@@ -7,7 +7,7 @@ namespace Cottle
 	{
 		#region Methods
 
-		Block	Parse (TextReader reader);
+		Command	Parse (TextReader reader);
 
 		#endregion
 	}

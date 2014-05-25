@@ -5,7 +5,7 @@ namespace Cottle
 	{
 		#region Properties
 		
-		Value	this[Value name]
+		Value	this[Value symbol]
 		{
 			get;
 			set;
@@ -17,11 +17,11 @@ namespace Cottle
 
 		void	Enter ();
 
-		bool	Get (Value name, out Value value);
+		bool	Get (Value symbol, out Value value);
 
 		bool	Leave ();
 
-		bool	Set (Value name, Value value, ScopeMode mode);
+		bool	Set (Value symbol, Value value, ScopeMode mode);
 
 		#endregion
 	}

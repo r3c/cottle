@@ -17,7 +17,7 @@ namespace Cottle.Parsers
 
 		#region Attributes / Static
 
-		private static readonly Dictionary<string, Func<DefaultParser, Block>>	keywords = new Dictionary<string, Func<DefaultParser, Block>>
+		private static readonly Dictionary<string, Func<DefaultParser, Command>>	keywords = new Dictionary<string, Func<DefaultParser, Command>>
 		{
 			{"_",		(p) => p.ParseKeywordComment ()},
 			{"declare",	(p) => p.ParseKeywordDeclare ()},
@@ -44,9 +44,9 @@ namespace Cottle.Parsers
 
 		#region Methods / Public
 
-		public Block Parse (TextReader reader)
+		public Command Parse (TextReader reader)
 		{
-			Block	statement;
+			Command	statement;
 
 			this.lexer.Reset (reader);
 			this.lexer.Next (LexerMode.Raw);
@@ -63,11 +63,11 @@ namespace Cottle.Parsers
 
 		#region Methods / Private
 
-		private Block ParseAssignment (ScopeMode mode)
+		private Command ParseAssignment (ScopeMode mode)
 		{
-			List<string>			arguments;
-			Func<ScopeMode, Block>	build;
-			string					name;
+			List<string>				arguments;
+			Func<ScopeMode, Command>	command;
+			string						name;
 
 			arguments = new List<string> ();
 			name = this.ParseSymbol ();
@@ -87,23 +87,23 @@ namespace Cottle.Parsers
 
 					this.lexer.Next (LexerMode.Block);
 
-					build = (m) => new Block
+					command = (m) => new Command
 					{
 						Arguments	= arguments.ToArray (),
 						Body		= this.ParseBody (),
 						Mode		= m,
-						Type		= BlockType.AssignFunction,
+						Type		= CommandType.AssignFunction,
 						Value		= name
 					};
 
 					break;
 
 				default:
-					build = (m) => new Block
+					command = (m) => new Command
 					{
 						Mode	= m,
 						Source	= this.ParseStatement (),
-						Type	= BlockType.AssignValue,
+						Type	= CommandType.AssignValue,
 						Value	= name
 					};
 
@@ -130,42 +130,42 @@ namespace Cottle.Parsers
 					else
 						this.ParseExpected (LexemType.Symbol, "as", "'as' keyword");
 
-					return build (mode);
+					return command (mode);
 
 				default:
 					this.lexer.Next (LexerMode.Raw);
 
-					return new Block
+					return new Command
 					{
 						Mode	= mode,
 						Source	= Expression.Empty,
-						Type	= BlockType.AssignValue,
+						Type	= CommandType.AssignValue,
 						Value	= name
 					};
 			}
 		}
 
-		private Block ParseCommand ()
+		private Command ParseCommand ()
 		{
-			Block						block;
-			Func<DefaultParser, Block>	parse;
+			Command							command;
+			Func<DefaultParser, Command>	parse;
 
 			if (this.lexer.Current.Type == LexemType.Symbol && DefaultParser.keywords.TryGetValue (this.lexer.Current.Content, out parse))
 				this.lexer.Next (LexerMode.Block);
 			else
 				parse = (p) => p.ParseKeywordEcho ();
 
-			block = parse (this);
+			command = parse (this);
 
 			if (this.lexer.Current.Type != LexemType.BlockEnd)
 				throw this.Raise ("end of block");
 
 			this.lexer.Next (LexerMode.Raw);
 
-			return block;
+			return command;
 		}
 
-		private Block ParseBody ()
+		private Command ParseBody ()
 		{
 			if (this.lexer.Current.Type != LexemType.Colon)
 				throw this.Raise ("body separator (':')");
@@ -214,8 +214,8 @@ namespace Cottle.Parsers
 							value = key;
 							key = new Expression
 							{
-								Number	= index++,
-								Type	= ExpressionType.Number
+								Type	= ExpressionType.Constant,
+								Value	= index++,
 							};
 						}
 
@@ -245,8 +245,8 @@ namespace Cottle.Parsers
 
 					expression = new Expression
 					{
-						Number	= number,
-						Type	= ExpressionType.Number
+						Type	= ExpressionType.Constant,
+						Value	= number
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -256,8 +256,8 @@ namespace Cottle.Parsers
 				case LexemType.String:
 					expression = new Expression
 					{
-						String	= this.lexer.Current.Content,
-						Type	= ExpressionType.String
+						Type	= ExpressionType.Constant,
+						Value	= this.lexer.Current.Content
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -267,8 +267,8 @@ namespace Cottle.Parsers
 				case LexemType.Symbol:
 					expression = new Expression
 					{
-						String	= this.lexer.Current.Content,
-						Type	= ExpressionType.Name
+						Type	= ExpressionType.Symbol,
+						Value	= this.lexer.Current.Content
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -313,8 +313,8 @@ namespace Cottle.Parsers
 							Source		= expression,
 							Subscript	= new Expression
 							{
-								String	= this.lexer.Current.Content,
-								Type	= ExpressionType.String
+								Type	= ExpressionType.Constant,
+								Value	= this.lexer.Current.Content
 							},
 							Type		= ExpressionType.Access 
 						};
@@ -351,7 +351,7 @@ namespace Cottle.Parsers
 			}
 		}
 
-		private Block ParseKeywordComment ()
+		private Command ParseKeywordComment ()
 		{
 			do
 			{
@@ -362,33 +362,33 @@ namespace Cottle.Parsers
 			return null;
 		}
 
-		private Block ParseKeywordDeclare ()
+		private Command ParseKeywordDeclare ()
 		{
 			return this.ParseAssignment (ScopeMode.Local);
 		}
 
-		private Block ParseKeywordDump ()
+		private Command ParseKeywordDump ()
 		{
-			return new Block
+			return new Command
 			{
 				Source	= this.ParseStatement (),
-				Type	= BlockType.Dump 
+				Type	= CommandType.Dump 
 			};
 		}
 
-		private Block ParseKeywordEcho ()
+		private Command ParseKeywordEcho ()
 		{
-			return new Block
+			return new Command
 			{
 				Source	= this.ParseStatement (),
-				Type	= BlockType.Echo 
+				Type	= CommandType.Echo 
 			};
 		}
 
-		private Block ParseKeywordFor ()
+		private Command ParseKeywordFor ()
 		{
-			Block		body;
-			Block		empty;
+			Command		body;
+			Command		empty;
 			Expression	from;
 			string		key;
 			string		value;
@@ -423,28 +423,28 @@ namespace Cottle.Parsers
 			else
 				empty = null;
 
-			return new Block
+			return new Command
 			{
 				Body	= body,
 				Key		= key,
 				Next	= empty,
 				Source	= from,
-				Type	= BlockType.For,
+				Type	= CommandType.For,
 				Value	= value
 			};
 		}
 
-		private Block ParseKeywordIf ()
+		private Command ParseKeywordIf ()
 		{
-			List<BlockBranch>	branches;
+			List<CommandBranch>	branches;
 			Expression			condition;
-			Block				fallback;
+			Command				fallback;
 
-			branches = new List<BlockBranch> ();
+			branches = new List<CommandBranch> ();
 			fallback = null;
 			condition = this.ParseExpression ();
 
-			branches.Add (new BlockBranch
+			branches.Add (new CommandBranch
 			{
 				Body		= this.ParseBody (),
 				Condition	= condition 
@@ -461,7 +461,7 @@ namespace Cottle.Parsers
 
 						condition = this.ParseExpression ();
 
-						branches.Add (new BlockBranch
+						branches.Add (new CommandBranch
 						{
 							Body		= this.ParseBody (),
 							Condition	= condition
@@ -481,56 +481,56 @@ namespace Cottle.Parsers
 				}
 			}
 
-			return new Block
+			return new Command
 			{
 				Body		= fallback,
 				Branches	= branches.ToArray (),
-				Type		= BlockType.Test
+				Type		= CommandType.If
 			};
 		}
 
-		private Block ParseKeywordReturn ()
+		private Command ParseKeywordReturn ()
 		{
-			return new Block
+			return new Command
 			{
 				Source	= this.ParseStatement (),
-				Type	= BlockType.Return 
+				Type	= CommandType.Return 
 			};
 		}
 
-		private Block ParseKeywordSet ()
+		private Command ParseKeywordSet ()
 		{
 			return this.ParseAssignment (ScopeMode.Closest);
 		}
 
-		private Block ParseKeywordWhile ()
+		private Command ParseKeywordWhile ()
 		{
-			Block		body;
+			Command		body;
 			Expression	condition;
 
 			condition = this.ParseExpression ();
 			body = this.ParseBody ();
 
-			return new Block
+			return new Command
 			{
 				Body	= body,
 				Source	= condition,
-				Type	= BlockType.While
+				Type	= CommandType.While
 			};
 		}
 
-		private Block ParseLiteral ()
+		private Command ParseLiteral ()
 		{
-			Block	current;
-			Block	first;
-			Block	parent;
+			Command	current;
+			Command	first;
+			Command	parent;
 			int		state;
-			Block	swap;
+			Command	swap;
 
-			first = new Block
+			first = new Command
 			{
 				Text	= string.Empty,
-				Type	= BlockType.Literal
+				Type	= CommandType.Literal
 			};
 
 			parent = null;
@@ -554,10 +554,10 @@ namespace Cottle.Parsers
 						return first;
 
 					case LexemType.Text:
-						current = new Block
+						current = new Command
 						{
 							Text	= this.lexer.Current.Content,
-							Type	= BlockType.Literal 
+							Type	= CommandType.Literal 
 						};
 
 						this.lexer.Next (LexerMode.Raw);
@@ -582,11 +582,11 @@ namespace Cottle.Parsers
 						break;
 
 					case 1:
-						parent = new Block
+						parent = new Command
 						{
 							Body	= first,
 							Next	= current,
-							Type	= BlockType.Composite
+							Type	= CommandType.Composite
 						};
 	
 						first = parent;
@@ -595,11 +595,11 @@ namespace Cottle.Parsers
 						break;
 
 					default:
-						swap = new Block
+						swap = new Command
 						{
 							Body	= parent.Next,
 							Next	= current,
-							Type	= BlockType.Composite
+							Type	= CommandType.Composite
 						};
 
 						parent.Next = swap;

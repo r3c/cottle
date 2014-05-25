@@ -2,9 +2,9 @@
 
 namespace Cottle
 {
-	struct BlockBranch
+	struct CommandBranch
 	{
-		public Block		Body;
+		public Command		Body;
 
 		public Expression	Condition;
 	}

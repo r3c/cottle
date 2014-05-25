@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\BlockBranch.cs" />
+    <Compile Include="src\CommandBranch.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
     <Compile Include="src\DocumentError.cs" />
     <Compile Include="src\Documents\AbstractDocument.cs" />
@@ -63,7 +63,7 @@
     <Compile Include="src\Documents\Simple\Evaluators\ConstantEvaluator.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\InvokeEvaluator.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\MapEvaluator.cs" />
-    <Compile Include="src\Documents\Simple\Evaluators\NameEvaluator.cs" />
+    <Compile Include="src\Documents\Simple\Evaluators\SymbolEvaluator.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\VoidEvaluator.cs" />
     <Compile Include="src\Documents\Simple\IEvaluator.cs" />
     <Compile Include="src\Documents\Simple\INode.cs" />
@@ -73,9 +73,9 @@
     <Compile Include="src\Documents\Simple\Nodes\DumpNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\EchoNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\ForNode.cs" />
+    <Compile Include="src\Documents\Simple\Nodes\IfNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\LiteralNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\ReturnNode.cs" />
-    <Compile Include="src\Documents\Simple\Nodes\TestNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\WhileNode.cs" />
     <Compile Include="src\Exceptions\ConfigException.cs" />
     <Compile Include="src\Expression.cs" />
@@ -126,8 +126,8 @@
     <Compile Include="src\Scopes\SimpleScope.cs" />
     <Compile Include="src\Settings\CustomSetting.cs" />
     <Compile Include="src\Settings\DefaultSetting.cs" />
-    <Compile Include="src\Block.cs" />
-    <Compile Include="src\BlockType.cs" />
+    <Compile Include="src\Command.cs" />
+    <Compile Include="src\CommandType.cs" />
     <Compile Include="src\Trimmer.cs" />
     <Compile Include="src\Value.cs" />
     <Compile Include="src\ValueContent.cs" />

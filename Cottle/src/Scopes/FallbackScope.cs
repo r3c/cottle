@@ -49,9 +49,9 @@ namespace Cottle.Scopes
 			this.mutable.Enter ();
 		}
 		
-		public override bool Get (Value name, out Value value)
+		public override bool Get (Value symbol, out Value value)
 		{
-			return this.mutable.Get (name, out value) || this.constant.Get (name, out value);
+			return this.mutable.Get (symbol, out value) || this.constant.Get (symbol, out value);
 		}
 		
 		public override bool Leave ()
@@ -59,9 +59,9 @@ namespace Cottle.Scopes
 			return this.mutable.Leave ();
 		}
 		
-		public override bool Set (Value name, Value value, ScopeMode mode)
+		public override bool Set (Value symbol, Value value, ScopeMode mode)
 		{
-			return this.mutable.Set (name, value, mode);
+			return this.mutable.Set (symbol, value, mode);
 		}
 
 		#endregion

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Documents.Dynamic;
 using Cottle.Parsers;
@@ -32,19 +34,17 @@ namespace Cottle.Documents
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
 			Allocator		allocator;
-			ILGenerator		generator;
 			DynamicMethod	method;
 			IParser			parser;
-			Block			root;
+			Command			root;
 
 			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (string[]), typeof (Value[]), typeof (IScope), typeof (TextWriter)}, this.GetType ());
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
-			generator = method.GetILGenerator ();
-			allocator = new Allocator (generator.DeclareLocal (typeof (Value)));
+			allocator = new Allocator (method.GetILGenerator ());
 			root = parser.Parse (reader);
 
-			this.CompileBlock (generator, allocator, setting.Trimmer, root);
+			this.CompileCommand (allocator, setting.Trimmer, root);
 
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
 			this.strings = allocator.Strings.ToArray ();
@@ -79,101 +79,116 @@ namespace Cottle.Documents
 
 		#region Methods / Private
 
-		private void CompileBlock (ILGenerator generator, Allocator allocator, Trimmer trimmer, Block block)
+		private void CompileCommand (Allocator allocator, Trimmer trimmer, Command command)
 		{
-			switch (block.Type)
+			Label	end;
+
+			end = allocator.Generator.DefineLabel ();
+
+			switch (command.Type)
 			{
-				case BlockType.AssignFunction:
+				case CommandType.AssignFunction:
 					// FIXME
 
 					break;
 
-				case BlockType.AssignValue:
+				case CommandType.AssignValue:
 					// FIXME
 
 					break;
 
-				case BlockType.Composite:
-					this.CompileBlock (generator, allocator, trimmer, block.Body);
-					this.CompileBlock (generator, allocator, trimmer, block.Next);
+				case CommandType.Composite:
+					this.CompileCommand (allocator, trimmer, command.Body);
+					this.CompileCommand (allocator, trimmer, command.Next);
 
 					break;
 
-				case BlockType.Dump:
-					generator.Emit (OpCodes.Ldarg_3);
+				case CommandType.Dump:
+					allocator.Generator.Emit (OpCodes.Ldarg_3);
 
-					this.CompileExpression (generator, allocator, block.Source);
-					this.EmitCallWriteObject (generator);
-
-					break;
-
-				case BlockType.Echo:
-					generator.Emit (OpCodes.Ldarg_3);
-
-					this.CompileExpression (generator, allocator, block.Source);
-					this.EmitCallValueAsString (generator);
-					this.EmitCallWriteString (generator);
+					this.CompileExpression (allocator, command.Source);
+					this.EmitCallWriteObject (allocator);
 
 					break;
 
-				case BlockType.For:
+				case CommandType.Echo:
+					allocator.Generator.Emit (OpCodes.Ldarg_3);
+
+					this.CompileExpression (allocator, command.Source);
+					this.EmitCallValueAsString (allocator);
+					this.EmitCallWriteString (allocator);
+
+					break;
+
+				case CommandType.For:
 					// FIXME
 
 					break;
 
-				case BlockType.Literal:
-					generator.Emit (OpCodes.Ldarg_3);
-
-					this.EmitString (generator, allocator, trimmer (block.Text));
-					this.EmitCallWriteString (generator);
-
-					break;
-
-				case BlockType.Return:
+				case CommandType.If:
 					// FIXME
 
 					break;
 
-				case BlockType.Test:
-					// FIXME
+				case CommandType.Literal:
+					allocator.Generator.Emit (OpCodes.Ldarg_3);
+
+					this.EmitString (allocator, trimmer (command.Text));
+					this.EmitCallWriteString (allocator);
 
 					break;
 
-				case BlockType.While:
+				case CommandType.Return:
+					this.CompileExpression (allocator, command.Source);
+
+					allocator.Generator.Emit (OpCodes.Br, end);
+
+					break;
+
+				case CommandType.While:
 					// FIXME
 
 					break;
 			}
 
-			generator.Emit (OpCodes.Ldnull);
-			generator.Emit (OpCodes.Ret);
+			this.EmitVoid (allocator);
+
+			allocator.Generator.MarkLabel (end);
+			allocator.Generator.Emit (OpCodes.Ret);
 		}
 
-		private void CompileExpression (ILGenerator generator, Allocator allocator, Expression expression)
+		private void CompileExpression (Allocator allocator, Expression expression)
 		{
-			Label	success;
+			ConstructorInfo	constructor;
+			LocalBuilder	localPairs;
+			Label			success;
 
 			switch (expression.Type)
 			{
 				case ExpressionType.Access:
-					success = generator.DefineLabel ();
+					success = allocator.Generator.DefineLabel ();
 
-					this.CompileExpression (generator, allocator, expression.Source);
+					this.CompileExpression (allocator, expression.Source);
 
-					generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>> ((value) => value.Fields).GetGetMethod ());
+					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>> ((value) => value.Fields).GetGetMethod ());
 
-					this.CompileExpression (generator, allocator, expression.Subscript);
+					this.CompileExpression (allocator, expression.Subscript);
 
-					generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
-					generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
-					generator.Emit (OpCodes.Brtrue, success);
+					allocator.Generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
+					allocator.Generator.Emit (OpCodes.Brtrue, success);
 
-					this.EmitVoid (generator);
+					this.EmitVoid (allocator);
 
-					generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
 
-					generator.MarkLabel (success);
-					generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
+					allocator.Generator.MarkLabel (success);
+					allocator.Generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
+
+					break;
+
+				case ExpressionType.Constant:
+					this.EmitValue (allocator, expression.Value);
 
 					break;
 
@@ -183,79 +198,93 @@ namespace Cottle.Documents
 					break;
 
 				case ExpressionType.Map:
-					// FIXME
+					localPairs = allocator.Generator.DeclareLocal (typeof (KeyValuePair<Value, Value>[]));
+
+					allocator.Generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
+					allocator.Generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
+					allocator.Generator.Emit (OpCodes.Stloc, localPairs);
+
+					constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>> ((key, value) => new KeyValuePair<Value, Value> (key, value));
+
+					for (int i = 0; i < expression.Elements.Length; ++i)
+					{
+						allocator.Generator.Emit (OpCodes.Ldloc, localPairs);
+						allocator.Generator.Emit (OpCodes.Ldc_I4, i);
+						allocator.Generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
+
+						this.CompileExpression (allocator, expression.Elements[i].Key);
+						this.CompileExpression (allocator, expression.Elements[i].Value);
+
+						allocator.Generator.Emit (OpCodes.Newobj, constructor);
+						allocator.Generator.Emit (OpCodes.Stobj, typeof (KeyValuePair<Value, Value>));
+					}
+
+					constructor = Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>> ((pairs) => new MapValue (pairs));
+
+					allocator.Generator.Emit (OpCodes.Ldloc, localPairs);
+					allocator.Generator.Emit (OpCodes.Newobj, constructor);
 
 					break;
 
-				case ExpressionType.Name:
-					success = generator.DefineLabel ();
-		
-					generator.Emit (OpCodes.Ldarg_2);
-		
-					this.EmitValue (generator, allocator, expression.String);
-		
-					generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
-					generator.Emit (OpCodes.Callvirt, typeof (IScope).GetMethod ("Get"));
-					generator.Emit (OpCodes.Brtrue, success);
-		
-					this.EmitVoid (generator);
-		
-					generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
-		
-					generator.MarkLabel (success);
-					generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
+				case ExpressionType.Symbol:
+					success = allocator.Generator.DefineLabel ();
 
-					break;
+					allocator.Generator.Emit (OpCodes.Ldarg_2);
 
-				case ExpressionType.Number:
-					this.EmitValue (generator, allocator, expression.Number);
+					this.EmitValue (allocator, expression.Value);
 
-					break;
+					allocator.Generator.Emit (OpCodes.Ldloca_S, allocator.LocalValue);
+					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IScope).GetMethod ("Get"));
+					allocator.Generator.Emit (OpCodes.Brtrue, success);
 
-				case ExpressionType.String:
-					this.EmitValue (generator, allocator, expression.String);
+					this.EmitVoid (allocator);
+
+					allocator.Generator.Emit (OpCodes.Stloc_S, allocator.LocalValue);
+
+					allocator.Generator.MarkLabel (success);
+					allocator.Generator.Emit (OpCodes.Ldloc_S, allocator.LocalValue);
 
 					break;
 
 				case ExpressionType.Void:
-					this.EmitVoid (generator);
+					this.EmitVoid (allocator);
 
 					break;
 			}
 		}
 
-		private void EmitCallValueAsString (ILGenerator generator)
+		private void EmitCallValueAsString (Allocator allocator)
 		{
-			generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((value) => value.AsString).GetGetMethod ());
+			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((value) => value.AsString).GetGetMethod ());
 		}
 
-		private void EmitCallWriteObject (ILGenerator generator)
+		private void EmitCallWriteObject (Allocator allocator)
 		{
-			generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((writer, value) => writer.Write (value)));
+			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((writer, value) => writer.Write (value)));
 		}
 
-		private void EmitCallWriteString (ILGenerator generator)
+		private void EmitCallWriteString (Allocator allocator)
 		{
-			generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>> ((writer, value) => writer.Write (value)));
+			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>> ((writer, value) => writer.Write (value)));
 		}
 
-		private void EmitString (ILGenerator generator, Allocator allocator, string literal)
+		private void EmitString (Allocator allocator, string literal)
 		{
-			generator.Emit (OpCodes.Ldarg_0);
-			generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (literal));
-			generator.Emit (OpCodes.Ldelem_Ref);
+			allocator.Generator.Emit (OpCodes.Ldarg_0);
+			allocator.Generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (literal));
+			allocator.Generator.Emit (OpCodes.Ldelem_Ref);
 		}
 
-		private void EmitValue (ILGenerator generator, Allocator allocator, Value constant)
+		private void EmitValue (Allocator allocator, Value constant)
 		{
-			generator.Emit (OpCodes.Ldarg_1);
-			generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (constant));
-			generator.Emit (OpCodes.Ldelem_Ref);
+			allocator.Generator.Emit (OpCodes.Ldarg_1);
+			allocator.Generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (constant));
+			allocator.Generator.Emit (OpCodes.Ldelem_Ref);
 		}
 
-		private void EmitVoid (ILGenerator generator)
+		private void EmitVoid (Allocator allocator)
 		{
-			generator.Emit (OpCodes.Call, Resolver.Property<Func<Value>> (() => VoidValue.Instance).GetGetMethod ());
+			allocator.Generator.Emit (OpCodes.Call, Resolver.Property<Func<Value>> (() => VoidValue.Instance).GetGetMethod ());
 		}
 
 		#endregion

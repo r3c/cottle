@@ -1,7 +1,7 @@
 ﻿
 namespace Cottle
 {
-	enum BlockType
+	enum CommandType
 	{
 		AssignFunction,
 		AssignValue,
@@ -9,9 +9,9 @@ namespace Cottle
 		Dump,
 		Echo,
 		For,
+		If,
 		Literal,
 		Return,
-		Test,
 		While
 	}
 }

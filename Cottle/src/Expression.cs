@@ -10,15 +10,13 @@ namespace Cottle
 
 		public ExpressionElement[]	Elements;
 
-		public decimal				Number;
-
 		public Expression			Source;
-
-		public string				String;
 
 		public Expression			Subscript;
 
 		public ExpressionType		Type;
+
+		public Value				Value;
 
 		#endregion
 

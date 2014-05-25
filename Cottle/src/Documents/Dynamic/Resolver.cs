@@ -6,6 +6,18 @@ namespace Cottle.Documents.Dynamic
 {
 	static class Resolver
 	{
+		public static ConstructorInfo Constructor<T> (Expression<T> lambda)
+		{
+			NewExpression	expression;
+
+			expression = lambda.Body as NewExpression;
+
+			if (expression == null)
+				throw new ArgumentException ("can't get constructor information from expression", "lambda");
+
+			return expression.Constructor;
+		}
+
 		public static MethodInfo Method<T> (Expression<T> lambda)
 		{
 			MethodCallExpression	expression;

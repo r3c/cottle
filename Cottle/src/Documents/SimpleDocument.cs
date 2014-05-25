@@ -29,13 +29,13 @@ namespace Cottle.Documents
 		public SimpleDocument (TextReader reader, ISetting setting)
 		{
 			IParser	parser;
-			Block	root;
+			Command	root;
 
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 			root = parser.Parse (reader);
 
 			this.setting = setting;
-			this.renderer = this.CompileBlock (root);
+			this.renderer = this.CompileCommand (root);
 		}
 
 		public SimpleDocument (TextReader reader) :
@@ -75,54 +75,54 @@ namespace Cottle.Documents
 
 		#region Methods / Private
 
-		private INode CompileBlock (Block block)
+		private INode CompileCommand (Command command)
 		{
 			KeyValuePair<IEvaluator, INode>[]	branches;
 			List<INode>							nodes;
 
-			switch (block.Type)
+			switch (command.Type)
 			{
-				case BlockType.AssignFunction:
-					return new AssignFunctionNode (block.Value, block.Arguments, this.CompileBlock (block.Body), block.Mode);
+				case CommandType.AssignFunction:
+					return new AssignFunctionNode (command.Value, command.Arguments, this.CompileCommand (command.Body), command.Mode);
 
-				case BlockType.AssignValue:
-					return new AssignValueNode (block.Value, this.CompileExpression (block.Source), block.Mode);
+				case CommandType.AssignValue:
+					return new AssignValueNode (command.Value, this.CompileExpression (command.Source), command.Mode);
 
-				case BlockType.Composite:
+				case CommandType.Composite:
 					nodes = new List<INode> ();
 
-					for (; block.Type == BlockType.Composite; block = block.Next)
-						nodes.Add (this.CompileBlock (block.Body));
+					for (; command.Type == CommandType.Composite; command = command.Next)
+						nodes.Add (this.CompileCommand (command.Body));
 
-					nodes.Add (this.CompileBlock (block));
+					nodes.Add (this.CompileCommand (command));
 
-					return new CompositeNode (nodes);
+					return new CompositeNode (nodes.ToArray ());
 
-				case BlockType.Dump:
-					return new DumpNode (this.CompileExpression (block.Source));
+				case CommandType.Dump:
+					return new DumpNode (this.CompileExpression (command.Source));
 
-				case BlockType.Echo:
-					return new EchoNode (this.CompileExpression (block.Source));
+				case CommandType.Echo:
+					return new EchoNode (this.CompileExpression (command.Source));
 
-				case BlockType.For:
-					return new ForNode (this.CompileExpression (block.Source), block.Key, block.Value, this.CompileBlock (block.Body), block.Next != null ? this.CompileBlock (block.Next) : null);
+				case CommandType.For:
+					return new ForNode (this.CompileExpression (command.Source), command.Key, command.Value, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
 
-				case BlockType.Literal:
-					return new LiteralNode (this.setting.Trimmer (block.Text));
-
-				case BlockType.Return:
-					return new ReturnNode (this.CompileExpression (block.Source));
-
-				case BlockType.Test:
-					branches = new KeyValuePair<IEvaluator, INode>[block.Branches.Length];
+				case CommandType.If:
+					branches = new KeyValuePair<IEvaluator, INode>[command.Branches.Length];
 
 					for (int i = 0; i < branches.Length; ++i)
-						branches[i] = new KeyValuePair<IEvaluator, INode> (this.CompileExpression (block.Branches[i].Condition), this.CompileBlock (block.Branches[i].Body));
+						branches[i] = new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Branches[i].Condition), this.CompileCommand (command.Branches[i].Body));
 
-					return new TestNode (branches, block.Next != null ? this.CompileBlock (block.Next) : null);
+					return new IfNode (branches, command.Next != null ? this.CompileCommand (command.Next) : null);
 
-				case BlockType.While:
-					return new WhileNode (this.CompileExpression (block.Source), this.CompileBlock (block.Body));
+				case CommandType.Literal:
+					return new LiteralNode (this.setting.Trimmer (command.Text));
+
+				case CommandType.Return:
+					return new ReturnNode (this.CompileExpression (command.Source));
+
+				case CommandType.While:
+					return new WhileNode (this.CompileExpression (command.Source), this.CompileCommand (command.Body));
 
 				default:
 					return new LiteralNode (string.Empty);
@@ -141,6 +141,9 @@ namespace Cottle.Documents
 			{
 				case ExpressionType.Access:
 					return new AccessEvaluator (this.CompileExpression (expression.Source), this.CompileExpression (expression.Subscript));
+
+				case ExpressionType.Constant:
+					return new ConstantEvaluator (expression.Value);
 
 				case ExpressionType.Map:
 					elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
@@ -166,14 +169,8 @@ namespace Cottle.Documents
 
 					return invoke;
 
-				case ExpressionType.Name:
-					return new NameEvaluator (expression.String);
-
-				case ExpressionType.Number:
-					return new ConstantEvaluator (expression.Number);
-
-				case ExpressionType.String:
-					return new ConstantEvaluator (expression.String);
+				case ExpressionType.Symbol:
+					return new SymbolEvaluator (expression.Value);
 
 				default:
 					return VoidEvaluator.Instance;

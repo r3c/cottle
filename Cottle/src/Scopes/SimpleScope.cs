@@ -31,11 +31,11 @@ namespace Cottle.Scopes
 			this.levels.Push (new HashSet<Value> ());
 		}
 
-		public override bool Get (Value name, out Value value)
+		public override bool Get (Value symbol, out Value value)
 		{
 			Stack<Value>	stack;
 
-			if (this.stacks.TryGetValue (name, out stack) && stack.Count > 0)
+			if (this.stacks.TryGetValue (symbol, out stack) && stack.Count > 0)
 			{
 				value = stack.Peek ();
 
@@ -68,16 +68,16 @@ namespace Cottle.Scopes
 			return true;
 		}
 
-		public override bool Set (Value name, Value value, ScopeMode mode)
+		public override bool Set (Value symbol, Value value, ScopeMode mode)
 		{
 			HashSet<Value>	level;
 			Stack<Value>	stack;
 
-			if (!this.stacks.TryGetValue (name, out stack))
+			if (!this.stacks.TryGetValue (symbol, out stack))
 			{
 				stack = new Stack<Value> ();
 
-				this.stacks[name] = stack;
+				this.stacks[symbol] = stack;
 			}
 
 			level = this.levels.Peek ();
@@ -91,7 +91,7 @@ namespace Cottle.Scopes
 					break;
 
 				case ScopeMode.Local:
-					if (!level.Add (name))
+					if (!level.Add (symbol))
 						stack.Pop ();
 
 					break;

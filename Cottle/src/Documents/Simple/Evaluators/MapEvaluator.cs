@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Cottle.Values;
 
@@ -17,9 +16,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Constructors
 
-		public MapEvaluator (IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
+		public MapEvaluator (KeyValuePair<IEvaluator, IEvaluator>[] elements)
 		{
-			this.elements = elements.ToArray ();
+			this.elements = elements;
 		}
 
 		#endregion

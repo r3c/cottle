@@ -4,11 +4,10 @@ namespace Cottle
 	enum ExpressionType
 	{
 		Access,
+		Constant,
 		Invoke,
 		Map,
-		Name,
-		Number,
-		String,
+		Symbol,
 		Void
 	}
 }

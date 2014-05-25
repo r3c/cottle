@@ -4,19 +4,19 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class NameEvaluator : IEvaluator
+	class SymbolEvaluator : IEvaluator
 	{
 		#region Attributes
 
-		private readonly string	name;
+		private readonly Value	symbol;
 
 		#endregion
 
 		#region Constructors
 
-		public	NameEvaluator (string name)
+		public SymbolEvaluator (Value symbol)
 		{
-			this.name = name;
+			this.symbol = symbol;
 		}
 
 		#endregion
@@ -27,7 +27,7 @@ namespace Cottle.Documents.Simple.Evaluators
 		{
 			Value	value;
 
-			if (scope.Get (this.name, out value))
+			if (scope.Get (this.symbol, out value))
 				return value;
 
 			return VoidValue.Instance;
@@ -35,12 +35,12 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public bool Set (IScope scope, Value value, ScopeMode mode)
 		{
-			return scope.Set (this.name, value, mode);
+			return scope.Set (this.symbol, value, mode);
 		}
 
 		public override string ToString ()
 		{
-			return this.name;
+			return this.symbol.ToString ();
 		}
 
 		#endregion

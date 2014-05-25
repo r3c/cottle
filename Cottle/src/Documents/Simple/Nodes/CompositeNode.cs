@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Values;
@@ -16,9 +15,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public CompositeNode (IEnumerable<INode> nodes)
+		public CompositeNode (INode[] nodes)
 		{
-			this.nodes = nodes.ToArray ();
+			this.nodes = nodes;
 		}
 
 		#endregion

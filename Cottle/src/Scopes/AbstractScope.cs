@@ -6,20 +6,20 @@ namespace Cottle.Scopes
 	{
 		#region Properties
 
-		public Value	this[Value name]
+		public Value	this[Value symbol]
 		{
 			get
 			{
 				Value	value;
 
-				if (this.Get (name, out value))
+				if (this.Get (symbol, out value))
 					return value;
 
 				return VoidValue.Instance;
 			}
 			set
 			{
-				this.Set (name, value, ScopeMode.Closest);
+				this.Set (symbol, value, ScopeMode.Closest);
 			}
 		}
 
@@ -29,11 +29,11 @@ namespace Cottle.Scopes
 		
 		public abstract void	Enter ();
 		
-		public abstract bool	Get (Value name, out Value value);
+		public abstract bool	Get (Value symbol, out Value value);
 		
 		public abstract bool	Leave ();
 
-		public abstract bool	Set (Value name, Value value, ScopeMode mode);
+		public abstract bool	Set (Value symbol, Value value, ScopeMode mode);
 
 		#endregion
 	}

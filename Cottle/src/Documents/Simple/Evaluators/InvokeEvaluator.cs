@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,9 +24,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Constructors
 
-		public InvokeEvaluator (IEvaluator caller, IEnumerable<IEvaluator> arguments)
+		public InvokeEvaluator (IEvaluator caller, IEvaluator[] arguments)
 		{
-			this.arguments = arguments.ToArray ();
+			this.arguments = arguments;
 			this.caller = caller;
 		}
 

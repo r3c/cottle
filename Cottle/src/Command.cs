@@ -2,27 +2,27 @@
 
 namespace Cottle
 {
-	class Block
+	class Command
 	{
 		#region Attributes / Instance
 
 		public string[]			Arguments;
 
-		public Block			Body;
+		public Command			Body;
 
-		public BlockBranch[]	Branches;
+		public CommandBranch[]	Branches;
 
 		public string			Key;
 
 		public ScopeMode		Mode;
 
-		public Block			Next;
+		public Command			Next;
 
 		public Expression		Source;
 
 		public string			Text;
 
-		public BlockType		Type;
+		public CommandType		Type;
 
 		public string			Value;
 

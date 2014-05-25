@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class TestNode : INode
+	class IfNode : INode
 	{
 		#region Attributes
 
@@ -17,9 +16,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public TestNode (IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
+		public IfNode (KeyValuePair<IEvaluator, INode>[] branches, INode fallback)
 		{
-			this.branches = branches.ToArray ();
+			this.branches = branches;
 			this.fallback = fallback;
 		}
 

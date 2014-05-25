@@ -8,6 +8,25 @@ namespace Cottle.Documents.Dynamic
 	{
 		#region Properties
 
+		public ILGenerator			Generator
+		{
+			get
+			{
+				return this.generator;
+			}
+		}
+
+		public LocalBuilder			LocalValue
+		{
+			get
+			{
+				if (this.localValue == null)
+					this.localValue = this.generator.DeclareLocal (typeof (Value));
+
+				return this.localValue;
+			}
+		}
+
 		public IEnumerable<string>	Strings
 		{
 			get
@@ -26,13 +45,11 @@ namespace Cottle.Documents.Dynamic
 
 		#endregion
 
-		#region Attributes / Public
+		#region Attributes
 
-		public readonly LocalBuilder	LocalValue;
+		public readonly ILGenerator		generator;
 
-		#endregion
-
-		#region Attributes / Private
+		private LocalBuilder			localValue;
 
 		private readonly List<string>	strings;
 
@@ -42,9 +59,10 @@ namespace Cottle.Documents.Dynamic
 
 		#region Constructors
 
-		public Allocator (LocalBuilder localValue)
+		public Allocator (ILGenerator generator)
 		{
-			this.LocalValue = localValue;
+			this.generator = generator;
+			this.localValue = null;
 			this.strings = new List<string> ();
 			this.values = new List<Value> ();
 		}
