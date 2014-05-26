@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
@@ -16,9 +17,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public IfNode (KeyValuePair<IEvaluator, INode>[] branches, INode fallback)
+		public IfNode (IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
 		{
-			this.branches = branches;
+			this.branches = branches.ToArray ();
 			this.fallback = fallback;
 		}
 

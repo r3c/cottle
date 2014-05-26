@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,9 +25,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Constructors
 
-		public InvokeEvaluator (IEvaluator caller, IEvaluator[] arguments)
+		public InvokeEvaluator (IEvaluator caller, IEnumerable<IEvaluator> arguments)
 		{
-			this.arguments = arguments;
+			this.arguments = arguments.ToArray ();
 			this.caller = caller;
 		}
 
@@ -37,9 +38,11 @@ namespace Cottle.Documents.Simple.Evaluators
 		public Value Evaluate (IScope scope, TextWriter output)
 		{
 			IFunction	function;
+			Value		source;
 			Value[]		values;
 
-			function = this.caller.Evaluate (scope, output).AsFunction;
+			source = this.caller.Evaluate (scope, output);
+			function = source.AsFunction;
 
 			if (function != null)
 			{
@@ -54,7 +57,7 @@ namespace Cottle.Documents.Simple.Evaluators
 				}
 				catch (Exception exception)
 				{
-					this.OnError (this.caller.ToString (), "function call raised an exception", exception);
+					this.OnError (source, "function call raised an exception", exception);
 				}
 			}
 
@@ -91,7 +94,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods / Private
 
-		private void OnError (string source, string message, Exception exception)
+		private void OnError (Value source, string message, Exception exception)
 		{
 			DocumentError	error;
 

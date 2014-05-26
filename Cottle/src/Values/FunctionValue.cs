@@ -88,7 +88,7 @@ namespace Cottle.Values
 
 		public override string	ToString ()
 		{
-			return "<function>";
+			return "<" + this.function + "()>";
 		}
 
 		#endregion

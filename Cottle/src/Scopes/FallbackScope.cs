@@ -59,9 +59,9 @@ namespace Cottle.Scopes
 			return this.mutable.Leave ();
 		}
 		
-		public override bool Set (Value symbol, Value value, ScopeMode mode)
+		public override void Set (Value symbol, Value value, ScopeMode mode)
 		{
-			return this.mutable.Set (symbol, value, mode);
+			this.mutable.Set (symbol, value, mode);
 		}
 
 		#endregion

@@ -20,11 +20,13 @@ namespace Cottle.Test
 			(source, setting) => new SimpleDocument (source, setting)
 		};
 
-		public void A ()
+		[Test]
+		[TestCase ("var", "1", "1")]
+		[TestCase ("_", "'A'", "\"A\"")]
+		[TestCase ("some_symbol_name", "[]", "[]")]
+		public void CommandDeclare (string name, string value, string expected)
 		{
-			Value[] x = new Value[2];
-			x[0] = 3;
-			x[1] = 4;
+			this.AssertReturn ("{declare " + name + " as " + value + "}{return " + name + "}", expected); 
 		}
 
 		[Test]
@@ -42,6 +44,15 @@ namespace Cottle.Test
 		public void CommandReturn (string value, string expected)
 		{
 			this.AssertReturn ("{return " + value + "}", expected);
+		}
+
+		[Test]
+		[TestCase ("var", "1", "1")]
+		[TestCase ("_", "'A'", "\"A\"")]
+		[TestCase ("some_symbol_name", "[]", "[]")]
+		public void CommandSet (string name, string value, string expected)
+		{
+			this.AssertReturn ("{set " + name + " to " + value + "}{return " + name + "}", expected); 
 		}
 
 		[Test]
@@ -124,16 +135,18 @@ namespace Cottle.Test
 		{
 			Action<IDocument>	listen;
 			Action<IScope>		populate;
-			bool				thrown;
+			int					thrown;
+
+			thrown = 0;
 
 			listen = (document) =>
 			{
 				document.Error += (s, m, e) =>
 				{
-					Assert.AreEqual ("f", s);
+					Assert.AreEqual (ValueContent.Function, s.Type);
 					Assert.IsInstanceOf (typeof (InvalidOperationException), e);
 
-					thrown = true;
+					++thrown;
 				};
 			};
 
@@ -145,17 +158,17 @@ namespace Cottle.Test
 				}, 0);
 			};
 
-			thrown = false;
+			thrown = 0;
 
-			this.AssertRender ("{return f()}", string.Empty, DefaultSetting.Instance, populate, (d) => {});
+			this.AssertRender ("{return f()}", string.Empty, DefaultSetting.Instance, populate, listen);
 
-			Assert.IsTrue (thrown, "Document error event has not been raised");
+			Assert.AreEqual (DocumentTester.constructors.Length, thrown, "Document error event has not been raised");
 
-			thrown = false;
+			thrown = 0;
 
-			this.AssertReturn ("{return f()}", "<void>", DefaultSetting.Instance, populate, (d) => {});
+			this.AssertReturn ("{return f()}", "<void>", DefaultSetting.Instance, populate, listen);
 
-			Assert.IsTrue (thrown, "Document error event has not been raised"); 
+			Assert.AreEqual (DocumentTester.constructors.Length, thrown, "Document error event has not been raised"); 
 		}
 
 		[Test]

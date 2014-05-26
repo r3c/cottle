@@ -22,9 +22,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public AssignFunctionNode (string name, string[] arguments, INode body, ScopeMode mode)
+		public AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
 		{
-			this.arguments = arguments;
+			this.arguments = arguments.ToArray ();
 			this.body = body;
 			this.mode = mode;
 			this.name = name;
@@ -105,6 +105,11 @@ namespace Cottle.Documents.Simple.Nodes
 			this.body.Source (setting, output);
 
 			output.Write (setting.BlockEnd);
+		}
+
+		public override string ToString ()
+		{
+			return this.name;
 		}
 
 		#endregion

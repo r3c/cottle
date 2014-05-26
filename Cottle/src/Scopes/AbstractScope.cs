@@ -33,7 +33,7 @@ namespace Cottle.Scopes
 		
 		public abstract bool	Leave ();
 
-		public abstract bool	Set (Value symbol, Value value, ScopeMode mode);
+		public abstract void	Set (Value symbol, Value value, ScopeMode mode);
 
 		#endregion
 	}

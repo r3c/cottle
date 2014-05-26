@@ -46,9 +46,9 @@ namespace Cottle
 			return this.scope.Leave ();
 		}
 
-		public bool	Set (Value name, Value value, ScopeMode mode)
+		public void	Set (Value name, Value value, ScopeMode mode)
 		{
-			return this.scope.Set (name, value, mode);
+			this.scope.Set (name, value, mode);
 		}
 	}
 }

@@ -33,11 +33,6 @@ namespace Cottle.Documents.Simple.Evaluators
 			return VoidValue.Instance;
 		}
 
-		public bool Set (IScope scope, Value value, ScopeMode mode)
-		{
-			return scope.Set (this.symbol, value, mode);
-		}
-
 		public override string ToString ()
 		{
 			return this.symbol.ToString ();

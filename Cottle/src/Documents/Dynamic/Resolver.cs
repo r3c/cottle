@@ -18,6 +18,18 @@ namespace Cottle.Documents.Dynamic
 			return expression.Constructor;
 		}
 
+		public static FieldInfo Field<T> (Expression<T> lambda)
+		{
+			MemberExpression	expression;
+
+			expression = lambda.Body as MemberExpression;
+
+			if (expression == null || expression.Member.MemberType != MemberTypes.Field)
+				throw new ArgumentException ("can't get field information from expression", "lambda");
+
+			return (FieldInfo)expression.Member;
+		}
+
 		public static MethodInfo Method<T> (Expression<T> lambda)
 		{
 			MethodCallExpression	expression;

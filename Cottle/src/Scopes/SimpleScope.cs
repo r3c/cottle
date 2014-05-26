@@ -68,7 +68,7 @@ namespace Cottle.Scopes
 			return true;
 		}
 
-		public override bool Set (Value symbol, Value value, ScopeMode mode)
+		public override void Set (Value symbol, Value value, ScopeMode mode)
 		{
 			HashSet<Value>	level;
 			Stack<Value>	stack;
@@ -98,8 +98,6 @@ namespace Cottle.Scopes
 			}
 
 			stack.Push (value);
-
-			return true;
 		}
 
 		#endregion

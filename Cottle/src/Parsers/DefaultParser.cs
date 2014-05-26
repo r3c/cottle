@@ -92,8 +92,8 @@ namespace Cottle.Parsers
 						Arguments	= arguments.ToArray (),
 						Body		= this.ParseBody (),
 						Mode		= m,
-						Type		= CommandType.AssignFunction,
-						Value		= name
+						Name		= name,
+						Type		= CommandType.AssignFunction
 					};
 
 					break;
@@ -102,9 +102,9 @@ namespace Cottle.Parsers
 					command = (m) => new Command
 					{
 						Mode	= m,
+						Name	= name,
 						Source	= this.ParseStatement (),
-						Type	= CommandType.AssignValue,
-						Value	= name
+						Type	= CommandType.AssignValue
 					};
 
 					break;
@@ -140,7 +140,7 @@ namespace Cottle.Parsers
 						Mode	= mode,
 						Source	= Expression.Empty,
 						Type	= CommandType.AssignValue,
-						Value	= name
+						Name	= name
 					};
 			}
 		}
@@ -427,10 +427,10 @@ namespace Cottle.Parsers
 			{
 				Body	= body,
 				Key		= key,
+				Name	= value,
 				Next	= empty,
 				Source	= from,
-				Type	= CommandType.For,
-				Value	= value
+				Type	= CommandType.For
 			};
 		}
 

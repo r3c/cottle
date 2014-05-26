@@ -2,5 +2,5 @@
 
 namespace Cottle.Documents.Dynamic
 {
-	delegate Value Renderer (string[] strings, Value[] values, IScope scope, TextWriter writer); 
+	delegate Value Renderer (DynamicDocument document, IScope scope, TextWriter writer); 
 }

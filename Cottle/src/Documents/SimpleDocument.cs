@@ -83,10 +83,10 @@ namespace Cottle.Documents
 			switch (command.Type)
 			{
 				case CommandType.AssignFunction:
-					return new AssignFunctionNode (command.Value, command.Arguments, this.CompileCommand (command.Body), command.Mode);
+					return new AssignFunctionNode (command.Name, command.Arguments, this.CompileCommand (command.Body), command.Mode);
 
 				case CommandType.AssignValue:
-					return new AssignValueNode (command.Value, this.CompileExpression (command.Source), command.Mode);
+					return new AssignValueNode (command.Name, this.CompileExpression (command.Source), command.Mode);
 
 				case CommandType.Composite:
 					nodes = new List<INode> ();
@@ -96,7 +96,7 @@ namespace Cottle.Documents
 
 					nodes.Add (this.CompileCommand (command));
 
-					return new CompositeNode (nodes.ToArray ());
+					return new CompositeNode (nodes);
 
 				case CommandType.Dump:
 					return new DumpNode (this.CompileExpression (command.Source));
@@ -105,7 +105,7 @@ namespace Cottle.Documents
 					return new EchoNode (this.CompileExpression (command.Source));
 
 				case CommandType.For:
-					return new ForNode (this.CompileExpression (command.Source), command.Key, command.Value, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
+					return new ForNode (this.CompileExpression (command.Source), command.Key, command.Name, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
 
 				case CommandType.If:
 					branches = new KeyValuePair<IEvaluator, INode>[command.Branches.Length];

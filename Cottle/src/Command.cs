@@ -16,6 +16,8 @@ namespace Cottle
 
 		public ScopeMode		Mode;
 
+		public string			Name;
+
 		public Command			Next;
 
 		public Expression		Source;
@@ -23,8 +25,6 @@ namespace Cottle
 		public string			Text;
 
 		public CommandType		Type;
-
-		public string			Value;
 
 		#endregion
 	}

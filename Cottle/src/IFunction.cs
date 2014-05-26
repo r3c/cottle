@@ -10,6 +10,8 @@ namespace Cottle
 
 		Value	Execute (IList<Value> arguments, IScope scope, TextWriter output);
 
+		string	ToString ();
+
 		#endregion
 	}
 }

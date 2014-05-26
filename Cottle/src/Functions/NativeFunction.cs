@@ -82,6 +82,11 @@ namespace Cottle.Functions
 			return this.callback (arguments, scope, output);
 		}
 
+		public override string ToString ()
+		{
+			return "native";
+		}
+
 		#endregion
 	}
 }

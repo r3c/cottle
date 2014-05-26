@@ -2,5 +2,5 @@
 
 namespace Cottle
 {
-	public delegate void DocumentError (string source, string message, Exception exception);
+	public delegate void DocumentError (Value source, string message, Exception exception);
 }

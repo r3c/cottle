@@ -35,7 +35,7 @@ namespace Cottle.Documents
 
 		#region Methods / Protected
 
-		protected void OnError (string source, string message, Exception exception)
+		protected void OnError (Value source, string message, Exception exception)
 		{
 			DocumentError	error;
 
