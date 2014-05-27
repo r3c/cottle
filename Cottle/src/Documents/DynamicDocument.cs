@@ -34,28 +34,15 @@ namespace Cottle.Documents
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
 			Allocator		allocator;
-			Label			end;
 			DynamicMethod	method;
 			IParser			parser;
-			Command			root;
 
 			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (DynamicDocument), typeof (IScope), typeof (TextWriter)}, this.GetType ());
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
 			allocator = new Allocator (method.GetILGenerator ());
-			root = parser.Parse (reader);
 
-			this.CompileCommand (allocator, setting.Trimmer, root);
-
-			end = allocator.Generator.DefineLabel ();
-
-			allocator.Generator.Emit (OpCodes.Brtrue, end);
-			allocator.Generator.Emit (OpCodes.Pop);
-
-			this.EmitVoid (allocator);
-
-			allocator.Generator.MarkLabel (end);
-			allocator.Generator.Emit (OpCodes.Ret);
+			this.CompileProgram (allocator, setting.Trimmer, parser.Parse (reader));
 
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
 			this.strings = allocator.Strings.ToArray ();
@@ -92,12 +79,8 @@ namespace Cottle.Documents
 
 		private void CompileCommand (Allocator allocator, Trimmer trimmer, Command command)
 		{
-			Label	bubble;
-			Label	exit;
 			Label	next;
-
-			exit = allocator.Generator.DefineLabel ();
-			next = allocator.Generator.DefineLabel ();
+			Label	tail;
 
 			switch (command.Type)
 			{
@@ -107,7 +90,7 @@ namespace Cottle.Documents
 				case CommandType.AssignValue:
 					this.EmitPushScope (allocator);
 					this.EmitValue (allocator, command.Name);
-					this.CompileExpression (allocator, command.Source);
+					this.CompileExpression (allocator, command.Operand);
 
 					allocator.Generator.Emit (OpCodes.Ldc_I4, (int)command.Mode);
 					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IScope, Value, Value, ScopeMode>> ((scope, symbol, value, mode) => scope.Set (symbol, value, mode)));
@@ -115,31 +98,17 @@ namespace Cottle.Documents
 					break;
 
 				case CommandType.Composite:
-					bubble = allocator.Generator.DefineLabel ();
-
-					for (; command.Type == CommandType.Composite; command = command.Next)
-					{
+					for (; command != null && command.Type == CommandType.Composite; command = command.Next)
 						this.CompileCommand (allocator, trimmer, command.Body);
 
-						allocator.Generator.Emit (OpCodes.Brtrue, bubble);
-						allocator.Generator.Emit (OpCodes.Pop);
-					}
-
-					this.CompileCommand (allocator, trimmer, command);
-
-					allocator.Generator.Emit (OpCodes.Brtrue, bubble);
-					allocator.Generator.Emit (OpCodes.Pop);
-					allocator.Generator.Emit (OpCodes.Br, next);
-
-					allocator.Generator.MarkLabel (bubble);
-					allocator.Generator.Emit (OpCodes.Ldc_I4_1);
-					allocator.Generator.Emit (OpCodes.Br, exit);
+					if (command != null)
+						this.CompileCommand (allocator, trimmer, command);
 
 					break;
 
 				case CommandType.Dump:
 					this.EmitPushOutput (allocator);
-					this.CompileExpression (allocator, command.Source);
+					this.CompileExpression (allocator, command.Operand);
 
 					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((writer, value) => writer.Write (value)));
 
@@ -147,7 +116,7 @@ namespace Cottle.Documents
 
 				case CommandType.Echo:
 					this.EmitPushOutput (allocator);
-					this.CompileExpression (allocator, command.Source);
+					this.CompileExpression (allocator, command.Operand);
 
 					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((value) => value.AsString).GetGetMethod ());
 
@@ -159,7 +128,34 @@ namespace Cottle.Documents
 					throw new NotImplementedException ();
 
 				case CommandType.If:
-					throw new NotImplementedException ();
+					tail = allocator.Generator.DefineLabel ();
+
+					// Emit conditional branches
+					for (; command != null && command.Type == CommandType.If; command = command.Next)
+					{
+						next = allocator.Generator.DefineLabel ();
+
+						// Evaluate branch condition, jump to next if false
+						this.CompileExpression (allocator, command.Operand);
+						this.EmitCallValueAsBoolean (allocator);
+
+						allocator.Generator.Emit (OpCodes.Brfalse, next);
+
+						// Execute branch command and exit statement
+						this.CompileCommand (allocator, trimmer, command.Body);
+
+						allocator.Generator.Emit (OpCodes.Br, tail);
+						allocator.Generator.MarkLabel (next);
+					}
+
+					// Emit fallback branch if any
+					if (command != null)
+						this.CompileCommand (allocator, trimmer, command);
+
+					// Mark end of statement
+					allocator.Generator.MarkLabel (tail);
+
+					break;
 
 				case CommandType.Literal:
 					this.EmitPushOutput (allocator);
@@ -169,22 +165,15 @@ namespace Cottle.Documents
 					break;
 
 				case CommandType.Return:
-					this.CompileExpression (allocator, command.Source);
+					this.CompileExpression (allocator, command.Operand);
 
-					allocator.Generator.Emit (OpCodes.Ldc_I4_1);
+					allocator.Generator.Emit (OpCodes.Br, allocator.Terminate);
 
-					return;
+					break;
 
 				case CommandType.While:
 					throw new NotImplementedException ();
 			}
-
-			allocator.Generator.MarkLabel (next);
-
-			this.EmitVoid (allocator);
-
-			allocator.Generator.Emit (OpCodes.Ldc_I4_0);
-			allocator.Generator.MarkLabel (exit);
 		}
 
 		private void CompileExpression (Allocator allocator, Expression expression)
@@ -360,6 +349,20 @@ namespace Cottle.Documents
 
 					break;
 			}
+		}
+
+		private void CompileProgram (Allocator allocator, Trimmer trimmer, Command program)
+		{
+			this.CompileCommand (allocator, trimmer, program);
+			this.EmitVoid (allocator);
+
+			allocator.Generator.MarkLabel (allocator.Terminate);
+			allocator.Generator.Emit (OpCodes.Ret);
+		}
+
+		private void EmitCallValueAsBoolean (Allocator allocator)
+		{
+			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, bool>> ((value) => value.AsBoolean).GetGetMethod ());
 		}
 
 		private void EmitCallWriteString (Allocator allocator)

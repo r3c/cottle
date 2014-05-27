@@ -6,25 +6,23 @@ namespace Cottle
 	{
 		#region Attributes / Instance
 
-		public string[]			Arguments;
+		public string[]		Arguments;
 
-		public Command			Body;
+		public Command		Body;
 
-		public CommandBranch[]	Branches;
+		public string		Key;
 
-		public string			Key;
+		public ScopeMode	Mode;
 
-		public ScopeMode		Mode;
+		public string		Name;
 
-		public string			Name;
+		public Command		Next;
 
-		public Command			Next;
+		public Expression	Operand;
 
-		public Expression		Source;
+		public string		Text;
 
-		public string			Text;
-
-		public CommandType		Type;
+		public CommandType	Type;
 
 		#endregion
 	}

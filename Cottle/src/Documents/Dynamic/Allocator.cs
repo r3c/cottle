@@ -38,6 +38,14 @@ namespace Cottle.Documents.Dynamic
 			}
 		}
 
+		public Label				Terminate
+		{
+			get
+			{
+				return this.terminate;
+			}
+		}
+
 		public IEnumerable<string>	Strings
 		{
 			get
@@ -58,11 +66,13 @@ namespace Cottle.Documents.Dynamic
 
 		#region Attributes
 
-		public readonly ILGenerator		generator;
+		private readonly ILGenerator	generator;
 
 		private LocalBuilder			localFunction;
 
 		private LocalBuilder			localValue;
+
+		private readonly Label			terminate;
 
 		private readonly List<string>	strings;
 
@@ -77,6 +87,7 @@ namespace Cottle.Documents.Dynamic
 			this.generator = generator;
 			this.localFunction = null;
 			this.localValue = null;
+			this.terminate = generator.DefineLabel ();
 			this.strings = new List<string> ();
 			this.values = new List<Value> ();
 		}
@@ -87,16 +98,36 @@ namespace Cottle.Documents.Dynamic
 
 		public int Allocate (string value)
 		{
-			this.strings.Add (value);
+			int	index;
 
-			return this.strings.Count - 1; 
+			// FIXME: slow
+			index = this.strings.IndexOf (value);
+
+			if (index < 0)
+			{
+				index = this.strings.Count;
+
+				this.strings.Add (value);
+			}
+
+			return index;
 		}
 
 		public int Allocate (Value value)
 		{
-			this.values.Add (value);
+			int	index;
 
-			return this.values.Count - 1;
+			// FIXME: slow
+			index = this.values.IndexOf (value);
+
+			if (index < 0)
+			{
+				index = this.values.Count;
+
+				this.values.Add (value);
+			}
+
+			return index;
 		}
 
 		#endregion

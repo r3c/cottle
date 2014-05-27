@@ -38,6 +38,20 @@ namespace Cottle.Test
 		}
 
 		[Test]
+/*		[TestCase ("1", "true", "true")]
+		[TestCase ("''", "invisible", "")]
+		[TestCase ("'something'", "visible", "visible")]
+		[TestCase ("[]", "invisible", "")]*/
+		[TestCase ("[1, 2, 3]", "visible", "visible")]
+		[TestCase ("1", "a|elif 1:b|else:c", "a")]
+		[TestCase ("0", "a|elif 1:b|else:c", "b")]
+		[TestCase ("0", "a|elif 0:b|else:c", "c")]
+		public void CommandIf (string condition, string body, string expected)
+		{
+			this.AssertRender ("{if " + condition + ":" + body + "}", expected);
+		}
+
+		[Test]
 		[TestCase ("1", "1")]
 		[TestCase ("'A'", "\"A\"")]
 		[TestCase ("[]", "[]")]

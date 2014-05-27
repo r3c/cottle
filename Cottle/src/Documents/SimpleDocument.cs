@@ -77,8 +77,8 @@ namespace Cottle.Documents
 
 		private INode CompileCommand (Command command)
 		{
-			KeyValuePair<IEvaluator, INode>[]	branches;
-			List<INode>							nodes;
+			List<KeyValuePair<IEvaluator, INode>>	branches;
+			List<INode>								nodes;
 
 			switch (command.Type)
 			{
@@ -86,7 +86,7 @@ namespace Cottle.Documents
 					return new AssignFunctionNode (command.Name, command.Arguments, this.CompileCommand (command.Body), command.Mode);
 
 				case CommandType.AssignValue:
-					return new AssignValueNode (command.Name, this.CompileExpression (command.Source), command.Mode);
+					return new AssignValueNode (command.Name, this.CompileExpression (command.Operand), command.Mode);
 
 				case CommandType.Composite:
 					nodes = new List<INode> ();
@@ -99,30 +99,30 @@ namespace Cottle.Documents
 					return new CompositeNode (nodes);
 
 				case CommandType.Dump:
-					return new DumpNode (this.CompileExpression (command.Source));
+					return new DumpNode (this.CompileExpression (command.Operand));
 
 				case CommandType.Echo:
-					return new EchoNode (this.CompileExpression (command.Source));
+					return new EchoNode (this.CompileExpression (command.Operand));
 
 				case CommandType.For:
-					return new ForNode (this.CompileExpression (command.Source), command.Key, command.Name, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
+					return new ForNode (this.CompileExpression (command.Operand), command.Key, command.Name, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
 
 				case CommandType.If:
-					branches = new KeyValuePair<IEvaluator, INode>[command.Branches.Length];
+					branches = new List<KeyValuePair<IEvaluator, INode>> ();
 
-					for (int i = 0; i < branches.Length; ++i)
-						branches[i] = new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Branches[i].Condition), this.CompileCommand (command.Branches[i].Body));
+					for (; command != null && command.Type == CommandType.If; command = command.Next)
+						branches.Add (new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Operand), this.CompileCommand (command.Body)));
 
-					return new IfNode (branches, command.Next != null ? this.CompileCommand (command.Next) : null);
+					return new IfNode (branches, command != null ? this.CompileCommand (command) : null);
 
 				case CommandType.Literal:
 					return new LiteralNode (this.setting.Trimmer (command.Text));
 
 				case CommandType.Return:
-					return new ReturnNode (this.CompileExpression (command.Source));
+					return new ReturnNode (this.CompileExpression (command.Operand));
 
 				case CommandType.While:
-					return new WhileNode (this.CompileExpression (command.Source), this.CompileCommand (command.Body));
+					return new WhileNode (this.CompileExpression (command.Operand), this.CompileCommand (command.Body));
 
 				default:
 					return new LiteralNode (string.Empty);

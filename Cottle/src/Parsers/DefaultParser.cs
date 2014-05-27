@@ -103,7 +103,7 @@ namespace Cottle.Parsers
 					{
 						Mode	= m,
 						Name	= name,
-						Source	= this.ParseStatement (),
+						Operand	= this.ParseStatement (),
 						Type	= CommandType.AssignValue
 					};
 
@@ -138,7 +138,7 @@ namespace Cottle.Parsers
 					return new Command
 					{
 						Mode	= mode,
-						Source	= Expression.Empty,
+						Operand	= Expression.Empty,
 						Type	= CommandType.AssignValue,
 						Name	= name
 					};
@@ -371,7 +371,7 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Source	= this.ParseStatement (),
+				Operand	= this.ParseStatement (),
 				Type	= CommandType.Dump 
 			};
 		}
@@ -380,7 +380,7 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Source	= this.ParseStatement (),
+				Operand	= this.ParseStatement (),
 				Type	= CommandType.Echo 
 			};
 		}
@@ -429,28 +429,28 @@ namespace Cottle.Parsers
 				Key		= key,
 				Name	= value,
 				Next	= empty,
-				Source	= from,
+				Operand	= from,
 				Type	= CommandType.For
 			};
 		}
 
 		private Command ParseKeywordIf ()
 		{
-			List<CommandBranch>	branches;
-			Expression			condition;
-			Command				fallback;
+			Expression	condition;
+			Command		current;
+			Command		result;
 
-			branches = new List<CommandBranch> ();
-			fallback = null;
 			condition = this.ParseExpression ();
-
-			branches.Add (new CommandBranch
+			result = new Command
 			{
-				Body		= this.ParseBody (),
-				Condition	= condition 
-			});
+				Body	= this.ParseBody (),
+				Operand	= condition,
+				Type	= CommandType.If
+			};
 
-			while (fallback == null && this.lexer.Current.Type == LexemType.BlockContinue)
+			current = result;
+
+			while (current.Next == null && this.lexer.Current.Type == LexemType.BlockContinue)
 			{
 				this.lexer.Next (LexerMode.Block);
 
@@ -461,18 +461,21 @@ namespace Cottle.Parsers
 
 						condition = this.ParseExpression ();
 
-						branches.Add (new CommandBranch
+						current.Next = new Command
 						{
-							Body		= this.ParseBody (),
-							Condition	= condition
-						});
+							Body	= this.ParseBody (),
+							Operand	= condition,
+							Type	= CommandType.If
+						};
+
+						current = current.Next;
 
 						break;
 
 					case "else":
 						this.lexer.Next (LexerMode.Block);
 
-						fallback = this.ParseBody ();
+						current.Next = this.ParseBody ();
 
 						break;
 
@@ -481,19 +484,14 @@ namespace Cottle.Parsers
 				}
 			}
 
-			return new Command
-			{
-				Body		= fallback,
-				Branches	= branches.ToArray (),
-				Type		= CommandType.If
-			};
+			return result;
 		}
 
 		private Command ParseKeywordReturn ()
 		{
 			return new Command
 			{
-				Source	= this.ParseStatement (),
+				Operand	= this.ParseStatement (),
 				Type	= CommandType.Return 
 			};
 		}
@@ -514,7 +512,7 @@ namespace Cottle.Parsers
 			return new Command
 			{
 				Body	= body,
-				Source	= condition,
+				Operand	= condition,
 				Type	= CommandType.While
 			};
 		}
