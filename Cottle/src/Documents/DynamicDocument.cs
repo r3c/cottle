@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Documents.Dynamic;
 using Cottle.Parsers;
 using Cottle.Settings;
-using Cottle.Values;
 
 namespace Cottle.Documents
 {
@@ -23,9 +20,7 @@ namespace Cottle.Documents
 
 		private readonly Renderer	renderer;
 
-		private readonly string[]	strings;
-
-		private readonly Value[]	values;
+		private readonly Storage	storage;
 
 		#endregion
 
@@ -33,20 +28,28 @@ namespace Cottle.Documents
 
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
-			Allocator		allocator;
+			Compiler		compiler;
 			DynamicMethod	method;
 			IParser			parser;
 
-			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (DynamicDocument), typeof (IScope), typeof (TextWriter)}, this.GetType ());
+			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IScope), typeof (TextWriter)}, this.GetType ());
+			compiler = new Compiler (method.GetILGenerator (), setting.Trimmer);
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
-			allocator = new Allocator (method.GetILGenerator ());
-
-			this.CompileProgram (allocator, setting.Trimmer, parser.Parse (reader));
-
+			this.storage = compiler.Compile (parser.Parse (reader));
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
-			this.strings = allocator.Strings.ToArray ();
-			this.values = allocator.Values.ToArray ();
+/*
+			var name = "HelloWorld.exe";
+			var assemblyname = new AssemblyName(name);
+			var assemblybuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyname, AssemblyBuilderAccess.RunAndSave);
+			var modulebuilder = assemblybuilder.DefineDynamicModule(name, "x.dll");
+			var programmclass = modulebuilder.DefineType("Program",TypeAttributes.Public);
+			var method2 = programmclass.DefineMethod("Main",MethodAttributes.Public | MethodAttributes.Static,typeof (Value), new [] {typeof (Context), typeof (IScope), typeof (TextWriter)});
+			compiler = new Compiler (method2.GetILGenerator (), setting.Trimmer);
+			compiler.Compile (command);
+			programmclass.CreateType();
+			assemblybuilder.Save ("x.dll");
+*/
 		}
 
 		public DynamicDocument (TextReader reader) :
@@ -66,344 +69,11 @@ namespace Cottle.Documents
 
 		#endregion
 
-		#region Methods / Public
+		#region Methods
 
 		public override Value Render (IScope scope, TextWriter writer)
 		{
-			return this.renderer (this, scope, writer);
-		}
-
-		#endregion
-
-		#region Methods / Private
-
-		private void CompileCommand (Allocator allocator, Trimmer trimmer, Command command)
-		{
-			Label	next;
-			Label	tail;
-
-			switch (command.Type)
-			{
-				case CommandType.AssignFunction:
-					throw new NotImplementedException ();
-
-				case CommandType.AssignValue:
-					this.EmitPushScope (allocator);
-					this.EmitValue (allocator, command.Name);
-					this.CompileExpression (allocator, command.Operand);
-
-					allocator.Generator.Emit (OpCodes.Ldc_I4, (int)command.Mode);
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IScope, Value, Value, ScopeMode>> ((scope, symbol, value, mode) => scope.Set (symbol, value, mode)));
-
-					break;
-
-				case CommandType.Composite:
-					for (; command != null && command.Type == CommandType.Composite; command = command.Next)
-						this.CompileCommand (allocator, trimmer, command.Body);
-
-					if (command != null)
-						this.CompileCommand (allocator, trimmer, command);
-
-					break;
-
-				case CommandType.Dump:
-					this.EmitPushOutput (allocator);
-					this.CompileExpression (allocator, command.Operand);
-
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((writer, value) => writer.Write (value)));
-
-					break;
-
-				case CommandType.Echo:
-					this.EmitPushOutput (allocator);
-					this.CompileExpression (allocator, command.Operand);
-
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((value) => value.AsString).GetGetMethod ());
-
-					this.EmitCallWriteString (allocator);
-
-					break;
-
-				case CommandType.For:
-					throw new NotImplementedException ();
-
-				case CommandType.If:
-					tail = allocator.Generator.DefineLabel ();
-
-					// Emit conditional branches
-					for (; command != null && command.Type == CommandType.If; command = command.Next)
-					{
-						next = allocator.Generator.DefineLabel ();
-
-						// Evaluate branch condition, jump to next if false
-						this.CompileExpression (allocator, command.Operand);
-						this.EmitCallValueAsBoolean (allocator);
-
-						allocator.Generator.Emit (OpCodes.Brfalse, next);
-
-						// Execute branch command and exit statement
-						this.CompileCommand (allocator, trimmer, command.Body);
-
-						allocator.Generator.Emit (OpCodes.Br, tail);
-						allocator.Generator.MarkLabel (next);
-					}
-
-					// Emit fallback branch if any
-					if (command != null)
-						this.CompileCommand (allocator, trimmer, command);
-
-					// Mark end of statement
-					allocator.Generator.MarkLabel (tail);
-
-					break;
-
-				case CommandType.Literal:
-					this.EmitPushOutput (allocator);
-					this.EmitString (allocator, trimmer (command.Text));
-					this.EmitCallWriteString (allocator);
-
-					break;
-
-				case CommandType.Return:
-					this.CompileExpression (allocator, command.Operand);
-
-					allocator.Generator.Emit (OpCodes.Br, allocator.Terminate);
-
-					break;
-
-				case CommandType.While:
-					throw new NotImplementedException ();
-			}
-		}
-
-		private void CompileExpression (Allocator allocator, Expression expression)
-		{
-			ConstructorInfo	constructor;
-			Label			failure;
-			LocalBuilder	localArray;
-			LocalBuilder	localCaller;
-			LocalBuilder	localException;
-			Label			success;
-
-			switch (expression.Type)
-			{
-				case ExpressionType.Access:
-					success = allocator.Generator.DefineLabel ();
-
-					// Evaluate source expression and get fields
-					this.CompileExpression (allocator, expression.Source);
-
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>> ((value) => value.Fields).GetGetMethod ());
-
-					// Evaluate subscript expression
-					this.CompileExpression (allocator, expression.Subscript);
-
-					// Use subscript to get value from fields
-					allocator.Generator.Emit (OpCodes.Ldloca, allocator.LocalValue);
-					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
-					allocator.Generator.Emit (OpCodes.Brtrue, success);
-
-					// Emit void value on error
-					this.EmitVoid (allocator);
-
-					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
-
-					// Push value on stack
-					allocator.Generator.MarkLabel (success);
-					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
-
-					break;
-
-				case ExpressionType.Constant:
-					this.EmitValue (allocator, expression.Value);
-
-					break;
-
-				case ExpressionType.Invoke:
-					localArray = allocator.Generator.DeclareLocal (typeof (Value[]));
-					localCaller = allocator.Generator.DeclareLocal (typeof (Value));
-					localException = allocator.Generator.DeclareLocal (typeof (Exception));
-					failure = allocator.Generator.DefineLabel ();
-					success = allocator.Generator.DefineLabel ();
-
-					// Evaluate source expression as a function
-					this.CompileExpression (allocator, expression.Source);
-
-					allocator.Generator.Emit (OpCodes.Stloc, localCaller);
-					allocator.Generator.Emit (OpCodes.Ldloc, localCaller);
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IFunction>> ((value) => value.AsFunction).GetGetMethod ());
-					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalFunction);
-					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalFunction);
-					allocator.Generator.Emit (OpCodes.Brfalse, failure);
-
-					// Create array to store evaluated values 
-					allocator.Generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
-					allocator.Generator.Emit (OpCodes.Newarr, typeof (Value));
-					allocator.Generator.Emit (OpCodes.Stloc, localArray);
-
-					// Evaluate arguments and store into array
-					for (int i = 0; i < expression.Arguments.Length; ++i)
-					{
-						allocator.Generator.Emit (OpCodes.Ldloc, localArray);
-						allocator.Generator.Emit (OpCodes.Ldc_I4, i);
-
-						this.CompileExpression (allocator, expression.Arguments[i]);
-
-						allocator.Generator.Emit (OpCodes.Stelem_Ref);
-					}
-
-					// Invoke function delegate within exception block
-					allocator.Generator.BeginExceptionBlock ();
-					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalFunction);
-					allocator.Generator.Emit (OpCodes.Ldloc, localArray);
-
-					this.EmitPushScope (allocator);
-					this.EmitPushOutput (allocator);
-
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IScope, TextWriter, Value>> ((function, arguments, scope, output) => function.Execute (arguments, scope, output)));
-					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
-
-					// Trigger event handler on exception
-					allocator.Generator.BeginCatchBlock (typeof (Exception));
-					allocator.Generator.Emit (OpCodes.Stloc, localException);
-
-					this.EmitPushDocument (allocator);
-
-					allocator.Generator.Emit (OpCodes.Ldloc, localCaller);
-					allocator.Generator.Emit (OpCodes.Ldstr, "function call raised an exception");
-					allocator.Generator.Emit (OpCodes.Ldloc, localException);
-					allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<DynamicDocument, Value, string, Exception>> ((document, source, message, exception) => document.OnError (source, message, exception)));
-					allocator.Generator.Emit (OpCodes.Leave_S, failure);
-					allocator.Generator.EndExceptionBlock ();
-					allocator.Generator.Emit (OpCodes.Br, success);
-
-					// Emit void value on error
-					allocator.Generator.MarkLabel (failure);
-
-					this.EmitVoid (allocator);
-
-					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
-
-					// Value is already available on stack
-					allocator.Generator.MarkLabel (success);
-					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
-
-					break;
-
-				case ExpressionType.Map:
-					localArray = allocator.Generator.DeclareLocal (typeof (KeyValuePair<Value, Value>[]));
-
-					// Create array to store evaluated pairs
-					allocator.Generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
-					allocator.Generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
-					allocator.Generator.Emit (OpCodes.Stloc, localArray);
-
-					// Evaluate elements and store into array 
-					constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>> ((key, value) => new KeyValuePair<Value, Value> (key, value));
-
-					for (int i = 0; i < expression.Elements.Length; ++i)
-					{
-						allocator.Generator.Emit (OpCodes.Ldloc, localArray);
-						allocator.Generator.Emit (OpCodes.Ldc_I4, i);
-						allocator.Generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
-
-						this.CompileExpression (allocator, expression.Elements[i].Key);
-						this.CompileExpression (allocator, expression.Elements[i].Value);
-
-						allocator.Generator.Emit (OpCodes.Newobj, constructor);
-						allocator.Generator.Emit (OpCodes.Stobj, typeof (KeyValuePair<Value, Value>));
-					}
-
-					// Create value from array
-					constructor = Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>> ((pairs) => new MapValue (pairs));
-
-					allocator.Generator.Emit (OpCodes.Ldloc, localArray);
-					allocator.Generator.Emit (OpCodes.Newobj, constructor);
-
-					break;
-
-				case ExpressionType.Symbol:
-					success = allocator.Generator.DefineLabel ();
-
-					// Get variable from scope
-					this.EmitPushScope (allocator);
-					this.EmitValue (allocator, expression.Value);
-
-					allocator.Generator.Emit (OpCodes.Ldloca, allocator.LocalValue);
-					allocator.Generator.Emit (OpCodes.Callvirt, typeof (IScope).GetMethod ("Get"));
-					allocator.Generator.Emit (OpCodes.Brtrue, success);
-
-					// Emit void value on error
-					this.EmitVoid (allocator);
-
-					allocator.Generator.Emit (OpCodes.Stloc, allocator.LocalValue);
-
-					// Push value on stack
-					allocator.Generator.MarkLabel (success);
-					allocator.Generator.Emit (OpCodes.Ldloc, allocator.LocalValue);
-
-					break;
-
-				case ExpressionType.Void:
-					this.EmitVoid (allocator);
-
-					break;
-			}
-		}
-
-		private void CompileProgram (Allocator allocator, Trimmer trimmer, Command program)
-		{
-			this.CompileCommand (allocator, trimmer, program);
-			this.EmitVoid (allocator);
-
-			allocator.Generator.MarkLabel (allocator.Terminate);
-			allocator.Generator.Emit (OpCodes.Ret);
-		}
-
-		private void EmitCallValueAsBoolean (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, bool>> ((value) => value.AsBoolean).GetGetMethod ());
-		}
-
-		private void EmitCallWriteString (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>> ((writer, value) => writer.Write (value)));
-		}
-
-		private void EmitPushDocument (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Ldarg_0);
-		}
-
-		private void EmitPushOutput (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Ldarg_2);
-		}
-
-		private void EmitPushScope (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Ldarg_1);
-		}
-
-		private void EmitString (Allocator allocator, string literal)
-		{
-			allocator.Generator.Emit (OpCodes.Ldarg_0);
-			allocator.Generator.Emit (OpCodes.Ldfld, Resolver.Field<Func<DynamicDocument, string[]>> ((document) => document.strings));
-			allocator.Generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (literal));
-			allocator.Generator.Emit (OpCodes.Ldelem_Ref);
-		}
-
-		private void EmitValue (Allocator allocator, Value constant)
-		{
-			allocator.Generator.Emit (OpCodes.Ldarg_0);
-			allocator.Generator.Emit (OpCodes.Ldfld, Resolver.Field<Func<DynamicDocument, Value[]>> ((document) => document.values));
-			allocator.Generator.Emit (OpCodes.Ldc_I4, allocator.Allocate (constant));
-			allocator.Generator.Emit (OpCodes.Ldelem_Ref);
-		}
-
-		private void EmitVoid (Allocator allocator)
-		{
-			allocator.Generator.Emit (OpCodes.Call, Resolver.Property<Func<Value>> (() => VoidValue.Instance).GetGetMethod ());
+			return this.renderer (this.storage, scope, writer);
 		}
 
 		#endregion

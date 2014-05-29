@@ -7,22 +7,6 @@ namespace Cottle
 	[Obsolete ("Use Cottle.Documents.SimpleDocument")]
 	public sealed class Document : IDocument
 	{
-		#region Events
-
-		public event DocumentError	Error
-		{
-			add
-			{
-				this.document.Error += value;
-			}
-			remove
-			{
-				this.document.Error -= value;
-			}
-		}
-
-		#endregion
-
 		#region Attributes
 
 		private readonly SimpleDocument	document;

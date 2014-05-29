@@ -9,12 +9,6 @@ namespace Cottle.Documents.Simple.Evaluators
 {
 	class InvokeEvaluator : IEvaluator
 	{
-		#region Events
-
-		public event DocumentError	Error;
-
-		#endregion
-
 		#region Attributes
 
 		private readonly IEvaluator[]	arguments;
@@ -51,14 +45,7 @@ namespace Cottle.Documents.Simple.Evaluators
 				for (int i = 0; i < this.arguments.Length; ++i)
 					values[i] = this.arguments[i].Evaluate (scope, output);
 
-				try
-				{
-					return function.Execute (values, scope, output);
-				}
-				catch (Exception exception)
-				{
-					this.OnError (source, "function call raised an exception", exception);
-				}
+				return function.Execute (values, scope, output);
 			}
 
 			return VoidValue.Instance;
@@ -88,20 +75,6 @@ namespace Cottle.Documents.Simple.Evaluators
 			builder.Append (')');
 
 			return builder.ToString ();
-		}
-
-		#endregion
-
-		#region Methods / Private
-
-		private void OnError (Value source, string message, Exception exception)
-		{
-			DocumentError	error;
-
-			error = this.Error;
-
-			if (error != null)
-				error (source, message, exception);
 		}
 
 		#endregion

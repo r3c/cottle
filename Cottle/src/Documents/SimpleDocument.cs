@@ -133,7 +133,6 @@ namespace Cottle.Documents
 		{
 			IEvaluator[]							arguments;
 			KeyValuePair<IEvaluator, IEvaluator>[]	elements;
-			InvokeEvaluator							invoke;
 			IEvaluator								key;
 			IEvaluator								value;
 
@@ -164,10 +163,7 @@ namespace Cottle.Documents
 					for (int i = 0; i < arguments.Length; ++i)
 						arguments[i] = this.CompileExpression (expression.Arguments[i]);
 
-					invoke = new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);
-					invoke.Error += this.OnError;
-
-					return invoke;
+					return new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);
 
 				case ExpressionType.Symbol:
 					return new SymbolEvaluator (expression.Value);

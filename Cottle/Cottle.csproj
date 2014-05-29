@@ -51,11 +51,11 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Commons\CommonFunctions.cs" />
-    <Compile Include="src\DocumentError.cs" />
     <Compile Include="src\Documents\AbstractDocument.cs" />
     <Compile Include="src\Documents\DynamicDocument.cs" />
-    <Compile Include="src\Documents\Dynamic\Allocator.cs" />
+    <Compile Include="src\Documents\Dynamic\Compiler.cs" />
     <Compile Include="src\Documents\Dynamic\Renderer.cs" />
+    <Compile Include="src\Documents\Dynamic\Storage.cs" />
     <Compile Include="src\Documents\Dynamic\Resolver.cs" />
     <Compile Include="src\Documents\SimpleDocument.cs" />
     <Compile Include="src\Documents\Simple\Evaluators\AccessEvaluator.cs" />

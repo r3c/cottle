@@ -5,12 +5,6 @@ namespace Cottle
 {
 	public interface IDocument
 	{
-		#region Events
-
-		event DocumentError	Error;
-
-		#endregion
-
 		#region Methods
 
 		Value	Render (IScope scope, TextWriter writer);

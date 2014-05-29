@@ -38,10 +38,29 @@ namespace Cottle.Test
 		}
 
 		[Test]
-/*		[TestCase ("1", "true", "true")]
+		[TestCase ("k", "v", "[]", "-", "EMPTY")]
+		[TestCase ("key", "value", "['A': 'X', 'B': 'Y', 'C': 'Z']", "{key}{value}", "AXBYCZ")]
+		[TestCase ("i", "j", "[1, 5, 9]", "{i}{j}", "011529")]
+		public void CommandForKeyValue (string name1, string name2, string source, string body, string expected)
+		{
+			this.AssertRender ("{for " + name1 + ", " + name2 + " in " + source + ":" + body + "|empty:EMPTY}", expected);
+		}
+
+		[Test]
+		[TestCase ("unused", "[]", "-", "EMPTY")]
+		[TestCase ("dummy", "[1, 5, 9]", "X", "XXX")]
+		[TestCase ("v", "[1, 5, 9]", "{v}", "159")]
+		[TestCase ("name", "[5: 'A', 9: 'B', 2: 'C']", "{name}", "ABC")]
+		public void CommandForValue (string name, string source, string body, string expected)
+		{
+			this.AssertRender ("{for " + name + " in " + source + ":" + body + "|empty:EMPTY}", expected);
+		}
+
+		[Test]
+		[TestCase ("1", "true", "true")]
 		[TestCase ("''", "invisible", "")]
 		[TestCase ("'something'", "visible", "visible")]
-		[TestCase ("[]", "invisible", "")]*/
+		[TestCase ("[]", "invisible", "")]
 		[TestCase ("[1, 2, 3]", "visible", "visible")]
 		[TestCase ("1", "a|elif 1:b|else:c", "a")]
 		[TestCase ("0", "a|elif 1:b|else:c", "b")]
@@ -67,6 +86,22 @@ namespace Cottle.Test
 		public void CommandSet (string name, string value, string expected)
 		{
 			this.AssertReturn ("{set " + name + " to " + value + "}{return " + name + "}", expected); 
+		}
+
+		[Test]
+		[TestCase ("{set a to 0}", "lt(a, 8)", "{set a to add(a, 1)}{a}", "12345678")]
+		[TestCase ("{set a to 8}", "lt(0, a)", "{set a to add(a, -1)}X", "XXXXXXXX")]
+		public void CommandWhile (string init, string condition, string body, string expected)
+		{
+			Action<IScope>	populate;
+
+			populate = (scope) =>
+			{
+				scope["add"] = new NativeFunction ((arguments) => arguments[0].AsNumber + arguments[1].AsNumber, 2);
+				scope["lt"] = new NativeFunction ((arguments) => arguments[0] < arguments[1], 2);
+			};
+
+			this.AssertRender (init + "{while " + condition + ":" + body + "}", expected, DefaultSetting.Instance, populate, (d) => {});
 		}
 
 		[Test]
@@ -121,7 +156,7 @@ namespace Cottle.Test
 		[Test]
 		[TestCase ("abc", "42")]
 		[TestCase ("xyz", "17")]
-		public void ExpressionInvokeSuccess (string symbol, string expected)
+		public void ExpressionInvoke (string symbol, string expected)
 		{
 			Action<IScope>	populate;
 
@@ -140,49 +175,8 @@ namespace Cottle.Test
 				}, 1);
 			};
 
-			this.AssertRender ("{return f('" + symbol + "')}", ((Value)expected).AsString, DefaultSetting.Instance, populate, (d) => {});
+			this.AssertRender ("{f('" + symbol + "')}", ((Value)expected).AsString + ((Value)expected).AsString, DefaultSetting.Instance, populate, (d) => {});
 			this.AssertReturn ("{return f('" + symbol + "')}", ((Value)expected).ToString (), DefaultSetting.Instance, populate, (d) => {}); 
-		}
-
-		[Test]
-		public void ExpressionInvokeThrow ()
-		{
-			Action<IDocument>	listen;
-			Action<IScope>		populate;
-			int					thrown;
-
-			thrown = 0;
-
-			listen = (document) =>
-			{
-				document.Error += (s, m, e) =>
-				{
-					Assert.AreEqual (ValueContent.Function, s.Type);
-					Assert.IsInstanceOf (typeof (InvalidOperationException), e);
-
-					++thrown;
-				};
-			};
-
-			populate = (scope) =>
-			{
-				scope["f"] = new NativeFunction ((a, s, o) =>
-				{
-					throw new InvalidOperationException ();
-				}, 0);
-			};
-
-			thrown = 0;
-
-			this.AssertRender ("{return f()}", string.Empty, DefaultSetting.Instance, populate, listen);
-
-			Assert.AreEqual (DocumentTester.constructors.Length, thrown, "Document error event has not been raised");
-
-			thrown = 0;
-
-			this.AssertReturn ("{return f()}", "<void>", DefaultSetting.Instance, populate, listen);
-
-			Assert.AreEqual (DocumentTester.constructors.Length, thrown, "Document error event has not been raised"); 
 		}
 
 		[Test]

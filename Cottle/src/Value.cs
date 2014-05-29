@@ -43,7 +43,7 @@ namespace Cottle
 
 		#region Operators
 
-		public static bool	operator == (Value lhs, Value rhs)
+		public static bool operator == (Value lhs, Value rhs)
 		{
 			if (object.ReferenceEquals (lhs, null))
 				return object.ReferenceEquals (rhs, null);
@@ -53,7 +53,7 @@ namespace Cottle
 			return lhs.CompareTo (rhs) == 0;
 		}
 
-		public static bool	operator != (Value lhs, Value rhs)
+		public static bool operator != (Value lhs, Value rhs)
 		{
 			if (object.ReferenceEquals (lhs, null))
 				return !object.ReferenceEquals (rhs, null);
@@ -63,7 +63,7 @@ namespace Cottle
 			return lhs.CompareTo (rhs) != 0;
 		}
 
-		public static bool	operator < (Value lhs, Value rhs)
+		public static bool operator < (Value lhs, Value rhs)
 		{
 			if (object.ReferenceEquals (lhs, null))
 				return !object.ReferenceEquals (rhs, null);
@@ -73,7 +73,17 @@ namespace Cottle
 			return lhs.CompareTo (rhs) < 0;
 		}
 
-		public static bool	operator > (Value lhs, Value rhs)
+		public static bool operator <= (Value lhs, Value rhs)
+		{
+			if (object.ReferenceEquals (lhs, null))
+				return !object.ReferenceEquals (rhs, null);
+			else if (object.ReferenceEquals (rhs, null))
+				return false;
+
+			return lhs.CompareTo (rhs) <= 0;
+		}
+
+		public static bool operator > (Value lhs, Value rhs)
 		{
 			if (object.ReferenceEquals (lhs, null))
 				return false;
@@ -81,6 +91,16 @@ namespace Cottle
 				return true;
 
 			return lhs.CompareTo (rhs) > 0;
+		}
+
+		public static bool operator >= (Value lhs, Value rhs)
+		{
+			if (object.ReferenceEquals (lhs, null))
+				return false;
+			else if (object.ReferenceEquals (rhs, null))
+				return true;
+
+			return lhs.CompareTo (rhs) >= 0;
 		}
 
 		public static implicit operator Value (Func<Value> resolver)
@@ -203,14 +223,14 @@ namespace Cottle
 			return this.CompareTo (other) == 0;
 		}
 
-		public override bool	Equals (object obj)
+		public override bool Equals (object obj)
 		{
 			Value	other = obj as Value;
 
 			return other != null && this.CompareTo (other) == 0;
 		}
 
-		public abstract override int	GetHashCode ();
+		public abstract override int GetHashCode ();
 
 		#endregion
 

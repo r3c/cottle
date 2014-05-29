@@ -6,12 +6,6 @@ namespace Cottle.Documents
 {
 	public abstract class AbstractDocument : IDocument
 	{
-		#region Events
-		
-		public event DocumentError	Error;
-
-		#endregion
-
 		#region Methods / Abstract
 
 		public abstract Value Render (IScope scope, TextWriter writer);
@@ -29,20 +23,6 @@ namespace Cottle.Documents
 			this.Render (scope, writer);
 
 			return writer.ToString ();
-		}
-
-		#endregion
-
-		#region Methods / Protected
-
-		protected void OnError (Value source, string message, Exception exception)
-		{
-			DocumentError	error;
-
-			error = this.Error;
-
-			if (error != null)
-				error (source, message, exception);
 		}
 
 		#endregion
