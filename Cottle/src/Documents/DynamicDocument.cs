@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -28,25 +29,28 @@ namespace Cottle.Documents
 
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
+			Command			command;
 			Compiler		compiler;
 			DynamicMethod	method;
 			IParser			parser;
 
-			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IScope), typeof (TextWriter)}, this.GetType ());
+			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)}, this.GetType ());
 			compiler = new Compiler (method.GetILGenerator (), setting.Trimmer);
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
-			this.storage = compiler.Compile (parser.Parse (reader));
+			command = parser.Parse (reader);
+
+			this.storage = compiler.CompileProgram (command);
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
 /*
 			var name = "HelloWorld.exe";
-			var assemblyname = new AssemblyName(name);
+			var assemblyname = new System.Reflection.AssemblyName(name);
 			var assemblybuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyname, AssemblyBuilderAccess.RunAndSave);
 			var modulebuilder = assemblybuilder.DefineDynamicModule(name, "x.dll");
-			var programmclass = modulebuilder.DefineType("Program",TypeAttributes.Public);
-			var method2 = programmclass.DefineMethod("Main",MethodAttributes.Public | MethodAttributes.Static,typeof (Value), new [] {typeof (Context), typeof (IScope), typeof (TextWriter)});
+			var programmclass = modulebuilder.DefineType("Program",System.Reflection.TypeAttributes.Public);
+			var method2 = programmclass.DefineMethod("Main",System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static,typeof (Value), new [] {typeof (Storage), typeof (IScope), typeof (TextWriter)});
 			compiler = new Compiler (method2.GetILGenerator (), setting.Trimmer);
-			compiler.Compile (command);
+			compiler.CompileProgram (command);
 			programmclass.CreateType();
 			assemblybuilder.Save ("x.dll");
 */
@@ -73,7 +77,7 @@ namespace Cottle.Documents
 
 		public override Value Render (IScope scope, TextWriter writer)
 		{
-			return this.renderer (this.storage, scope, writer);
+			return this.renderer (this.storage, null, scope, writer);
 		}
 
 		#endregion

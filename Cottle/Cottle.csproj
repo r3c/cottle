@@ -54,6 +54,7 @@
     <Compile Include="src\Documents\AbstractDocument.cs" />
     <Compile Include="src\Documents\DynamicDocument.cs" />
     <Compile Include="src\Documents\Dynamic\Compiler.cs" />
+    <Compile Include="src\Documents\Dynamic\Function.cs" />
     <Compile Include="src\Documents\Dynamic\Renderer.cs" />
     <Compile Include="src\Documents\Dynamic\Storage.cs" />
     <Compile Include="src\Documents\Dynamic\Resolver.cs" />

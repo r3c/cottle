@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using Cottle.Commons;
 using Cottle.Documents;
 using Cottle.Functions;
 using Cottle.Scopes;
@@ -21,12 +22,44 @@ namespace Cottle.Test
 		};
 
 		[Test]
+		public void CombinedPowerOfTwo ()
+		{
+			Action<IScope>	populate;
+
+			populate = (scope) => CommonFunctions.Assign (scope);
+
+			this.AssertRender
+			(
+				"{set a to 5}" +
+				"{set b to 1}" +
+				"{while gt (a, 0):" +
+					"{b}" +
+					"{set a to add (a, -1)}" +
+					"{set b to add (b, b)}" +
+				"}",
+				"124816",
+				DefaultSetting.Instance,
+				populate,
+				(d) => {}
+			);
+		}
+
+		[Test]
 		[TestCase ("var", "1", "1")]
 		[TestCase ("_", "'A'", "\"A\"")]
 		[TestCase ("some_symbol_name", "[]", "[]")]
-		public void CommandDeclare (string name, string value, string expected)
+		public void CommandDeclareValueSimple (string name, string value, string expected)
 		{
 			this.AssertReturn ("{declare " + name + " as " + value + "}{return " + name + "}", expected); 
+		}
+
+		[Test]
+		[TestCase ("var", "1", "1")]
+		[TestCase ("_", "'A'", "\"A\"")]
+		[TestCase ("some_symbol_name", "[]", "[]")]
+		public void CommandDeclareValueScope (string name, string value, string expected)
+		{
+			this.AssertReturn ("{declare f() as:{declare " + name + " as 'unused'}}{declare " + name + " as " + value + "}{f()}{return " + name + "}", expected);
 		}
 
 		[Test]
@@ -80,12 +113,46 @@ namespace Cottle.Test
 		}
 
 		[Test]
+		[TestCase ("{set a to 1}{set b to 2}", "", "{a}{b}", "12")]
+		[TestCase ("{set a to 1}{set b to 2}", "{a}{b}", "{a}{b}", "3412")]
+		public void CommandSetFunctionArguments (string pre, string body, string post, string expected)
+		{
+			this.AssertRender (pre + "{set f(a, b) to:" + body + "}{f(3, 4)}" + post, expected);
+		}
+
+		[Test]
+		[TestCase ("f", "Hello, World!", "Hello, World!")]
+		[TestCase ("test", "{'Some String'}", "Some String")]
+		public void CommandSetFunctionRender (string name, string body, string expected)
+		{
+			this.AssertRender ("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
+		}
+
+		[Test]
+		[TestCase ("f", "{return 1}", "1")]
+		[TestCase ("test", "{return 'Some String'}", "\"Some String\"")]
+		[TestCase ("x", "{if 1:{return 'X'}|else:{return 'Y'}}", "\"X\"")]
+		public void CommandSetFunctionReturn (string name, string body, string expected)
+		{
+			this.AssertReturn ("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
+		}
+
+		[Test]
 		[TestCase ("var", "1", "1")]
 		[TestCase ("_", "'A'", "\"A\"")]
 		[TestCase ("some_symbol_name", "[]", "[]")]
-		public void CommandSet (string name, string value, string expected)
+		public void CommandSetValueSimple (string name, string value, string expected)
 		{
 			this.AssertReturn ("{set " + name + " to " + value + "}{return " + name + "}", expected); 
+		}
+
+		[Test]
+		[TestCase ("var", "1", "1")]
+		[TestCase ("_", "'A'", "\"A\"")]
+		[TestCase ("some_symbol_name", "[]", "[]")]
+		public void CommandSetValueScope (string name, string value, string expected)
+		{
+			this.AssertReturn ("{declare f() as:{set " + name + " to " + value + "}}{set " + name + " to 'default'}{f()}{return " + name + "}", expected);
 		}
 
 		[Test]
