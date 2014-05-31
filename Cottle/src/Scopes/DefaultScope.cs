@@ -1,5 +1,7 @@
 ﻿using System;
-using Cottle.Commons;
+using System.Collections.Generic;
+using Cottle.Builtins;
+using Cottle.Values;
 
 namespace Cottle.Scopes
 {
@@ -24,7 +26,7 @@ namespace Cottle.Scopes
 
 		#region Methods
 
-		private static IScope	GetConstant ()
+		private static IScope GetConstant ()
 		{
 			IScope	scope;
 
@@ -36,7 +38,8 @@ namespace Cottle.Scopes
 					{
 						scope = new SimpleScope ();
 
-						CommonFunctions.Assign (scope, ScopeMode.Closest);
+						foreach (KeyValuePair<string, IFunction> instance in BuiltinFunctions.Instances)
+							scope[instance.Key] = new FunctionValue (instance.Value);
 
 						DefaultScope.constant = scope;
 					}

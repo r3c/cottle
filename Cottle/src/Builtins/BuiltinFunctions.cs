@@ -1,50 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Globalization;
-using System.IO;
-using System.Runtime.Remoting.Activation;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using Cottle.Documents;
 using Cottle.Functions;
-using Cottle.Scopes;
 using Cottle.Values;
 
-namespace Cottle.Commons
+namespace Cottle.Builtins
 {
-	public static class CommonFunctions
+	public static class BuiltinFunctions
 	{
 		#region Properties
 
-		public static bool	IncludeCacheEnable
+		public static IEnumerable<KeyValuePair<string, IFunction>>	Instances
 		{
 			get
 			{
-				return CommonFunctions.includeCacheEnable;
-			}
-			set
-			{
-				CommonFunctions.includeCacheEnable = value;
-			}
-		}
-
-		public static int	IncludeCacheSize
-		{
-			get
-			{
-				return CommonFunctions.includeCacheSize;
-			}
-			set
-			{
-				CommonFunctions.includeCacheSize = value;
+				return BuiltinFunctions.instances;
 			}
 		}
 
 		#endregion
 
-		#region Attributes / Instance
+		#region Attributes
+
+		private static readonly DateTime	epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 		private static readonly IFunction	functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
 
@@ -391,55 +371,6 @@ namespace Cottle.Commons
 			return true;
 		}, 1, -1);
 
-		private static readonly IFunction	functionInclude = new NativeFunction ((values, scope, output) =>
-		{
-			IDocument	document;
-			object		entry;
-			IScope		inner;
-			string		path;
-			DateTime	write;
-
-			path = Path.GetFullPath (values[0].AsString);
-
-			if (!File.Exists (path))
-				return VoidValue.Instance;
-
-			write = File.GetLastWriteTime (path);
-
-			lock (CommonFunctions.includeCache)
-			{
-				if (CommonFunctions.includeCacheEnable)
-					entry = CommonFunctions.includeCache[path];
-				else
-					entry = null;
-
-				if (entry != null && ((KeyValuePair<IDocument, DateTime>)entry).Value >= write)
-					document = ((KeyValuePair<IDocument, DateTime>)entry).Key;
-				else
-				{
-					using (FileStream stream = File.OpenRead (path))
-					{
-						document = new SimpleDocument (new StreamReader (stream));
-					}
-
-					CommonFunctions.includeCache[path] = new KeyValuePair<IDocument, DateTime> (document, write);
-
-					while (CommonFunctions.includeCache.Count > CommonFunctions.includeCacheSize && CommonFunctions.includeCache.Count > 0)
-						CommonFunctions.includeCache.RemoveAt (0);
-				}
-			}
-
-			inner = new FallbackScope (scope, new SimpleScope ());
-
-			for (int i = 1; i < values.Count; ++i)
-			{
-				foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-					inner.Set (pair.Key, pair.Value, ScopeMode.Closest);
-			}
-
-			return document.Render (inner, output);
-		}, 1, -1);
-
 		private static readonly IFunction	functionJoin = new NativeFunction ((values) =>
 		{
 			StringBuilder	builder;
@@ -593,19 +524,19 @@ namespace Cottle.Commons
 
 		private static readonly IFunction	functionRandom = new NativeFunction ((values) =>
 		{
-			if (CommonFunctions.random == null)
-				CommonFunctions.random = new Random ();
-
-			switch (values.Count)
+			lock (BuiltinFunctions.random)
 			{
-				case 0:
-					return CommonFunctions.random.Next ();
-
-				case 1:
-					return CommonFunctions.random.Next ((int)values[0].AsNumber);
-
-				default:
-					return CommonFunctions.random.Next ((int)values[0].AsNumber, (int)values[1].AsNumber);
+				switch (values.Count)
+				{
+					case 0:
+						return BuiltinFunctions.random.Next ();
+	
+					case 1:
+						return BuiltinFunctions.random.Next ((int)values[0].AsNumber);
+	
+					default:
+						return BuiltinFunctions.random.Next ((int)values[0].AsNumber, (int)values[1].AsNumber);
+				}
 			}
 		}, 0, 2);
 
@@ -811,80 +742,71 @@ namespace Cottle.Commons
 			return result;
 		}, 2);
 
-		#endregion
+		private static readonly Dictionary<string, IFunction>	instances = new Dictionary<string, IFunction>
+		{
+			{"abs",		BuiltinFunctions.functionAbsolute},
+			{"add",		BuiltinFunctions.functionAdd},
+			{"and",		BuiltinFunctions.functionAnd},
+			{"call",	BuiltinFunctions.functionCall},
+			{"cast",	BuiltinFunctions.functionCast},
+			{"cat",		BuiltinFunctions.functionCat},
+			{"ceil",	BuiltinFunctions.functionCeiling},
+			{"char",	BuiltinFunctions.functionChar},
+			{"cmp",		BuiltinFunctions.functionCompare},
+			{"cos",		BuiltinFunctions.functionCosine},
+			{"cross",	BuiltinFunctions.functionCross},
+			{"default",	BuiltinFunctions.functionDefault},
+			{"div",		BuiltinFunctions.functionDiv},
+			{"eq",		BuiltinFunctions.functionEqual},
+			{"except",	BuiltinFunctions.functionExcept},
+			{"filter",	BuiltinFunctions.functionFilter},
+			{"find",	BuiltinFunctions.functionFind},
+			{"flip",	BuiltinFunctions.functionFlip},
+			{"floor",	BuiltinFunctions.functionFloor},
+			{"format",	BuiltinFunctions.functionFormat},
+			{"ge",		BuiltinFunctions.functionGreaterEqual},
+			{"gt",		BuiltinFunctions.functionGreater},
+			{"has",		BuiltinFunctions.functionHas},
+			{"join",	BuiltinFunctions.functionJoin},
+			{"lcase",	BuiltinFunctions.functionLowerCase},
+			{"le",		BuiltinFunctions.functionLowerEqual},
+			{"len",		BuiltinFunctions.functionLength},
+			{"lt",		BuiltinFunctions.functionLower},
+			{"map",		BuiltinFunctions.functionMap},
+			{"match",	BuiltinFunctions.functionMatch},
+			{"max",		BuiltinFunctions.functionMaximum},
+			{"min",		BuiltinFunctions.functionMinimum},
+			{"mod",		BuiltinFunctions.functionMod},
+			{"mul",		BuiltinFunctions.functionMul},
+			{"not",		BuiltinFunctions.functionNot},
+			{"or",		BuiltinFunctions.functionOr},
+			{"ord",		BuiltinFunctions.functionOrd},
+			{"pow",		BuiltinFunctions.functionPower},
+			{"rand",	BuiltinFunctions.functionRandom},
+			{"range",	BuiltinFunctions.functionRange},
+			{"round",	BuiltinFunctions.functionRound},
+			{"sin",		BuiltinFunctions.functionSine},
+			{"slice",	BuiltinFunctions.functionSlice},
+			{"sort",	BuiltinFunctions.functionSort},
+			{"split",	BuiltinFunctions.functionSplit},
+			{"sub",		BuiltinFunctions.functionSub},
+			{"token",	BuiltinFunctions.functionToken},
+			{"ucase",	BuiltinFunctions.functionUpperCase},
+			{"union",	BuiltinFunctions.functionUnion},
+			{"when",	BuiltinFunctions.functionWhen},
+			{"xor",		BuiltinFunctions.functionXor},
+			{"zip",		BuiltinFunctions.functionZip}
+		};
 
-		#region Attributes / Static
-
-		private static readonly DateTime			epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-		private static readonly OrderedDictionary	includeCache = new OrderedDictionary ();
-		
-		private static bool							includeCacheEnable = true;
-
-		private static int							includeCacheSize = 256;
-
-		[ThreadStatic]
-		private static Random						random = null;
+		private static readonly Random	random = new Random ();
 
 		#endregion
 
 		#region Methods
 
-		public static void	Assign (IScope scope, ScopeMode mode = ScopeMode.Closest)
+		public static bool TryGet (string name, out IFunction function)
 		{
-			scope.Set ("abs", new FunctionValue (CommonFunctions.functionAbsolute), mode);
-			scope.Set ("add", new FunctionValue (CommonFunctions.functionAdd), mode);
-			scope.Set ("and", new FunctionValue (CommonFunctions.functionAnd), mode);
-			scope.Set ("call", new FunctionValue (CommonFunctions.functionCall), mode);
-			scope.Set ("cast", new FunctionValue (CommonFunctions.functionCast), mode);
-			scope.Set ("cat", new FunctionValue (CommonFunctions.functionCat), mode);
-			scope.Set ("ceil", new FunctionValue (CommonFunctions.functionCeiling), mode);
-			scope.Set ("char", new FunctionValue (CommonFunctions.functionChar), mode);
-			scope.Set ("cmp", new FunctionValue (CommonFunctions.functionCompare), mode);
-			scope.Set ("cos", new FunctionValue (CommonFunctions.functionCosine), mode);
-			scope.Set ("cross", new FunctionValue (CommonFunctions.functionCross), mode);
-			scope.Set ("default", new FunctionValue (CommonFunctions.functionDefault), mode);
-			scope.Set ("div", new FunctionValue (CommonFunctions.functionDiv), mode);
-			scope.Set ("eq", new FunctionValue (CommonFunctions.functionEqual), mode);
-			scope.Set ("except", new FunctionValue (CommonFunctions.functionExcept), mode);
-			scope.Set ("filter", new FunctionValue (CommonFunctions.functionFilter), mode);
-			scope.Set ("find", new FunctionValue (CommonFunctions.functionFind), mode);
-			scope.Set ("flip", new FunctionValue (CommonFunctions.functionFlip), mode);
-			scope.Set ("floor", new FunctionValue (CommonFunctions.functionFloor), mode);
-			scope.Set ("format", new FunctionValue (CommonFunctions.functionFormat), mode);
-			scope.Set ("ge", new FunctionValue (CommonFunctions.functionGreaterEqual), mode);
-			scope.Set ("gt", new FunctionValue (CommonFunctions.functionGreater), mode);
-			scope.Set ("has", new FunctionValue (CommonFunctions.functionHas), mode);
-			scope.Set ("include", new FunctionValue (CommonFunctions.functionInclude), mode);
-			scope.Set ("join", new FunctionValue (CommonFunctions.functionJoin), mode);
-			scope.Set ("lcase", new FunctionValue (CommonFunctions.functionLowerCase), mode);
-			scope.Set ("le", new FunctionValue (CommonFunctions.functionLowerEqual), mode);
-			scope.Set ("len", new FunctionValue (CommonFunctions.functionLength), mode);
-			scope.Set ("lt", new FunctionValue (CommonFunctions.functionLower), mode);
-			scope.Set ("map", new FunctionValue (CommonFunctions.functionMap), mode);
-			scope.Set ("match", new FunctionValue (CommonFunctions.functionMatch), mode);
-			scope.Set ("max", new FunctionValue (CommonFunctions.functionMaximum), mode);
-			scope.Set ("min", new FunctionValue (CommonFunctions.functionMinimum), mode);
-			scope.Set ("mod", new FunctionValue (CommonFunctions.functionMod), mode);
-			scope.Set ("mul", new FunctionValue (CommonFunctions.functionMul), mode);
-			scope.Set ("not", new FunctionValue (CommonFunctions.functionNot), mode);
-			scope.Set ("or", new FunctionValue (CommonFunctions.functionOr), mode);
-			scope.Set ("ord", new FunctionValue (CommonFunctions.functionOrd), mode);
-			scope.Set ("pow", new FunctionValue (CommonFunctions.functionPower), mode);
-			scope.Set ("rand", new FunctionValue (CommonFunctions.functionRandom), mode);
-			scope.Set ("range", new FunctionValue (CommonFunctions.functionRange), mode);
-			scope.Set ("round", new FunctionValue (CommonFunctions.functionRound), mode);
-			scope.Set ("sin", new FunctionValue (CommonFunctions.functionSine), mode);
-			scope.Set ("slice", new FunctionValue (CommonFunctions.functionSlice), mode);
-			scope.Set ("sort", new FunctionValue (CommonFunctions.functionSort), mode);
-			scope.Set ("split", new FunctionValue (CommonFunctions.functionSplit), mode);
-			scope.Set ("sub", new FunctionValue (CommonFunctions.functionSub), mode);
-			scope.Set ("token", new FunctionValue (CommonFunctions.functionToken), mode);
-			scope.Set ("ucase", new FunctionValue (CommonFunctions.functionUpperCase), mode);
-			scope.Set ("union", new FunctionValue (CommonFunctions.functionUnion), mode);
-			scope.Set ("when", new FunctionValue (CommonFunctions.functionWhen), mode);
-			scope.Set ("xor", new FunctionValue (CommonFunctions.functionXor), mode);
-			scope.Set ("zip", new FunctionValue (CommonFunctions.functionZip), mode);
+			return BuiltinFunctions.instances.TryGetValue (name, out function);
 		}
 
 		#endregion

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using Cottle.Commons;
+using Cottle.Builtins;
 using Cottle.Documents;
 using Cottle.Functions;
 using Cottle.Scopes;
@@ -26,7 +26,16 @@ namespace Cottle.Test
 		{
 			Action<IScope>	populate;
 
-			populate = (scope) => CommonFunctions.Assign (scope);
+			populate = (scope) =>
+			{
+				IFunction	function;
+
+				if (BuiltinFunctions.TryGet ("add", out function))
+					scope["add"] = new FunctionValue (function);
+
+				if (BuiltinFunctions.TryGet ("gt", out function))
+					scope["gt"] = new FunctionValue (function);
+			};
 
 			this.AssertRender
 			(
@@ -107,9 +116,19 @@ namespace Cottle.Test
 		[TestCase ("1", "1")]
 		[TestCase ("'A'", "\"A\"")]
 		[TestCase ("[]", "[]")]
-		public void CommandReturn (string value, string expected)
+		public void CommandReturnDirect (string value, string expected)
 		{
 			this.AssertReturn ("{return " + value + "}", expected);
+		}
+
+		[Test]
+		[TestCase ("0", "0", "\"B\"")]
+		[TestCase ("0", "1", "\"B\"")]
+		[TestCase ("1", "0", "\"AB\"")]
+		[TestCase ("1", "1", "\"AA\"")]
+		public void CommandReturnNested (string a, string b, string expected)
+		{
+			this.AssertReturn ("{if " + a + ":{if " + b + ":{return 'AA'}|else:{return 'AB'}}|else:{return 'B'}}", expected);
 		}
 
 		[Test]
@@ -134,7 +153,7 @@ namespace Cottle.Test
 		[TestCase ("x", "{if 1:{return 'X'}|else:{return 'Y'}}", "\"X\"")]
 		public void CommandSetFunctionReturn (string name, string body, string expected)
 		{
-			this.AssertReturn ("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
+			this.AssertReturn ("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
 		}
 
 		[Test]

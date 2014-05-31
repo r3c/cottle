@@ -46,17 +46,17 @@ namespace Cottle.Parsers
 
 		public Command Parse (TextReader reader)
 		{
-			Command	statement;
+			Command	command;
 
 			this.lexer.Reset (reader);
 			this.lexer.Next (LexerMode.Raw);
 
-			statement = this.ParseLiteral ();
+			command = this.ParseLiteral ();
 
 			if (this.lexer.Current.Type != LexemType.EndOfFile)
 				throw this.Raise ("end of file");
 
-			return statement;
+			return command;
 		}
 
 		#endregion

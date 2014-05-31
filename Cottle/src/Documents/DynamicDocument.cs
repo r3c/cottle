@@ -19,9 +19,7 @@ namespace Cottle.Documents
 	{
 		#region Attributes
 
-		private readonly Renderer	renderer;
-
-		private readonly Storage	storage;
+		private readonly Function	main;
 
 		#endregion
 
@@ -29,31 +27,12 @@ namespace Cottle.Documents
 
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
-			Command			command;
-			Compiler		compiler;
-			DynamicMethod	method;
-			IParser			parser;
+			IParser	parser;
 
-			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)}, this.GetType ());
-			compiler = new Compiler (method.GetILGenerator (), setting.Trimmer);
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
-			command = parser.Parse (reader);
+			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer);
 
-			this.storage = compiler.CompileProgram (command);
-			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
-/*
-			var name = "HelloWorld.exe";
-			var assemblyname = new System.Reflection.AssemblyName(name);
-			var assemblybuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyname, AssemblyBuilderAccess.RunAndSave);
-			var modulebuilder = assemblybuilder.DefineDynamicModule(name, "x.dll");
-			var programmclass = modulebuilder.DefineType("Program",System.Reflection.TypeAttributes.Public);
-			var method2 = programmclass.DefineMethod("Main",System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static,typeof (Value), new [] {typeof (Storage), typeof (IScope), typeof (TextWriter)});
-			compiler = new Compiler (method2.GetILGenerator (), setting.Trimmer);
-			compiler.CompileProgram (command);
-			programmclass.CreateType();
-			assemblybuilder.Save ("x.dll");
-*/
 		}
 
 		public DynamicDocument (TextReader reader) :
@@ -77,7 +56,7 @@ namespace Cottle.Documents
 
 		public override Value Render (IScope scope, TextWriter writer)
 		{
-			return this.renderer (this.storage, null, scope, writer);
+			return this.main.Execute (null, scope, writer);
 		}
 
 		#endregion

@@ -38,16 +38,18 @@ namespace Cottle.Documents.Dynamic
 
 		#region Methods / Public
 
-		public Storage CompileFunction (IEnumerable<string> arguments, Command command)
+		public Storage Compile (IEnumerable<string> arguments, Command command)
 		{
 			Label	assign;
 			Label	copy;
 			Label	exit;
 			int		index;
 
+			// Create scope for program execution
 			this.EmitPushScope ();
 			this.EmitCallScopeEnter ();
 
+			// Assign provided values to arguments
 			index = 0;
 
 			foreach (string argument in arguments)
@@ -85,6 +87,7 @@ namespace Cottle.Documents.Dynamic
 				++index;
 			}
 
+			// Compile program body
 			exit = this.generator.DefineLabel ();
 
 			this.CompileCommand (command, exit, 0, false);
@@ -92,24 +95,10 @@ namespace Cottle.Documents.Dynamic
 
 			this.generator.MarkLabel (exit);
 
+			// Leave scope and return
 			this.EmitPushScope ();
 			this.EmitCallScopeLeave ();
 
-			this.generator.Emit (OpCodes.Ret);
-
-			return new Storage (this.strings, this.values);
-		}
-
-		public Storage CompileProgram (Command command)
-		{
-			Label	exit;
-
-			exit = this.generator.DefineLabel ();
-
-			this.CompileCommand (command, exit, 0, false);
-			this.EmitPushVoid ();
-
-			this.generator.MarkLabel (exit);
 			this.generator.Emit (OpCodes.Ret);
 
 			return new Storage (this.strings, this.values);
@@ -315,17 +304,17 @@ namespace Cottle.Documents.Dynamic
 						jump = this.generator.DefineLabel ();
 
 						this.generator.Emit (OpCodes.Ldc_I4, depth);
-						this.generator.Emit (OpCodes.Stloc);
+						this.generator.Emit (OpCodes.Stloc, counter);
 						this.generator.MarkLabel (jump);
 
 						this.EmitPushScope ();
 						this.EmitCallScopeLeave ();
 
-						this.generator.Emit (OpCodes.Ldloc, depth);
+						this.generator.Emit (OpCodes.Ldloc, counter);
 						this.generator.Emit (OpCodes.Ldc_I4_1);
 						this.generator.Emit (OpCodes.Sub);
-						this.generator.Emit (OpCodes.Stloc, depth);
-						this.generator.Emit (OpCodes.Ldloc, depth);
+						this.generator.Emit (OpCodes.Stloc, counter);
+						this.generator.Emit (OpCodes.Ldloc, counter);
 						this.generator.Emit (OpCodes.Brtrue, jump);
 
 						this.LocalRelease<int> (counter);

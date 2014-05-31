@@ -61,7 +61,11 @@ namespace Cottle.Documents
 		{
 			Value	result;
 
+			scope.Enter ();
+
 			this.renderer.Render (scope, writer, out result);
+
+			scope.Leave ();
 
 			return result;
 		}

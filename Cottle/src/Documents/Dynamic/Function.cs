@@ -17,6 +17,8 @@ namespace Cottle.Documents.Dynamic
 
 		#region Constructors
 
+//		private static int g = 0;
+
 		public Function (IEnumerable<string> arguments, Command command, Trimmer trimmer)
 		{
 			Compiler		compiler;
@@ -25,19 +27,20 @@ namespace Cottle.Documents.Dynamic
 			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)}, this.GetType ());
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 
-			this.storage = compiler.CompileFunction (arguments, command);
+//			int p = g++;
+
+			this.storage = compiler.Compile (arguments, command);
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
 /*
-			var name = "HelloWorld.exe";
-			var assemblyname = new System.Reflection.AssemblyName(name);
-			var assemblybuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyname, AssemblyBuilderAccess.RunAndSave);
-			var modulebuilder = assemblybuilder.DefineDynamicModule(name, "x.dll");
-			var programmclass = modulebuilder.DefineType("Program",System.Reflection.TypeAttributes.Public);
-			var method2 = programmclass.DefineMethod("Main",System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static,typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)});
-			compiler = new Compiler (method2.GetILGenerator (), trimmer);
-			compiler.CompileFunction (arguments, command);
-			programmclass.CreateType();
-			assemblybuilder.Save ("x.dll");
+			var assemblyName = new System.Reflection.AssemblyName ("Dynamic_" + p);
+			var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly (assemblyName, AssemblyBuilderAccess.RunAndSave);
+			var moduleBuilder = assemblyBuilder.DefineDynamicModule (assemblyName.Name, assemblyName.Name + ".dll");
+			var program = moduleBuilder.DefineType ("Program",System.Reflection.TypeAttributes.Public);
+			var main = program.DefineMethod ("Main", System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)});
+			compiler = new Compiler (main.GetILGenerator (), trimmer);
+			compiler.Compile (arguments, command);
+			program.CreateType();
+			assemblyBuilder.Save (assemblyName.Name + ".dll");
 */
 		}
 

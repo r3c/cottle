@@ -3,10 +3,10 @@ using Cottle.Documents;
 using Cottle.Scopes;
 using NUnit.Framework;
 
-namespace Cottle.Test.Commons
+namespace Cottle.Test.Builtins
 {
 	[TestFixture]
-	public class CommonFunctionsTester
+	public class BuiltinFunctionsTester
 	{
 		[Test]
 		[TestCase ("range(3)", "[0, 1, 2]")]
@@ -26,7 +26,7 @@ namespace Cottle.Test.Commons
 		[TestCase ("slice(range(1000000000), 0, 5)", "[0, 1, 2, 3, 4]")]
 		public void FunctionRange (string expression, string expected)
 		{
-			CommonFunctionsTester.AssertEqual (expression, expected);
+			BuiltinFunctionsTester.AssertEqual (expression, expected);
 		}
 
 		[Test]
@@ -43,7 +43,7 @@ namespace Cottle.Test.Commons
 		[TestCase("token('A---B---C---', '---', 4, 'D')", "A---B---C------D")]
 		public void FunctionToken (string template, string expected)
 		{
-			CommonFunctionsTester.AssertPrint (template, expected);
+			BuiltinFunctionsTester.AssertPrint (template, expected);
 		}
 
 		private static void AssertEqual (string expression, string expected)

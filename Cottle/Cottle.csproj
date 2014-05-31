@@ -50,7 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Commons\CommonFunctions.cs" />
+    <Compile Include="src\Builtins\BuiltinFunctions.cs" />
+    <Compile Include="src\Builtins\BuiltinTrimmers.cs" />
     <Compile Include="src\Documents\AbstractDocument.cs" />
     <Compile Include="src\Documents\DynamicDocument.cs" />
     <Compile Include="src\Documents\Dynamic\Compiler.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="src\Obsoletes\ArrayValue.cs" />
     <Compile Include="src\Obsoletes\BlankCharactersCleaner.cs" />
     <Compile Include="src\Obsoletes\CallbackFunction.cs" />
+    <Compile Include="src\Obsoletes\CommonFunctions.cs" />
     <Compile Include="src\Obsoletes\Document.cs" />
     <Compile Include="src\Obsoletes\DocumentException.cs" />
     <Compile Include="src\Obsoletes\FirstLastLinesCleaner.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="src\Maps\EmptyMap.cs" />
     <Compile Include="src\Maps\HashMap.cs" />
     <Compile Include="src\Maps\MixMap.cs" />
+    <Compile Include="src\Obsoletes\Trimmers.cs" />
     <Compile Include="src\Obsoletes\UndefinedValue.cs" />
     <Compile Include="src\Obsoletes\UnexpectedException.cs" />
     <Compile Include="src\Obsoletes\UnknownException.cs" />
@@ -149,6 +152,7 @@
     <Folder Include="src\Documents\Simple\Nodes" />
     <Folder Include="src\Maps" />
     <Folder Include="src\Documents" />
+    <Folder Include="src\Builtins" />
     <Folder Include="src\Parsers" />
     <Folder Include="src\Obsoletes" />
     <Folder Include="src\Parsers\Default" />
