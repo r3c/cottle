@@ -22,35 +22,9 @@ namespace Cottle.Test
 		};
 
 		[Test]
-		public void CombinedPowerOfTwo ()
+		public void X ()
 		{
-			Action<IScope>	populate;
-
-			populate = (scope) =>
-			{
-				IFunction	function;
-
-				if (BuiltinFunctions.TryGet ("add", out function))
-					scope["add"] = new FunctionValue (function);
-
-				if (BuiltinFunctions.TryGet ("gt", out function))
-					scope["gt"] = new FunctionValue (function);
-			};
-
-			this.AssertRender
-			(
-				"{set a to 5}" +
-				"{set b to 1}" +
-				"{while gt (a, 0):" +
-					"{b}" +
-					"{set a to add (a, -1)}" +
-					"{set b to add (b, b)}" +
-				"}",
-				"124816",
-				DefaultSetting.Instance,
-				populate,
-				(d) => {}
-			);
+			this.AssertRender ("{set f() to:{g('XXX')}}{set g(a) to:{a}}{f()}", "XXX");
 		}
 
 		[Test]
@@ -298,6 +272,121 @@ namespace Cottle.Test
 			};
 
 			this.AssertReturn ("{return " + get + "}", expected, DefaultSetting.Instance, populate, (d) => {});
+		}
+
+		[Test]
+		[TestCase ("1", "1")]
+		[TestCase ("3", "6")]
+		[TestCase ("8", "40320")]
+		public void SampleFactorial (string value, string expected)
+		{
+			Action<IScope>	populate;
+
+			populate = (scope) =>
+			{
+				IFunction	function;
+
+				if (BuiltinFunctions.TryGet ("gt", out function))
+					scope["gt"] = new FunctionValue (function);
+
+				if (BuiltinFunctions.TryGet ("mul", out function))
+					scope["mul"] = new FunctionValue (function);
+
+				if (BuiltinFunctions.TryGet ("sub", out function))
+					scope["sub"] = new FunctionValue (function);
+			};
+
+			this.AssertReturn
+			(
+				"{set factorial(n) to:" +
+					"{if gt(n, 1):" +
+						"{return mul(n, factorial(sub(n, 1)))}" +
+					"|else:" +
+						"{return 1}" +
+					"}" +
+				"}" +
+				"{return factorial(" + value + ")}",
+				expected,
+				DefaultSetting.Instance,
+				populate,
+				(d) => {}
+			);
+		}
+
+		[Test]
+		[TestCase ("2", "A -> B, A -> C, B -> C, ")]
+		[TestCase ("3", "A -> C, A -> B, C -> B, A -> C, B -> A, B -> C, A -> C, ")]
+		public void SampleHanoiTowers (string disks, string expected)
+		{
+			Action<IScope>	populate;
+
+			populate = (scope) =>
+			{
+				IFunction	function;
+
+				if (BuiltinFunctions.TryGet ("gt", out function))
+					scope["gt"] = new FunctionValue (function);
+
+				if (BuiltinFunctions.TryGet ("sub", out function))
+					scope["sub"] = new FunctionValue (function);
+			};
+
+			this.AssertRender
+			(			
+				"{set hanoi_rec(n, from, by, to) to:" +
+					"{set n to sub(n, 1)}" +
+					"{if gt(n, 0):" +
+						"{hanoi_rec(n, from, to, by)}" +
+					"}" +
+					"{from} -> {to}, " +
+					"{if gt(n, 0):" +
+						"{hanoi_rec(n, by, from, to)}" +
+					"}" +
+				"}" +
+				"{set hanoi(n) to:" +
+					"{hanoi_rec(n, 'A', 'B', 'C')}" +
+				"}" +
+				"{hanoi(" + disks + ")}",
+				expected,
+				DefaultSetting.Instance,
+				populate,
+				(d) => {}
+			);
+		}
+
+		[Test]
+		[TestCase ("2", "4")]
+		[TestCase ("8", "256")]
+		[TestCase ("16", "65536")]
+		public void SamplePowerOfTwo (string value, string expected)
+		{
+			Action<IScope>	populate;
+
+			populate = (scope) =>
+			{
+				IFunction	function;
+
+				if (BuiltinFunctions.TryGet ("add", out function))
+					scope["add"] = new FunctionValue (function);
+
+				if (BuiltinFunctions.TryGet ("gt", out function))
+					scope["gt"] = new FunctionValue (function);
+			};
+
+			this.AssertReturn
+			(
+				"{set a to " + value + "}" +
+				"{set b to 1}" +
+				"{while gt (a, 0):" +
+					"{set a to add (a, -1)}" +
+					"{set b to add (b, b)}" +
+				"}" +
+				"{return b}",
+				expected,
+				DefaultSetting.Instance,
+				populate,
+				(d) => {}
+			);
 		}
 
 		[Test]

@@ -74,12 +74,40 @@ namespace Cottle.Functions
 
 		#region Methods
 
+		public int CompareTo (IFunction other)
+		{
+			return object.ReferenceEquals (this, other) ? 0 : 1;
+		}
+
+		public bool	Equals (IFunction other)
+		{
+			return this.CompareTo (other) == 0;
+		}
+
+		public override bool Equals (object obj)
+		{
+			IFunction	other = obj as IFunction;
+
+			return other != null && this.Equals (other);
+		}
+
 		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
 		{
 			if (this.min > arguments.Count || (this.max >= 0 && this.max < arguments.Count))
 				return VoidValue.Instance;
 
 			return this.callback (arguments, scope, output);
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked
+			{
+				return
+					(this.callback.GetHashCode () &	(int)0xFFFFFF00) |
+					(this.max.GetHashCode () &		(int)0x000000F0) |
+					(this.min.GetHashCode () & 		(int)0x0000000F);
+			}
 		}
 
 		public override string ToString ()

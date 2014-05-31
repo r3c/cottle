@@ -34,6 +34,23 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
+		public int CompareTo (IFunction other)
+		{
+			return object.ReferenceEquals (this, other) ? 0 : 1;
+		}
+
+		public bool	Equals (IFunction other)
+		{
+			return this.CompareTo (other) == 0;
+		}
+
+		public override bool Equals (object obj)
+		{
+			IFunction	other = obj as IFunction;
+
+			return other != null && this.Equals (other);
+		}
+
 		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
 		{
 			Value	result;
@@ -48,6 +65,17 @@ namespace Cottle.Documents.Simple.Nodes
 			scope.Leave ();
 
 			return result;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked
+			{
+				return
+					(this.body.GetHashCode () &	(int)0xFFFFFF00) |
+					(this.mode.GetHashCode () &	(int)0x000000C0) |
+					(this.name.GetHashCode () &	(int)0x0000003F);
+			}
 		}
 
 		public bool Render (IScope scope, TextWriter output, out Value result)

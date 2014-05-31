@@ -1,7 +1,7 @@
 ﻿using System;
 using Cottle.Builtins;
 
-namespace Cottle.Obsoletes
+namespace Cottle
 {
 	[Obsolete ("Use Cottle.Builtins.BuiltinTrimmers")]
 	public static class Trimmers

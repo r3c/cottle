@@ -15,11 +15,15 @@ namespace Cottle.Documents.Dynamic
 
 		private readonly Dictionary<Type, Queue<LocalBuilder>>	locals;
 
-		private readonly List<string>							strings;
+		private readonly List<string>							stringList;
+
+		private readonly Dictionary<string, int>				stringMap;
 
 		private readonly Trimmer								trimmer;
 
-		private readonly List<Value>							values;
+		private readonly List<Value>							valueList;
+
+		private readonly Dictionary<Value, int>					valueMap;
 
 		#endregion
 
@@ -29,9 +33,11 @@ namespace Cottle.Documents.Dynamic
 		{
 			this.generator = generator;
 			this.locals = new Dictionary<Type, Queue<LocalBuilder>> ();
-			this.strings = new List<string> ();
+			this.stringList = new List<string> ();
+			this.stringMap = new Dictionary<string, int> ();
 			this.trimmer = trimmer;
-			this.values = new List<Value> ();
+			this.valueList = new List<Value> ();
+			this.valueMap = new Dictionary<Value, int> ();
 		}
 
 		#endregion
@@ -101,7 +107,7 @@ namespace Cottle.Documents.Dynamic
 
 			this.generator.Emit (OpCodes.Ret);
 
-			return new Storage (this.strings, this.values);
+			return new Storage (this.stringList, this.valueList);
 		}
 
 		#endregion
@@ -587,14 +593,12 @@ namespace Cottle.Documents.Dynamic
 		{
 			int	index;
 
-			// FIXME: slow
-			index = this.strings.IndexOf (literal);
-
-			if (index < 0)
+			if (!this.stringMap.TryGetValue (literal, out index))
 			{
-				index = this.strings.Count;
+				index = this.stringList.Count;
 
-				this.strings.Add (literal);
+				this.stringList.Add (literal);
+				this.stringMap[literal] = index;
 			}
 
 			this.EmitPushContext ();
@@ -608,14 +612,12 @@ namespace Cottle.Documents.Dynamic
 		{
 			int	index;
 
-			// FIXME: slow
-			index = this.values.IndexOf (constant);
-
-			if (index < 0)
+			if (!this.valueMap.TryGetValue (constant, out index))
 			{
-				index = this.values.Count;
+				index = this.valueList.Count;
 
-				this.values.Add (constant);
+				this.valueList.Add (constant);
+				this.valueMap[constant] = index;
 			}
 
 			this.EmitPushContext ();

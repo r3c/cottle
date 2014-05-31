@@ -78,7 +78,10 @@ namespace Cottle.Values
 			if (other == null)
 				return 1;
 
-			return ((int)this.Type).CompareTo ((int)other.Type);
+			if (this.Type != other.Type)
+				return ((int)this.Type).CompareTo ((int)other.Type);
+
+			return this.function.CompareTo (other.AsFunction);
 		}
 
 		public override int GetHashCode ()
@@ -86,7 +89,7 @@ namespace Cottle.Values
 			return this.function.GetHashCode ();
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return "<" + this.function + "()>";
 		}

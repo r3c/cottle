@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Cottle
 {
-	public interface IFunction
+	public interface IFunction : IComparable<IFunction>, IEquatable<IFunction>
 	{
 		#region Methods
 

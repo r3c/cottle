@@ -48,9 +48,31 @@ namespace Cottle.Documents.Dynamic
 
 		#region Methods
 
+		public int CompareTo (IFunction other)
+		{
+			return object.ReferenceEquals (this, other) ? 0 : 1;
+		}
+
+		public bool	Equals (IFunction other)
+		{
+			return this.CompareTo (other) == 0;
+		}
+
+		public override bool Equals (object obj)
+		{
+			IFunction	other = obj as IFunction;
+
+			return other != null && this.Equals (other);
+		}
+
 		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
 		{
 			return this.renderer (this.storage, arguments, scope, output);
+		}
+
+		public override int GetHashCode ()
+		{
+			return this.renderer.GetHashCode ();
 		}
 
 		public override string ToString ()

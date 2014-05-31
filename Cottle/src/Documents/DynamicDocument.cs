@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
 using Cottle.Documents.Dynamic;
 using Cottle.Parsers;
 using Cottle.Settings;
@@ -30,6 +28,9 @@ namespace Cottle.Documents
 			IParser	parser;
 
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
+
+//			if (setting.Optimize)
+//				parser = new PostParser (parser, new IOptimizer[0]);
 
 			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer);
 

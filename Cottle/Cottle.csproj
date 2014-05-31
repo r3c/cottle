@@ -122,6 +122,8 @@
     <Compile Include="src\Parsers\Default\LexemType.cs" />
     <Compile Include="src\Parsers\Default\Lexer.cs" />
     <Compile Include="src\Parsers\Default\LexerMode.cs" />
+    <Compile Include="src\Parsers\PostParser.cs" />
+    <Compile Include="src\Parsers\Post\IOptimizer.cs" />
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Scopes\AbstractScope.cs" />
     <Compile Include="src\Scopes\FallbackScope.cs" />
@@ -156,6 +158,7 @@
     <Folder Include="src\Parsers" />
     <Folder Include="src\Obsoletes" />
     <Folder Include="src\Parsers\Default" />
+    <Folder Include="src\Parsers\Post" />
     <Folder Include="src\Scopes" />
     <Folder Include="src\Settings" />
   </ItemGroup>

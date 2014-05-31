@@ -58,27 +58,14 @@ namespace Cottle.Maps
 		
 		public bool	Equals (IMap other)
 		{
-			IEnumerator<KeyValuePair<Value, Value>> lhs;
-			IEnumerator<KeyValuePair<Value, Value>> rhs;
-
-			if (this.Count != other.Count)
-				return false;
-
-			lhs = this.GetEnumerator ();
-			rhs = other.GetEnumerator ();
-
-			while (lhs.MoveNext () && rhs.MoveNext ())
-			{
-				if (!lhs.Current.Key.Equals (rhs.Current.Key) || !lhs.Current.Value.Equals (rhs.Current.Value))
-					return false;
-			}
-
-			return true;
+			return this.CompareTo (other) == 0;
 		}
 		
 		public override bool Equals (object obj)
 		{
-			IMap	other = obj as AbstractMap;
+			IMap	other;
+
+			other = obj as IMap;
 
 			return other != null && this.Equals (other);
 		}
@@ -90,7 +77,9 @@ namespace Cottle.Maps
 
 		public override int GetHashCode ()
 		{
-			int hash = 0;
+			int	hash;
+
+			hash = 0;
 
 			foreach (KeyValuePair<Value, Value> item in this)
 				hash = (hash << 1) ^ item.Key.GetHashCode () ^ item.Value.GetHashCode ();

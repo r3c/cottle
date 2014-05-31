@@ -42,6 +42,11 @@ namespace Cottle.Functions
 
 		#region Methods
 
+		public int CompareTo (IFunction other)
+		{
+			return 0;
+		}
+
 		public Value Execute (IList<Value> values, IScope scope, TextWriter output)
 		{
 			if (this.callback == null || this.min > values.Count || (this.max >= 0 && this.max < values.Count))
@@ -49,6 +54,11 @@ namespace Cottle.Functions
 
 			return this.callback (values, scope, output);
 		}
+
+		public bool Equals (IFunction other)
+		{
+			return true;
+		}		
 
 		#endregion
 
