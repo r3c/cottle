@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using Cottle.Documents.Dynamic;
 using Cottle.Parsers;
+using Cottle.Parsers.Post;
+using Cottle.Parsers.Post.Optimizers;
 using Cottle.Settings;
 
 namespace Cottle.Documents
@@ -29,11 +31,16 @@ namespace Cottle.Documents
 
 			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
 
-//			if (setting.Optimize)
-//				parser = new PostParser (parser, new IOptimizer[0]);
+			if (setting.Optimize)
+			{
+				parser = new PostParser (parser, new IOptimizer[]
+				{
+                 	new ConstantMapOptimizer (),
+					new ReturnOptimizer ()
+				});
+			}
 
 			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer);
-
 		}
 
 		public DynamicDocument (TextReader reader) :

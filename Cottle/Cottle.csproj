@@ -124,6 +124,9 @@
     <Compile Include="src\Parsers\Default\LexerMode.cs" />
     <Compile Include="src\Parsers\PostParser.cs" />
     <Compile Include="src\Parsers\Post\IOptimizer.cs" />
+    <Compile Include="src\Parsers\Post\Optimizers\AbstractOptimizer.cs" />
+    <Compile Include="src\Parsers\Post\Optimizers\ConstantMapOptimizer.cs" />
+    <Compile Include="src\Parsers\Post\Optimizers\ReturnOptimizer.cs" />
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Scopes\AbstractScope.cs" />
     <Compile Include="src\Scopes\FallbackScope.cs" />
@@ -159,6 +162,7 @@
     <Folder Include="src\Obsoletes" />
     <Folder Include="src\Parsers\Default" />
     <Folder Include="src\Parsers\Post" />
+    <Folder Include="src\Parsers\Post\Optimizers" />
     <Folder Include="src\Scopes" />
     <Folder Include="src\Settings" />
   </ItemGroup>

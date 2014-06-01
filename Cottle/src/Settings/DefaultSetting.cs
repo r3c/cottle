@@ -30,6 +30,14 @@ namespace Cottle.Settings
 			}
 		}
 
+		public bool		Optimize
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 		public Trimmer	Trimmer
 		{
 			get

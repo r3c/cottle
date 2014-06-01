@@ -42,6 +42,18 @@ namespace Cottle.Settings
 			}
 		}
 
+		public bool		Optimize
+		{
+			get
+			{
+				return this.optimize;
+			}
+			set
+			{
+				this.optimize = value;
+			}
+		}
+
 		public Trimmer	Trimmer
 		{
 			get
@@ -63,6 +75,8 @@ namespace Cottle.Settings
 		private string	blockContinue = DefaultSetting.Instance.BlockContinue;
 
 		private string	blockEnd = DefaultSetting.Instance.BlockEnd;
+
+		private bool	optimize = DefaultSetting.Instance.Optimize;
 
 		private Trimmer	trimmer = DefaultSetting.Instance.Trimmer;
 

@@ -153,11 +153,8 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case CommandType.Composite:
-					for (; command != null && command.Type == CommandType.Composite; command = command.Next)
-						this.CompileCommand (command.Body, exit, depth, false);
-
-					if (command != null)
-						this.CompileCommand (command, exit, depth, false);
+					this.CompileCommand (command.Body, exit, depth, false);
+					this.CompileCommand (command.Next, exit, depth, false);
 
 					break;
 

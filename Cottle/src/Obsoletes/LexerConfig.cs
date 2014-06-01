@@ -11,33 +11,41 @@ namespace Cottle
 		{
 			get
 			{
-				return this.blockBegin;
+				return this.setting.BlockBegin;
 			}
 			set
 			{
-				this.blockBegin = value;
+				this.setting.BlockBegin = value;
 			}
 		}
 		public string BlockContinue
 		{
 			get
 			{
-				return this.blockContinue;
+				return this.setting.BlockContinue;
 			}
 			set
 			{
-				this.blockContinue = value;
+				this.setting.BlockContinue = value;
 			}
 		}
 		public string BlockEnd
 		{
 			get
 			{
-				return this.blockEnd;
+				return this.setting.BlockEnd;
 			}
 			set
 			{
-				this.blockEnd = value;
+				this.setting.BlockEnd = value;
+			}
+		}
+
+		public bool Optimize
+		{
+			get
+			{
+				return this.setting.Optimize;
 			}
 		}
 
@@ -57,8 +65,6 @@ namespace Cottle
 			}
 		}
 
-		private string blockBegin = "{";
-		private string blockContinue = "|";
-		private string blockEnd = "}";
+		private CustomSetting setting = new CustomSetting ();
 	}
 }

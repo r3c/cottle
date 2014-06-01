@@ -22,9 +22,12 @@ namespace Cottle.Test
 		};
 
 		[Test]
-		public void X ()
+		[TestCase ("var", "1", "1")]
+		[TestCase ("_", "'A'", "\"A\"")]
+		[TestCase ("some_symbol_name", "[]", "[]")]
+		public void CommandDeclareValueScope (string name, string value, string expected)
 		{
-			this.AssertRender ("{set f() to:{g('XXX')}}{set g(a) to:{a}}{f()}", "XXX");
+			this.AssertReturn ("{declare f() as:{declare " + name + " as 'unused'}}{declare " + name + " as " + value + "}{f()}{return " + name + "}", expected);
 		}
 
 		[Test]
@@ -34,15 +37,6 @@ namespace Cottle.Test
 		public void CommandDeclareValueSimple (string name, string value, string expected)
 		{
 			this.AssertReturn ("{declare " + name + " as " + value + "}{return " + name + "}", expected); 
-		}
-
-		[Test]
-		[TestCase ("var", "1", "1")]
-		[TestCase ("_", "'A'", "\"A\"")]
-		[TestCase ("some_symbol_name", "[]", "[]")]
-		public void CommandDeclareValueScope (string name, string value, string expected)
-		{
-			this.AssertReturn ("{declare f() as:{declare " + name + " as 'unused'}}{declare " + name + " as " + value + "}{f()}{return " + name + "}", expected);
 		}
 
 		[Test]
@@ -272,6 +266,36 @@ namespace Cottle.Test
 			};
 
 			this.AssertReturn ("{return " + get + "}", expected, DefaultSetting.Instance, populate, (d) => {});
+		}
+
+		[Test]
+		public void OptimizeConstantMap ()
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.Optimize = false;
+
+			this.AssertRender ("{['X', 'Y', 'Z'][0]}", "X", setting, (s) => {}, (d) => {});
+
+			setting.Optimize = true;
+
+			this.AssertRender ("{['X', 'Y', 'Z'][0]}", "X", setting, (s) => {}, (d) => {});
+		}
+
+		[Test]
+		public void OptimizeReturn ()
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.Optimize = false;
+
+			this.AssertRender ("X{return 1}Y", "X", setting, (s) => {}, (d) => {});
+
+			setting.Optimize = true;
+
+			this.AssertRender ("X{return 1}Y", "X", setting, (s) => {}, (d) => {});
 		}
 
 		[Test]

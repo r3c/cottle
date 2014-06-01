@@ -624,7 +624,7 @@ namespace Cottle.Parsers
 			string	name;
 
 			if (this.lexer.Current.Type != LexemType.Symbol)
-				throw this.Raise ("variable name");
+				throw this.Raise ("symbol (variable name)");
 
 			name = this.lexer.Current.Content;
 

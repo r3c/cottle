@@ -21,6 +21,11 @@ namespace Cottle
 			get;
 		}
 
+		bool	Optimize
+		{
+			get;
+		}
+
 		Trimmer	Trimmer
 		{
 			get;
