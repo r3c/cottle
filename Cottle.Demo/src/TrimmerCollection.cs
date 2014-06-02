@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Cottle.Builtins;
 using Cottle.Cleaners;
 using Cottle.Settings;
 
@@ -31,10 +32,10 @@ namespace Cottle.Demo
 
 		private static readonly KeyValuePair<string, Trimmer>[]	trimmers = new KeyValuePair<string, Trimmer>[]
 		{
-			new KeyValuePair<string, Trimmer> ("Blank characters",			Trimmers.LeadingAndTrailingBlankCharacters),
-			new KeyValuePair<string, Trimmer> ("First and last lines",		Trimmers.FirstAndLastBlankLines),
+			new KeyValuePair<string, Trimmer> ("Blank characters",			BuiltinTrimmers.LeadAndTrailBlankCharacters),
+			new KeyValuePair<string, Trimmer> ("First and last lines",		BuiltinTrimmers.FirstAndLastBlankLines),
 			new KeyValuePair<string, Trimmer> ("Do not modify text",		DefaultSetting.Instance.Trimmer),
-			new KeyValuePair<string, Trimmer> ("Collapse blank characters",	Trimmers.CollapseBlankCharacters)
+			new KeyValuePair<string, Trimmer> ("Collapse blank characters",	BuiltinTrimmers.CollapseBlankCharacters)
 		};
 
 		#endregion

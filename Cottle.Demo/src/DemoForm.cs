@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-
 using Cottle.Documents;
 using Cottle.Exceptions;
 using Cottle.Scopes;
@@ -37,7 +36,7 @@ namespace Cottle.Demo
 
 		#region Constructors
 
-		public	DemoForm ()
+		public DemoForm ()
 		{
 			InitializeComponent ();
 
@@ -51,7 +50,7 @@ namespace Cottle.Demo
 
 		#region Methods / Listeners
 
-		private void	buttonClean_Click (object sender, EventArgs e)
+		private void buttonClean_Click (object sender, EventArgs e)
 		{
 			IDocument	document;
 			ISetting	setting;
@@ -60,41 +59,17 @@ namespace Cottle.Demo
 
 			try
 			{
-				try
-				{
-					document = new SimpleDocument (this.textBoxInput.Text, setting);
+				document = new SimpleDocument (this.textBoxInput.Text, setting);
 
-					this.textBoxInput.Text = document.Source ();
-				}
-				catch (UnexpectedException exception)
-				{
-					this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
-					this.textBoxInput.SelectionLength = exception.Lexem.Length;
-
-					throw;
-				}
-				catch (UnknownException exception)
-				{
-					this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
-					this.textBoxInput.SelectionLength = 1;
-
-					throw;
-				}
+				this.DisplayText (document.Source ());
 			}
 			catch (ParseException exception)
 			{
-				this.textBoxInput.Focus ();
-				this.textBoxPrint.BackColor = Color.LightPink;
-				this.textBoxPrint.Text = "Document error: " + exception.Message;
-			}
-			catch (RenderException exception)
-			{
-				this.textBoxPrint.BackColor = Color.LightSalmon;
-				this.textBoxPrint.Text = "Render error: " + exception.Message;
+				this.DisplayError (exception);
 			}
 		}
 
-		private void	buttonEvaluate_Click (object sender, EventArgs e)
+		private void buttonEvaluate_Click (object sender, EventArgs e)
 		{
 			IDocument	document;
 			IScope		scope;
@@ -104,49 +79,24 @@ namespace Cottle.Demo
 
 			try
 			{
-				try
+				document = new SimpleDocument (this.textBoxInput.Text, setting);
+				scope = new DefaultScope ();
+
+				foreach (TreeNode root in this.treeViewValue.Nodes)
 				{
-					document = new SimpleDocument (this.textBoxInput.Text, setting);
-					scope = new DefaultScope ();
-
-					foreach (TreeNode root in this.treeViewValue.Nodes)
-					{
-						foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-							scope.Set (pair.Key, pair.Value, ScopeMode.Closest);
-					}
-
-					this.textBoxPrint.BackColor = Color.LightGreen;
-					this.textBoxPrint.Text = document.Render (scope);
+					foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
+						scope.Set (pair.Key, pair.Value, ScopeMode.Closest);
 				}
-				catch (UnexpectedException exception)
-				{
-					this.textBoxInput.SelectionStart = Math.Max (exception.Index - exception.Lexem.Length - 1, 0);
-					this.textBoxInput.SelectionLength = exception.Lexem.Length;
 
-					throw;
-				}
-				catch (UnknownException exception)
-				{
-					this.textBoxInput.SelectionStart = Math.Max (exception.Index - 1, 0);
-					this.textBoxInput.SelectionLength = 1;
-
-					throw;
-				}
+				this.DisplayText (document.Render (scope));
 			}
 			catch (ParseException exception)
 			{
-				this.textBoxInput.Focus ();
-				this.textBoxPrint.BackColor = Color.LightPink;
-				this.textBoxPrint.Text = "Document error: " + exception.Message;
-			}
-			catch (RenderException exception)
-			{
-				this.textBoxPrint.BackColor = Color.LightSalmon;
-				this.textBoxPrint.Text = "Render error: " + exception.Message;
+				this.DisplayError (exception);
 			}
 		}
 
-		private void	toolStripMenuItemSetting_Click (object sender, EventArgs e)
+		private void toolStripMenuItemSetting_Click (object sender, EventArgs e)
 		{
 			Form	form;
 
@@ -154,7 +104,7 @@ namespace Cottle.Demo
 			form.ShowDialog (this);
 		}
 
-		private void	toolStripMenuItemFileLoad_Click (object sender, EventArgs e)
+		private void toolStripMenuItemFileLoad_Click (object sender, EventArgs e)
 		{
 			OpenFileDialog	dialog = new OpenFileDialog ();
 
@@ -164,7 +114,7 @@ namespace Cottle.Demo
 				this.StateLoad (dialog.FileName, true);
 		}
 
-		private void	toolStripMenuItemFileSave_Click (object sender, EventArgs e)
+		private void toolStripMenuItemFileSave_Click (object sender, EventArgs e)
 		{
 			SaveFileDialog	dialog = new SaveFileDialog ();
 
@@ -174,7 +124,7 @@ namespace Cottle.Demo
 				this.StateSave (dialog.FileName);
 		}
 
-		private void	toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
+		private void toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
 		{
 			TreeNodeCollection	collection;
 			int					index1;
@@ -199,7 +149,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private void	toolStripMenuItemMoveUp_Click (object sender, EventArgs e)
+		private void toolStripMenuItemMoveUp_Click (object sender, EventArgs e)
 		{
 			TreeNodeCollection	collection;
 			int					index1;
@@ -224,7 +174,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private void	toolStripMenuItemNodeClone_Click (object sender, EventArgs e)
+		private void toolStripMenuItemNodeClone_Click (object sender, EventArgs e)
 		{
 			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
 
@@ -232,7 +182,7 @@ namespace Cottle.Demo
 				node.Parent.Nodes.Insert (node.Index + 1, this.NodeClone (node));
 		}
 
-		private void	toolStripMenuItemNodeCreate_Click (object sender, EventArgs e)
+		private void toolStripMenuItemNodeCreate_Click (object sender, EventArgs e)
 		{
 			Form		form;
 			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
@@ -251,7 +201,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private void	toolStripMenuItemNodeDelete_Click (object sender, EventArgs e)
+		private void toolStripMenuItemNodeDelete_Click (object sender, EventArgs e)
 		{
 			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
 
@@ -259,7 +209,7 @@ namespace Cottle.Demo
 				node.Remove ();
 		}
 
-		private void	toolStripMenuItemNodeUpdate_Click (object sender, EventArgs e)
+		private void toolStripMenuItemNodeUpdate_Click (object sender, EventArgs e)
 		{
 			Form		form;
 			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
@@ -271,17 +221,17 @@ namespace Cottle.Demo
 			}
 		}
 
-		private void	toolStripMenuItemTreeCollapse_Click (object sender, EventArgs e)
+		private void toolStripMenuItemTreeCollapse_Click (object sender, EventArgs e)
 		{
 			this.treeViewValue.CollapseAll ();
 		}
 
-		private void	toolStripMenuItemTreeExpand_Click (object sender, EventArgs e)
+		private void toolStripMenuItemTreeExpand_Click (object sender, EventArgs e)
 		{
 			this.treeViewValue.ExpandAll ();
 		}
 
-		private void	contextMenuStripTree_Opening (object sender, CancelEventArgs e)
+		private void contextMenuStripTree_Opening (object sender, CancelEventArgs e)
 		{
 			TreeNode	node = this.treeViewValue.SelectedNode;
 			NodeData	data = node != null ? node.Tag as NodeData : null;
@@ -300,7 +250,27 @@ namespace Cottle.Demo
 
 		#region Methods / Private
 
-		private void	NodeAssign (TreeNode node, string key, Value value)
+		private void DisplayError (ParseException exception)
+		{
+			int	index;
+
+			index = this.textBoxInput.GetFirstCharIndexFromLine (exception.Line - 1) + exception.Column;
+
+			this.textBoxInput.SelectionStart = Math.Max (Math.Min (index - exception.Lexem.Length - 1, this.textBoxInput.Text.Length - 1), 0);
+			this.textBoxInput.SelectionLength = exception.Lexem.Length;
+			this.textBoxInput.Focus ();
+
+			this.textBoxPrint.BackColor = Color.LightPink;
+			this.textBoxPrint.Text = "Document error: " + exception.Message;
+		}
+
+		private void DisplayText (string text)
+		{
+			this.textBoxPrint.BackColor = Color.LightGreen;
+			this.textBoxPrint.Text = text;
+		}
+
+		private void NodeAssign (TreeNode node, string key, Value value)
 		{
 			NodeData	data = new NodeData (key, value);
 
@@ -322,7 +292,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private TreeNode	NodeClone (TreeNode node)
+		private TreeNode NodeClone (TreeNode node)
 		{
 			NodeData	data = node.Tag as NodeData;
 			TreeNode	copy;
@@ -345,7 +315,7 @@ namespace Cottle.Demo
 			return copy;
 		}
 
-		private TreeNode	NodeCreate (string key, Value value)
+		private TreeNode NodeCreate (string key, Value value)
 		{
 			TreeNode	node;
 			TreeNode[]	range;
@@ -390,7 +360,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private ISetting	SettingCreate ()
+		private ISetting SettingCreate ()
 		{
 			CustomSetting	setting;
 
@@ -403,7 +373,7 @@ namespace Cottle.Demo
 			return setting;
 		}
 
-		private void	StateLoad (string path, bool dialog)
+		private void StateLoad (string path, bool dialog)
 		{
 			TreeNode					root;
 			Dictionary<string, Value>   values;
@@ -457,7 +427,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private void	StateSave (string path)
+		private void StateSave (string path)
 		{
 			Dictionary<string, Value>	values = new Dictionary<string, Value> ();
 
@@ -490,7 +460,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		private List<KeyValuePair<Value, Value>>	ValuesBuild (TreeNodeCollection nodes)
+		private List<KeyValuePair<Value, Value>> ValuesBuild (TreeNodeCollection nodes)
 		{
 			List<KeyValuePair<Value, Value>>	collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
 			NodeData							data;
