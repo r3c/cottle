@@ -97,6 +97,7 @@
     <Compile Include="src\Obsoletes\BlankCharactersCleaner.cs" />
     <Compile Include="src\Obsoletes\CallbackFunction.cs" />
     <Compile Include="src\Obsoletes\CommonFunctions.cs" />
+    <Compile Include="src\Obsoletes\DefaultScope.cs" />
     <Compile Include="src\Obsoletes\Document.cs" />
     <Compile Include="src\Obsoletes\DocumentException.cs" />
     <Compile Include="src\Obsoletes\FirstLastLinesCleaner.cs" />
@@ -129,8 +130,8 @@
     <Compile Include="src\Parsers\Post\Optimizers\ReturnOptimizer.cs" />
     <Compile Include="src\ScopeMode.cs" />
     <Compile Include="src\Scopes\AbstractScope.cs" />
+    <Compile Include="src\Scopes\BuiltinScope.cs" />
     <Compile Include="src\Scopes\FallbackScope.cs" />
-    <Compile Include="src\Scopes\DefaultScope.cs" />
     <Compile Include="src\Scopes\SimpleScope.cs" />
     <Compile Include="src\Settings\CustomSetting.cs" />
     <Compile Include="src\Settings\DefaultSetting.cs" />

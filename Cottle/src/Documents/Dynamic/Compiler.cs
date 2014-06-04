@@ -119,8 +119,9 @@ namespace Cottle.Documents.Dynamic
 			LocalBuilder	counter;
 			Label			empty;
 			LocalBuilder	enumerator;
+			LocalBuilder	fields;
 			Label			jump;
-			LocalBuilder	map;
+			LocalBuilder	operand;
 			LocalBuilder	pair;
 			Label			skip;
 
@@ -145,9 +146,18 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case CommandType.AssignValue:
+					this.CompileExpression (command.Operand);
+
+					operand = this.LocalReserve<Value> ();
+
+					this.generator.Emit (OpCodes.Stloc, operand);
+
 					this.EmitPushScope ();
 					this.EmitPushValue (command.Name);
-					this.CompileExpression (command.Operand);
+
+					this.generator.Emit (OpCodes.Ldloc, operand);
+
+					this.LocalRelease<Value> (operand);
 					this.EmitCallScopeSet (command.Mode);
 
 					break;
@@ -159,18 +169,34 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case CommandType.Dump:
-					this.EmitPushOutput ();
 					this.CompileExpression (command.Operand);
 
+					operand = this.LocalReserve<Value> ();
+
+					this.generator.Emit (OpCodes.Stloc, operand);
+
+					this.EmitPushOutput ();
+
+					this.generator.Emit (OpCodes.Ldloc, operand);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((w, v) => w.Write (v)));
+
+					this.LocalRelease<Value> (operand);
 
 					break;
 
 				case CommandType.Echo:
-					this.EmitPushOutput ();
 					this.CompileExpression (command.Operand);
 
+					operand = this.LocalReserve<Value> ();
+
+					this.generator.Emit (OpCodes.Stloc, operand);
+
+					this.EmitPushOutput ();
+
+					this.generator.Emit (OpCodes.Ldloc, operand);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((v) => v.AsString).GetGetMethod ());
+
+					this.LocalRelease<Value> (operand);
 
 					this.EmitCallWriteString ();
 
@@ -185,21 +211,20 @@ namespace Cottle.Documents.Dynamic
 					this.CompileExpression (command.Operand);
 					this.EmitCallValueFields ();
 
-					map = this.LocalReserve<IMap> ();
+					fields = this.LocalReserve<IMap> ();
 
-					this.generator.Emit (OpCodes.Stloc, map);
+					this.generator.Emit (OpCodes.Stloc, fields);
 
 					// Get number of fields
-					this.generator.Emit (OpCodes.Ldloc, map);
+					this.generator.Emit (OpCodes.Ldloc, fields);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IMap, int>> ((m) => m.Count).GetGetMethod ());
 					this.generator.Emit (OpCodes.Brfalse, empty);
 
 					// Evaluate command for "not empty" case
-					this.generator.Emit (OpCodes.Ldloc, map);
-
-					this.LocalRelease<IMap> (map);
-
+					this.generator.Emit (OpCodes.Ldloc, fields);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>> ((m) => m.GetEnumerator ()));
+
+					this.LocalRelease<IMap> (fields);
 
 					enumerator = this.LocalReserve<IEnumerator<KeyValuePair<Value, Value>>> ();
 
@@ -214,10 +239,9 @@ namespace Cottle.Documents.Dynamic
 
 					this.LocalRelease<IEnumerator<KeyValuePair<Value, Value>>> (enumerator);
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>> ((e) => e.Current).GetGetMethod ());
-
 					pair = this.LocalReserve<KeyValuePair<Value, Value>> ();
 
+					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>> ((e) => e.Current).GetGetMethod ());
 					this.generator.Emit (OpCodes.Stloc, pair);
 
 					// Store current element key if required
@@ -237,11 +261,9 @@ namespace Cottle.Documents.Dynamic
 					this.EmitPushValue (command.Name);
 
 					this.generator.Emit (OpCodes.Ldloca, pair);
-
-					this.LocalRelease<KeyValuePair<Value, Value>> (pair);
-
 					this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Value).GetGetMethod ());
 
+					this.LocalRelease<KeyValuePair<Value, Value>> (pair);
 					this.EmitCallScopeSet (ScopeMode.Local);
 
 					// Evaluate body and restart cycle
@@ -365,7 +387,9 @@ namespace Cottle.Documents.Dynamic
 			LocalBuilder	arguments;
 			ConstructorInfo	constructor;
 			Label			failure;
+			LocalBuilder	fields;
 			LocalBuilder	function;
+			LocalBuilder	key;
 			Label			success;
 			LocalBuilder	value;
 
@@ -378,12 +402,20 @@ namespace Cottle.Documents.Dynamic
 					this.CompileExpression (expression.Source);
 					this.EmitCallValueFields ();
 
+					fields = this.LocalReserve<IMap> ();
+
+					this.generator.Emit (OpCodes.Stloc, fields);
+
 					// Evaluate subscript expression
 					this.CompileExpression (expression.Subscript);
 
-					// Use subscript to get value from fields
 					value = this.LocalReserve<Value> ();
 
+					this.generator.Emit (OpCodes.Stloc, value);
+
+					// Use subscript to get value from fields
+					this.generator.Emit (OpCodes.Ldloc, fields);
+					this.generator.Emit (OpCodes.Ldloc, value);
 					this.generator.Emit (OpCodes.Ldloca, value);
 					this.generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
 					this.generator.Emit (OpCodes.Brtrue, success);
@@ -421,34 +453,35 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Ldloc, function);
 					this.generator.Emit (OpCodes.Brfalse, failure);
 
-					// Create array to store evaluated values 
-					this.generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
-					this.generator.Emit (OpCodes.Newarr, typeof (Value));
-
+					// Create array to store evaluated values
 					arguments = this.LocalReserve<Value[]> ();
 
+					this.generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
+					this.generator.Emit (OpCodes.Newarr, typeof (Value));
 					this.generator.Emit (OpCodes.Stloc, arguments);
 
 					// Evaluate arguments and store into array
 					for (int i = 0; i < expression.Arguments.Length; ++i)
 					{
-						this.generator.Emit (OpCodes.Ldloc, arguments);
-						this.generator.Emit (OpCodes.Ldc_I4, i);
-
 						this.CompileExpression (expression.Arguments[i]);
 
+						value = this.LocalReserve<Value> ();
+
+						this.generator.Emit (OpCodes.Stloc, value);
+						this.generator.Emit (OpCodes.Ldloc, arguments);
+						this.generator.Emit (OpCodes.Ldc_I4, i);
+						this.generator.Emit (OpCodes.Ldloc, value);
 						this.generator.Emit (OpCodes.Stelem_Ref);
+
+						this.LocalRelease<Value> (value);
 					}
 
 					// Invoke function delegate within exception block
 					this.generator.Emit (OpCodes.Ldloc, function);
-
-					this.LocalRelease<IFunction> (function);
-
 					this.generator.Emit (OpCodes.Ldloc, arguments);
 
 					this.LocalRelease<Value[]> (arguments);
-
+					this.LocalRelease<IFunction> (function);
 					this.EmitPushScope ();
 					this.EmitPushOutput ();
 
@@ -466,12 +499,11 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case ExpressionType.Map:
+					arguments = this.LocalReserve<KeyValuePair<Value, Value>[]> ();
+
 					// Create array to store evaluated pairs
 					this.generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
 					this.generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
-
-					arguments = this.LocalReserve<KeyValuePair<Value, Value>[]> ();
-
 					this.generator.Emit (OpCodes.Stloc, arguments);
 
 					// Evaluate elements and store into array 
@@ -484,20 +516,32 @@ namespace Cottle.Documents.Dynamic
 						this.generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
 
 						this.CompileExpression (expression.Elements[i].Key);
+
+						key = this.LocalReserve<Value> ();
+
+						this.generator.Emit (OpCodes.Stloc, key);
+
 						this.CompileExpression (expression.Elements[i].Value);
 
+						value = this.LocalReserve<Value> ();
+
+						this.generator.Emit (OpCodes.Stloc, value);
+						this.generator.Emit (OpCodes.Ldloc, key);
+						this.generator.Emit (OpCodes.Ldloc, value);
 						this.generator.Emit (OpCodes.Newobj, constructor);
 						this.generator.Emit (OpCodes.Stobj, typeof (KeyValuePair<Value, Value>));
+
+						this.LocalRelease<Value> (key);
+						this.LocalRelease<Value> (value);
 					}
 
 					// Create value from array
 					constructor = Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>> ((f) => new MapValue (f));
 
 					this.generator.Emit (OpCodes.Ldloc, arguments);
+					this.generator.Emit (OpCodes.Newobj, constructor);
 
 					this.LocalRelease<KeyValuePair<Value, Value>[]> (arguments);
-
-					this.generator.Emit (OpCodes.Newobj, constructor);
 
 					break;
 

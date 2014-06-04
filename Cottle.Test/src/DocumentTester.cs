@@ -147,15 +147,7 @@ namespace Cottle.Test
 		[TestCase ("{set a to 8}", "lt(0, a)", "{set a to add(a, -1)}X", "XXXXXXXX")]
 		public void CommandWhile (string init, string condition, string body, string expected)
 		{
-			Action<IScope>	populate;
-
-			populate = (scope) =>
-			{
-				scope["add"] = new NativeFunction ((arguments) => arguments[0].AsNumber + arguments[1].AsNumber, 2);
-				scope["lt"] = new NativeFunction ((arguments) => arguments[0] < arguments[1], 2);
-			};
-
-			this.AssertRender (init + "{while " + condition + ":" + body + "}", expected, DefaultSetting.Instance, populate, (d) => {});
+			this.AssertRender (init + "{while " + condition + ":" + body + "}", expected, DefaultSetting.Instance, this.PopulateScope ("add", "lt"), (d) => {});
 		}
 
 		[Test]
@@ -304,22 +296,6 @@ namespace Cottle.Test
 		[TestCase ("8", "40320")]
 		public void SampleFactorial (string value, string expected)
 		{
-			Action<IScope>	populate;
-
-			populate = (scope) =>
-			{
-				IFunction	function;
-
-				if (BuiltinFunctions.TryGet ("gt", out function))
-					scope["gt"] = new FunctionValue (function);
-
-				if (BuiltinFunctions.TryGet ("mul", out function))
-					scope["mul"] = new FunctionValue (function);
-
-				if (BuiltinFunctions.TryGet ("sub", out function))
-					scope["sub"] = new FunctionValue (function);
-			};
-
 			this.AssertReturn
 			(
 				"{set factorial(n) to:" +
@@ -332,7 +308,7 @@ namespace Cottle.Test
 				"{return factorial(" + value + ")}",
 				expected,
 				DefaultSetting.Instance,
-				populate,
+				this.PopulateScope ("gt", "mul", "sub"),
 				(d) => {}
 			);
 		}
@@ -342,19 +318,6 @@ namespace Cottle.Test
 		[TestCase ("3", "A -> C, A -> B, C -> B, A -> C, B -> A, B -> C, A -> C, ")]
 		public void SampleHanoiTowers (string disks, string expected)
 		{
-			Action<IScope>	populate;
-
-			populate = (scope) =>
-			{
-				IFunction	function;
-
-				if (BuiltinFunctions.TryGet ("gt", out function))
-					scope["gt"] = new FunctionValue (function);
-
-				if (BuiltinFunctions.TryGet ("sub", out function))
-					scope["sub"] = new FunctionValue (function);
-			};
-
 			this.AssertRender
 			(			
 				"{set hanoi_rec(n, from, by, to) to:" +
@@ -373,7 +336,7 @@ namespace Cottle.Test
 				"{hanoi(" + disks + ")}",
 				expected,
 				DefaultSetting.Instance,
-				populate,
+				this.PopulateScope ("gt", "sub"),
 				(d) => {}
 			);
 		}
@@ -384,19 +347,6 @@ namespace Cottle.Test
 		[TestCase ("16", "65536")]
 		public void SamplePowerOfTwo (string value, string expected)
 		{
-			Action<IScope>	populate;
-
-			populate = (scope) =>
-			{
-				IFunction	function;
-
-				if (BuiltinFunctions.TryGet ("add", out function))
-					scope["add"] = new FunctionValue (function);
-
-				if (BuiltinFunctions.TryGet ("gt", out function))
-					scope["gt"] = new FunctionValue (function);
-			};
-
 			this.AssertReturn
 			(
 				"{set a to " + value + "}" +
@@ -408,7 +358,7 @@ namespace Cottle.Test
 				"{return b}",
 				expected,
 				DefaultSetting.Instance,
-				populate,
+				this.PopulateScope ("add", "gt"),
 				(d) => {}
 			);
 		}
@@ -499,6 +449,22 @@ namespace Cottle.Test
 		private void AssertReturn (string source, string expected)
 		{
 			this.AssertReturn (source, expected, DefaultSetting.Instance, (s) => {}, (d) => {});
+		}
+
+		private Action<IScope> PopulateScope (params string[] names)
+		{
+			return (s) =>
+			{
+				IFunction	function;
+
+				foreach (string name in names)
+				{
+					if (!BuiltinFunctions.TryGet (name, out function))
+						continue;
+
+					s[name] = new FunctionValue (function);
+				}
+			};
 		}
 	}
 }

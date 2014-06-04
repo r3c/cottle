@@ -49,7 +49,7 @@ namespace Cottle.Test.Builtins
 		private static void AssertEqual (string expression, string expected)
 		{
 			IDocument	document = new SimpleDocument ("{eq(" + expression + ", " + expected + ")}");
-			IScope		scope = new DefaultScope ();
+			IScope		scope = new BuiltinScope ();
 
 			Assert.AreEqual ("true", document.Render (scope));
 		}
@@ -57,7 +57,7 @@ namespace Cottle.Test.Builtins
 		private static void AssertPrint (string template, string expected)
 		{
 			IDocument	document = new SimpleDocument ("{echo " + template + "}");
-			IScope		scope = new DefaultScope ();
+			IScope		scope = new BuiltinScope ();
 
 			Assert.AreEqual (expected, document.Render (scope));
 		}

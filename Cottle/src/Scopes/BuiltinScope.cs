@@ -5,7 +5,7 @@ using Cottle.Values;
 
 namespace Cottle.Scopes
 {
-	public sealed class DefaultScope : FallbackScope
+	public sealed class BuiltinScope : FallbackScope
 	{
 		#region Attributes
 
@@ -17,8 +17,8 @@ namespace Cottle.Scopes
 
 		#region Constructors
 
-		public	DefaultScope () :
-			base (DefaultScope.GetConstant (), new SimpleScope ())
+		public BuiltinScope () :
+			base (BuiltinScope.GetConstant (), new SimpleScope ())
 		{
 		}
 
@@ -30,23 +30,23 @@ namespace Cottle.Scopes
 		{
 			IScope	scope;
 
-			if (DefaultScope.constant == null)
+			if (BuiltinScope.constant == null)
 			{
-				lock (DefaultScope.mutex)
+				lock (BuiltinScope.mutex)
 				{
-					if (DefaultScope.constant == null)
+					if (BuiltinScope.constant == null)
 					{
 						scope = new SimpleScope ();
 
 						foreach (KeyValuePair<string, IFunction> instance in BuiltinFunctions.Instances)
 							scope[instance.Key] = new FunctionValue (instance.Value);
 
-						DefaultScope.constant = scope;
+						BuiltinScope.constant = scope;
 					}
 				}
 			}
 
-			return DefaultScope.constant;
+			return BuiltinScope.constant;
 		}
 
 		#endregion

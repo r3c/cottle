@@ -51,7 +51,7 @@ namespace Cottle.Parsers
 			this.lexer.Reset (reader);
 			this.lexer.Next (LexerMode.Raw);
 
-			command = this.ParseLiteral ();
+			command = this.ParseCommand ();
 
 			if (this.lexer.Current.Type != LexemType.EndOfFile)
 				throw this.Raise ("end of file");
@@ -103,7 +103,7 @@ namespace Cottle.Parsers
 					{
 						Mode	= m,
 						Name	= name,
-						Operand	= this.ParseStatement (),
+						Operand	= this.ParseOperand (),
 						Type	= CommandType.AssignValue
 					};
 
@@ -145,34 +145,104 @@ namespace Cottle.Parsers
 			}
 		}
 
-		private Command ParseCommand ()
-		{
-			Command							command;
-			Func<DefaultParser, Command>	parse;
-
-			if (this.lexer.Current.Type == LexemType.Symbol && DefaultParser.keywords.TryGetValue (this.lexer.Current.Content, out parse))
-				this.lexer.Next (LexerMode.Block);
-			else
-				parse = (p) => p.ParseKeywordEcho ();
-
-			command = parse (this);
-
-			if (this.lexer.Current.Type != LexemType.BlockEnd)
-				throw this.Raise ("end of block");
-
-			this.lexer.Next (LexerMode.Raw);
-
-			return command;
-		}
-
 		private Command ParseBody ()
 		{
 			if (this.lexer.Current.Type != LexemType.Colon)
-				throw this.Raise ("body separator (':')");
+				this.Raise ("body separator (':')");
 
 			this.lexer.Next (LexerMode.Raw);
 
-			return this.ParseLiteral ();
+			return this.ParseCommand ();
+		}
+
+		private Command ParseCommand ()
+		{
+			Command							current;
+			Command							head;
+			Func<DefaultParser, Command>	parse;
+			Command							tail;
+
+			head = null;
+			tail = null;
+
+			while
+			(
+				this.lexer.Current.Type != LexemType.BlockContinue &&
+			    this.lexer.Current.Type != LexemType.BlockEnd &&
+			    this.lexer.Current.Type != LexemType.EndOfFile
+		   	)
+			{
+				// Parse next block or exit loop
+				switch (this.lexer.Current.Type)
+				{
+					case LexemType.BlockBegin:
+						this.lexer.Next (LexerMode.Block);
+
+						if (this.lexer.Current.Type == LexemType.Symbol && DefaultParser.keywords.TryGetValue (this.lexer.Current.Content, out parse))
+							this.lexer.Next (LexerMode.Block);
+						else
+							parse = (p) => p.ParseKeywordEcho ();
+			
+						current = parse (this);
+
+						if (this.lexer.Current.Type != LexemType.BlockEnd)
+							throw this.Raise ("end of block");
+
+						this.lexer.Next (LexerMode.Raw);
+
+						break;
+
+					case LexemType.Text:
+						current = new Command
+						{
+							Text	= this.lexer.Current.Content,
+							Type	= CommandType.Literal 
+						};
+
+						this.lexer.Next (LexerMode.Raw);
+
+						break;
+
+					default:
+						throw this.Raise ("text or block begin ('{')");
+				}
+
+				// Ignore empty blocks
+				if (current == null)
+					continue;
+
+				// Chain current block to parent
+				if (tail != null)
+				{
+					tail.Next = new Command
+					{
+						Body	= tail.Next,
+						Next	= current,
+						Type	= CommandType.Composite
+					};
+	
+					tail = tail.Next;
+				}
+				else if (head != null)
+				{
+					tail = new Command
+					{
+						Body	= head,
+						Next	= current,
+						Type	= CommandType.Composite
+					};
+	
+					head = tail;
+				}
+				else
+					head = current;
+			}
+
+			return head ?? new Command
+			{
+				Text	= string.Empty,
+				Type	= CommandType.Literal
+			};
 		}
 
 		private void ParseExpected (LexemType type, string value, string expected)
@@ -371,7 +441,7 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseStatement (),
+				Operand	= this.ParseOperand (),
 				Type	= CommandType.Dump 
 			};
 		}
@@ -380,7 +450,7 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseStatement (),
+				Operand	= this.ParseOperand (),
 				Type	= CommandType.Echo 
 			};
 		}
@@ -491,7 +561,7 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseStatement (),
+				Operand	= this.ParseOperand (),
 				Type	= CommandType.Return 
 			};
 		}
@@ -517,98 +587,7 @@ namespace Cottle.Parsers
 			};
 		}
 
-		private Command ParseLiteral ()
-		{
-			Command	current;
-			Command	first;
-			Command	parent;
-			int		state;
-			Command	swap;
-
-			first = new Command
-			{
-				Text	= string.Empty,
-				Type	= CommandType.Literal
-			};
-
-			parent = null;
-			state = 0;
-
-			while (true)
-			{
-				// Parse next block or exit loop
-				switch (this.lexer.Current.Type)
-				{
-					case LexemType.BlockBegin:
-						this.lexer.Next (LexerMode.Block);
-
-						current = this.ParseCommand ();
-
-						break;
-
-					case LexemType.BlockContinue:
-					case LexemType.BlockEnd:
-					case LexemType.EndOfFile:
-						return first;
-
-					case LexemType.Text:
-						current = new Command
-						{
-							Text	= this.lexer.Current.Content,
-							Type	= CommandType.Literal 
-						};
-
-						this.lexer.Next (LexerMode.Raw);
-
-						break;
-
-					default:
-						throw this.Raise ("text or block begin ('{')");
-				}
-
-				// Ignore empty blocks
-				if (current == null)
-					continue;
-
-				// Chain current block to parent
-				switch (state)
-				{
-					case 0:
-						first = current;
-						state = 1;
-
-						break;
-
-					case 1:
-						parent = new Command
-						{
-							Body	= first,
-							Next	= current,
-							Type	= CommandType.Composite
-						};
-	
-						first = parent;
-						state = 2;
-
-						break;
-
-					default:
-						swap = new Command
-						{
-							Body	= parent.Next,
-							Next	= current,
-							Type	= CommandType.Composite
-						};
-
-						parent.Next = swap;
-						parent = parent.Next;
-
-						break;
-				}
-			}
-		}
-
-		private Expression ParseStatement ()
+		private Expression ParseOperand ()
 		{
 			Expression	expression;
 
