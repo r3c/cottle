@@ -140,7 +140,7 @@ namespace Cottle.Documents.Dynamic
 				case CommandType.AssignFunction:
 					this.EmitPushScope ();
 					this.EmitPushValue (command.Name);
-					this.EmitPushValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer)));
+					this.EmitPushValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer, string.Empty)));
 					this.EmitCallScopeSet (command.Mode);
 
 					break;
@@ -485,7 +485,10 @@ namespace Cottle.Documents.Dynamic
 					this.EmitPushScope ();
 					this.EmitPushOutput ();
 
+					value = this.LocalReserve<Value> ();
+
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IScope, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
+					this.generator.Emit (OpCodes.Stloc, value);
 					this.generator.Emit (OpCodes.Br_S, success);
 
 					// Emit void value on error
@@ -493,8 +496,13 @@ namespace Cottle.Documents.Dynamic
 
 					this.EmitPushVoid ();
 
+					this.generator.Emit (OpCodes.Stloc, value);
+
 					// Value is already available on stack
 					this.generator.MarkLabel (success);
+					this.generator.Emit (OpCodes.Ldloc, value);
+
+					this.LocalRelease<Value> (value);
 
 					break;
 
@@ -511,10 +519,6 @@ namespace Cottle.Documents.Dynamic
 
 					for (int i = 0; i < expression.Elements.Length; ++i)
 					{
-						this.generator.Emit (OpCodes.Ldloc, arguments);
-						this.generator.Emit (OpCodes.Ldc_I4, i);
-						this.generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
-
 						this.CompileExpression (expression.Elements[i].Key);
 
 						key = this.LocalReserve<Value> ();
@@ -526,6 +530,9 @@ namespace Cottle.Documents.Dynamic
 						value = this.LocalReserve<Value> ();
 
 						this.generator.Emit (OpCodes.Stloc, value);
+						this.generator.Emit (OpCodes.Ldloc, arguments);
+						this.generator.Emit (OpCodes.Ldc_I4, i);
+						this.generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
 						this.generator.Emit (OpCodes.Ldloc, key);
 						this.generator.Emit (OpCodes.Ldloc, value);
 						this.generator.Emit (OpCodes.Newobj, constructor);

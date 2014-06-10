@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Cottle.Documents.Dynamic
@@ -17,9 +18,7 @@ namespace Cottle.Documents.Dynamic
 
 		#region Constructors
 
-//		private static int g = 0;
-
-		public Function (IEnumerable<string> arguments, Command command, Trimmer trimmer)
+		public Function (IEnumerable<string> arguments, Command command, Trimmer trimmer, string name)
 		{
 			Compiler		compiler;
 			DynamicMethod	method;
@@ -27,26 +26,16 @@ namespace Cottle.Documents.Dynamic
 			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)}, this.GetType ());
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 
-//			int p = g++;
+			if (!string.IsNullOrEmpty (name))
+				this.Save (arguments, command, trimmer, name);
 
 			this.storage = compiler.Compile (arguments, command);
 			this.renderer = (Renderer)method.CreateDelegate (typeof (Renderer));
-/*
-			var assemblyName = new System.Reflection.AssemblyName ("Dynamic_" + p);
-			var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly (assemblyName, AssemblyBuilderAccess.RunAndSave);
-			var moduleBuilder = assemblyBuilder.DefineDynamicModule (assemblyName.Name, assemblyName.Name + ".dll");
-			var program = moduleBuilder.DefineType ("Program",System.Reflection.TypeAttributes.Public);
-			var main = program.DefineMethod ("Main", System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)});
-			compiler = new Compiler (main.GetILGenerator (), trimmer);
-			compiler.Compile (arguments, command);
-			program.CreateType();
-			assemblyBuilder.Save (assemblyName.Name + ".dll");
-*/
 		}
 
 		#endregion
 
-		#region Methods
+		#region Methods / Public
 
 		public int CompareTo (IFunction other)
 		{
@@ -78,6 +67,30 @@ namespace Cottle.Documents.Dynamic
 		public override string ToString ()
 		{
 			return "<dynamic>";
+		}
+
+		#endregion
+
+		#region Methods / Private
+
+		private void Save (IEnumerable<string> arguments, Command command, Trimmer trimmer, string name)
+		{
+			AssemblyBuilder	assembly;
+			Compiler		compiler;
+			MethodBuilder	method;
+			ModuleBuilder	module;
+			TypeBuilder		program;
+
+			assembly = AppDomain.CurrentDomain.DefineDynamicAssembly (new AssemblyName (name), AssemblyBuilderAccess.RunAndSave);
+			module = assembly.DefineDynamicModule (name, name + ".dll");
+			program = module.DefineType ("Program", TypeAttributes.Public);
+			method = program.DefineMethod ("Main", MethodAttributes.Public | MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)});
+
+			compiler = new Compiler (method.GetILGenerator (), trimmer);
+			compiler.Compile (arguments, command);
+
+			program.CreateType();
+			assembly.Save (name + ".dll");
 		}
 
 		#endregion

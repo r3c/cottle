@@ -40,7 +40,7 @@ namespace Cottle.Documents
 				});
 			}
 
-			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer);
+			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer, string.Empty);
 		}
 
 		public DynamicDocument (TextReader reader) :
