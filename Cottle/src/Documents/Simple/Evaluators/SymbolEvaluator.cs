@@ -35,7 +35,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public override string ToString ()
 		{
-			return this.symbol.ToString ();
+			return this.symbol.AsString;
 		}
 
 		#endregion

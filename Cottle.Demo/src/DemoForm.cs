@@ -52,8 +52,8 @@ namespace Cottle.Demo
 
 		private void buttonClean_Click (object sender, EventArgs e)
 		{
-			IDocument	document;
-			ISetting	setting;
+			SimpleDocument	document;
+			ISetting	    setting;
 
 			setting = this.SettingCreate ();
 
@@ -71,16 +71,16 @@ namespace Cottle.Demo
 
 		private void buttonEvaluate_Click (object sender, EventArgs e)
 		{
-			IDocument	document;
-			IScope		scope;
-			ISetting	setting;
+			SimpleDocument	document;
+			IScope			scope;
+			ISetting		setting;
 
 			setting = this.SettingCreate ();
 
 			try
 			{
 				document = new SimpleDocument (this.textBoxInput.Text, setting);
-				scope = new DefaultScope ();
+				scope = new BuiltinScope ();
 
 				foreach (TreeNode root in this.treeViewValue.Nodes)
 				{
