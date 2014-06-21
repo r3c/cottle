@@ -21,7 +21,7 @@ namespace Cottle
 
 		bool	Leave ();
 
-		void	Set (Value symbol, Value value, ScopeMode mode);
+		bool	Set (Value symbol, Value value, ScopeMode mode);
 
 		#endregion
 	}

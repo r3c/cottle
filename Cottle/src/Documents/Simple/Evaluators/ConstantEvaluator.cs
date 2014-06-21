@@ -22,7 +22,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods
 
-		public Value Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IStore store, TextWriter output)
 		{
 			return this.value;
 		}

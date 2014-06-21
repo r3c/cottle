@@ -5,6 +5,7 @@ using Cottle.Values;
 
 namespace Cottle.Scopes
 {
+	[Obsolete("Use Cottle.Stores.BuiltinStore")]
 	public sealed class BuiltinScope : FallbackScope
 	{
 		#region Attributes

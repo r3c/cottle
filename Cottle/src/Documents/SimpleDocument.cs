@@ -57,15 +57,15 @@ namespace Cottle.Documents
 
 		#region Methods / Public
 
-		public override Value Render (IScope scope, TextWriter writer)
+		public override Value Render (IStore store, TextWriter writer)
 		{
 			Value	result;
 
-			scope.Enter ();
+			store.Enter ();
 
-			this.renderer.Render (scope, writer, out result);
+			this.renderer.Render (store, writer, out result);
 
-			scope.Leave ();
+			store.Leave ();
 
 			return result;
 		}

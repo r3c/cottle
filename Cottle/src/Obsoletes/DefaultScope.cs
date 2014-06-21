@@ -22,9 +22,9 @@ namespace Cottle.Scopes
 			return this.scope.Leave ();
 		}
 
-		public override void Set (Value symbol, Value value, ScopeMode mode)
+		public override bool Set (Value symbol, Value value, ScopeMode mode)
 		{
-			this.scope.Set (symbol, value, mode);
+			return this.scope.Set (symbol, value, mode);
 		}
 	}
 }

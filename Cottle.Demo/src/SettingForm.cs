@@ -7,7 +7,7 @@ namespace Cottle.Demo
 	{
 		#region Attributes
 
-		private ApplyCallback	apply;
+		private readonly ApplyCallback apply;
 
 		#endregion
 

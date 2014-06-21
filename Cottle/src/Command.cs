@@ -12,7 +12,7 @@ namespace Cottle
 
 		public string		Key;
 
-		public ScopeMode	Mode;
+		public StoreMode	Mode;
 
 		public string		Name;
 

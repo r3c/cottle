@@ -23,7 +23,7 @@ namespace Cottle.Documents.Dynamic
 			Compiler		compiler;
 			DynamicMethod	method;
 
-			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)}, this.GetType ());
+			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IStore), typeof (TextWriter)}, this.GetType ());
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 
 			if (!string.IsNullOrEmpty (name))
@@ -54,9 +54,9 @@ namespace Cottle.Documents.Dynamic
 			return other != null && this.Equals (other);
 		}
 
-		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
+		public Value Execute (IList<Value> arguments, IStore store, TextWriter output)
 		{
-			return this.renderer (this.storage, arguments, scope, output);
+			return this.renderer (this.storage, arguments, store, output);
 		}
 
 		public override int GetHashCode ()
@@ -84,13 +84,23 @@ namespace Cottle.Documents.Dynamic
 			assembly = AppDomain.CurrentDomain.DefineDynamicAssembly (new AssemblyName (name), AssemblyBuilderAccess.RunAndSave);
 			module = assembly.DefineDynamicModule (name, name + ".dll");
 			program = module.DefineType ("Program", TypeAttributes.Public);
-			method = program.DefineMethod ("Main", MethodAttributes.Public | MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IScope), typeof (TextWriter)});
+			method = program.DefineMethod ("Main", MethodAttributes.Public | MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IStore), typeof (TextWriter)});
 
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 			compiler.Compile (arguments, command);
 
 			program.CreateType();
 			assembly.Save (name + ".dll");
+		}
+
+		#endregion
+
+		#region Obsoletes
+
+		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
+		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
+		{
+			throw new NotImplementedException ();
 		}
 
 		#endregion

@@ -8,8 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using Cottle.Documents;
 using Cottle.Exceptions;
-using Cottle.Scopes;
 using Cottle.Settings;
+using Cottle.Stores;
 using Cottle.Values;
 
 namespace Cottle.Demo
@@ -40,7 +40,7 @@ namespace Cottle.Demo
 		{
 			InitializeComponent ();
 
-			this.treeViewValue.Nodes.Add (new TreeNode ("Cottle Scope", 6, 6));
+			this.treeViewValue.Nodes.Add (new TreeNode ("Cottle Store", 6, 6));
 
 			if (File.Exists (DemoForm.AUTOLOAD))
 				this.StateLoad (DemoForm.AUTOLOAD, false);
@@ -72,23 +72,23 @@ namespace Cottle.Demo
 		private void buttonEvaluate_Click (object sender, EventArgs e)
 		{
 			SimpleDocument	document;
-			IScope			scope;
 			ISetting		setting;
+			IStore			store;
 
 			setting = this.SettingCreate ();
 
 			try
 			{
 				document = new SimpleDocument (this.textBoxInput.Text, setting);
-				scope = new BuiltinScope ();
+				store = new BuiltinStore ();
 
 				foreach (TreeNode root in this.treeViewValue.Nodes)
 				{
 					foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-						scope.Set (pair.Key, pair.Value, ScopeMode.Closest);
+						store.Set (pair.Key, pair.Value, StoreMode.Global);
 				}
 
-				this.DisplayText (document.Render (scope));
+				this.DisplayText (document.Render (store));
 			}
 			catch (ParseException exception)
 			{

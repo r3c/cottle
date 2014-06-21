@@ -14,7 +14,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		private readonly INode		body;
 
-		private readonly ScopeMode	mode;
+		private readonly StoreMode	mode;
 
 		private readonly string		name;
 
@@ -22,7 +22,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, ScopeMode mode)
+		public AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, StoreMode mode)
 		{
 			this.arguments = arguments.ToArray ();
 			this.body = body;
@@ -51,18 +51,18 @@ namespace Cottle.Documents.Simple.Nodes
 			return other != null && this.Equals (other);
 		}
 
-		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
+		public Value Execute (IList<Value> arguments, IStore store, TextWriter output)
 		{
 			Value	result;
 
-			scope.Enter ();
+			store.Enter ();
 
 			for (int i = 0; i < this.arguments.Length; ++i)
-				scope.Set (this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, ScopeMode.Local);
+				store.Set (this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
 
-			this.body.Render (scope, output, out result);
+			this.body.Render (store, output, out result);
 
-			scope.Leave ();
+			store.Leave ();
 
 			return result;
 		}
@@ -78,9 +78,9 @@ namespace Cottle.Documents.Simple.Nodes
 			}
 		}
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			scope.Set (this.name, new FunctionValue (this), mode);
+			store.Set (this.name, new FunctionValue (this), mode);
 
 			result = VoidValue.Instance;
 
@@ -95,7 +95,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 			switch (this.mode)
 			{
-				case ScopeMode.Local:
+				case StoreMode.Local:
 					keyword = "declare";
 					link = "as";
 
@@ -138,6 +138,16 @@ namespace Cottle.Documents.Simple.Nodes
 		public override string ToString ()
 		{
 			return this.name;
+		}
+
+		#endregion
+
+		#region Methods / Obsoletes
+
+		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
+		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
+		{
+			throw new NotImplementedException ();
 		}
 
 		#endregion

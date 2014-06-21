@@ -53,7 +53,7 @@ namespace Cottle.Documents.Dynamic
 
 			// Create scope for program execution
 			this.EmitPushScope ();
-			this.EmitCallScopeEnter ();
+			this.EmitCallStoreEnter ();
 
 			// Assign provided values to arguments
 			index = 0;
@@ -88,7 +88,7 @@ namespace Cottle.Documents.Dynamic
 				// Assign argument value
 				this.generator.MarkLabel (assign);
 
-				this.EmitCallScopeSet (ScopeMode.Local);
+				this.EmitCallStoreSet (StoreMode.Local);
 
 				++index;
 			}
@@ -103,7 +103,7 @@ namespace Cottle.Documents.Dynamic
 
 			// Leave scope and return
 			this.EmitPushScope ();
-			this.EmitCallScopeLeave ();
+			this.EmitCallStoreLeave ();
 
 			this.generator.Emit (OpCodes.Ret);
 
@@ -129,7 +129,7 @@ namespace Cottle.Documents.Dynamic
 			if (isolate)
 			{
 				this.EmitPushScope ();
-				this.EmitCallScopeEnter ();
+				this.EmitCallStoreEnter ();
 
 				++depth;
 			}
@@ -141,7 +141,7 @@ namespace Cottle.Documents.Dynamic
 					this.EmitPushScope ();
 					this.EmitPushValue (command.Name);
 					this.EmitPushValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer, string.Empty)));
-					this.EmitCallScopeSet (command.Mode);
+					this.EmitCallStoreSet (command.Mode);
 
 					break;
 
@@ -158,7 +158,7 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Ldloc, operand);
 
 					this.LocalRelease<Value> (operand);
-					this.EmitCallScopeSet (command.Mode);
+					this.EmitCallStoreSet (command.Mode);
 
 					break;
 
@@ -253,7 +253,7 @@ namespace Cottle.Documents.Dynamic
 						this.generator.Emit (OpCodes.Ldloca, pair);
 						this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Key).GetGetMethod ());
 
-						this.EmitCallScopeSet (ScopeMode.Local);
+						this.EmitCallStoreSet (StoreMode.Local);
 					}
 
 					// Store current element value
@@ -264,7 +264,7 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Value).GetGetMethod ());
 
 					this.LocalRelease<KeyValuePair<Value, Value>> (pair);
-					this.EmitCallScopeSet (ScopeMode.Local);
+					this.EmitCallStoreSet (StoreMode.Local);
 
 					// Evaluate body and restart cycle
 					this.CompileCommand (command.Body, exit, depth, true);
@@ -333,7 +333,7 @@ namespace Cottle.Documents.Dynamic
 						this.generator.MarkLabel (jump);
 
 						this.EmitPushScope ();
-						this.EmitCallScopeLeave ();
+						this.EmitCallStoreLeave ();
 
 						this.generator.Emit (OpCodes.Ldloc, counter);
 						this.generator.Emit (OpCodes.Ldc_I4_1);
@@ -378,7 +378,7 @@ namespace Cottle.Documents.Dynamic
 				--depth;
 
 				this.EmitPushScope ();
-				this.EmitCallScopeLeave ();
+				this.EmitCallStoreLeave ();
 			}
 		}
 
@@ -487,7 +487,7 @@ namespace Cottle.Documents.Dynamic
 
 					value = this.LocalReserve<Value> ();
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IScope, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
+					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
 					this.generator.Emit (OpCodes.Stloc, value);
 					this.generator.Emit (OpCodes.Br_S, success);
 
@@ -562,7 +562,7 @@ namespace Cottle.Documents.Dynamic
 					value = this.LocalReserve<Value> ();
 
 					this.generator.Emit (OpCodes.Ldloca, value);
-					this.generator.Emit (OpCodes.Callvirt, typeof (IScope).GetMethod ("Get"));
+					this.generator.Emit (OpCodes.Callvirt, typeof (IStore).GetMethod ("TryGet"));
 					this.generator.Emit (OpCodes.Brtrue, success);
 
 					// Emit void value on error
@@ -585,21 +585,21 @@ namespace Cottle.Documents.Dynamic
 			}
 		}
 
-		private void EmitCallScopeEnter ()
+		private void EmitCallStoreEnter ()
 		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IScope>> ((s) => s.Enter ()));
+			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore>> ((s) => s.Enter ()));
 		}
 
-		private void EmitCallScopeLeave ()
+		private void EmitCallStoreLeave ()
 		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IScope>> ((s) => s.Leave ()));
+			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore>> ((s) => s.Leave ()));
 			this.generator.Emit (OpCodes.Pop);
 		}
 
-		private void EmitCallScopeSet (ScopeMode mode)
+		private void EmitCallStoreSet (StoreMode mode)
 		{
 			this.generator.Emit (OpCodes.Ldc_I4, (int)mode);
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IScope, Value, Value, ScopeMode>> ((s, n, v, m) => s.Set (n, v, m)));
+			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore, Value, Value, StoreMode>> ((s, n, v, m) => s.Set (n, v, m)));
 		}
 
 		private void EmitCallValueAsBoolean ()

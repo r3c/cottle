@@ -26,15 +26,15 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods
 
-		public Value Evaluate (IScope scope, TextWriter writer)
+		public Value Evaluate (IStore store, TextWriter writer)
 		{
 			return new MapValue (Array.ConvertAll (this.elements, (element) =>
 			{
 				Value	key;
 				Value	value;
 
-				key = element.Key.Evaluate (scope, writer);
-				value = element.Value.Evaluate (scope, writer);
+				key = element.Key.Evaluate (store, writer);
+				value = element.Value.Evaluate (store, writer);
 
 				return new KeyValuePair<Value, Value> (key, value);
 			}));

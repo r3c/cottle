@@ -26,14 +26,14 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods
 
-		public Value Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IStore store, TextWriter output)
 		{
 			Value	key;
 			Value	map;
 			Value	value;
 
-			key = this.subscript.Evaluate (scope, output);
-			map = this.source.Evaluate (scope, output);
+			key = this.subscript.Evaluate (store, output);
+			map = this.source.Evaluate (store, output);
 
 			if (map.Fields.TryGet (key, out value))
 				return value;

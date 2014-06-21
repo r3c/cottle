@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
+using Cottle.Obsolete;
 using Cottle.Values;
 
 namespace Cottle.Functions
@@ -90,6 +91,11 @@ namespace Cottle.Functions
 		}
 
 		public delegate Value	LegacyCallbackDelegate (IList<Value> values, Scope scope, TextWriter output);
+
+		public Value Execute (IList<Value> arguments, IStore store, TextWriter output)
+		{
+			return this.Execute (arguments, new StoreScope (store), output);
+		}
 
 		#endregion
 	}

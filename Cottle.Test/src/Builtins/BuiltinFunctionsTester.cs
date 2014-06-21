@@ -1,6 +1,7 @@
 ﻿using System;
 using Cottle.Documents;
 using Cottle.Scopes;
+using Cottle.Stores;
 using NUnit.Framework;
 
 namespace Cottle.Test.Builtins
@@ -49,17 +50,17 @@ namespace Cottle.Test.Builtins
 		private static void AssertEqual (string expression, string expected)
 		{
 			IDocument	document = new SimpleDocument ("{eq(" + expression + ", " + expected + ")}");
-			IScope		scope = new BuiltinScope ();
+			IStore		store = new BuiltinStore ();
 
-			Assert.AreEqual ("true", document.Render (scope));
+			Assert.AreEqual ("true", document.Render (store));
 		}
 
 		private static void AssertPrint (string template, string expected)
 		{
 			IDocument	document = new SimpleDocument ("{echo " + template + "}");
-			IScope		scope = new BuiltinScope ();
+			IStore		store = new BuiltinStore ();
 
-			Assert.AreEqual (expected, document.Render (scope));
+			Assert.AreEqual (expected, document.Render (store));
 		}
 	}
 }

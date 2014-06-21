@@ -27,19 +27,19 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
 			bool	halt;
 
 			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
 			{
-				if (branch.Key.Evaluate (scope, output).AsBoolean)
+				if (branch.Key.Evaluate (store, output).AsBoolean)
 				{
-					scope.Enter ();
+					store.Enter ();
 
-					halt = branch.Value.Render (scope, output, out result);
+					halt = branch.Value.Render (store, output, out result);
 
-					scope.Leave ();
+					store.Leave ();
 
 					return halt;
 				}
@@ -47,11 +47,11 @@ namespace Cottle.Documents.Simple.Nodes
 
 			if (this.fallback != null)
 			{
-				scope.Enter ();
+				store.Enter ();
 
-				halt = this.fallback.Render (scope, output, out result);
+				halt = this.fallback.Render (store, output, out result);
 
-				scope.Leave ();
+				store.Leave ();
 
 				return halt;
 			}

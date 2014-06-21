@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Cottle.Demo
 {
@@ -37,9 +34,9 @@ namespace Cottle.Demo
 
 		#region Attributes
 
-		private string	key;
+		private readonly string key;
 
-		private Value	value;
+		private readonly Value value;
 
 		#endregion
 

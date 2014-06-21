@@ -7,7 +7,7 @@ namespace Cottle.Documents.Simple
 	{
 		#region Methods
 
-		bool	Render (IScope scope, TextWriter output, out Value result);
+		bool	Render (IStore store, TextWriter output, out Value result);
 
 		void	Source (ISetting setting, TextWriter output);
 

@@ -35,45 +35,45 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
 			IMap	fields;
 
-			fields = this.from.Evaluate (scope, output).Fields;
+			fields = this.from.Evaluate (store, output).Fields;
 
 			if (fields.Count > 0)
 			{
 				foreach (KeyValuePair<Value, Value> pair in fields)
 				{
-					scope.Enter ();
+					store.Enter ();
 
 					if (!string.IsNullOrEmpty (this.key))
-						scope.Set (this.key, pair.Key, ScopeMode.Local);
+						store.Set (this.key, pair.Key, StoreMode.Local);
 
-					scope.Set (this.value, pair.Value, ScopeMode.Local);
+					store.Set (this.value, pair.Value, StoreMode.Local);
 
-					if (this.body.Render (scope, output, out result))
+					if (this.body.Render (store, output, out result))
 					{
-						scope.Leave ();
+						store.Leave ();
 
 						return true;
 					}
 
-					scope.Leave ();
+					store.Leave ();
 				}
 			}
 			else if (this.empty != null)
 			{
-				scope.Enter ();
+				store.Enter ();
 
-				if (this.empty.Render (scope, output, out result))
+				if (this.empty.Render (store, output, out result))
 				{
-					scope.Leave ();
+					store.Leave ();
 
 					return true;
 				}
 
-				scope.Leave ();
+				store.Leave ();
 			}
 
 			result = VoidValue.Instance;

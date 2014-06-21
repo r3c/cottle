@@ -62,9 +62,9 @@ namespace Cottle.Documents
 
 		#region Methods
 
-		public override Value Render (IScope scope, TextWriter writer)
+		public override Value Render (IStore store, TextWriter writer)
 		{
-			return this.main.Execute (null, scope, writer);
+			return this.main.Execute (null, store, writer);
 		}
 
 		#endregion

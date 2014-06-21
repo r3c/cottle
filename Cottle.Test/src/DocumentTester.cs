@@ -7,6 +7,7 @@ using Cottle.Documents;
 using Cottle.Functions;
 using Cottle.Scopes;
 using Cottle.Settings;
+using Cottle.Stores;
 using Cottle.Values;
 using NUnit.Framework;
 
@@ -166,7 +167,7 @@ namespace Cottle.Test
 		[TestCase ("ddd", "<void>")]
 		public void ExpressionAccess (string access, string expected)
 		{
-			Action<IScope>	populate;
+			Action<IStore>	populate;
 
 			populate = (scope) =>
 			{
@@ -204,7 +205,7 @@ namespace Cottle.Test
 		[TestCase ("xyz", "17")]
 		public void ExpressionInvoke (string symbol, string expected)
 		{
-			Action<IScope>	populate;
+			Action<IStore>	populate;
 
 			populate = (scope) =>
 			{
@@ -249,7 +250,7 @@ namespace Cottle.Test
 		public void ExpressionSymbol (string set, string get, string value)
 		{
 			string			expected;
-			Action<IScope>	populate;
+			Action<IStore>	populate;
 
 			expected = (set == get ? (Value)value : VoidValue.Instance).ToString ();
 			populate = (scope) =>
@@ -400,10 +401,10 @@ namespace Cottle.Test
 			this.AssertRender (value, expected, setting, (s) => {}, (d) => {});
 		}
 
-		private void AssertRender (string source, string expected, ISetting setting, Action<IScope> populate, Action<IDocument> listen)
+		private void AssertRender (string source, string expected, ISetting setting, Action<IStore> populate, Action<IDocument> listen)
 		{
 			IDocument	document;
-			IScope		scope;
+			IStore		store;
 
 			foreach (Func<string, ISetting, IDocument> constructor in DocumentTester.constructors)
 			{
@@ -411,11 +412,11 @@ namespace Cottle.Test
 
 				listen (document);
 
-				scope = new SimpleScope ();
+				store = new SimpleStore ();
 
-				populate (scope);
+				populate (store);
 
-				Assert.AreEqual (expected, document.Render (scope), "Invalid rendered output for document type '{0}'", document.GetType ());
+				Assert.AreEqual (expected, document.Render (store), "Invalid rendered output for document type '{0}'", document.GetType ());
 			}
 		}
 
@@ -424,10 +425,10 @@ namespace Cottle.Test
 			this.AssertRender (source, expected, DefaultSetting.Instance, (s) => {}, (d) => {});
 		}
 
-		private void AssertReturn (string source, string expected, ISetting setting, Action<IScope> populate, Action<IDocument> listen)
+		private void AssertReturn (string source, string expected, ISetting setting, Action<IStore> populate, Action<IDocument> listen)
 		{
 			IDocument	document;
-			IScope		scope;
+			IStore		store;
 			Value		value;
 
 			foreach (Func<string, ISetting, IDocument> constructor in DocumentTester.constructors)
@@ -436,11 +437,11 @@ namespace Cottle.Test
 
 				listen (document);
 
-				scope = new SimpleScope ();
+				store = new SimpleStore ();
 
-				populate (scope);
+				populate (store);
 
-				value = document.Render (scope, new StringWriter ());
+				value = document.Render (store, new StringWriter ());
 
 				Assert.AreEqual (expected, value.ToString (), "Invalid return value for document type '{0}'", document.GetType ());
 			}
@@ -451,7 +452,7 @@ namespace Cottle.Test
 			this.AssertReturn (source, expected, DefaultSetting.Instance, (s) => {}, (d) => {});
 		}
 
-		private Action<IScope> PopulateScope (params string[] names)
+		private Action<IStore> PopulateScope (params string[] names)
 		{
 			return (s) =>
 			{

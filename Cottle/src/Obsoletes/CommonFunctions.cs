@@ -5,7 +5,7 @@ using System.IO;
 using Cottle.Builtins;
 using Cottle.Documents;
 using Cottle.Functions;
-using Cottle.Scopes;
+using Cottle.Stores;
 using Cottle.Values;
 
 namespace Cottle.Commons
@@ -43,11 +43,11 @@ namespace Cottle.Commons
 
 		#region Attributes
 
-		private static readonly IFunction	functionInclude = new NativeFunction ((values, scope, output) =>
+		private static readonly IFunction	functionInclude = new NativeFunction ((values, store, output) =>
 		{
 			IDocument	document;
 			object		entry;
-			IScope		inner;
+			IStore		inner;
 			string		path;
 			DateTime	write;
 
@@ -81,12 +81,12 @@ namespace Cottle.Commons
 				}
 			}
 
-			inner = new FallbackScope (scope, new SimpleScope ());
+			inner = new FallbackStore (store, new SimpleStore ());
 
 			for (int i = 1; i < values.Count; ++i)
 			{
 				foreach (KeyValuePair<Value, Value> pair in values[i].Fields)
-					inner.Set (pair.Key, pair.Value, ScopeMode.Closest);
+					inner.Set (pair.Key, pair.Value, StoreMode.Global);
 			}
 
 			return document.Render (inner, output);

@@ -10,7 +10,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		private readonly IEvaluator	expression;
 
-		private readonly ScopeMode	mode;
+		private readonly StoreMode	mode;
 
 		private readonly string		name;
 
@@ -18,7 +18,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public AssignValueNode (string name, IEvaluator expression, ScopeMode mode)
+		public AssignValueNode (string name, IEvaluator expression, StoreMode mode)
 		{
 			this.expression = expression;
 			this.mode = mode;
@@ -29,9 +29,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			scope.Set (this.name, this.expression.Evaluate (scope, output), this.mode);
+			store.Set (this.name, this.expression.Evaluate (store, output), this.mode);
 
 			result = VoidValue.Instance;
 
@@ -45,7 +45,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 			switch (this.mode)
 			{
-				case ScopeMode.Local:
+				case StoreMode.Local:
 					keyword = "declare";
 					link = "as";
 

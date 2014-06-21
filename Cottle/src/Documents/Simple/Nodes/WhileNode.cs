@@ -26,20 +26,20 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			while (this.condition.Evaluate (scope, output).AsBoolean)
+			while (this.condition.Evaluate (store, output).AsBoolean)
 			{
-				scope.Enter ();
+				store.Enter ();
 
-				if (this.body.Render (scope, output, out result))
+				if (this.body.Render (store, output, out result))
 				{
-					scope.Leave ();
+					store.Leave ();
 
 					return true;
 				}
 
-				scope.Leave ();
+				store.Leave ();
 			}
 
 			result = VoidValue.Instance;

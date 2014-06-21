@@ -7,13 +7,19 @@ namespace Cottle
 	{
 		#region Methods
 
-		Value	Render (IScope scope, TextWriter writer);
+		Value	Render (IStore store, TextWriter writer);
 
-		string	Render (IScope scope);
+		string	Render (IStore store);
 
 		#endregion
 
 		#region Obsoletes
+
+		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
+		Value	Render (IScope scope, TextWriter writer);
+
+		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
+		string	Render (IScope scope);
 
 		[Obsolete ("Only SimpleDocument implements 'Source' methods")]
 		void	Source (TextWriter writer);

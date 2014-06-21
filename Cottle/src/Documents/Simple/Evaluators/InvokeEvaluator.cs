@@ -29,13 +29,13 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods / Public
 
-		public Value Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IStore store, TextWriter output)
 		{
 			IFunction	function;
 			Value		source;
 			Value[]		values;
 
-			source = this.caller.Evaluate (scope, output);
+			source = this.caller.Evaluate (store, output);
 			function = source.AsFunction;
 
 			if (function != null)
@@ -43,9 +43,9 @@ namespace Cottle.Documents.Simple.Evaluators
 				values = new Value[this.arguments.Length];
 
 				for (int i = 0; i < this.arguments.Length; ++i)
-					values[i] = this.arguments[i].Evaluate (scope, output);
+					values[i] = this.arguments[i].Evaluate (store, output);
 
-				return function.Execute (values, scope, output);
+				return function.Execute (values, store, output);
 			}
 
 			return VoidValue.Instance;

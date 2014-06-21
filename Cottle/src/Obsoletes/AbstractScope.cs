@@ -1,4 +1,5 @@
-﻿using Cottle.Values;
+﻿using System;
+using Cottle.Values;
 
 namespace Cottle.Scopes
 {
@@ -33,8 +34,16 @@ namespace Cottle.Scopes
 		
 		public abstract bool	Leave ();
 
-		public abstract void	Set (Value symbol, Value value, ScopeMode mode);
+		public abstract bool	Set (Value symbol, Value value, ScopeMode mode);
 
 		#endregion
+	}
+}
+
+namespace Cottle.Scopes.Abstracts
+{
+	[Obsolete("Use Cottle.Stores.AbstractStore")]
+	public abstract class AbstractScope : Cottle.Scopes.AbstractScope
+	{
 	}
 }

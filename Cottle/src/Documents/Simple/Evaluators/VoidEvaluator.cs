@@ -7,13 +7,13 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		public static readonly VoidEvaluator	Instance = new VoidEvaluator ();
+		public static readonly VoidEvaluator Instance = new VoidEvaluator ();
 
 		#endregion
 
 		#region Methods
 
-		public Value Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IStore store, TextWriter output)
 		{
 			return VoidValue.Instance;
 		}

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Cottle.Builtins;
-using Cottle.Cleaners;
 using Cottle.Settings;
 
 namespace Cottle.Demo

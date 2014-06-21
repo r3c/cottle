@@ -63,10 +63,10 @@ namespace Cottle.Parsers
 
 		#region Methods / Private
 
-		private Command ParseAssignment (ScopeMode mode)
+		private Command ParseAssignment (StoreMode mode)
 		{
 			List<string>				arguments;
-			Func<ScopeMode, Command>	command;
+			Func<StoreMode, Command>	command;
 			string						name;
 
 			arguments = new List<string> ();
@@ -113,7 +113,7 @@ namespace Cottle.Parsers
 			switch (this.lexer.Current.Type)
 			{
 				case LexemType.Symbol:
-					if (mode == ScopeMode.Closest)
+					if (mode == StoreMode.Global)
 					{
 						// <TODO> remove legacy keywords handling
 						// FIXME: should raise event
@@ -121,7 +121,7 @@ namespace Cottle.Parsers
 						{
 							this.lexer.Next (LexerMode.Block);
 
-							mode = ScopeMode.Local;
+							mode = StoreMode.Local;
 						}
 						else
 						// </TODO>
@@ -434,7 +434,7 @@ namespace Cottle.Parsers
 
 		private Command ParseKeywordDeclare ()
 		{
-			return this.ParseAssignment (ScopeMode.Local);
+			return this.ParseAssignment (StoreMode.Local);
 		}
 
 		private Command ParseKeywordDump ()
@@ -568,7 +568,7 @@ namespace Cottle.Parsers
 
 		private Command ParseKeywordSet ()
 		{
-			return this.ParseAssignment (ScopeMode.Closest);
+			return this.ParseAssignment (StoreMode.Global);
 		}
 
 		private Command ParseKeywordWhile ()

@@ -63,6 +63,16 @@ namespace Cottle
 			return this.Source ();
 		}
 
+		public Value Render (IStore store, TextWriter writer)
+		{
+			return this.document.Render (store, writer);
+		}
+
+		public string Render (IStore store)
+		{
+			return this.document.Render (store);
+		}
+
 		public Value Render (IScope scope, TextWriter writer)
 		{
 			return this.document.Render (scope, writer);

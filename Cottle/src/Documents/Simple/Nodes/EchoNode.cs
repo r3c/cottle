@@ -23,9 +23,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			output.Write (this.expression.Evaluate (scope, output).AsString);
+			output.Write (this.expression.Evaluate (store, output).AsString);
 
 			result = VoidValue.Instance;
 

@@ -25,11 +25,11 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Methods
 
-		public bool Render (IScope scope, TextWriter output, out Value result)
+		public bool Render (IStore store, TextWriter output, out Value result)
 		{
 			foreach (INode node in this.nodes)
 			{
-				if (node.Render (scope, output, out result))
+				if (node.Render (store, output, out result))
 					return true;
 			}
 

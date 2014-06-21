@@ -23,11 +23,11 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		#region Methods
 
-		public Value Evaluate (IScope scope, TextWriter output)
+		public Value Evaluate (IStore store, TextWriter output)
 		{
 			Value	value;
 
-			if (scope.Get (this.symbol, out value))
+			if (store.TryGet (this.symbol, out value))
 				return value;
 
 			return VoidValue.Instance;

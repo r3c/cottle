@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cottle.Scopes
+namespace Cottle.Stores
 {
-	public sealed class SimpleScope : AbstractScope
+	public sealed class SimpleStore : AbstractStore
 	{
 		#region Attributes
 
@@ -15,10 +15,9 @@ namespace Cottle.Scopes
 
 		#region Constructors
 
-		public SimpleScope ()
+		public SimpleStore ()
 		{
 			this.levels = new Stack<HashSet<Value>> ();
-			this.levels.Push (new HashSet<Value> ());
 			this.stacks = new Dictionary<Value, Stack<Value>> ();
 		}
 
@@ -31,27 +30,11 @@ namespace Cottle.Scopes
 			this.levels.Push (new HashSet<Value> ());
 		}
 
-		public override bool Get (Value symbol, out Value value)
-		{
-			Stack<Value>	stack;
-
-			if (this.stacks.TryGetValue (symbol, out stack) && stack.Count > 0)
-			{
-				value = stack.Peek ();
-
-				return true;
-			}
-
-			value = null;
-
-			return false;
-		}
-
 		public override bool Leave ()
 		{
 			Stack<Value>	stack;
 
-			if (this.levels.Count < 2)
+			if (this.levels.Count < 1)
 				return false;
 
 			foreach (Value name in this.levels.Pop ())
@@ -68,9 +51,8 @@ namespace Cottle.Scopes
 			return true;
 		}
 
-		public override void Set (Value symbol, Value value, ScopeMode mode)
+		public override void Set (Value symbol, Value value, StoreMode mode)
 		{
-			HashSet<Value>	level;
 			Stack<Value>	stack;
 
 			if (!this.stacks.TryGetValue (symbol, out stack))
@@ -80,24 +62,38 @@ namespace Cottle.Scopes
 				this.stacks[symbol] = stack;
 			}
 
-			level = this.levels.Peek ();
-
 			switch (mode)
 			{
-				case ScopeMode.Closest:
+				case StoreMode.Global:
 					if (stack.Count > 0)
 						stack.Pop ();
 
 					break;
 
-				case ScopeMode.Local:
-					if (!level.Add (symbol))
+				case StoreMode.Local:
+					if (this.levels.Count > 0 && !this.levels.Peek ().Add (symbol))
 						stack.Pop ();
 
 					break;
 			}
 
 			stack.Push (value);
+		}
+
+		public override bool TryGet (Value symbol, out Value value)
+		{
+			Stack<Value>	stack;
+
+			if (this.stacks.TryGetValue (symbol, out stack) && stack.Count > 0)
+			{
+				value = stack.Peek ();
+
+				return true;
+			}
+
+			value = null;
+
+			return false;
 		}
 
 		#endregion

@@ -7,7 +7,7 @@ namespace Cottle.Documents.Simple
 	{
 		#region Methods
 
-		Value	Evaluate (IScope scope, TextWriter output);
+		Value	Evaluate (IStore store, TextWriter output);
 
 		string	ToString ();
 
