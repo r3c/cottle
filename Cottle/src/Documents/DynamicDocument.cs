@@ -29,7 +29,7 @@ namespace Cottle.Documents
 		{
 			IParser	parser;
 
-			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
+			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd, setting.Escape);
 
 			if (setting.Optimize)
 			{

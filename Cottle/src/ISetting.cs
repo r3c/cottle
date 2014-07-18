@@ -21,6 +21,11 @@ namespace Cottle
 			get;
 		}
 
+		char	Escape
+		{
+			get;
+		}
+
 		bool	Optimize
 		{
 			get;

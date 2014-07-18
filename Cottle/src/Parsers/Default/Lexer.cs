@@ -47,6 +47,8 @@ namespace Cottle.Parsers.Default
 
 		private bool						eof;
 
+		private readonly char				escape;
+
 		private char						last;
 
 		private int							line;
@@ -61,9 +63,10 @@ namespace Cottle.Parsers.Default
 
 		#region Constructors
 
-		public Lexer (string blockBegin, string blockContinue, string blockEnd)
+		public Lexer (string blockBegin, string blockContinue, string blockEnd, char escape)
 		{
 			this.cursors = new Queue<LexemCursor> ();
+			this.escape = escape;
 			this.pending = new Lexem (LexemType.None, string.Empty);
 			this.root = new LexemState ();
 
@@ -257,7 +260,7 @@ namespace Cottle.Parsers.Default
 
 						while (this.Read () && this.last != end)
 						{
-							if (this.last != '\\' || this.Read ())
+							if (this.last != this.escape || this.Read ())
 								buffer.Append (this.last);
 						}
 
@@ -308,7 +311,7 @@ namespace Cottle.Parsers.Default
 
 			for (; !this.eof; this.Read ())
 			{
-				cancel = this.last == '\\' && this.Read ();
+				cancel = this.last == this.escape && this.Read ();
 				trail = 0;
 
 				this.cursors.Enqueue (new LexemCursor (this.last, this.root));

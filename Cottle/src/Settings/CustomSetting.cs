@@ -42,6 +42,18 @@ namespace Cottle.Settings
 			}
 		}
 
+		public char		Escape
+		{
+			get
+			{
+				return this.escape;
+			}
+			set
+			{
+				this.escape = value;
+			}
+		}
+
 		public bool		Optimize
 		{
 			get
@@ -75,6 +87,8 @@ namespace Cottle.Settings
 		private string	blockContinue = DefaultSetting.Instance.BlockContinue;
 
 		private string	blockEnd = DefaultSetting.Instance.BlockEnd;
+
+		private char	escape = DefaultSetting.Instance.Escape;
 
 		private bool	optimize = DefaultSetting.Instance.Optimize;
 

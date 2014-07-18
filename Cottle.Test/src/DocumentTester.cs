@@ -152,6 +152,34 @@ namespace Cottle.Test
 		}
 
 		[Test]
+		[TestCase ("{\"\\\"\"}", '\\', "\"")]
+		[TestCase ("{\"xxxy\"}", 'x', "xy")]
+		public void EscapeCommand (string input, char escape, string expected)
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.Escape = escape;
+
+			this.AssertRender (input, expected, setting, (s) => {}, (d) => {});
+		}
+
+		[Test]
+		[TestCase ("Escaped\\ Literal", '\\', "Escaped Literal")]
+		[TestCase ("-{'x'-}", '-', "{'x'}")]
+		[TestCase ("ABC", 'x', "ABC")]
+		[TestCase ("--", '-', "-")]
+		public void EscapeText (string input, char escape, string expected)
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.Escape = escape;
+
+			this.AssertRender (input, expected, setting, (s) => {}, (d) => {});
+		}
+
+		[Test]
 		[TestCase ("aaa[0]", "5")]
 		[TestCase ("aaa[1]", "7")]
 		[TestCase ("aaa[2]", "<void>")]

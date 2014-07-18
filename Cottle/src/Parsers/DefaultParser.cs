@@ -35,9 +35,9 @@ namespace Cottle.Parsers
 
 		#region Constructors
 
-		public DefaultParser (string blockBegin, string blockContinue, string blockEnd)
+		public DefaultParser (string blockBegin, string blockContinue, string blockEnd, char escape)
 		{
-			this.lexer = new Lexer (blockBegin, blockContinue, blockEnd);
+			this.lexer = new Lexer (blockBegin, blockContinue, blockEnd, escape);
 		}
 
 		#endregion

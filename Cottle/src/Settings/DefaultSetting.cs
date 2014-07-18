@@ -30,6 +30,14 @@ namespace Cottle.Settings
 			}
 		}
 
+		public char		Escape
+		{
+			get
+			{
+				return '\\';
+			}
+		}
+
 		public bool		Optimize
 		{
 			get

@@ -31,7 +31,7 @@ namespace Cottle.Documents
 			IParser	parser;
 			Command	root;
 
-			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd);
+			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd, setting.Escape);
 			root = parser.Parse (reader);
 
 			this.setting = setting;

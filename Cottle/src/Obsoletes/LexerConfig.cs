@@ -29,6 +29,7 @@ namespace Cottle
 				this.setting.BlockContinue = value;
 			}
 		}
+
 		public string BlockEnd
 		{
 			get
@@ -38,6 +39,18 @@ namespace Cottle
 			set
 			{
 				this.setting.BlockEnd = value;
+			}
+		}
+
+		public char Escape
+		{
+			get
+			{
+				return this.setting.Escape;
+			}
+			set
+			{
+				this.setting.Escape = value;
 			}
 		}
 
