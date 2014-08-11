@@ -94,15 +94,5 @@ namespace Cottle.Documents.Dynamic
 		}
 
 		#endregion
-
-		#region Obsoletes
-
-		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
-		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
-		{
-			throw new NotImplementedException ();
-		}
-
-		#endregion
 	}
 }

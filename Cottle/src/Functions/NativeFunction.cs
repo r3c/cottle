@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Cottle.Obsolete;
 using Cottle.Values;
 
 namespace Cottle.Functions
@@ -114,16 +112,6 @@ namespace Cottle.Functions
 		public override string ToString ()
 		{
 			return "native";
-		}
-
-		#endregion
-
-		#region Obsoletes
-
-		[Obsolete ("Replace 'scope' argument by a Cottle.IStore instance")]
-		public Value Execute (IList<Value> arguments, IScope scope, TextWriter output)
-		{
-			return this.Execute (arguments, new ScopeStore (scope), output);
 		}
 
 		#endregion

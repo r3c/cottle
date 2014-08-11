@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Cottle.Builtins;
 using Cottle.Documents;
 using Cottle.Functions;
-using Cottle.Scopes;
 using Cottle.Settings;
 using Cottle.Stores;
 using Cottle.Values;

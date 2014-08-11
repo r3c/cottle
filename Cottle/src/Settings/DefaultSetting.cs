@@ -73,18 +73,5 @@ namespace Cottle.Settings
 		private static readonly DefaultSetting	instance = new DefaultSetting ();
 
 		#endregion
-
-		#region Obsolete
-
-		[Obsolete ("Use Trimmer property")]
-		public ICleaner	Cleaner
-		{
-			get
-			{
-				throw new InvalidOperationException ();
-			}
-		}
-
-		#endregion
 	}
 }

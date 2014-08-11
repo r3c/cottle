@@ -9,12 +9,6 @@ namespace Cottle
 		Map			= 0,
 		Number		= 3,
 		String		= 4,
-		Void		= 5,
-
-		[Obsolete ("Use ValueContent.Map")]
-		Array		= 0,
-
-		[Obsolete ("Use ValueContent.Void")]
-		Undefined	= 5
+		Void		= 5
 	}
 }

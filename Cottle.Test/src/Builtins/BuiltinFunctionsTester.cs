@@ -1,6 +1,5 @@
 ﻿using System;
 using Cottle.Documents;
-using Cottle.Scopes;
 using Cottle.Stores;
 using NUnit.Framework;
 

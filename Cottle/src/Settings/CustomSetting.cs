@@ -95,33 +95,5 @@ namespace Cottle.Settings
 		private Trimmer	trimmer = DefaultSetting.Instance.Trimmer;
 
 		#endregion
-
-		#region Obsolete
-
-		[Obsolete("Use Trimmer property")]
-		public ICleaner	Cleaner
-		{
-			get
-			{
-				throw new InvalidOperationException ();
-			}
-			set
-			{
-				this.trimmer = (text) =>
-				{
-					int	length;
-					int	start;
-
-					value.GetRange (text, out start, out length);
-
-					start = Math.Max (Math.Min (start, text.Length - 1), 0);
-					length = Math.Max (Math.Min (length, text.Length - start), 0);
-
-					return text.Substring (start, length);
-				};
-			}
-		}
-
-		#endregion
 	}
 }

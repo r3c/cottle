@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Cottle.Documents.Simple;
 using Cottle.Documents.Simple.Evaluators;
@@ -70,9 +71,20 @@ namespace Cottle.Documents
 			return result;
 		}
 
-		public override void Source (TextWriter writer)
+		public void Source (TextWriter writer)
 		{
 			this.renderer.Source (this.setting, writer);
+		}
+
+		public string Source ()
+		{
+			StringWriter	writer;
+
+			writer = new StringWriter (CultureInfo.InvariantCulture);
+
+			this.Source (writer);
+
+			return writer.ToString ();
 		}
 
 		#endregion

@@ -37,14 +37,5 @@ namespace Cottle
 		}
 		
 		#endregion
-
-		#region Obsoletes
-
-		ICleaner	Cleaner
-		{
-			get;
-		}
-
-		#endregion
 	}
 }
