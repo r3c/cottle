@@ -141,20 +141,14 @@ namespace Cottle.Parsers.Default
 
 						break;
 
-					case '[':
-						return this.NextChar (LexemType.BracketBegin);
+					case '!':
+						if (this.Read () && this.last == '=')
+							return this.NextChar (LexemType.NotEqual);
 
-					case ']':
-						return this.NextChar (LexemType.BracketEnd);
+						return new Lexem (LexemType.Bang, string.Empty);
 
-					case ',':
-						return this.NextChar (LexemType.Comma);
-
-					case ':':
-						return this.NextChar (LexemType.Colon);
-
-					case '.':
-						return this.NextChar (LexemType.Dot);
+					case '%':
+						return this.NextChar (LexemType.Percent);
 
 					case '(':
 						return this.NextChar (LexemType.ParenthesisBegin);
@@ -162,7 +156,66 @@ namespace Cottle.Parsers.Default
 					case ')':
 						return this.NextChar (LexemType.ParenthesisEnd);
 
-					case '_':
+					case '*':
+						return this.NextChar (LexemType.Star);
+
+					case '+':
+						return this.NextChar (LexemType.Plus);
+
+					case ',':
+						return this.NextChar (LexemType.Comma);
+
+					case '-':
+						return this.NextChar (LexemType.Minus);
+
+					case '.':
+						return this.NextChar (LexemType.Dot);
+
+					case '/':
+						return this.NextChar (LexemType.Slash);
+
+					case '0':
+					case '1':
+					case '2':
+					case '3':
+					case '4':
+					case '5':
+					case '6':
+					case '7':
+					case '8':
+					case '9':
+						buffer = new StringBuilder ();
+						dot = false;
+
+						do
+						{
+							dot |= this.last == '.';
+
+							buffer.Append (this.last);
+						}
+						while (this.Read () && ((this.last >= '0' && this.last <= '9') ||
+						                        (this.last == '.' && !dot)));
+
+						return new Lexem (LexemType.Number, buffer.ToString ());
+
+					case ':':
+						return this.NextChar (LexemType.Colon);
+
+					case '<':
+						if (this.Read () && this.last == '=')
+							return this.NextChar (LexemType.LowerEqual);
+
+						return new Lexem (LexemType.LowerThan, string.Empty);
+
+					case '=':
+						return this.NextChar (LexemType.Equal);
+
+					case '>':
+						if (this.Read () && this.last == '=')
+							return this.NextChar (LexemType.GreaterEqual);
+
+						return new Lexem (LexemType.GreaterThan, string.Empty);
+
 					case 'A':
 					case 'B':
 					case 'C':
@@ -189,6 +242,7 @@ namespace Cottle.Parsers.Default
 					case 'X':
 					case 'Y':
 					case 'Z':
+					case '_':
 					case 'a':
 					case 'b':
 					case 'c':
@@ -228,30 +282,11 @@ namespace Cottle.Parsers.Default
 
 						return new Lexem (LexemType.Symbol, buffer.ToString ());
 
-					case '-':
-					case '0':
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-					case '5':
-					case '6':
-					case '7':
-					case '8':
-					case '9':
-						buffer = new StringBuilder ();
-						dot = false;
+					case '[':
+						return this.NextChar (LexemType.BracketBegin);
 
-						do
-						{
-							dot |= this.last == '.';
-
-							buffer.Append (this.last);
-						}
-						while (this.Read () && ((this.last >= '0' && this.last <= '9') ||
-						                        (this.last == '.' && !dot)));
-
-						return new Lexem (LexemType.Number, buffer.ToString ());
+					case ']':
+						return this.NextChar (LexemType.BracketEnd);
 
 					case '\'':
 					case '"':

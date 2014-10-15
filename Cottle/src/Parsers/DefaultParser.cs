@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using Cottle.Builtins;
 using Cottle.Exceptions;
 using Cottle.Parsers.Default;
+using Cottle.Values;
 
 namespace Cottle.Parsers
 {
@@ -62,6 +64,20 @@ namespace Cottle.Parsers
 		#endregion
 
 		#region Methods / Private
+
+		private Expression BuildOperator (IFunction function, params Expression[] arguments)
+		{
+			return new Expression
+			{
+				Arguments	= arguments,
+				Source		= new Expression
+				{
+					Type	= ExpressionType.Constant,
+					Value	= new FunctionValue (function)
+				},
+				Type		= ExpressionType.Invoke
+			};
+		}
 
 		private Command ParseAssignment (StoreMode mode)
 		{
@@ -255,169 +271,143 @@ namespace Cottle.Parsers
 
 		private Expression ParseExpression ()
 		{
-			List<Expression>		arguments;
-			List<ExpressionElement>	elements;
-			Expression				expression;
-			int						index;
-			Expression				key;
-			decimal					number;
-			Expression				value;
+			Operator			current;
+			Stack<Expression>	operands;
+			Stack<Operator>		operators;
+			Operator			other;
+			Expression			value;
 
-			switch (this.lexer.Current.Type)
-			{
-				case LexemType.BracketBegin:
-					elements = new List<ExpressionElement> ();
-					index = 0;
-
-					for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.BracketEnd; )
-					{
-						key = this.ParseExpression ();
-
-						if (this.lexer.Current.Type == LexemType.Colon)
-						{
-							this.lexer.Next (LexerMode.Block);
-
-							value = this.ParseExpression ();
-						}
-						else
-						{
-							value = key;
-							key = new Expression
-							{
-								Type	= ExpressionType.Constant,
-								Value	= index++,
-							};
-						}
-
-						elements.Add (new ExpressionElement
-						{
-							Key		= key,
-							Value	= value
-						});
-
-						if (this.lexer.Current.Type == LexemType.Comma)
-							this.lexer.Next (LexerMode.Block);
-					}
-
-					expression = new Expression
-					{
-						Elements	= elements.ToArray (),
-						Type		= ExpressionType.Map
-					};
-
-					this.lexer.Next (LexerMode.Block);
-
-					break;
-
-				case LexemType.Number:
-					if (!decimal.TryParse (this.lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
-						number = 0;
-
-					expression = new Expression
-					{
-						Type	= ExpressionType.Constant,
-						Value	= number
-					};
-
-					this.lexer.Next (LexerMode.Block);
-
-					break;
-
-				case LexemType.String:
-					expression = new Expression
-					{
-						Type	= ExpressionType.Constant,
-						Value	= this.lexer.Current.Content
-					};
-
-					this.lexer.Next (LexerMode.Block);
-
-					break;
-
-				case LexemType.Symbol:
-					expression = new Expression
-					{
-						Type	= ExpressionType.Symbol,
-						Value	= this.lexer.Current.Content
-					};
-
-					this.lexer.Next (LexerMode.Block);
-
-					break;
-
-				default:
-					throw this.Raise ("expression");
-			}
+			operands = new Stack<Expression> ();
+			operators = new Stack<Operator> ();
 
 			while (true)
 			{
+				operands.Push (this.ParseValue ());
+
 				switch (this.lexer.Current.Type)
 				{
-					case LexemType.BracketBegin:
-						this.lexer.Next (LexerMode.Block);
-
-						value = this.ParseExpression ();
-
-						if (this.lexer.Current.Type != LexemType.BracketEnd)
-							throw this.Raise ("array index end (']')");
-
-						this.lexer.Next (LexerMode.Block);
-
-						expression = new Expression
+					case LexemType.Equal:
+						current = new Operator
 						{
-							Source		= expression,
-							Subscript	= value,
-							Type		= ExpressionType.Access 
+							Function	= BuiltinOperators.operatorEqual,
+							Precedence	= 1
 						};
 
 						break;
 
-					case LexemType.Dot:
-						this.lexer.Next (LexerMode.Block);
-
-						if (this.lexer.Current.Type != LexemType.Symbol)
-							throw this.Raise ("field name");
-
-						expression = new Expression
+					case LexemType.GreaterEqual:
+						current = new Operator
 						{
-							Source		= expression,
-							Subscript	= new Expression
-							{
-								Type	= ExpressionType.Constant,
-								Value	= this.lexer.Current.Content
-							},
-							Type		= ExpressionType.Access 
+							Function	= BuiltinOperators.operatorGreaterEqual,
+							Precedence	= 1
 						};
-
-						this.lexer.Next (LexerMode.Block);
 
 						break;
 
-					case LexemType.ParenthesisBegin:
-						arguments = new List<Expression> ();
-
-						for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+					case LexemType.GreaterThan:
+						current = new Operator
 						{
-							arguments.Add (this.ParseExpression ());
+							Function	= BuiltinOperators.operatorGreaterThan,
+							Precedence	= 1
+						};
 
-							if (this.lexer.Current.Type == LexemType.Comma)
-								this.lexer.Next (LexerMode.Block);
-						}
+						break;
 
-						this.lexer.Next (LexerMode.Block);
-
-						expression = new Expression
+					case LexemType.LowerEqual:
+						current = new Operator
 						{
-							Arguments	= arguments.ToArray (),
-							Source		= expression,
-							Type		= ExpressionType.Invoke
+							Function	= BuiltinOperators.operatorLowerEqual,
+							Precedence	= 1
+						};
+
+						break;
+
+					case LexemType.LowerThan:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorLowerThan,
+							Precedence	= 1
+						};
+
+						break;
+
+					case LexemType.Minus:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorSub,
+							Precedence	= 2
+						};
+
+						break;
+
+					case LexemType.NotEqual:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorNotEqual,
+							Precedence	= 1
+						};
+
+						break;
+
+					case LexemType.Percent:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorMod,
+							Precedence	= 3
+						};
+
+						break;
+
+					case LexemType.Plus:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorAdd,
+							Precedence	= 2
+						};
+
+						break;
+
+					case LexemType.Slash:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorDiv,
+							Precedence	= 3
+						};
+
+						break;
+
+					case LexemType.Star:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorMul,
+							Precedence	= 3
 						};
 
 						break;
 
 					default:
-						return expression;
+						while (operators.Count > 0)
+						{
+							current = operators.Pop ();
+							value = operands.Pop ();
+
+							operands.Push (this.BuildOperator (current.Function, operands.Pop (), value));
+						}
+
+						return operands.Pop ();
 				}
+
+				this.lexer.Next (LexerMode.Block);
+
+				while (operators.Count > 0 && operators.Peek ().Precedence >= current.Precedence)
+				{
+					other = operators.Pop ();
+					value = operands.Pop ();
+
+					operands.Push (this.BuildOperator (other.Function, operands.Pop (), value));
+				}
+
+				operators.Push (current);
 			}
 		}
 
@@ -610,6 +600,207 @@ namespace Cottle.Parsers
 			this.lexer.Next (LexerMode.Block);
 
 			return name;
+		}
+
+		private Expression ParseValue ()
+		{
+			List<Expression>		arguments;
+			List<ExpressionElement>	elements;
+			Expression				expression;
+			int						index;
+			Expression				key;
+			decimal					number;
+			Expression				value;
+
+			switch (this.lexer.Current.Type)
+			{
+				case LexemType.Bang:
+					this.lexer.Next (LexerMode.Block);
+
+					return this.BuildOperator (BuiltinOperators.operatorNot, this.ParseExpression ());
+
+				case LexemType.BracketBegin:
+					elements = new List<ExpressionElement> ();
+					index = 0;
+
+					for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.BracketEnd; )
+					{
+						key = this.ParseExpression ();
+
+						if (this.lexer.Current.Type == LexemType.Colon)
+						{
+							this.lexer.Next (LexerMode.Block);
+
+							value = this.ParseExpression ();
+						}
+						else
+						{
+							value = key;
+							key = new Expression
+							{
+								Type	= ExpressionType.Constant,
+								Value	= index++,
+							};
+						}
+
+						elements.Add (new ExpressionElement
+						{
+							Key		= key,
+							Value	= value
+						});
+
+						if (this.lexer.Current.Type == LexemType.Comma)
+							this.lexer.Next (LexerMode.Block);
+					}
+
+					expression = new Expression
+					{
+						Elements	= elements.ToArray (),
+						Type		= ExpressionType.Map
+					};
+
+					this.lexer.Next (LexerMode.Block);
+
+					break;
+
+				case LexemType.Minus:
+					this.lexer.Next (LexerMode.Block);
+
+					expression = new Expression
+					{
+						Type	= ExpressionType.Constant,
+						Value	= 0
+					};
+
+					return this.BuildOperator (BuiltinOperators.operatorSub, expression, this.ParseExpression ());
+
+				case LexemType.Number:
+					if (!decimal.TryParse (this.lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
+						number = 0;
+
+					expression = new Expression
+					{
+						Type	= ExpressionType.Constant,
+						Value	= number
+					};
+
+					this.lexer.Next (LexerMode.Block);
+
+					break;
+
+				case LexemType.ParenthesisBegin:
+					this.lexer.Next (LexerMode.Block);
+
+					expression = this.ParseExpression ();
+
+					if (this.lexer.Current.Type != LexemType.ParenthesisEnd)
+						throw this.Raise ("parenthesis end (')')");
+
+					this.lexer.Next (LexerMode.Block);
+
+					return expression;
+
+				case LexemType.Plus:
+					this.lexer.Next (LexerMode.Block);
+
+					return this.ParseExpression ();
+
+				case LexemType.String:
+					expression = new Expression
+					{
+						Type	= ExpressionType.Constant,
+						Value	= this.lexer.Current.Content
+					};
+
+					this.lexer.Next (LexerMode.Block);
+
+					break;
+
+				case LexemType.Symbol:
+					expression = new Expression
+					{
+						Type	= ExpressionType.Symbol,
+						Value	= this.lexer.Current.Content
+					};
+
+					this.lexer.Next (LexerMode.Block);
+
+					break;
+
+				default:
+					throw this.Raise ("expression");
+			}
+
+			while (true)
+			{
+				switch (this.lexer.Current.Type)
+				{
+					case LexemType.BracketBegin:
+						this.lexer.Next (LexerMode.Block);
+
+						value = this.ParseExpression ();
+
+						if (this.lexer.Current.Type != LexemType.BracketEnd)
+							throw this.Raise ("array index end (']')");
+
+						this.lexer.Next (LexerMode.Block);
+
+						expression = new Expression
+						{
+							Source		= expression,
+							Subscript	= value,
+							Type		= ExpressionType.Access 
+						};
+
+						break;
+
+					case LexemType.Dot:
+						this.lexer.Next (LexerMode.Block);
+
+						if (this.lexer.Current.Type != LexemType.Symbol)
+							throw this.Raise ("field name");
+
+						expression = new Expression
+						{
+							Source		= expression,
+							Subscript	= new Expression
+							{
+								Type	= ExpressionType.Constant,
+								Value	= this.lexer.Current.Content
+							},
+							Type		= ExpressionType.Access 
+						};
+
+						this.lexer.Next (LexerMode.Block);
+
+						break;
+
+					case LexemType.ParenthesisBegin:
+						arguments = new List<Expression> ();
+
+						for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+						{
+							arguments.Add (this.ParseExpression ());
+
+							if (this.lexer.Current.Type == LexemType.Comma)
+								this.lexer.Next (LexerMode.Block);
+						}
+
+						this.lexer.Next (LexerMode.Block);
+
+						expression = new Expression
+						{
+							Arguments	= arguments.ToArray (),
+							Source		= expression,
+							Type		= ExpressionType.Invoke
+						};
+
+						break;
+
+					default:
+						return expression;
+				}
+			}
 		}
 
 		private Exception Raise (string expected)

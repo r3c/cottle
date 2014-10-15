@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="src\Builtins\BuiltinFunctionsTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Builtins\BuiltinOperatorsTester.cs" />
     <Compile Include="src\Builtins\BuiltinTrimmersTester.cs" />
     <Compile Include="src\DocumentTester.cs" />
   </ItemGroup>

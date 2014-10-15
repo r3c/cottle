@@ -160,6 +160,14 @@ namespace Cottle.Documents
 				case ExpressionType.Constant:
 					return new ConstantEvaluator (expression.Value);
 
+				case ExpressionType.Invoke:
+					arguments = new IEvaluator[expression.Arguments.Length];
+
+					for (int i = 0; i < arguments.Length; ++i)
+						arguments[i] = this.CompileExpression (expression.Arguments[i]);
+
+					return new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);					
+
 				case ExpressionType.Map:
 					elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
 
@@ -172,14 +180,6 @@ namespace Cottle.Documents
 					}
 
 					return new MapEvaluator (elements);
-
-				case ExpressionType.Invoke:
-					arguments = new IEvaluator[expression.Arguments.Length];
-
-					for (int i = 0; i < arguments.Length; ++i)
-						arguments[i] = this.CompileExpression (expression.Arguments[i]);
-
-					return new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);
 
 				case ExpressionType.Symbol:
 					return new SymbolEvaluator (expression.Value);

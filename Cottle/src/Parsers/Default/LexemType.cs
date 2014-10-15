@@ -4,6 +4,7 @@ namespace Cottle.Parsers.Default
 	enum LexemType
 	{
 		None,
+		Bang,
 		BlockBegin,
 		BlockContinue,
 		BlockEnd,
@@ -13,9 +14,20 @@ namespace Cottle.Parsers.Default
 		Colon,
 		Dot,
 		EndOfFile,
+		Equal,
+		GreaterEqual,
+		GreaterThan,
+		LowerEqual,
+		LowerThan,
+		Minus,
+		NotEqual,
 		Number,
 		ParenthesisBegin,
 		ParenthesisEnd,
+		Percent,
+		Plus,
+		Slash,
+		Star,
 		String,
 		Symbol,
 		Text

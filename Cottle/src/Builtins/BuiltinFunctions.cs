@@ -28,8 +28,6 @@ namespace Cottle.Builtins
 
 		private static readonly IFunction	functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionAdd = new NativeFunction ((v) => v[0].AsNumber + v[1].AsNumber, 2);
-
 		private static readonly IFunction	functionAnd = new NativeFunction ((values) =>
 		{
 			foreach (Value value in values)
@@ -151,31 +149,6 @@ namespace Cottle.Builtins
 		}, 1, -1);
 
 		private static readonly IFunction	functionDefault = new NativeFunction ((v) => v[0].AsBoolean ? v[0] : v[1], 2);
-
-		private static readonly IFunction	functionDiv = new NativeFunction ((values) =>
-		{
-			decimal denominator;
-
-			denominator = values[1].AsNumber;
-
-			if (denominator == 0)
-				return VoidValue.Instance;
-
-			return values[0].AsNumber / denominator;
-		}, 2);
-
-		private static readonly IFunction	functionEqual = new NativeFunction ((values) =>
-		{
-			Value	first;
-
-			first = values[0];
-
-			for (int i = 1; i < values.Count; ++i)
-				if (values[i].CompareTo (first) != 0)
-					return false;
-
-			return true;
-		}, 1, -1);
 
 		private static readonly IFunction	functionExcept = new NativeFunction ((values) =>
 		{
@@ -354,10 +327,6 @@ namespace Cottle.Builtins
 			return string.Format (culture, "{0:" + format.Substring (index + 1) + "}", target);
 		}, 2, 3);
 
-		private static readonly IFunction	functionGreater = new NativeFunction ((v) => v[0].CompareTo (v[1]) > 0, 2);
-
-		private static readonly IFunction	functionGreaterEqual = new NativeFunction ((v) => v[0].CompareTo (v[1]) >= 0, 2);
-
 		private static readonly IFunction	functionHas = new NativeFunction ((values) =>
 		{
 			Value	source;
@@ -406,11 +375,7 @@ namespace Cottle.Builtins
 			return values[0].AsString.Length;
 		}, 1);
 
-		private static readonly IFunction	functionLower = new NativeFunction ((v) => v[0].CompareTo (v[1]) < 0, 2);
-
 		private static readonly IFunction	functionLowerCase = new NativeFunction ((v) => v[0].AsString.ToLowerInvariant (), 1);
-
-		private static readonly IFunction	functionLowerEqual = new NativeFunction ((v) => v[0].CompareTo (v[1]) <= 0, 2);
 
 		private static readonly IFunction	functionMap = new NativeFunction ((values, scope, output) =>
 		{
@@ -483,22 +448,6 @@ namespace Cottle.Builtins
 
 			return min;
 		}, 1, -1);
-
-		private static readonly IFunction	functionMod = new NativeFunction ((values) =>
-		{
-			decimal denominator;
-
-			denominator = values[1].AsNumber;
-
-			if (denominator == 0)
-				return VoidValue.Instance;
-
-			return values[0].AsNumber % denominator;
-		}, 2);
-
-		private static readonly IFunction	functionMul = new NativeFunction ((v) => v[0].AsNumber * v[1].AsNumber, 2);
-
-		private static readonly IFunction	functionNot = new NativeFunction ((v) => !v[0].AsBoolean, 1);
 
 		private static readonly IFunction	functionOr = new NativeFunction ((values) =>
 		{
@@ -634,8 +583,6 @@ namespace Cottle.Builtins
 
 		private static readonly IFunction	functionSplit = new NativeFunction ((v) => Array.ConvertAll (v[0].AsString.Split (new [] {v[1].AsString}, StringSplitOptions.None), s => new StringValue (s)), 2);
 
-		private static readonly IFunction	functionSub = new NativeFunction ((v) => v[0].AsNumber - v[1].AsNumber, 2);
-
 		private static readonly IFunction	functionToken = new NativeFunction ((values) =>
 		{
 			string	search;
@@ -745,7 +692,7 @@ namespace Cottle.Builtins
 		private static readonly Dictionary<string, IFunction>	instances = new Dictionary<string, IFunction>
 		{
 			{"abs",		BuiltinFunctions.functionAbsolute},
-			{"add",		BuiltinFunctions.functionAdd},
+			{"add",		BuiltinOperators.operatorAdd},
 			{"and",		BuiltinFunctions.functionAnd},
 			{"call",	BuiltinFunctions.functionCall},
 			{"cast",	BuiltinFunctions.functionCast},
@@ -756,29 +703,30 @@ namespace Cottle.Builtins
 			{"cos",		BuiltinFunctions.functionCosine},
 			{"cross",	BuiltinFunctions.functionCross},
 			{"default",	BuiltinFunctions.functionDefault},
-			{"div",		BuiltinFunctions.functionDiv},
-			{"eq",		BuiltinFunctions.functionEqual},
+			{"div",		BuiltinOperators.operatorDiv},
+			{"eq",		BuiltinOperators.operatorEqual},
 			{"except",	BuiltinFunctions.functionExcept},
 			{"filter",	BuiltinFunctions.functionFilter},
 			{"find",	BuiltinFunctions.functionFind},
 			{"flip",	BuiltinFunctions.functionFlip},
 			{"floor",	BuiltinFunctions.functionFloor},
 			{"format",	BuiltinFunctions.functionFormat},
-			{"ge",		BuiltinFunctions.functionGreaterEqual},
-			{"gt",		BuiltinFunctions.functionGreater},
+			{"ge",		BuiltinOperators.operatorGreaterEqual},
+			{"gt",		BuiltinOperators.operatorGreaterThan},
 			{"has",		BuiltinFunctions.functionHas},
 			{"join",	BuiltinFunctions.functionJoin},
 			{"lcase",	BuiltinFunctions.functionLowerCase},
-			{"le",		BuiltinFunctions.functionLowerEqual},
+			{"le",		BuiltinOperators.operatorLowerEqual},
 			{"len",		BuiltinFunctions.functionLength},
-			{"lt",		BuiltinFunctions.functionLower},
+			{"lt",		BuiltinOperators.operatorLowerThan},
 			{"map",		BuiltinFunctions.functionMap},
 			{"match",	BuiltinFunctions.functionMatch},
 			{"max",		BuiltinFunctions.functionMaximum},
 			{"min",		BuiltinFunctions.functionMinimum},
-			{"mod",		BuiltinFunctions.functionMod},
-			{"mul",		BuiltinFunctions.functionMul},
-			{"not",		BuiltinFunctions.functionNot},
+			{"mod",		BuiltinOperators.operatorMod},
+			{"mul",		BuiltinOperators.operatorMul},
+			{"ne",		BuiltinOperators.operatorNotEqual},
+			{"not",		BuiltinOperators.operatorNot},
 			{"or",		BuiltinFunctions.functionOr},
 			{"ord",		BuiltinFunctions.functionOrd},
 			{"pow",		BuiltinFunctions.functionPower},
@@ -789,7 +737,7 @@ namespace Cottle.Builtins
 			{"slice",	BuiltinFunctions.functionSlice},
 			{"sort",	BuiltinFunctions.functionSort},
 			{"split",	BuiltinFunctions.functionSplit},
-			{"sub",		BuiltinFunctions.functionSub},
+			{"sub",		BuiltinOperators.operatorSub},
 			{"token",	BuiltinFunctions.functionToken},
 			{"ucase",	BuiltinFunctions.functionUpperCase},
 			{"union",	BuiltinFunctions.functionUnion},

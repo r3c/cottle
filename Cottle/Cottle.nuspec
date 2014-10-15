@@ -11,7 +11,7 @@
     <iconUrl>https://raw.github.com/r3c/Cottle/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-	<releaseNotes>Remove deprecated code.</releaseNotes>
+	<releaseNotes>Add binary operators</releaseNotes>
 	<copyright>$copyright$</copyright>
     <tags>Cottle Template Engine Text Transform Format</tags>
   </metadata>
