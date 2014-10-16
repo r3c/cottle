@@ -13,6 +13,8 @@ namespace Cottle.Parsers.Default
 		Comma,
 		Colon,
 		Dot,
+		DoubleAmpersand,
+		DoublePipe,
 		EndOfFile,
 		Equal,
 		GreaterEqual,

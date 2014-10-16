@@ -8,6 +8,17 @@ namespace Cottle.Builtins
 	{
 		public static readonly IFunction	operatorAdd = new NativeFunction ((v) => v[0].AsNumber + v[1].AsNumber, 2);
 
+		public static readonly IFunction	operatorAnd = new NativeFunction ((values) =>
+		{
+			foreach (Value value in values)
+			{
+				if (!value.AsBoolean)
+					return false;
+			}
+
+			return true;
+		});
+
 		public static readonly IFunction	operatorDiv = new NativeFunction ((values) =>
 		{
 			decimal denominator;
@@ -69,6 +80,17 @@ namespace Cottle.Builtins
 
 			return true;
 		}, 1, -1);
+
+		public static readonly IFunction	operatorOr = new NativeFunction ((values) =>
+		{
+			foreach (Value value in values)
+			{
+				if (value.AsBoolean)
+					return true;
+			}
+
+			return false;
+		});
 
 		public static readonly IFunction	operatorSub = new NativeFunction ((v) => v[0].AsNumber - v[1].AsNumber, 2);
 	}

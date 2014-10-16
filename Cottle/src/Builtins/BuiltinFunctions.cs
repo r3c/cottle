@@ -28,17 +28,6 @@ namespace Cottle.Builtins
 
 		private static readonly IFunction	functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionAnd = new NativeFunction ((values) =>
-		{
-			foreach (Value value in values)
-			{
-				if (!value.AsBoolean)
-					return false;
-			}
-
-			return true;
-		});
-
 		private static readonly IFunction	functionCall = new NativeFunction ((values, scope, output) =>
 		{
 			Value[]		arguments;
@@ -79,15 +68,18 @@ namespace Cottle.Builtins
 
 		private static readonly IFunction	functionCat = new NativeFunction ((values) =>
 		{
-			StringBuilder						builder;
-			List<KeyValuePair<Value, Value>>	list;
+			StringBuilder	builder;
+			List<Value>		list;
 
 			if (values[0].Type == ValueContent.Map)
 			{
-				list = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count * 2 + 1);
+				list = new List<Value> (values[0].Fields.Count * 2 + 1);
 
 				foreach (Value value in values)
-					list.AddRange (value.Fields);
+				{
+					foreach (KeyValuePair<Value, Value> field in value.Fields)
+						list.Add (field.Value);
+				}
 
 				return list;
 			}
@@ -449,17 +441,6 @@ namespace Cottle.Builtins
 			return min;
 		}, 1, -1);
 
-		private static readonly IFunction	functionOr = new NativeFunction ((values) =>
-		{
-			foreach (Value value in values)
-			{
-				if (value.AsBoolean)
-					return true;
-			}
-
-			return false;
-		});
-
 		private static readonly IFunction	functionOrd = new NativeFunction ((values) =>
 		{
 			string	str;
@@ -538,13 +519,13 @@ namespace Cottle.Builtins
 			int										length;
 			int										offset;
 			Value									source;
-			KeyValuePair<Value, Value>[]			target;
+			Value[]									target;
 			int										i;
 
 			source = values[0];
 			length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
-			offset = Math.Min ((int)values[1].AsNumber, length);
-			count = values.Count > 2 ? Math.Min ((int)values[2].AsNumber, length - offset) : length - offset;
+			offset = Math.Max (Math.Min ((int)values[1].AsNumber, length), 0);
+			count = values.Count > 2 ? Math.Max (Math.Min ((int)values[2].AsNumber, length - offset), 0) : length - offset;
 
 			if (source.Type == ValueContent.Map)
 			{
@@ -553,11 +534,11 @@ namespace Cottle.Builtins
 				while (offset-- > 0 && enumerator.MoveNext ())
 					;
 
-				target = new KeyValuePair<Value, Value>[count];
+				target = new Value[count];
 				i = 0;
 
 				while (count-- > 0 && enumerator.MoveNext ())
-					target[i++] = enumerator.Current;
+					target[i++] = enumerator.Current.Value;
 
 				return target;
 			}
@@ -693,7 +674,7 @@ namespace Cottle.Builtins
 		{
 			{"abs",		BuiltinFunctions.functionAbsolute},
 			{"add",		BuiltinOperators.operatorAdd},
-			{"and",		BuiltinFunctions.functionAnd},
+			{"and",		BuiltinOperators.operatorAnd},
 			{"call",	BuiltinFunctions.functionCall},
 			{"cast",	BuiltinFunctions.functionCast},
 			{"cat",		BuiltinFunctions.functionCat},
@@ -727,7 +708,7 @@ namespace Cottle.Builtins
 			{"mul",		BuiltinOperators.operatorMul},
 			{"ne",		BuiltinOperators.operatorNotEqual},
 			{"not",		BuiltinOperators.operatorNot},
-			{"or",		BuiltinFunctions.functionOr},
+			{"or",		BuiltinOperators.operatorOr},
 			{"ord",		BuiltinFunctions.functionOrd},
 			{"pow",		BuiltinFunctions.functionPower},
 			{"rand",	BuiltinFunctions.functionRandom},

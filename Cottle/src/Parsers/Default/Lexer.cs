@@ -150,6 +150,12 @@ namespace Cottle.Parsers.Default
 					case '%':
 						return this.NextChar (LexemType.Percent);
 
+					case '&':
+						if (this.Read () && this.last == '&')
+							return this.NextChar (LexemType.DoubleAmpersand);
+
+						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
+
 					case '(':
 						return this.NextChar (LexemType.ParenthesisBegin);
 
@@ -281,6 +287,12 @@ namespace Cottle.Parsers.Default
 						                        (this.last == '_')));
 
 						return new Lexem (LexemType.Symbol, buffer.ToString ());
+
+					case '|':
+						if (this.Read () && this.last == '|')
+							return this.NextChar (LexemType.DoublePipe);
+
+						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
 
 					case '[':
 						return this.NextChar (LexemType.BracketBegin);

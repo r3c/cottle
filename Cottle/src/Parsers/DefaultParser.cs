@@ -286,6 +286,24 @@ namespace Cottle.Parsers
 
 				switch (this.lexer.Current.Type)
 				{
+					case LexemType.DoubleAmpersand:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorAnd,
+							Precedence	= 0
+						};
+
+						break;
+
+					case LexemType.DoublePipe:
+						current = new Operator
+						{
+							Function	= BuiltinOperators.operatorOr,
+							Precedence	= 0
+						};
+
+						break;
+
 					case LexemType.Equal:
 						current = new Operator
 						{

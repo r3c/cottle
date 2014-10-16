@@ -15,7 +15,17 @@ namespace Cottle.Test.Builtins
 		[TestCase ("1 + 2 + 3", "6")]
 		public void OperatorAdd (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + expected);
+			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);
+		}
+
+		[Test]
+		[TestCase ("0 && 0", false)]
+		[TestCase ("0 && 1", false)]
+		[TestCase ("1 && 0", false)]
+		[TestCase ("1 && 1", true)]
+		public void OperatorAnd (string expression, bool expected)
+		{
+			BuiltinOperatorsTester.AssertResult (expression, expected);
 		}
 
 		[Test]
@@ -25,7 +35,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("18 / 3 / 2", "3")]
 		public void OperatorDiv (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + (expected ?? "0%0"));
+			BuiltinOperatorsTester.AssertResult (expression + "=" + (expected ?? "0%0"), true);
 		}
 
 		[Test]
@@ -35,8 +45,8 @@ namespace Cottle.Test.Builtins
 		[TestCase ("'Equal'", "'Equal'", true)]
 		public void OperatorEqualNotEqual (string lhs, string rhs, bool expected)
 		{
-			BuiltinOperatorsTester.AssertTrue ((expected ? "" : "!") + "(" + lhs + "=" + rhs + ")");
-			BuiltinOperatorsTester.AssertTrue ((expected ? "!" : "") + "(" + lhs + "!=" + rhs + ")");
+			BuiltinOperatorsTester.AssertResult (lhs + "=" + rhs, expected);
+			BuiltinOperatorsTester.AssertResult (lhs + "!=" + rhs, !expected);
 		}
 
 		[Test]
@@ -48,8 +58,8 @@ namespace Cottle.Test.Builtins
 		[TestCase ("'BX'", "'AX'", false)]
 		public void OperatorGreaterThanLowerEqual (string lhs, string rhs, bool expected)
 		{
-			BuiltinOperatorsTester.AssertTrue ((expected ? "!" : "") + "(" + lhs + ">" + rhs + ")");
-			BuiltinOperatorsTester.AssertTrue ((expected ? "" : "!") + "(" + lhs + "<=" + rhs + ")");
+			BuiltinOperatorsTester.AssertResult (lhs + ">" + rhs, !expected);
+			BuiltinOperatorsTester.AssertResult (lhs + "<=" + rhs, expected);
 		}
 
 		[Test]
@@ -61,8 +71,8 @@ namespace Cottle.Test.Builtins
 		[TestCase ("'BX'", "'AX'", false)]
 		public void OperatorGreaterEqualLowerThan (string lhs, string rhs, bool expected)
 		{
-			BuiltinOperatorsTester.AssertTrue ((expected ? "!" : "") + "(" + lhs + ">=" + rhs + ")");
-			BuiltinOperatorsTester.AssertTrue ((expected ? "" : "!") + "(" + lhs + "<" + rhs + ")");
+			BuiltinOperatorsTester.AssertResult (lhs + ">=" + rhs, !expected);
+			BuiltinOperatorsTester.AssertResult (lhs + "<" + rhs, expected);
 		}
 
 		[Test]
@@ -72,7 +82,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("18 % 5 % 2", "1")]
 		public void OperatorMod (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + (expected ?? "0/0"));
+			BuiltinOperatorsTester.AssertResult (expression + "=" + (expected ?? "0/0"), true);
 		}
 
 		[Test]
@@ -82,7 +92,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("3 * 2 * 1", "6")]
 		public void OperatorMul (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + expected);
+			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);
 		}
 
 		[Test]
@@ -90,7 +100,17 @@ namespace Cottle.Test.Builtins
 		[TestCase ("!1", false)]
 		public void OperatorNot (string expression, bool expected)
 		{
-			BuiltinOperatorsTester.AssertTrue ((expected ? "" : "!") + "(" + expression + ")");
+			BuiltinOperatorsTester.AssertResult (expression, expected);
+		}
+
+		[Test]
+		[TestCase ("0 || 0", false)]
+		[TestCase ("0 || 1", true)]
+		[TestCase ("1 || 0", true)]
+		[TestCase ("1 || 1", true)]
+		public void OperatorOr (string expression, bool expected)
+		{
+			BuiltinOperatorsTester.AssertResult (expression, expected);
 		}
 
 		[Test]
@@ -100,7 +120,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("3 - 2 - 1", "0")]
 		public void OperatorSub (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + expected);
+			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);
 		}
 
 		[Test]
@@ -111,12 +131,12 @@ namespace Cottle.Test.Builtins
 		[TestCase ("1 * 2 + 3", "5")]
 		public void Precedence (string expression, string expected)
 		{
-			BuiltinOperatorsTester.AssertTrue (expression + "=" + expected);
+			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);
 		}
 
-		private static void AssertTrue (string expression)
+		private static void AssertResult (string expression, bool expected)
 		{
-			IDocument	document = new SimpleDocument ("{" + expression + "}");
+			IDocument	document = new SimpleDocument ("{" + (expected ? "" : "!") + "(" + expression + ")}");
 			IStore		store = new BuiltinStore ();
 
 			Assert.AreEqual ("true", document.Render (store));

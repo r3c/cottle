@@ -30,6 +30,24 @@ namespace Cottle.Test.Builtins
 		}
 
 		[Test]
+		[TestCase ("slice('abc', 0, 5)", "'abc'")]
+		[TestCase ("slice('abc', 0, 3)", "'abc'")]
+		[TestCase ("slice('abc', 0, 2)", "'ab'")]
+		[TestCase ("slice('abc', 0, 0)", "''")]
+		[TestCase ("slice('abc', 1)", "'bc'")]
+		[TestCase ("slice('abc', -2)", "'abc'")]
+		[TestCase ("slice([1, 2, 3], 0, 5)", "[1, 2, 3]")]
+		[TestCase ("slice([1, 2, 3], 0, 3)", "[1, 2, 3]")]
+		[TestCase ("slice([1, 2, 3], 0, 2)", "[1, 2]")]
+		[TestCase ("slice([1, 2, 3], 0, 0)", "[]")]
+		[TestCase ("slice([1, 2, 3], 1)", "[2, 3]")]
+		[TestCase ("slice([1, 2, 3], -2)", "[1, 2, 3]")]
+		public void FunctionSlice (string expression, string expected)
+		{
+			BuiltinFunctionsTester.AssertEqual (expression, expected);
+		}
+
+		[Test]
 		[TestCase("token('A.B.C', '.', 0)", "A")]
 		[TestCase("token('A//B//C', '//', 1)", "B")]
 		[TestCase("token('A---B---C', '---', 2)", "C")]
