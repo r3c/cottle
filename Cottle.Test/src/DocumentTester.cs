@@ -392,6 +392,19 @@ namespace Cottle.Test
 		}
 
 		[Test]
+		public void TestAmbiguous ()
+		{
+			CustomSetting	setting;
+
+			setting = new CustomSetting ();
+			setting.BlockBegin = "<|";
+			setting.BlockContinue = "<>";
+			setting.BlockEnd = "|>";
+
+			this.AssertRender ("<|1 || 0|>", "true", setting, (s) => {}, (d) => {});
+		}
+
+		[Test]
 		public void TextEmpty ()
 		{
 			this.AssertRender (string.Empty, string.Empty);

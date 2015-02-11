@@ -53,7 +53,7 @@ namespace Cottle.Parsers.Default
 
 		private int							line;
 
-		private Lexem						pending;
+		private readonly Queue<char>		pending;
 
 		private TextReader					reader;
 
@@ -67,7 +67,7 @@ namespace Cottle.Parsers.Default
 		{
 			this.cursors = new Queue<LexemCursor> ();
 			this.escape = escape;
-			this.pending = new Lexem (LexemType.None, string.Empty);
+			this.pending = new Queue<char> ();
 			this.root = new LexemState ();
 
 			if (!this.root.Store (LexemType.BlockBegin, blockBegin))
@@ -110,6 +110,7 @@ namespace Cottle.Parsers.Default
 			this.eof = false;
 			this.last = '\0';
 			this.line = 1;
+			this.pending.Clear ();
 			this.reader = reader;
 
 			return this.Read ();
@@ -153,6 +154,9 @@ namespace Cottle.Parsers.Default
 					case '&':
 						if (this.Read () && this.last == '&')
 							return this.NextChar (LexemType.DoubleAmpersand);
+
+						this.pending.Enqueue (this.last);
+						this.last = '&';
 
 						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
 
@@ -292,6 +296,9 @@ namespace Cottle.Parsers.Default
 						if (this.Read () && this.last == '|')
 							return this.NextChar (LexemType.DoublePipe);
 
+						this.pending.Enqueue (this.last);
+						this.last = '|';
+
 						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
 
 					case '[':
@@ -345,15 +352,6 @@ namespace Cottle.Parsers.Default
 			int				trail;
 			LexemType		type;
 
-			if (this.pending.Type != LexemType.None)
-			{
-				lexem = this.pending;
-
-				this.pending = new Lexem (LexemType.None, string.Empty);
-
-				return lexem;
-			}
-
 			buffer = new StringBuilder ();
 
 			for (; !this.eof; this.Read ())
@@ -377,12 +375,14 @@ namespace Cottle.Parsers.Default
 						while (this.cursors.Count > 0)
 							token.Append (this.cursors.Dequeue ().Character);
 
-						lexem = new Lexem (type, token.ToString ());
 						text = buffer.ToString ();
 
-						if (!string.IsNullOrEmpty (text))
+						if (string.IsNullOrEmpty (text))
+							lexem = new Lexem (type, token.ToString ());
+						else
 						{
-							this.pending = lexem;
+							for (int i = 0; i < token.Length; ++i)
+								this.pending.Enqueue (token[i]);
 
 							lexem = new Lexem (LexemType.Text, text);
 						}
@@ -414,24 +414,36 @@ namespace Cottle.Parsers.Default
 		{
 			int value;
 
+			if (this.eof)
+				return false;
+
+			if (this.pending.Count > 0)
+			{
+				this.last = this.pending.Dequeue ();
+
+				return true;
+			}
+
 			value = this.reader.Read ();
 
-			if (value >= 0)
+			if (value < 0)
 			{
-				this.last = (char)value;
-
-				if (this.last == '\n')
-				{
-					this.column = 1;
-					++this.line;
-				}
-				else
-					++this.column;
-			}
-			else
 				this.eof = true;
 
-			return !this.eof;
+				return false;
+			}
+
+			this.last = (char)value;
+
+			if (this.last == '\n')
+			{
+				this.column = 1;
+				++this.line;
+			}
+			else
+				++this.column;
+
+			return true;
 		}
 
 		#endregion
