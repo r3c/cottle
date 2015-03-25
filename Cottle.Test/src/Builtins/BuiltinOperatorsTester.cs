@@ -13,6 +13,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("0 + 1.5", "1.5")]
 		[TestCase ("3 + 0", "3")]
 		[TestCase ("1 + 2 + 3", "6")]
+		[TestCase ("+1 + 2", "3")]
 		public void OperatorAdd (string expression, string expected)
 		{
 			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);
@@ -118,6 +119,7 @@ namespace Cottle.Test.Builtins
 		[TestCase ("0 - 1.5", "-1.5")]
 		[TestCase ("3 - 0", "3")]
 		[TestCase ("3 - 2 - 1", "0")]
+		[TestCase ("-1 - 2", "-3")]
 		public void OperatorSub (string expression, string expected)
 		{
 			BuiltinOperatorsTester.AssertResult (expression + "=" + expected, true);

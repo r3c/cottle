@@ -635,7 +635,7 @@ namespace Cottle.Parsers
 				case LexemType.Bang:
 					this.lexer.Next (LexerMode.Block);
 
-					return this.BuildOperator (BuiltinOperators.operatorNot, this.ParseExpression ());
+					return this.BuildOperator (BuiltinOperators.operatorNot, this.ParseValue ());
 
 				case LexemType.BracketBegin:
 					elements = new List<ExpressionElement> ();
@@ -690,7 +690,7 @@ namespace Cottle.Parsers
 						Value	= 0
 					};
 
-					return this.BuildOperator (BuiltinOperators.operatorSub, expression, this.ParseExpression ());
+					return this.BuildOperator (BuiltinOperators.operatorSub, expression, this.ParseValue ());
 
 				case LexemType.Number:
 					if (!decimal.TryParse (this.lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture, out number))
@@ -721,7 +721,7 @@ namespace Cottle.Parsers
 				case LexemType.Plus:
 					this.lexer.Next (LexerMode.Block);
 
-					return this.ParseExpression ();
+					return this.ParseValue ();
 
 				case LexemType.String:
 					expression = new Expression
