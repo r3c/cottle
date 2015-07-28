@@ -34,7 +34,7 @@ solution if you want to use it. It is compatible with .NET 3.5 and above.
 directly in a text box and render them using predefined data.
 
 User manual (the "manual.html" at repository root, also available through
-http://r3c.github.com/Cottle/) explains how to use the library, and contains a
+http://r3c.github.com/cottle/) explains how to use the library, and contains a
 lot of code examples.
 
 Licence
@@ -46,7 +46,7 @@ more information. Any contribution would be of course highly welcomed!
 Author
 ------
 
-Rémi Caput (cottle [at] mirari [dot] fr)
+RÃ©mi Caput (cottle [at] mirari [dot] fr)
 http://remi.caput.fr/
 
 If you use my library, please drop me a line!
