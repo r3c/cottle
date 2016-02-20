@@ -5,6 +5,8 @@
 /Cottle.Test/bin/
 /Cottle.Test/obj/
 /packages/
+/tests/
+/TestResult.xml
 *.sln.sdsettings
 *.suo
 *.user
