@@ -13,6 +13,6 @@
     <description>$description$</description>
 	<releaseNotes>Add "defined" and "type" builtin functions.</releaseNotes>
 	<copyright>$copyright$</copyright>
-    <tags>Cottle Template Templating Engine C# Text Transform Language Format</tags>
+    <tags>Template Templating Engine HTML JavaScript Email</tags>
   </metadata>
 </package>
