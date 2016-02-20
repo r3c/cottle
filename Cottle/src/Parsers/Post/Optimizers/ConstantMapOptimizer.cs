@@ -8,7 +8,13 @@ namespace Cottle.Parsers.Post.Optimizers
 	/// </summary>
 	class ConstantMapOptimizer : AbstractOptimizer
 	{
-		#region Attributes
+		#region Attributes / Static
+
+		public static readonly ConstantMapOptimizer Instance = new ConstantMapOptimizer ();
+
+		#endregion
+
+		#region Attributes / Instance
 
 		private static readonly Predicate<ExpressionElement>	constants = (e) => e.Key.Type == ExpressionType.Constant && e.Value.Type == ExpressionType.Constant;
 
@@ -20,21 +26,19 @@ namespace Cottle.Parsers.Post.Optimizers
 		{
 			KeyValuePair<Value, Value>[]	pairs;
 
-			if (expression.Type == ExpressionType.Map && Array.TrueForAll (expression.Elements, ConstantMapOptimizer.constants))
+			if (expression.Type != ExpressionType.Map || !Array.TrueForAll (expression.Elements, ConstantMapOptimizer.constants))
+				return expression;
+
+			pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];
+
+			for (int i = expression.Elements.Length; i-- > 0; )
+				pairs[i] = new KeyValuePair<Value, Value> (expression.Elements[i].Key.Value, expression.Elements[i].Value.Value);
+
+			return new Expression
 			{
-				pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];
-
-				for (int i = expression.Elements.Length; i-- > 0; )
-					pairs[i] = new KeyValuePair<Value, Value> (expression.Elements[i].Key.Value, expression.Elements[i].Value.Value);
-
-				return new Expression
-				{
-					Type	= ExpressionType.Constant,
-					Value	= pairs
-				};
-			}
-
-			return expression;
+				Type	= ExpressionType.Constant,
+				Value	= pairs
+			};
 		}
 
 		#endregion

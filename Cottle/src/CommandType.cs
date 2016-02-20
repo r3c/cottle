@@ -3,6 +3,7 @@ namespace Cottle
 {
 	enum CommandType
 	{
+		None,
 		AssignFunction,
 		AssignValue,
 		Composite,

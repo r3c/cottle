@@ -75,6 +75,9 @@ namespace Cottle.Test
 		[TestCase ("1", "a|elif 1:b|else:c", "a")]
 		[TestCase ("0", "a|elif 1:b|else:c", "b")]
 		[TestCase ("0", "a|elif 0:b|else:c", "c")]
+		[TestCase ("1 + 0", "a|elif 1 + 0:b|else:c", "a")]
+		[TestCase ("0 + 0", "a|elif 1 + 0:b|else:c", "b")]
+		[TestCase ("0 + 0", "a|elif 0 + 0:b|else:c", "c")]
 		public void CommandIf (string condition, string body, string expected)
 		{
 			this.AssertRender ("{if " + condition + ":" + body + "}", expected);

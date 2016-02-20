@@ -98,6 +98,7 @@
     <Compile Include="src\Maps\EmptyMap.cs" />
     <Compile Include="src\Maps\HashMap.cs" />
     <Compile Include="src\Maps\MixMap.cs" />
+    <Compile Include="src\ParserFactory.cs" />
     <Compile Include="src\Parsers\DefaultParser.cs" />
     <Compile Include="src\Parsers\Default\Lexem.cs" />
     <Compile Include="src\Parsers\Default\LexemCursor.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="src\Parsers\PostParser.cs" />
     <Compile Include="src\Parsers\Post\IOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\AbstractOptimizer.cs" />
+    <Compile Include="src\Parsers\Post\Optimizers\IfOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\ConstantMapOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\ReturnOptimizer.cs" />
     <Compile Include="src\Settings\CustomSetting.cs" />

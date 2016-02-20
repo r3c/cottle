@@ -5,7 +5,6 @@ using System.IO;
 using Cottle.Documents.Simple;
 using Cottle.Documents.Simple.Evaluators;
 using Cottle.Documents.Simple.Nodes;
-using Cottle.Parsers;
 using Cottle.Settings;
 
 namespace Cottle.Documents
@@ -29,14 +28,11 @@ namespace Cottle.Documents
 
 		public SimpleDocument (TextReader reader, ISetting setting)
 		{
-			IParser	parser;
-			Command	root;
+			IParser	parser = ParserFactory.BuildParser (setting);
+			Command	root = parser.Parse (reader);
 
-			parser = new DefaultParser (setting.BlockBegin, setting.BlockContinue, setting.BlockEnd, setting.Escape);
-			root = parser.Parse (reader);
-
+			this.renderer = this.CompileCommand (root, setting.Trimmer);
 			this.setting = setting;
-			this.renderer = this.CompileCommand (root);
 		}
 
 		public SimpleDocument (TextReader reader) :
@@ -91,7 +87,7 @@ namespace Cottle.Documents
 
 		#region Methods / Private
 
-		private INode CompileCommand (Command command)
+		private INode CompileCommand (Command command, Trimmer trimmer)
 		{
 			List<KeyValuePair<IEvaluator, INode>>	branches;
 			List<INode>								nodes;
@@ -99,7 +95,7 @@ namespace Cottle.Documents
 			switch (command.Type)
 			{
 				case CommandType.AssignFunction:
-					return new AssignFunctionNode (command.Name, command.Arguments, this.CompileCommand (command.Body), command.Mode);
+					return new AssignFunctionNode (command.Name, command.Arguments, this.CompileCommand (command.Body, trimmer), command.Mode);
 
 				case CommandType.AssignValue:
 					return new AssignValueNode (command.Name, this.CompileExpression (command.Operand), command.Mode);
@@ -108,9 +104,9 @@ namespace Cottle.Documents
 					nodes = new List<INode> ();
 
 					for (; command.Type == CommandType.Composite; command = command.Next)
-						nodes.Add (this.CompileCommand (command.Body));
+						nodes.Add (this.CompileCommand (command.Body, trimmer));
 
-					nodes.Add (this.CompileCommand (command));
+					nodes.Add (this.CompileCommand (command, trimmer));
 
 					return new CompositeNode (nodes);
 
@@ -121,24 +117,24 @@ namespace Cottle.Documents
 					return new EchoNode (this.CompileExpression (command.Operand));
 
 				case CommandType.For:
-					return new ForNode (this.CompileExpression (command.Operand), command.Key, command.Name, this.CompileCommand (command.Body), command.Next != null ? this.CompileCommand (command.Next) : null);
+					return new ForNode (this.CompileExpression (command.Operand), command.Key, command.Name, this.CompileCommand (command.Body, trimmer), command.Next != null ? this.CompileCommand (command.Next, trimmer) : null);
 
 				case CommandType.If:
 					branches = new List<KeyValuePair<IEvaluator, INode>> ();
 
 					for (; command != null && command.Type == CommandType.If; command = command.Next)
-						branches.Add (new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Operand), this.CompileCommand (command.Body)));
+						branches.Add (new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Operand), this.CompileCommand (command.Body, trimmer)));
 
-					return new IfNode (branches, command != null ? this.CompileCommand (command) : null);
+					return new IfNode (branches, command != null ? this.CompileCommand (command, trimmer) : null);
 
 				case CommandType.Literal:
-					return new LiteralNode (this.setting.Trimmer (command.Text));
+					return new LiteralNode (trimmer (command.Text));
 
 				case CommandType.Return:
 					return new ReturnNode (this.CompileExpression (command.Operand));
 
 				case CommandType.While:
-					return new WhileNode (this.CompileExpression (command.Operand), this.CompileCommand (command.Body));
+					return new WhileNode (this.CompileExpression (command.Operand), this.CompileCommand (command.Body, trimmer));
 
 				default:
 					return new LiteralNode (string.Empty);

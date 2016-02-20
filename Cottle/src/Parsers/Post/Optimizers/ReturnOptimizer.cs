@@ -7,6 +7,12 @@ namespace Cottle.Parsers.Post.Optimizers
 	/// </summary>
 	class ReturnOptimizer : AbstractOptimizer
 	{
+		#region Attributes
+
+		public static readonly ReturnOptimizer Instance = new ReturnOptimizer ();
+
+		#endregion
+
 		#region Methods
 
 		public override Command Optimize (Command command)
