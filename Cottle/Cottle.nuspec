@@ -6,13 +6,13 @@
 	<title>$title$</title>
     <authors>$author$</authors>
     <owners>Remi Caput</owners>
-    <licenseUrl>https://raw.github.com/r3c/Cottle/master/LICENSE</licenseUrl>
-    <projectUrl>http://r3c.github.com/Cottle/</projectUrl>
-    <iconUrl>https://raw.github.com/r3c/Cottle/master/icon.png</iconUrl>
+    <licenseUrl>https://raw.github.com/r3c/cottle/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://r3c.github.com/cottle/</projectUrl>
+    <iconUrl>https://raw.github.com/r3c/cottle/master/icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-	<releaseNotes>Add binary operators</releaseNotes>
+	<releaseNotes>Add "defined" and "type" builtin functions.</releaseNotes>
 	<copyright>$copyright$</copyright>
-    <tags>Cottle Template Engine Text Transform Format</tags>
+    <tags>Cottle Template Templating Engine C# Text Transform Language Format</tags>
   </metadata>
 </package>
