@@ -9,6 +9,41 @@ namespace Cottle.Test.Builtins
 	public class BuiltinFunctionsTester
 	{
 		[Test]
+		[TestCase ("cast(eq(0, 1), 'n')", "0")]
+		[TestCase ("cast(eq(0, 0), 'number')", "1")]
+		[TestCase ("cast(eq(0, 1), 's')", "''")]
+		[TestCase ("cast(eq(0, 0), 'string')", "'true'")]
+		[TestCase ("cast(0, 'b')", "eq(0, 1)")]
+		[TestCase ("cast(1, 'boolean')", "eq(0, 0)")]
+		[TestCase ("cast(1, 's')", "'1'")]
+		[TestCase ("cast(1, 'string')", "'1'")]
+		[TestCase ("cast('0', 'b')", "eq(0, 0)")]
+		[TestCase ("cast('42', 'b')", "eq(0, 0)")]
+		[TestCase ("cast('', 'boolean')", "eq(0, 1)")]
+		[TestCase ("cast('0', 'n')", "0")]
+		[TestCase ("cast('42', 'n')", "42")]
+		[TestCase ("cast('ABC', 'number')", "0")]
+		public void FunctionCast (string expression, string expected)
+		{
+			BuiltinFunctionsTester.AssertEqual (expression, expected);
+		}
+
+		[Test]
+		[TestCase ("defined(void)", "")]
+		[TestCase ("defined(0)", "true")]
+		[TestCase ("defined(1)", "true")]
+		[TestCase ("defined('')", "true")]
+		[TestCase ("defined('A')", "true")]
+		[TestCase ("defined(eq(0, 0))", "true")]
+		[TestCase ("defined(eq(0, 1))", "true")]
+		[TestCase ("defined([])", "true")]
+		[TestCase ("defined([1])", "true")]
+		public void FunctionDefined (string expression, string expected)
+		{
+			BuiltinFunctionsTester.AssertPrint (expression, expected);
+		}
+
+		[Test]
 		[TestCase ("range(3)", "[0, 1, 2]")]
 		[TestCase ("range(10)", "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]")]
 		[TestCase ("range(-2)", "[]")]
@@ -48,18 +83,29 @@ namespace Cottle.Test.Builtins
 		}
 
 		[Test]
-		[TestCase("token('A.B.C', '.', 0)", "A")]
-		[TestCase("token('A//B//C', '//', 1)", "B")]
-		[TestCase("token('A---B---C', '---', 2)", "C")]
-		[TestCase("token('A.B.C', '.', 3)", "")]
-		[TestCase("token('A.B.C', '.', 0, 'XXX')", "XXX.B.C")]
-		[TestCase("token('A//B//C', '//', 1, 'YYY')", "A//YYY//C")]
-		[TestCase("token('A---B---C', '---', 2, 'ZZZ')", "A---B---ZZZ")]
-		[TestCase("token('A______C', '___', 1, 'B')", "A___B___C")]
-		[TestCase("token('A|B|C', '|', 3, 'D')", "A|B|C|D")]
-		[TestCase("token('A**B**C**', '**', 3, 'D')", "A**B**C**D")]
-		[TestCase("token('A---B---C---', '---', 4, 'D')", "A---B---C------D")]
-		public void FunctionToken (string template, string expected)
+		[TestCase ("token('A.B.C', '.', 0)", "A")]
+		[TestCase ("token('A//B//C', '//', 1)", "B")]
+		[TestCase ("token('A---B---C', '---', 2)", "C")]
+		[TestCase ("token('A.B.C', '.', 3)", "")]
+		[TestCase ("token('A.B.C', '.', 0, 'XXX')", "XXX.B.C")]
+		[TestCase ("token('A//B//C', '//', 1, 'YYY')", "A//YYY//C")]
+		[TestCase ("token('A---B---C', '---', 2, 'ZZZ')", "A---B---ZZZ")]
+		[TestCase ("token('A______C', '___', 1, 'B')", "A___B___C")]
+		[TestCase ("token('A|B|C', '|', 3, 'D')", "A|B|C|D")]
+		[TestCase ("token('A**B**C**', '**', 3, 'D')", "A**B**C**D")]
+		[TestCase ("token('A---B---C---', '---', 4, 'D')", "A---B---C------D")]
+		public void FunctionToken (string expression, string expected)
+		{
+			BuiltinFunctionsTester.AssertPrint (expression, expected);
+		}
+
+		[Test]
+		[TestCase ("type(eq(0, 0))", "boolean")]
+		[TestCase ("type([20, 30])", "map")]
+		[TestCase ("type(57)", "number")]
+		[TestCase ("type('A')", "string")]
+		[TestCase ("type(undefined)", "void")]
+		public void FunctionType (string template, string expected)
 		{
 			BuiltinFunctionsTester.AssertPrint (template, expected);
 		}
@@ -69,15 +115,15 @@ namespace Cottle.Test.Builtins
 			IDocument	document = new SimpleDocument ("{eq(" + expression + ", " + expected + ")}");
 			IStore		store = new BuiltinStore ();
 
-			Assert.AreEqual ("true", document.Render (store));
+			Assert.AreEqual ("true", document.Render (store), "'{0}' doesn't evaluate to '{1}'", expression, expected);
 		}
 
-		private static void AssertPrint (string template, string expected)
+		private static void AssertPrint (string expression, string expected)
 		{
-			IDocument	document = new SimpleDocument ("{echo " + template + "}");
+			IDocument	document = new SimpleDocument ("{echo " + expression + "}");
 			IStore		store = new BuiltinStore ();
 
-			Assert.AreEqual (expected, document.Render (store));
+			Assert.AreEqual (expected, document.Render (store), "'{0}' doesn't render to '{1}'", expression, expected);
 		}
 	}
 }

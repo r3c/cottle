@@ -53,12 +53,15 @@ namespace Cottle.Builtins
 			switch (values[1].AsString)
 			{
 				case "b":
+				case "boolean":
 					return values[0].AsBoolean;
 
 				case "n":
+				case "number":
 					return values[0].AsNumber;
 
 				case "s":
+				case "string":
 					return values[0].AsString;
 
 				default:
@@ -141,6 +144,8 @@ namespace Cottle.Builtins
 		}, 1, -1);
 
 		private static readonly IFunction	functionDefault = new NativeFunction ((v) => v[0].AsBoolean ? v[0] : v[1], 2);
+
+		private static readonly IFunction	functionDefined = new NativeFunction ((values) => values[0].Type != ValueContent.Void, 1);
 
 		private static readonly IFunction	functionExcept = new NativeFunction ((values) =>
 		{
@@ -609,6 +614,8 @@ namespace Cottle.Builtins
 			}
         }, 3, 4);
 
+		private static readonly IFunction	functionType = new NativeFunction ((values) => values[0].Type.ToString ().ToLowerInvariant (), 1);
+
 		private static readonly IFunction	functionUnion = new NativeFunction ((values) =>
 		{
 			Dictionary<Value, Value>	result;
@@ -684,6 +691,7 @@ namespace Cottle.Builtins
 			{"cos",		BuiltinFunctions.functionCosine},
 			{"cross",	BuiltinFunctions.functionCross},
 			{"default",	BuiltinFunctions.functionDefault},
+			{"defined",	BuiltinFunctions.functionDefined},
 			{"div",		BuiltinOperators.operatorDiv},
 			{"eq",		BuiltinOperators.operatorEqual},
 			{"except",	BuiltinFunctions.functionExcept},
@@ -720,6 +728,7 @@ namespace Cottle.Builtins
 			{"split",	BuiltinFunctions.functionSplit},
 			{"sub",		BuiltinOperators.operatorSub},
 			{"token",	BuiltinFunctions.functionToken},
+			{"type",	BuiltinFunctions.functionType},
 			{"ucase",	BuiltinFunctions.functionUpperCase},
 			{"union",	BuiltinFunctions.functionUnion},
 			{"when",	BuiltinFunctions.functionWhen},
