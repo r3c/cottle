@@ -6,3 +6,4 @@ install:
 script:
   - xbuild /p:Configuration=Release Cottle.sln
   - mono ./tests/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Cottle.Test/bin/Release/Cottle.Test.dll
+  - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj

@@ -6,6 +6,7 @@
 /Cottle.Test/obj/
 /packages/
 /tests/
+/Cottle.*.nupkg
 /TestResult.xml
 *.sln.sdsettings
 *.suo
