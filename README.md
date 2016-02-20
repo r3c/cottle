@@ -1,6 +1,8 @@
 Cottle: Compact Object to Text Transform Language
 =================================================
 
+[![Build Status](https://travis-ci.org/r3c/cottle.svg?branch=master)](https://travis-ci.org/r3c/cottle)
+
 Overview
 --------
 
