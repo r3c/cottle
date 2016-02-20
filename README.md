@@ -6,9 +6,9 @@ Cottle: Compact Object to Text Transform Language
 Overview
 --------
 
-Cottle is an open-source (BSD) template engine designed to be light, efficient
-and extensible. If you never used a template engine before, here is a
-simple example about how it could be used:
+Cottle is an open-source (MIT) templating engine for C# .NET designed to be
+light, fast and extensible. If you never used a templating engine before, here
+is a simple example about how it could be used:
 
 - A program of yours generated some structured data, for example a list of
 products with associated name, description, quantity and price for each of
@@ -22,8 +22,8 @@ transform. Once your template is ready, it can be re-used with any products
 list as long as it keeps the same structure (to keep with our example, products
 with names, descriptions, quantities and prices).
 
-Template files must be written using Cottle's specific template language, as
-explained in the user manual (see "Installation" section).
+Template files must be written using Cottle's template language as explained in
+user manual (see "Installation" section).
 
 Installation
 ------------
@@ -35,14 +35,14 @@ solution if you want to use it. It is compatible with .NET 3.5 and above.
 - Demo, a simple Windows Form test program that allows you to write templates
 directly in a text box and render them using predefined data.
 
-User manual (the "manual.html" at repository root, also available through
-http://r3c.github.com/cottle/) explains how to use the library, and contains a
-lot of code examples.
+User manual is available at http://r3c.github.io/cottle/ (or in "gh-pages"
+branch of this repository) and explains how to use the library with many code
+snippets and examples.
 
 Licence
 -------
 
-This project is open-source, released under BSD licence. See "LICENSE" file for
+This project is open-source, released under MIT licence. See "LICENSE" file for
 more information. Any contribution would be of course highly welcomed!
 
 Author
