@@ -7,6 +7,16 @@ namespace Cottle.Functions
 {
 	public sealed class NativeFunction : IFunction
 	{
+		#region Properties
+
+		public bool Pure
+		{
+			get;
+			private set;
+		}
+
+		#endregion
+
 		#region Attributes
 
 		private readonly Func<IList<Value>, IStore, TextWriter, Value> callback;
@@ -17,9 +27,58 @@ namespace Cottle.Functions
 
 		#endregion
 
-		#region Constructors
+		#region Constructors / Public
 
-		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback, int min, int max)
+		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback, int min, int max) :
+			this (callback, min, max, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback, int exact) :
+			this (callback, exact, exact, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback) :
+			this (callback, 0, -1, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, IStore, Value> callback, int min, int max) :
+			this ((v, s, o) => callback (v, s), min, max, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, IStore, Value> callback, int exact) :
+			this ((v, s, o) => callback (v, s), exact, exact, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, IStore, Value> callback) :
+			this ((v, s, o) => callback (v, s), 0, -1, false)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, Value> callback, int min, int max) :
+			this ((v, s, o) => callback (v), min, max, true)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, Value> callback, int exact) :
+			this ((v, s, o) => callback (v), exact, exact, true)
+		{
+		}
+
+		public NativeFunction (Func<IList<Value>, Value> callback) :
+			this ((v, s, o) => callback (v), 0, -1, true)
+		{
+		}
+
+		#endregion
+
+		#region Constructors / Private
+
+		private NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback, int min, int max, bool pure)
 		{
 			if (callback == null)
 				throw new ArgumentNullException ("callback");
@@ -27,46 +86,7 @@ namespace Cottle.Functions
 			this.callback = callback;
 			this.max = max;
 			this.min = min;
-		}
-
-		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback, int exact) :
-			this (callback, exact, exact)
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, IStore, TextWriter, Value> callback) :
-			this (callback, 0, -1)
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, IStore, Value> callback, int min, int max) :
-			this ((v, s, o) => callback (v, s), min, max) 
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, IStore, Value> callback, int exact) :
-			this ((v, s, o) => callback (v, s), exact) 
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, IStore, Value> callback) :
-			this ((v, s, o) => callback (v, s)) 
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, Value> callback, int min, int max) :
-			this ((v, s, o) => callback (v), min, max) 
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, Value> callback, int exact) :
-			this ((v, s, o) => callback (v), exact) 
-		{
-		}
-
-		public NativeFunction (Func<IList<Value>, Value> callback) :
-			this ((v, s, o) => callback (v)) 
-		{
+			this.Pure = pure;
 		}
 
 		#endregion

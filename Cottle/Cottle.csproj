@@ -110,6 +110,7 @@
     <Compile Include="src\Parsers\PostParser.cs" />
     <Compile Include="src\Parsers\Post\IOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\AbstractOptimizer.cs" />
+    <Compile Include="src\Parsers\Post\Optimizers\ConstantInvokeOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\IfOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\ConstantMapOptimizer.cs" />
     <Compile Include="src\Parsers\Post\Optimizers\ReturnOptimizer.cs" />

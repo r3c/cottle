@@ -17,6 +17,7 @@ namespace Cottle
 			{
 				parser = new PostParser (parser, new IOptimizer[]
 				{
+					ConstantInvokeOptimizer.Instance,
 					ConstantMapOptimizer.Instance,
 					IfOptimizer.Instance,
 					ReturnOptimizer.Instance
