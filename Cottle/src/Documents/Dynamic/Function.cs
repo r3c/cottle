@@ -80,18 +80,26 @@ namespace Cottle.Documents.Dynamic
 			MethodBuilder	method;
 			ModuleBuilder	module;
 			TypeBuilder		program;
-
+#if CORECLR
+			assembly = AssemblyBuilder.DefineDynamicAssembly (new AssemblyName (name), AssemblyBuilderAccess.Run);
+			module = assembly.DefineDynamicModule (name);
+#else
 			assembly = AppDomain.CurrentDomain.DefineDynamicAssembly (new AssemblyName (name), AssemblyBuilderAccess.RunAndSave);
 			module = assembly.DefineDynamicModule (name, name + ".dll");
+#endif
+
 			program = module.DefineType ("Program", TypeAttributes.Public);
 			method = program.DefineMethod ("Main", MethodAttributes.Public | MethodAttributes.Static, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IStore), typeof (TextWriter)});
 
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 			compiler.Compile (arguments, command);
-
-			program.CreateType();
+#if CORECLR
+			program.CreateTypeInfo ();
+#else
+			program.CreateType ();
 			assembly.Save (name + ".dll");
-		}
+#endif
+        }
 
 		#endregion
 	}

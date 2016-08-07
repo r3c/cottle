@@ -28,7 +28,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public Value Evaluate (IStore store, TextWriter writer)
 		{
-			return new MapValue (Array.ConvertAll (this.elements, (element) =>
+			return new MapValue (this.elements.Select ( (element) =>
 			{
 				Value	key;
 				Value	value;

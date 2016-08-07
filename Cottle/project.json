@@ -1,0 +1,30 @@
+﻿{
+	"version" : "1.1.5-*",
+	"title" : "Cottle: Compact Object to Text Transform Language",
+	"description" : "Lightweight & extensible template library for .NET 3.5 and above.",
+	"authors" : ["Remi Caput"],
+	"packOptions" : {
+		"projectUrl" : "http://r3c.github.io/cottle/",
+		"tags" : ["Template Templating Engine HTML JavaScript Email"],
+		"licenseUrl" : "https://raw.github.com/r3c/cottle/master/LICENSE.md",
+		"iconUrl" : "https://raw.github.com/r3c/cottle/master/icon.png",
+		"repository" : {
+			"type" : "git",
+			"url" : "git://github.com/r3c/cottle"
+		}
+	},
+	"frameworks" : {
+		"net35" : {},
+		"netstandard1.5" : {
+			"dependencies" : {
+				"NETStandard.Library" : "1.6.0",
+				"System.Reflection.Emit" : "4.0.1",
+				"System.Reflection.TypeExtensions" : "4.1.0",
+				"System.Reflection.Emit.Lightweight" : "4.0.1"
+			},
+			"buildOptions" : {
+				"define" : ["CORECLR"]
+			}
+		}
+	}
+}
