@@ -69,7 +69,11 @@ namespace Cottle.Values
 				return converter (this.source);
 
 			// Return undefined value for other primitive types
+#if CORECLR
+			if (type.GetTypeInfo().IsPrimitive)
+#else
 			if (type.IsPrimitive)
+#endif
 				return VoidValue.Instance;
 
 			// Convert elements to array if source object is enumerable

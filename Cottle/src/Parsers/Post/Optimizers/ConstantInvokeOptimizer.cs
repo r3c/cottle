@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Cottle.Functions;
 using Cottle.Stores;
 
@@ -36,7 +37,7 @@ namespace Cottle.Parsers.Post.Optimizers
 			return new Expression
 			{
 				Type	= ExpressionType.Constant,
-				Value	= function.Execute (Array.ConvertAll (expression.Arguments, a => a.Value), new SimpleStore (), new StringWriter ()) 
+				Value	= function.Execute (expression.Arguments.Select( (a) => a.Value).ToList (), new SimpleStore (), new StringWriter ())
 			};
 		}
 

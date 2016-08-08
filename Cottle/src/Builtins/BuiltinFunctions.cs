@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Cottle.Functions;
@@ -228,7 +229,11 @@ namespace Cottle.Builtins
 				return -1;
 			}
 			else
+#if CORECLR
+				return source.AsString.IndexOf (search.AsString, offset);
+#else
 				return source.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
+#endif
 		}, 2, 3);
 
 		private static readonly IFunction	functionFlip = new NativeFunction ((values) =>
@@ -254,7 +259,11 @@ namespace Cottle.Builtins
 			int			index;
 			object		target;
 
+#if CORECLR
+			culture = values.Count > 2 ? new CultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
+#else
 			culture = values.Count > 2 ? CultureInfo.GetCultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
+#endif
 			format = values[1].AsString;
 			index = format.IndexOf (':');
 
@@ -567,7 +576,7 @@ namespace Cottle.Builtins
 			return sorted;
 		}, 1, 2);
 
-		private static readonly IFunction	functionSplit = new NativeFunction ((v) => Array.ConvertAll (v[0].AsString.Split (new [] {v[1].AsString}, StringSplitOptions.None), s => new StringValue (s)), 2);
+		private static readonly IFunction	functionSplit = new NativeFunction ((v) => (v[0].AsString.Split ( new [] {v[1].AsString}, StringSplitOptions.None).Select( (s) => new StringValue (s)).ToArray ()), 2);
 
 		private static readonly IFunction	functionToken = new NativeFunction ((values) =>
 		{
@@ -579,7 +588,11 @@ namespace Cottle.Builtins
 			search = values[1].AsString;
 			source = values[0].AsString;
 			start = 0;
+#if CORECLR
+			stop = source.IndexOf (search);
+#else
 			stop = source.IndexOf (search, StringComparison.InvariantCulture);
+#endif
 
 			for (int i = Math.Max ((int)values[2].AsNumber, 0); i > 0; --i)
 			{
@@ -591,7 +604,11 @@ namespace Cottle.Builtins
 				}
 
 				start = stop + search.Length;
+#if CORECLR
+				stop = source.IndexOf (search, start);
+#else
 				stop = source.IndexOf (search, start, StringComparison.InvariantCulture);
+#endif
 			}
 
 			if (values.Count < 4)
