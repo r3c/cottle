@@ -1,9 +1,31 @@
 language: csharp
 solution: Cottle.sln
+sudo: required
+dist: trusty
+os:
+  - linux
+branches:
+  only:
+    - master
+addons:
+  apt:
+    packages:
+    - gettext
+    - libcurl4-openssl-dev
+    - libicu-dev
+    - libssl-dev
+    - libunwind8
+    - zlib1g
+env:
+  - CLI_VERSION=latest
 install:
   - nuget restore Cottle.sln
   - nuget install NUnit.Console -Version 3.0.1 -OutputDirectory tests
+  - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
+  - curl -sSL https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version "$CLI_VERSION" --install-dir "$DOTNET_INSTALL_DIR"
+  - export PATH="$DOTNET_INSTALL_DIR:$PATH"
 script:
   - xbuild /p:Configuration=Release Cottle.sln
   - mono ./tests/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Cottle.Test/bin/Release/Cottle.Test.dll
 # - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj
+  - ./build_net_core.sh
