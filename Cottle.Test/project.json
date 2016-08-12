@@ -1,7 +1,8 @@
 ﻿{
 	"version" : "1.1.5-*",
 	"runtimes" : {
-		"win7-x64" : {}
+		"win7-x64" : {},
+		"ubuntu.14.04-x64" : {}
 	},
 	"dependencies" : {
 		"Cottle" : {
@@ -14,7 +15,6 @@
 	"frameworks" : {
 		"netcoreapp1.0" : {
 			"imports" : [
-				"netcoreapp1.0",
 				"portable-net45+win8"
 			],
 			"dependencies" : {
