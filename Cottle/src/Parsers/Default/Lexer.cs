@@ -157,11 +157,8 @@ namespace Cottle.Parsers.Default
 
 						this.pending.Enqueue (this.last);
 						this.last = '&';
-#if CORECLR
+
 						return new Lexem (LexemType.None, this.last.ToString ());
-#else
-						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
-#endif
 
 					case '(':
 						return this.NextChar (LexemType.ParenthesisBegin);
@@ -301,11 +298,8 @@ namespace Cottle.Parsers.Default
 
 						this.pending.Enqueue (this.last);
 						this.last = '|';
-#if CORECLR
+
 						return new Lexem (LexemType.None, this.last.ToString ());
-#else
-						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
-#endif
 
 					case '[':
 						return this.NextChar (LexemType.BracketBegin);
@@ -332,11 +326,8 @@ namespace Cottle.Parsers.Default
 						return new Lexem (LexemType.String, buffer.ToString ());
 
 					default:
-#if CORECLR
 						return new Lexem (LexemType.None, this.last.ToString ());
-#else
-						return new Lexem (LexemType.None, this.last.ToString (CultureInfo.InvariantCulture));
-#endif
+
 				}
 			}
 		}
@@ -344,11 +335,8 @@ namespace Cottle.Parsers.Default
 		private Lexem NextChar (LexemType type)
 		{
 			Lexem	lexem;
-#if CORECLR
+
 			lexem = new Lexem (type, this.last.ToString ());
-#else
-			lexem = new Lexem (type, this.last.ToString (CultureInfo.InvariantCulture));
-#endif
 
 			this.Read ();
 

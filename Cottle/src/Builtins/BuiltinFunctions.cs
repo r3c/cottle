@@ -229,11 +229,7 @@ namespace Cottle.Builtins
 				return -1;
 			}
 			else
-#if CORECLR
-				return source.AsString.IndexOf (search.AsString, offset);
-#else
-				return source.AsString.IndexOf (search.AsString, offset, StringComparison.InvariantCulture);
-#endif
+				return source.AsString.IndexOf (search.AsString, offset, StringComparison.Ordinal);
 		}, 2, 3);
 
 		private static readonly IFunction	functionFlip = new NativeFunction ((values) =>
@@ -588,11 +584,8 @@ namespace Cottle.Builtins
 			search = values[1].AsString;
 			source = values[0].AsString;
 			start = 0;
-#if CORECLR
-			stop = source.IndexOf (search);
-#else
-			stop = source.IndexOf (search, StringComparison.InvariantCulture);
-#endif
+
+			stop = source.IndexOf (search, StringComparison.Ordinal);
 
 			for (int i = Math.Max ((int)values[2].AsNumber, 0); i > 0; --i)
 			{
@@ -604,11 +597,7 @@ namespace Cottle.Builtins
 				}
 
 				start = stop + search.Length;
-#if CORECLR
-				stop = source.IndexOf (search, start);
-#else
-				stop = source.IndexOf (search, start, StringComparison.InvariantCulture);
-#endif
+				stop = source.IndexOf (search, start, StringComparison.Ordinal);
 			}
 
 			if (values.Count < 4)
