@@ -40,11 +40,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 			output.Write (setting.BlockBegin);
 
-#if CORECLR
-			if (source.StartsWith ("echo"))
-#else
-			if (source.StartsWith ("echo", StringComparison.InvariantCulture))
-#endif
+			if (source.StartsWith ("echo", StringComparison.Ordinal))
 				output.Write ("echo ");
 
 			output.Write (source);
