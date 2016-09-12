@@ -23,11 +23,16 @@ namespace Cottle.Values
 			{typeof (byte),		(s) => (byte)s},
 			{typeof (char),		(s) => (char)s},
 			{typeof (double),	(s) => (double)s},
+			{typeof (decimal),	(s) => (decimal)s},
 			{typeof (float),	(s) => (float)s},
 			{typeof (int),		(s) => (int)s},
 			{typeof (long),		(s) => (long)s},
+			{typeof (sbyte),	(s) => (sbyte)s},
 			{typeof (short),	(s) => (short)s},
-			{typeof (string),	(s) => (string)s}
+			{typeof (string),	(s) => (string)s},
+			{typeof (uint),		(s) => (uint)s},
+			{typeof (ulong),	(s) => (long)(ulong)s},
+			{typeof (ushort),	(s) => (ushort)s}
 		};
 
 		private static readonly Dictionary<Type, List<MemberReader>>	readers = new Dictionary<Type, List<MemberReader>> ();
@@ -70,7 +75,7 @@ namespace Cottle.Values
 
 			// Return undefined value for other primitive types
 #if CORECLR
-			if (type.GetTypeInfo().IsPrimitive)
+			if (type.GetTypeInfo ().IsPrimitive)
 #else
 			if (type.IsPrimitive)
 #endif

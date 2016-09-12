@@ -51,10 +51,12 @@
     <Compile Include="src\Builtins\BuiltinOperatorsTester.cs" />
     <Compile Include="src\Builtins\BuiltinTrimmersTester.cs" />
     <Compile Include="src\DocumentTester.cs" />
+    <Compile Include="src\Values\ReflectionValueTester.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="src\Builtins" />
     <Folder Include="src" />
+    <Folder Include="src\Values" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cottle\Cottle.csproj">
