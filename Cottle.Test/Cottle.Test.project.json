@@ -1,0 +1,11 @@
+﻿{
+  "runtimes": {
+    "win": {}
+  },
+  "frameworks": {
+    "net35": {}
+  },
+  "dependencies": {
+    "NUnit": "3.0.1"
+  }
+}

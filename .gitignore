@@ -8,6 +8,8 @@
 /tests/
 /Cottle.*.nupkg
 /TestResult.xml
+project.lock.json
+*.project.lock.json
 *.sln.sdsettings
 *.suo
 *.user
