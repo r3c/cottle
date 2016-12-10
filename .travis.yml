@@ -3,11 +3,10 @@ solution: Cottle.sln
 
 matrix:
   include:
-    - os: linux # Ubuntu 14.04
+    - os: linux
       dist: trusty
-      sudo: required
-      mono: latest
       dotnet: 1.0.0-preview2-003121
+      mono: latest
       env: DOTNETCORE=1
 
 install:
@@ -18,4 +17,7 @@ script:
   - xbuild /p:Configuration=Release Cottle.sln
   - mono ./tests/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Cottle.Test/bin/Release/Cottle.Test.dll
 # - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj
-  - ./build_net_core.sh
+  - rm -fr ./artifacts
+  - dotnet restore
+  - dotnet test ./Cottle.Test -c Release -f netcoreapp1.0
+  - dotnet pack ./Cottle -c Release -o ./artifacts
