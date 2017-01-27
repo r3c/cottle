@@ -43,7 +43,7 @@ namespace Cottle.Parsers.Default
 
 		private Lexem						current;
 
-		private readonly Queue<LexemCursor>	cursors;
+		private readonly List<LexemCursor>	cursors;
 
 		private bool						eof;
 
@@ -65,7 +65,7 @@ namespace Cottle.Parsers.Default
 
 		public Lexer (string blockBegin, string blockContinue, string blockEnd, char escape)
 		{
-			this.cursors = new Queue<LexemCursor> ();
+			this.cursors = new List<LexemCursor> ();
 			this.escape = escape;
 			this.pending = new Queue<char> ();
 			this.root = new LexemState ();
@@ -346,40 +346,58 @@ namespace Cottle.Parsers.Default
 		private Lexem NextRaw ()
 		{
 			StringBuilder	buffer;
-			bool			cancel;
+			int				copy;
+			int				first;
 			Lexem			lexem;
+			LexemCursor		next;
 			string			text;
 			StringBuilder	token;
-			int				trail;
-			LexemType		type;
 
 			buffer = new StringBuilder ();
 
 			for (; !this.eof; this.Read ())
 			{
-				cancel = this.last == this.escape && this.Read ();
-				trail = 0;
-
-				this.cursors.Enqueue (new LexemCursor (this.last, this.root));
-
-				foreach (LexemCursor cursor in this.cursors)
+				// Escape sequence found, cancel all pending cursors
+				if (this.last == this.escape && this.Read ())
 				{
-					if (cancel)
-						cursor.Cancel ();
-					else if (cursor.Move (this.last, out type))
-					{
-						while (trail-- > 0)
-							buffer.Append (this.cursors.Dequeue ().Character);
+					foreach (LexemCursor cursor in this.cursors)
+						buffer.Append (cursor.Character);
 
+					this.cursors.Clear ();
+
+					buffer.Append (this.last);
+				}
+
+				// Not an escape sequence, move all cursors
+				else
+				{
+					this.cursors.Add (new LexemCursor (this.last, this.root));
+
+					for (int candidate = 0; candidate < this.cursors.Count; ++candidate)
+					{
+						next = this.cursors[candidate].Move (this.last);
+
+						this.cursors[candidate] = next;
+
+						// No lexem matched for this cursor, continue loop
+						if (next.State == null || next.State.Type == LexemType.None)
+							continue;
+
+						// Lexem matched, flush characters located before it
+						for (int i = 0; i < candidate; ++i)
+							buffer.Append (this.cursors[i].Character);
+
+						// Concatenate matched characters to build matched lexem string
 						token = new StringBuilder ();
 
-						while (this.cursors.Count > 0)
-							token.Append (this.cursors.Dequeue ().Character);
+						while (candidate < this.cursors.Count)
+							token.Append (this.cursors[candidate++].Character);
 
 						text = buffer.ToString ();
 
+						// Return lexem if no text was located before or enqueue otherwise
 						if (string.IsNullOrEmpty (text))
-							lexem = new Lexem (type, token.ToString ());
+							lexem = new Lexem (next.State.Type, token.ToString ());
 						else
 						{
 							for (int i = 0; i < token.Length; ++i)
@@ -390,18 +408,33 @@ namespace Cottle.Parsers.Default
 
 						this.Read ();
 
+						this.cursors.Clear ();
+
 						return lexem;
 					}
 
-					++trail;
-				}
+					// Remove dead cursors and shift next ones
+					first = 0;
 
-				while (this.cursors.Count > 0 && this.cursors.Peek ().State == null)
-					buffer.Append (this.cursors.Dequeue ().Character);
+					while (first < this.cursors.Count && this.cursors[first].State == null)
+						buffer.Append (this.cursors[first++].Character);
+
+					if (first > 0)
+					{
+						copy = 0;
+
+						while (first < this.cursors.Count)
+							this.cursors[copy++] = this.cursors[first++];
+
+						this.cursors.RemoveRange (copy, this.cursors.Count - copy);
+					}
+				}
 			}
 
-			while (this.cursors.Count > 0)
-				buffer.Append (this.cursors.Dequeue ().Character);
+			foreach (LexemCursor cursor in this.cursors)
+				buffer.Append (cursor.Character);
+
+			this.cursors.Clear ();
 
 			text = buffer.ToString ();
 

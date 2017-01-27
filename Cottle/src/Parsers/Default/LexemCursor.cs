@@ -1,7 +1,7 @@
 ﻿
 namespace Cottle.Parsers.Default
 {
-	class LexemCursor
+	struct LexemCursor
 	{
 		#region Attributes
 
@@ -28,23 +28,12 @@ namespace Cottle.Parsers.Default
 			this.State = null;
 		}
 
-		public bool Move (char character, out LexemType type)
+		public LexemCursor Move (char character)
 		{
-			if (this.State != null)
-			{
-				this.State = this.State.Follow (character);
+			if (this.State == null)
+				return new LexemCursor (this.Character, null);
 
-				if (this.State != null && this.State.Type != LexemType.None)
-				{
-					type = this.State.Type;
-
-					return true;
-				}
-			}
-
-			type = LexemType.None;
-
-			return false;
+			return new LexemCursor (this.Character, this.State.Follow (character));
 		}
 
 		#endregion
