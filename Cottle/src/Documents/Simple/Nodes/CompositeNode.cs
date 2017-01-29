@@ -10,7 +10,7 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly INode[]	nodes;
+		private readonly INode[] nodes;
 
 		#endregion
 

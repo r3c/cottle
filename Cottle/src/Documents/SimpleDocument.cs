@@ -18,9 +18,9 @@ namespace Cottle.Documents
 	{
 		#region Attributes
 
-		private readonly INode		renderer;
+		private readonly INode renderer;
 
-		private readonly ISetting	setting;
+		private readonly ISetting setting;
 
 		#endregion
 
@@ -28,8 +28,8 @@ namespace Cottle.Documents
 
 		public SimpleDocument (TextReader reader, ISetting setting)
 		{
-			IParser	parser = ParserFactory.BuildParser (setting);
-			Command	root = parser.Parse (reader);
+			IParser parser = ParserFactory.BuildParser (setting);
+			Command root = parser.Parse (reader);
 
 			this.renderer = this.CompileCommand (root, setting.Trimmer);
 			this.setting = setting;
@@ -56,7 +56,7 @@ namespace Cottle.Documents
 
 		public override Value Render (IStore store, TextWriter writer)
 		{
-			Value	result;
+			Value result;
 
 			store.Enter ();
 
@@ -74,7 +74,7 @@ namespace Cottle.Documents
 
 		public string Source ()
 		{
-			StringWriter	writer;
+			StringWriter writer;
 
 			writer = new StringWriter (CultureInfo.InvariantCulture);
 
@@ -89,8 +89,8 @@ namespace Cottle.Documents
 
 		private INode CompileCommand (Command command, Trimmer trimmer)
 		{
-			List<KeyValuePair<IEvaluator, INode>>	branches;
-			List<INode>								nodes;
+			List<KeyValuePair<IEvaluator, INode>> branches;
+			List<INode> nodes;
 
 			switch (command.Type)
 			{
@@ -143,10 +143,10 @@ namespace Cottle.Documents
 
 		private IEvaluator CompileExpression (Expression expression)
 		{
-			IEvaluator[]							arguments;
-			KeyValuePair<IEvaluator, IEvaluator>[]	elements;
-			IEvaluator								key;
-			IEvaluator								value;
+			IEvaluator[] arguments;
+			KeyValuePair<IEvaluator, IEvaluator>[] elements;
+			IEvaluator key;
+			IEvaluator value;
 
 			switch (expression.Type)
 			{

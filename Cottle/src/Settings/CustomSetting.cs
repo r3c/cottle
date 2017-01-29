@@ -6,7 +6,7 @@ namespace Cottle.Settings
 	{
 		#region Properties
 
-		public string	BlockBegin
+		public string BlockBegin
 		{
 			get
 			{
@@ -18,7 +18,7 @@ namespace Cottle.Settings
 			}
 		}
 
-		public string	BlockContinue
+		public string BlockContinue
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace Cottle.Settings
 			}
 		}
 
-		public string	BlockEnd
+		public string BlockEnd
 		{
 			get
 			{
@@ -42,7 +42,7 @@ namespace Cottle.Settings
 			}
 		}
 
-		public char		Escape
+		public char Escape
 		{
 			get
 			{
@@ -54,7 +54,7 @@ namespace Cottle.Settings
 			}
 		}
 
-		public bool		Optimize
+		public bool Optimize
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace Cottle.Settings
 			}
 		}
 
-		public Trimmer	Trimmer
+		public Trimmer Trimmer
 		{
 			get
 			{
@@ -82,17 +82,17 @@ namespace Cottle.Settings
 
 		#region Attributes
 
-		private string	blockBegin = DefaultSetting.Instance.BlockBegin;
+		private string blockBegin = DefaultSetting.Instance.BlockBegin;
 
-		private string	blockContinue = DefaultSetting.Instance.BlockContinue;
+		private string blockContinue = DefaultSetting.Instance.BlockContinue;
 
-		private string	blockEnd = DefaultSetting.Instance.BlockEnd;
+		private string blockEnd = DefaultSetting.Instance.BlockEnd;
 
-		private char	escape = DefaultSetting.Instance.Escape;
+		private char escape = DefaultSetting.Instance.Escape;
 
-		private bool	optimize = DefaultSetting.Instance.Optimize;
+		private bool optimize = DefaultSetting.Instance.Optimize;
 
-		private Trimmer	trimmer = DefaultSetting.Instance.Trimmer;
+		private Trimmer trimmer = DefaultSetting.Instance.Trimmer;
 
 		#endregion
 	}

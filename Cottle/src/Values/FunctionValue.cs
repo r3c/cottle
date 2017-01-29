@@ -6,7 +6,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IFunction		AsFunction
+		public override IFunction AsFunction
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -38,7 +38,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IMap			Fields
+		public override IMap Fields
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -58,13 +58,13 @@ namespace Cottle.Values
 
 		#region Attributes
 
-		private readonly IFunction	function;
+		private readonly IFunction function;
 
 		#endregion
 
 		#region Constructors
 
-		public	FunctionValue (IFunction function)
+		public FunctionValue (IFunction function)
 		{
 			this.function = function;
 		}

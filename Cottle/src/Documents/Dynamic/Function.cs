@@ -10,9 +10,9 @@ namespace Cottle.Documents.Dynamic
 	{
 		#region Attributes
 
-		private readonly Renderer	renderer;
+		private readonly Renderer renderer;
 
-		private readonly Storage	storage;
+		private readonly Storage storage;
 
 		#endregion
 
@@ -20,8 +20,8 @@ namespace Cottle.Documents.Dynamic
 
 		public Function (IEnumerable<string> arguments, Command command, Trimmer trimmer, string name)
 		{
-			Compiler		compiler;
-			DynamicMethod	method;
+			Compiler compiler;
+			DynamicMethod method;
 
 			method = new DynamicMethod (string.Empty, typeof (Value), new [] {typeof (Storage), typeof (IList<Value>), typeof (IStore), typeof (TextWriter)}, this.GetType ());
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
@@ -42,14 +42,14 @@ namespace Cottle.Documents.Dynamic
 			return object.ReferenceEquals (this, other) ? 0 : 1;
 		}
 
-		public bool	Equals (IFunction other)
+		public bool Equals (IFunction other)
 		{
 			return this.CompareTo (other) == 0;
 		}
 
 		public override bool Equals (object obj)
 		{
-			IFunction	other = obj as IFunction;
+			IFunction other = obj as IFunction;
 
 			return other != null && this.Equals (other);
 		}
@@ -75,11 +75,11 @@ namespace Cottle.Documents.Dynamic
 
 		private void Save (IEnumerable<string> arguments, Command command, Trimmer trimmer, string name)
 		{
-			AssemblyBuilder	assembly;
-			Compiler		compiler;
-			MethodBuilder	method;
-			ModuleBuilder	module;
-			TypeBuilder		program;
+			AssemblyBuilder assembly;
+			Compiler compiler;
+			MethodBuilder method;
+			ModuleBuilder module;
+			TypeBuilder program;
 #if CORECLR
 			assembly = AssemblyBuilder.DefineDynamicAssembly (new AssemblyName (name), AssemblyBuilderAccess.Run);
 			module = assembly.DefineDynamicModule (name);

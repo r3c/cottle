@@ -35,11 +35,11 @@ namespace Cottle.Exceptions
 
 		#region Attributes
 
-		private readonly int	column;
+		private readonly int column;
 
-		private readonly string	lexem;
+		private readonly string lexem;
 
-		private readonly int	line;
+		private readonly int line;
 
 		#endregion
 

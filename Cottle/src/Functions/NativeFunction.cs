@@ -98,14 +98,14 @@ namespace Cottle.Functions
 			return object.ReferenceEquals (this, other) ? 0 : 1;
 		}
 
-		public bool	Equals (IFunction other)
+		public bool Equals (IFunction other)
 		{
 			return this.CompareTo (other) == 0;
 		}
 
 		public override bool Equals (object obj)
 		{
-			IFunction	other = obj as IFunction;
+			IFunction other = obj as IFunction;
 
 			return other != null && this.Equals (other);
 		}

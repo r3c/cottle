@@ -11,7 +11,7 @@ namespace Cottle.Stores
 		{
 			get
 			{
-				Value	value;
+				Value value;
 
 				if (this.TryGet (symbol, out value))
 					return value;

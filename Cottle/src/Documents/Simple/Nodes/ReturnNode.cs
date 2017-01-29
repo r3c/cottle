@@ -7,7 +7,7 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly IEvaluator	expression;
+		private readonly IEvaluator expression;
 
 		#endregion
 

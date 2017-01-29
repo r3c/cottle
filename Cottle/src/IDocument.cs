@@ -7,9 +7,9 @@ namespace Cottle
 	{
 		#region Methods
 
-		Value	Render (IStore store, TextWriter writer);
+		Value Render (IStore store, TextWriter writer);
 
-		string	Render (IStore store);
+		string Render (IStore store);
 
 		#endregion
 	}

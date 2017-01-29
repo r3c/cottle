@@ -16,7 +16,7 @@ namespace Cottle.Documents
 
 		public string Render (IStore store)
 		{
-			StringWriter	writer;
+			StringWriter writer;
 
 			writer = new StringWriter (CultureInfo.InvariantCulture);
 

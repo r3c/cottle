@@ -6,13 +6,13 @@ namespace Cottle.Parsers.Default
 	{
 		#region Constants
 
-		private const int  BRANCH_LIMIT = 256;
+		private const int BRANCH_LIMIT = 256;
 
 		#endregion
 
 		#region Properties
 
-		public LexemType	Type
+		public LexemType Type
 		{
 			get
 			{
@@ -24,19 +24,19 @@ namespace Cottle.Parsers.Default
 
 		#region Attributes
 
-		private Dictionary<char, LexemState>	branchesHigh = null;
+		private Dictionary<char, LexemState> branchesHigh = null;
 
-		private LexemState[]					branchesLow = null;
+		private LexemState[] branchesLow = null;
 
-		private LexemType						type = LexemType.None;
+		private LexemType type = LexemType.None;
 
 		#endregion
 
 		#region Methods
 
-		public LexemState	Follow (char character)
+		public LexemState Follow (char character)
 		{
-			LexemState	state;
+			LexemState state;
 
 			if (this.branchesLow != null && character < LexemState.BRANCH_LIMIT)
 				return this.branchesLow[character];
@@ -48,8 +48,8 @@ namespace Cottle.Parsers.Default
 
 		public bool Store (LexemType type, string content)
 		{
-			LexemState  current;
-			LexemState  next;
+			LexemState current;
+			LexemState next;
 
 			current = this;
 

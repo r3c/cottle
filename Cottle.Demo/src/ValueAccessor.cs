@@ -10,11 +10,11 @@ namespace Cottle.Demo
 	{
 		#region Methods / Public
 
-		public static bool	Load (BinaryReader reader, IDictionary<string, Value> values)
+		public static bool Load (BinaryReader reader, IDictionary<string, Value> values)
 		{
-			int		count;
-			string	key;
-			Value	value;
+			int count;
+			string key;
+			Value value;
 
 			for (count = reader.ReadInt32 (); count-- > 0; )
 			{
@@ -29,7 +29,7 @@ namespace Cottle.Demo
 			return true;
 		}
 
-		public static void	Save (BinaryWriter writer, IDictionary<string, Value> values)
+		public static void Save (BinaryWriter writer, IDictionary<string, Value> values)
 		{
 			writer.Write (values.Count);
 
@@ -47,11 +47,11 @@ namespace Cottle.Demo
 
 		private static bool Load (BinaryReader reader, out Value value)
 		{
-			List<KeyValuePair<Value, Value>>	array;
-			Value								arrayKey;
-			Value								arrayValue;
-			int									count;
-			ValueContent						type;
+			List<KeyValuePair<Value, Value>> array;
+			Value arrayKey;
+			Value arrayValue;
+			int count;
+			ValueContent type;
 
 			type = (ValueContent)reader.ReadInt32 ();
 

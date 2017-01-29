@@ -7,9 +7,9 @@ namespace Cottle.Builtins
 	{
 		#region Attributes / Public
 
-		public static readonly Trimmer	CollapseBlankCharacters = (text) => BuiltinTrimmers.collapseBlankCharacters.Replace (text, " ");
+		public static readonly Trimmer CollapseBlankCharacters = (text) => BuiltinTrimmers.collapseBlankCharacters.Replace (text, " ");
 
-		public static readonly Trimmer	FirstAndLastBlankLines = (text) =>
+		public static readonly Trimmer FirstAndLastBlankLines = (text) =>
 		{
 			int index;
 			int start;
@@ -44,7 +44,7 @@ namespace Cottle.Builtins
 			return text;
 		};
 
-		public static readonly Trimmer	LeadAndTrailBlankCharacters = (text) =>
+		public static readonly Trimmer LeadAndTrailBlankCharacters = (text) =>
 		{
 			int index;
 			int start;
@@ -73,7 +73,7 @@ namespace Cottle.Builtins
 
 		#region Attributes / Private
 
-		private static readonly Regex	collapseBlankCharacters = new Regex ("\\s{2,}", RegexOptions.Multiline);
+		private static readonly Regex collapseBlankCharacters = new Regex ("\\s{2,}", RegexOptions.Multiline);
 
 		#endregion
 	}

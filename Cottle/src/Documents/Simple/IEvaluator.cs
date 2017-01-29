@@ -7,9 +7,9 @@ namespace Cottle.Documents.Simple
 	{
 		#region Methods
 
-		Value	Evaluate (IStore store, TextWriter output);
+		Value Evaluate (IStore store, TextWriter output);
 
-		string	ToString ();
+		string ToString ();
 
 		#endregion
 	}

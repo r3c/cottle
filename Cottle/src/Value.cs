@@ -9,32 +9,32 @@ namespace Cottle
 	{
 		#region Properties
 
-		public abstract bool			AsBoolean
+		public abstract bool AsBoolean
 		{
 			get;
 		}
 
-		public abstract IFunction		AsFunction
+		public abstract IFunction AsFunction
 		{
 			get;
 		}
 
-		public abstract decimal			AsNumber
+		public abstract decimal AsNumber
 		{
 			get;
 		}
 
-		public abstract string			AsString
+		public abstract string AsString
 		{
 			get;
 		}
 
-		public abstract IMap			Fields
+		public abstract IMap Fields
 		{
 			get;
 		}
 
-		public abstract ValueContent	Type
+		public abstract ValueContent Type
 		{
 			get;
 		}
@@ -225,7 +225,7 @@ namespace Cottle
 
 		public override bool Equals (object obj)
 		{
-			Value	other = obj as Value;
+			Value other = obj as Value;
 
 			return other != null && this.CompareTo (other) == 0;
 		}

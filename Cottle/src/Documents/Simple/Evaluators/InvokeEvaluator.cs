@@ -11,9 +11,9 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		private readonly IEvaluator[]	arguments;
+		private readonly IEvaluator[] arguments;
 
-		private readonly IEvaluator		caller;
+		private readonly IEvaluator caller;
 
 		#endregion
 
@@ -31,9 +31,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public Value Evaluate (IStore store, TextWriter output)
 		{
-			IFunction	function;
-			Value		source;
-			Value[]		values;
+			IFunction function;
+			Value source;
+			Value[] values;
 
 			source = this.caller.Evaluate (store, output);
 			function = source.AsFunction;
@@ -53,8 +53,8 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public override string ToString ()
 		{
-			StringBuilder	builder;
-			bool			comma;
+			StringBuilder builder;
+			bool comma;
 
 			builder = new StringBuilder ();
 			builder.Append (this.caller);

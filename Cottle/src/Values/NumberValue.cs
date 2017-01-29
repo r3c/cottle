@@ -6,7 +6,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -42,37 +42,37 @@ namespace Cottle.Values
 
 		#region Constructors / Public
 
-		public	NumberValue (byte value) :
+		public NumberValue (byte value) :
 			this ((decimal)value)
 		{
 		}
 
-		public	NumberValue (decimal value) :
+		public NumberValue (decimal value) :
 			base (value, (source) => source.AsNumber)
 		{
 		}
 
-		public	NumberValue (double value) :
+		public NumberValue (double value) :
 			this ((decimal)value)
 		{
 		}
 
-		public	NumberValue (float value) :
+		public NumberValue (float value) :
 			this ((decimal)value)
 		{
 		}
 
-		public	NumberValue (int value) :
+		public NumberValue (int value) :
 			this ((decimal)value)
 		{
 		}
 
-		public	NumberValue (long value) :
+		public NumberValue (long value) :
 			this ((decimal)value)
 		{
 		}
 
-		public	NumberValue (short value) :
+		public NumberValue (short value) :
 			this ((decimal)value)
 		{
 		}
@@ -81,7 +81,7 @@ namespace Cottle.Values
 
 		#region Methods
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return this.value.ToString (CultureInfo.InvariantCulture);
 		}

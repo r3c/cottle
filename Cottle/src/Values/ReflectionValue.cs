@@ -9,15 +9,15 @@ namespace Cottle.Values
 	{
 		#region Attributes / Instance
 
-		private readonly BindingFlags	binding;
+		private readonly BindingFlags binding;
 
-		private readonly object			source;
+		private readonly object source;
 
 		#endregion
 
 		#region Attributes / Static
 
-		private static readonly Dictionary<Type, ValueConverter>		converters = new Dictionary<Type, ValueConverter>
+		private static readonly Dictionary<Type, ValueConverter> converters = new Dictionary<Type, ValueConverter>
 		{
 			{typeof (bool),		(s) => (bool)s},
 			{typeof (byte),		(s) => (byte)s},
@@ -35,13 +35,13 @@ namespace Cottle.Values
 			{typeof (ushort),	(s) => (ushort)s}
 		};
 
-		private static readonly Dictionary<Type, List<MemberReader>>	readers = new Dictionary<Type, List<MemberReader>> ();
+		private static readonly Dictionary<Type, List<MemberReader>> readers = new Dictionary<Type, List<MemberReader>> ();
 
 		#endregion
 
 		#region Constructors
 
-		public	ReflectionValue (object source, BindingFlags binding)
+		public ReflectionValue (object source, BindingFlags binding)
 		{
 			if (source == null)
 				throw new ArgumentNullException ("source");
@@ -50,7 +50,7 @@ namespace Cottle.Values
 			this.source = source;
 		}
 
-		public	ReflectionValue (object source) :
+		public ReflectionValue (object source) :
 			this (source, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
 		{
 		}
@@ -59,13 +59,13 @@ namespace Cottle.Values
 
 		#region Methods
 
-		protected override Value	Resolve ()
+		protected override Value Resolve ()
 		{
-			ValueConverter				converter;
-			List<Value>					elements;
-			Dictionary<Value, Value>	fields;
-			List<MemberReader>			reader;
-			Type						type;
+			ValueConverter converter;
+			List<Value> elements;
+			Dictionary<Value, Value> fields;
+			List<MemberReader> reader;
+			Type type;
 
 			type = this.source.GetType ();
 
@@ -121,11 +121,11 @@ namespace Cottle.Values
 
 		#region Types
 
-		private struct	MemberReader
+		private struct MemberReader
 		{
 			#region Properties
 
-			public string	Name
+			public string Name
 			{
 				get
 				{
@@ -137,26 +137,26 @@ namespace Cottle.Values
 
 			#region Attributes
 
-			private readonly BindingFlags			binding;
+			private readonly BindingFlags binding;
 
-			private readonly Func<object, object>	extractor;
+			private readonly Func<object, object> extractor;
 
-			private readonly string					name;
+			private readonly string name;
 
 			#endregion
 
 			#region Constructors
 
-			public	MemberReader (FieldInfo field, BindingFlags binding)
+			public MemberReader (FieldInfo field, BindingFlags binding)
 			{
 				this.binding = binding;
 				this.extractor = field.GetValue;
 				this.name = field.Name;
 			}
 
-			public	MemberReader (PropertyInfo property, BindingFlags binding)
+			public MemberReader (PropertyInfo property, BindingFlags binding)
 			{
-				MethodInfo	method;
+				MethodInfo method;
 
 				method = property.GetGetMethod (true);
 
@@ -169,9 +169,9 @@ namespace Cottle.Values
 
 			#region Methods
 
-			public Value	Extract (object source)
+			public Value Extract (object source)
 			{
-				object	value;
+				object value;
 
 				value = this.extractor (source);
 
@@ -184,7 +184,7 @@ namespace Cottle.Values
 			#endregion
 		}
 
-		private delegate Value	ValueConverter (object source);
+		private delegate Value ValueConverter (object source);
 
 		#endregion
 	}

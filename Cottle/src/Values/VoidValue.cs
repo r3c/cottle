@@ -6,7 +6,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IFunction		AsFunction
+		public override IFunction AsFunction
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -38,7 +38,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IMap			Fields
+		public override IMap Fields
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -58,7 +58,7 @@ namespace Cottle.Values
 
 		#region Properties / Static
 
-		public static VoidValue	Instance
+		public static VoidValue Instance
 		{
 			get
 			{
@@ -70,7 +70,7 @@ namespace Cottle.Values
 
 		#region Attributes
 
-		private static readonly VoidValue	instance = new VoidValue ();
+		private static readonly VoidValue instance = new VoidValue ();
 
 		#endregion
 
@@ -92,7 +92,7 @@ namespace Cottle.Values
 			return 0;
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return "<void>";
 		}

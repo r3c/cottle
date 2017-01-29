@@ -15,9 +15,9 @@ namespace Cottle.Stores
 
 		#region Attributes / Static
 
-		private static volatile IStore	constant = null;
+		private static volatile IStore constant = null;
 
-		private static readonly object	mutex = new object ();
+		private static readonly object mutex = new object ();
 		
 		#endregion
 
@@ -58,7 +58,7 @@ namespace Cottle.Stores
 
 		private static IStore GetConstant ()
 		{
-			IStore	store;
+			IStore store;
 
 			if (BuiltinStore.constant == null)
 			{

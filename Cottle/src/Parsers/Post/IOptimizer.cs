@@ -6,9 +6,9 @@ namespace Cottle.Parsers.Post
 	{
 		#region Methods
 
-		Command		Optimize (Command command);
+		Command Optimize (Command command);
 
-		Expression	Optimize (Expression expression);
+		Expression Optimize (Expression expression);
 
 		#endregion
 	}

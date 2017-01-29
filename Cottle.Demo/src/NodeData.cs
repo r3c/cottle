@@ -6,7 +6,7 @@ namespace Cottle.Demo
 	{
 		#region Properties
 
-		public int		ImageIndex
+		public int ImageIndex
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		public string	Key
+		public string Key
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cottle.Demo
 			}
 		}
 
-		public Value	Value
+		public Value Value
 		{
 			get
 			{
@@ -42,7 +42,7 @@ namespace Cottle.Demo
 
 		#region Constructors
 
-		public	NodeData (string key, Value value)
+		public NodeData (string key, Value value)
 		{
 			this.key = key;
 			this.value = value;

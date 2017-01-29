@@ -8,9 +8,9 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly INode		body;
+		private readonly INode body;
 
-		private readonly IEvaluator	condition;
+		private readonly IEvaluator condition;
 
 		#endregion
 

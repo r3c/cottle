@@ -8,9 +8,9 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		private readonly IEvaluator	source;
+		private readonly IEvaluator source;
 
-		private readonly IEvaluator	subscript;
+		private readonly IEvaluator subscript;
 
 		#endregion
 
@@ -28,9 +28,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public Value Evaluate (IStore store, TextWriter output)
 		{
-			Value	key;
-			Value	map;
-			Value	value;
+			Value key;
+			Value map;
+			Value value;
 
 			key = this.subscript.Evaluate (store, output);
 			map = this.source.Evaluate (store, output);

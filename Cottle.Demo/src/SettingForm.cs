@@ -13,7 +13,7 @@ namespace Cottle.Demo
 
 		#region Constructors
 
-		public	SettingForm (ApplyCallback apply, Parameters parameters)
+		public SettingForm (ApplyCallback apply, Parameters parameters)
 		{
 			this.apply = apply;
 
@@ -32,16 +32,16 @@ namespace Cottle.Demo
 
 		#region Methods
 
-		private void	buttonAccept_Click (object sender, EventArgs e)
+		private void buttonAccept_Click (object sender, EventArgs e)
 		{
-			Parameters	parameters;
+			Parameters parameters;
 
 			parameters = new Parameters
 			{
-				BlockBegin		= this.textBoxBlockBegin.Text,
-				BlockContinue	= this.textBoxBlockContinue.Text,
-				BlockEnd		= this.textBoxBlockEnd.Text,
-				TrimmerIndex	= this.comboBoxTrimmer.SelectedIndex
+				BlockBegin = this.textBoxBlockBegin.Text,
+				BlockContinue = this.textBoxBlockContinue.Text,
+				BlockEnd = this.textBoxBlockEnd.Text,
+				TrimmerIndex = this.comboBoxTrimmer.SelectedIndex
 			};
 
 			this.apply (parameters);
@@ -49,7 +49,7 @@ namespace Cottle.Demo
 			this.Close ();
 		}
 
-		private void	buttonCancel_Click (object sender, EventArgs e)
+		private void buttonCancel_Click (object sender, EventArgs e)
 		{
 			this.Close ();
 		}
@@ -58,14 +58,14 @@ namespace Cottle.Demo
 
 		#region Types
 
-		public delegate void	ApplyCallback (Parameters config);
+		public delegate void ApplyCallback (Parameters config);
 
-		public struct	Parameters
+		public struct Parameters
 		{
-			public string	BlockBegin;
-			public string	BlockContinue;
-			public string	BlockEnd;
-			public int		TrimmerIndex;
+			public string BlockBegin;
+			public string BlockContinue;
+			public string BlockEnd;
+			public int TrimmerIndex;
 		}
 
 		#endregion

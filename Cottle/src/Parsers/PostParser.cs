@@ -10,9 +10,9 @@ namespace Cottle.Parsers
 	{
 		#region Attributes
 
-		private readonly IOptimizer[]	optimizers;
+		private readonly IOptimizer[] optimizers;
 
-		private readonly IParser		parser;
+		private readonly IParser parser;
 
 		#endregion
 

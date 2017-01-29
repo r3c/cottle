@@ -7,7 +7,7 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		private readonly Value	value;
+		private readonly Value value;
 
 		#endregion
 

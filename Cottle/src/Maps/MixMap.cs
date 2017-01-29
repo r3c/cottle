@@ -18,15 +18,15 @@ namespace Cottle.Maps
 
 		#region Attributes
 
-		private readonly List<KeyValuePair<Value, Value>>	array;
+		private readonly List<KeyValuePair<Value, Value>> array;
 
-		private readonly Dictionary<Value, Value>			hash;
+		private readonly Dictionary<Value, Value> hash;
 
 		#endregion
 
 		#region Constructors
 
-		public	MixMap (IEnumerable<KeyValuePair<Value, Value>> pairs)
+		public MixMap (IEnumerable<KeyValuePair<Value, Value>> pairs)
 		{
 			this.array = new List<KeyValuePair<Value, Value>> (pairs);
 			this.hash = new Dictionary<Value, Value> ();

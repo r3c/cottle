@@ -10,7 +10,7 @@ namespace Cottle.Values
 	{
 		#region Properties / Instance
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -18,7 +18,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IFunction		AsFunction
+		public override IFunction AsFunction
 		{
 			get
 			{
@@ -26,7 +26,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -34,7 +34,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -42,7 +42,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IMap			Fields
+		public override IMap Fields
 		{
 			get
 			{
@@ -50,7 +50,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -62,7 +62,7 @@ namespace Cottle.Values
 
 		#region Properties / Static
 
-		public static MapValue	Empty
+		public static MapValue Empty
 		{
 			get
 			{
@@ -74,13 +74,13 @@ namespace Cottle.Values
 
 		#region Attributes / Instance
 
-		private readonly IMap	fields;
+		private readonly IMap fields;
 
 		#endregion
 
 		#region Attributes / Static
 
-		private static readonly MapValue	empty = new MapValue ();
+		private static readonly MapValue empty = new MapValue ();
 
 		#endregion
 
@@ -131,10 +131,10 @@ namespace Cottle.Values
 			return this.fields.GetHashCode ();
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
-			StringBuilder	builder;
-			bool			separator;
+			StringBuilder builder;
+			bool separator;
 
 			builder = new StringBuilder ();
 			builder.Append ('[');

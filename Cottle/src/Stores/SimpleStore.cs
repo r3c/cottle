@@ -7,9 +7,9 @@ namespace Cottle.Stores
 	{
 		#region Attributes
 
-		private readonly Stack<HashSet<Value>>				levels;
+		private readonly Stack<HashSet<Value>> levels;
 
-		private readonly Dictionary<Value, Stack<Value>>	stacks;
+		private readonly Dictionary<Value, Stack<Value>> stacks;
 
 		#endregion
 
@@ -32,7 +32,7 @@ namespace Cottle.Stores
 
 		public override bool Leave ()
 		{
-			Stack<Value>	stack;
+			Stack<Value> stack;
 
 			if (this.levels.Count < 1)
 				return false;
@@ -53,7 +53,7 @@ namespace Cottle.Stores
 
 		public override void Set (Value symbol, Value value, StoreMode mode)
 		{
-			Stack<Value>	stack;
+			Stack<Value> stack;
 
 			if (!this.stacks.TryGetValue (symbol, out stack))
 			{
@@ -82,7 +82,7 @@ namespace Cottle.Stores
 
 		public override bool TryGet (Value symbol, out Value value)
 		{
-			Stack<Value>	stack;
+			Stack<Value> stack;
 
 			if (this.stacks.TryGetValue (symbol, out stack) && stack.Count > 0)
 			{

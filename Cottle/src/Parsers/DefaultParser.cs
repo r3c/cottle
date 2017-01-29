@@ -13,13 +13,13 @@ namespace Cottle.Parsers
 	{
 		#region Attributes / Instance
 
-		private readonly Lexer	lexer;
+		private readonly Lexer lexer;
 
 		#endregion
 
 		#region Attributes / Static
 
-		private static readonly Dictionary<string, Func<DefaultParser, Command>>	keywords = new Dictionary<string, Func<DefaultParser, Command>>
+		private static readonly Dictionary<string, Func<DefaultParser, Command>> keywords = new Dictionary<string, Func<DefaultParser, Command>>
 		{
 			{"_",		(p) => p.ParseKeywordComment ()},
 			{"declare",	(p) => p.ParseKeywordDeclare ()},
@@ -48,7 +48,7 @@ namespace Cottle.Parsers
 
 		public Command Parse (TextReader reader)
 		{
-			Command	command;
+			Command command;
 
 			this.lexer.Reset (reader);
 			this.lexer.Next (LexerMode.Raw);
@@ -69,21 +69,21 @@ namespace Cottle.Parsers
 		{
 			return new Expression
 			{
-				Arguments	= arguments,
-				Source		= new Expression
+				Arguments = arguments,
+				Source = new Expression
 				{
-					Type	= ExpressionType.Constant,
-					Value	= new FunctionValue (function)
+					Type = ExpressionType.Constant,
+					Value = new FunctionValue (function)
 				},
-				Type		= ExpressionType.Invoke
+				Type = ExpressionType.Invoke
 			};
 		}
 
 		private Command ParseAssignment (StoreMode mode)
 		{
-			List<string>				arguments;
-			Func<StoreMode, Command>	command;
-			string						name;
+			List<string> arguments;
+			Func<StoreMode, Command> command;
+			string name;
 
 			arguments = new List<string> ();
 			name = this.ParseSymbol ();
@@ -105,11 +105,11 @@ namespace Cottle.Parsers
 
 					command = (m) => new Command
 					{
-						Arguments	= arguments.ToArray (),
-						Body		= this.ParseBody (),
-						Mode		= m,
-						Name		= name,
-						Type		= CommandType.AssignFunction
+						Arguments = arguments.ToArray (),
+						Body = this.ParseBody (),
+						Mode = m,
+						Name = name,
+						Type = CommandType.AssignFunction
 					};
 
 					break;
@@ -117,10 +117,10 @@ namespace Cottle.Parsers
 				default:
 					command = (m) => new Command
 					{
-						Mode	= m,
-						Name	= name,
-						Operand	= this.ParseOperand (),
-						Type	= CommandType.AssignValue
+						Mode = m,
+						Name = name,
+						Operand = this.ParseOperand (),
+						Type = CommandType.AssignValue
 					};
 
 					break;
@@ -153,10 +153,10 @@ namespace Cottle.Parsers
 
 					return new Command
 					{
-						Mode	= mode,
-						Operand	= Expression.Empty,
-						Type	= CommandType.AssignValue,
-						Name	= name
+						Mode = mode,
+						Operand = Expression.Empty,
+						Type = CommandType.AssignValue,
+						Name = name
 					};
 			}
 		}
@@ -173,10 +173,10 @@ namespace Cottle.Parsers
 
 		private Command ParseCommand ()
 		{
-			Command							current;
-			Command							head;
-			Func<DefaultParser, Command>	parse;
-			Command							tail;
+			Command current;
+			Command head;
+			Func<DefaultParser, Command> parse;
+			Command tail;
 
 			head = null;
 			tail = null;
@@ -211,8 +211,8 @@ namespace Cottle.Parsers
 					case LexemType.Text:
 						current = new Command
 						{
-							Text	= this.lexer.Current.Content,
-							Type	= CommandType.Literal 
+							Text = this.lexer.Current.Content,
+							Type = CommandType.Literal 
 						};
 
 						this.lexer.Next (LexerMode.Raw);
@@ -232,9 +232,9 @@ namespace Cottle.Parsers
 				{
 					tail.Next = new Command
 					{
-						Body	= tail.Next,
-						Next	= current,
-						Type	= CommandType.Composite
+						Body = tail.Next,
+						Next = current,
+						Type = CommandType.Composite
 					};
 	
 					tail = tail.Next;
@@ -243,9 +243,9 @@ namespace Cottle.Parsers
 				{
 					tail = new Command
 					{
-						Body	= head,
-						Next	= current,
-						Type	= CommandType.Composite
+						Body = head,
+						Next = current,
+						Type = CommandType.Composite
 					};
 	
 					head = tail;
@@ -256,8 +256,8 @@ namespace Cottle.Parsers
 
 			return head ?? new Command
 			{
-				Text	= string.Empty,
-				Type	= CommandType.Literal
+				Text = string.Empty,
+				Type = CommandType.Literal
 			};
 		}
 
@@ -271,11 +271,11 @@ namespace Cottle.Parsers
 
 		private Expression ParseExpression ()
 		{
-			Operator			current;
-			Stack<Expression>	operands;
-			Stack<Operator>		operators;
-			Operator			other;
-			Expression			value;
+			Operator current;
+			Stack<Expression> operands;
+			Stack<Operator> operators;
+			Operator other;
+			Expression value;
 
 			operands = new Stack<Expression> ();
 			operators = new Stack<Operator> ();
@@ -289,8 +289,8 @@ namespace Cottle.Parsers
 					case LexemType.DoubleAmpersand:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorAnd,
-							Precedence	= 0
+							Function = BuiltinOperators.operatorAnd,
+							Precedence = 0
 						};
 
 						break;
@@ -298,8 +298,8 @@ namespace Cottle.Parsers
 					case LexemType.DoublePipe:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorOr,
-							Precedence	= 0
+							Function = BuiltinOperators.operatorOr,
+							Precedence = 0
 						};
 
 						break;
@@ -307,8 +307,8 @@ namespace Cottle.Parsers
 					case LexemType.Equal:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorEqual,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorEqual,
+							Precedence = 1
 						};
 
 						break;
@@ -316,8 +316,8 @@ namespace Cottle.Parsers
 					case LexemType.GreaterEqual:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorGreaterEqual,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorGreaterEqual,
+							Precedence = 1
 						};
 
 						break;
@@ -325,8 +325,8 @@ namespace Cottle.Parsers
 					case LexemType.GreaterThan:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorGreaterThan,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorGreaterThan,
+							Precedence = 1
 						};
 
 						break;
@@ -334,8 +334,8 @@ namespace Cottle.Parsers
 					case LexemType.LowerEqual:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorLowerEqual,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorLowerEqual,
+							Precedence = 1
 						};
 
 						break;
@@ -343,8 +343,8 @@ namespace Cottle.Parsers
 					case LexemType.LowerThan:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorLowerThan,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorLowerThan,
+							Precedence = 1
 						};
 
 						break;
@@ -352,8 +352,8 @@ namespace Cottle.Parsers
 					case LexemType.Minus:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorSub,
-							Precedence	= 2
+							Function = BuiltinOperators.operatorSub,
+							Precedence = 2
 						};
 
 						break;
@@ -361,8 +361,8 @@ namespace Cottle.Parsers
 					case LexemType.NotEqual:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorNotEqual,
-							Precedence	= 1
+							Function = BuiltinOperators.operatorNotEqual,
+							Precedence = 1
 						};
 
 						break;
@@ -370,8 +370,8 @@ namespace Cottle.Parsers
 					case LexemType.Percent:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorMod,
-							Precedence	= 3
+							Function = BuiltinOperators.operatorMod,
+							Precedence = 3
 						};
 
 						break;
@@ -379,8 +379,8 @@ namespace Cottle.Parsers
 					case LexemType.Plus:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorAdd,
-							Precedence	= 2
+							Function = BuiltinOperators.operatorAdd,
+							Precedence = 2
 						};
 
 						break;
@@ -388,8 +388,8 @@ namespace Cottle.Parsers
 					case LexemType.Slash:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorDiv,
-							Precedence	= 3
+							Function = BuiltinOperators.operatorDiv,
+							Precedence = 3
 						};
 
 						break;
@@ -397,8 +397,8 @@ namespace Cottle.Parsers
 					case LexemType.Star:
 						current = new Operator
 						{
-							Function	= BuiltinOperators.operatorMul,
-							Precedence	= 3
+							Function = BuiltinOperators.operatorMul,
+							Precedence = 3
 						};
 
 						break;
@@ -449,8 +449,8 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseOperand (),
-				Type	= CommandType.Dump 
+				Operand = this.ParseOperand (),
+				Type = CommandType.Dump 
 			};
 		}
 
@@ -458,18 +458,18 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseOperand (),
-				Type	= CommandType.Echo 
+				Operand = this.ParseOperand (),
+				Type = CommandType.Echo 
 			};
 		}
 
 		private Command ParseKeywordFor ()
 		{
-			Command		body;
-			Command		empty;
-			Expression	from;
-			string		key;
-			string		value;
+			Command body;
+			Command empty;
+			Expression from;
+			string key;
+			string value;
 
 			key = this.ParseSymbol ();
 
@@ -503,27 +503,27 @@ namespace Cottle.Parsers
 
 			return new Command
 			{
-				Body	= body,
-				Key		= key,
-				Name	= value,
-				Next	= empty,
-				Operand	= from,
-				Type	= CommandType.For
+				Body = body,
+				Key = key,
+				Name = value,
+				Next = empty,
+				Operand = from,
+				Type = CommandType.For
 			};
 		}
 
 		private Command ParseKeywordIf ()
 		{
-			Expression	condition;
-			Command		current;
-			Command		result;
+			Expression condition;
+			Command current;
+			Command result;
 
 			condition = this.ParseExpression ();
 			result = new Command
 			{
-				Body	= this.ParseBody (),
-				Operand	= condition,
-				Type	= CommandType.If
+				Body = this.ParseBody (),
+				Operand = condition,
+				Type = CommandType.If
 			};
 
 			current = result;
@@ -541,9 +541,9 @@ namespace Cottle.Parsers
 
 						current.Next = new Command
 						{
-							Body	= this.ParseBody (),
-							Operand	= condition,
-							Type	= CommandType.If
+							Body = this.ParseBody (),
+							Operand = condition,
+							Type = CommandType.If
 						};
 
 						current = current.Next;
@@ -569,8 +569,8 @@ namespace Cottle.Parsers
 		{
 			return new Command
 			{
-				Operand	= this.ParseOperand (),
-				Type	= CommandType.Return 
+				Operand = this.ParseOperand (),
+				Type = CommandType.Return 
 			};
 		}
 
@@ -581,23 +581,23 @@ namespace Cottle.Parsers
 
 		private Command ParseKeywordWhile ()
 		{
-			Command		body;
-			Expression	condition;
+			Command body;
+			Expression condition;
 
 			condition = this.ParseExpression ();
 			body = this.ParseBody ();
 
 			return new Command
 			{
-				Body	= body,
-				Operand	= condition,
-				Type	= CommandType.While
+				Body = body,
+				Operand = condition,
+				Type = CommandType.While
 			};
 		}
 
 		private Expression ParseOperand ()
 		{
-			Expression	expression;
+			Expression expression;
 
 			expression = this.ParseExpression ();
 
@@ -608,7 +608,7 @@ namespace Cottle.Parsers
 
 		private string ParseSymbol ()
 		{
-			string	name;
+			string name;
 
 			if (this.lexer.Current.Type != LexemType.Symbol)
 				throw this.Raise ("symbol (variable name)");
@@ -622,13 +622,13 @@ namespace Cottle.Parsers
 
 		private Expression ParseValue ()
 		{
-			List<Expression>		arguments;
-			List<ExpressionElement>	elements;
-			Expression				expression;
-			int						index;
-			Expression				key;
-			decimal					number;
-			Expression				value;
+			List<Expression> arguments;
+			List<ExpressionElement> elements;
+			Expression expression;
+			int index;
+			Expression key;
+			decimal number;
+			Expression value;
 
 			switch (this.lexer.Current.Type)
 			{
@@ -656,15 +656,15 @@ namespace Cottle.Parsers
 							value = key;
 							key = new Expression
 							{
-								Type	= ExpressionType.Constant,
-								Value	= index++,
+								Type = ExpressionType.Constant,
+								Value = index++,
 							};
 						}
 
 						elements.Add (new ExpressionElement
 						{
-							Key		= key,
-							Value	= value
+							Key = key,
+							Value = value
 						});
 
 						if (this.lexer.Current.Type == LexemType.Comma)
@@ -673,8 +673,8 @@ namespace Cottle.Parsers
 
 					expression = new Expression
 					{
-						Elements	= elements.ToArray (),
-						Type		= ExpressionType.Map
+						Elements = elements.ToArray (),
+						Type = ExpressionType.Map
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -686,8 +686,8 @@ namespace Cottle.Parsers
 
 					expression = new Expression
 					{
-						Type	= ExpressionType.Constant,
-						Value	= 0
+						Type = ExpressionType.Constant,
+						Value = 0
 					};
 
 					return this.BuildOperator (BuiltinOperators.operatorSub, expression, this.ParseValue ());
@@ -698,8 +698,8 @@ namespace Cottle.Parsers
 
 					expression = new Expression
 					{
-						Type	= ExpressionType.Constant,
-						Value	= number
+						Type = ExpressionType.Constant,
+						Value = number
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -726,8 +726,8 @@ namespace Cottle.Parsers
 				case LexemType.String:
 					expression = new Expression
 					{
-						Type	= ExpressionType.Constant,
-						Value	= this.lexer.Current.Content
+						Type = ExpressionType.Constant,
+						Value = this.lexer.Current.Content
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -737,8 +737,8 @@ namespace Cottle.Parsers
 				case LexemType.Symbol:
 					expression = new Expression
 					{
-						Type	= ExpressionType.Symbol,
-						Value	= this.lexer.Current.Content
+						Type = ExpressionType.Symbol,
+						Value = this.lexer.Current.Content
 					};
 
 					this.lexer.Next (LexerMode.Block);
@@ -765,9 +765,9 @@ namespace Cottle.Parsers
 
 						expression = new Expression
 						{
-							Source		= expression,
-							Subscript	= value,
-							Type		= ExpressionType.Access 
+							Source = expression,
+							Subscript = value,
+							Type = ExpressionType.Access 
 						};
 
 						break;
@@ -780,13 +780,13 @@ namespace Cottle.Parsers
 
 						expression = new Expression
 						{
-							Source		= expression,
-							Subscript	= new Expression
+							Source = expression,
+							Subscript = new Expression
 							{
-								Type	= ExpressionType.Constant,
-								Value	= this.lexer.Current.Content
+								Type = ExpressionType.Constant,
+								Value = this.lexer.Current.Content
 							},
-							Type		= ExpressionType.Access 
+							Type = ExpressionType.Access 
 						};
 
 						this.lexer.Next (LexerMode.Block);
@@ -808,9 +808,9 @@ namespace Cottle.Parsers
 
 						expression = new Expression
 						{
-							Arguments	= arguments.ToArray (),
-							Source		= expression,
-							Type		= ExpressionType.Invoke
+							Arguments = arguments.ToArray (),
+							Source = expression,
+							Type = ExpressionType.Invoke
 						};
 
 						break;

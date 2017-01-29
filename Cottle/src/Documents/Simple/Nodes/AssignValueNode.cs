@@ -8,11 +8,11 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly IEvaluator	expression;
+		private readonly IEvaluator expression;
 
-		private readonly StoreMode	mode;
+		private readonly StoreMode mode;
 
-		private readonly string		name;
+		private readonly string name;
 
 		#endregion
 
@@ -40,8 +40,8 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			string	keyword;
-			string	link;
+			string keyword;
+			string link;
 
 			switch (this.mode)
 			{

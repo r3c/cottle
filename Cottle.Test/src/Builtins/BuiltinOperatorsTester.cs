@@ -138,8 +138,8 @@ namespace Cottle.Test.Builtins
 
 		private static void AssertResult (string expression, bool expected)
 		{
-			IDocument	document = new SimpleDocument ("{" + (expected ? "" : "!") + "(" + expression + ")}");
-			IStore		store = new BuiltinStore ();
+			IDocument document = new SimpleDocument ("{" + (expected ? "" : "!") + "(" + expression + ")}");
+			IStore store = new BuiltinStore ();
 
 			Assert.AreEqual ("true", document.Render (store));
 		}

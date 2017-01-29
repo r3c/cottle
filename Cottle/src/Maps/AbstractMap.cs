@@ -15,7 +15,7 @@ namespace Cottle.Maps
 		
 		public abstract bool Contains (Value key);
 
-		public abstract IEnumerator<KeyValuePair<Value, Value>>	GetEnumerator ();
+		public abstract IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ();
 		
 		public abstract bool TryGet (Value key, out Value value);
 
@@ -25,9 +25,9 @@ namespace Cottle.Maps
 
 		public int CompareTo (IMap other)
 		{
-			int										compare;
-			IEnumerator<KeyValuePair<Value, Value>>	lhs;
-			IEnumerator<KeyValuePair<Value, Value>>	rhs;
+			int compare;
+			IEnumerator<KeyValuePair<Value, Value>> lhs;
+			IEnumerator<KeyValuePair<Value, Value>> rhs;
 
 			if (other == null)
 				return 1;
@@ -56,14 +56,14 @@ namespace Cottle.Maps
 			return 0;
 		}
 		
-		public bool	Equals (IMap other)
+		public bool Equals (IMap other)
 		{
 			return this.CompareTo (other) == 0;
 		}
 		
 		public override bool Equals (object obj)
 		{
-			IMap	other;
+			IMap other;
 
 			other = obj as IMap;
 
@@ -77,7 +77,7 @@ namespace Cottle.Maps
 
 		public override int GetHashCode ()
 		{
-			int	hash;
+			int hash;
 
 			hash = 0;
 

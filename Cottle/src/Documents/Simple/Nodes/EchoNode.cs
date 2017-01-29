@@ -8,7 +8,7 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly IEvaluator	expression;
+		private readonly IEvaluator expression;
 
 		#endregion
 
@@ -34,7 +34,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			string	source;
+			string source;
 
 			source = this.expression.ToString ();
 

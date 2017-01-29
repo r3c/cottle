@@ -11,7 +11,7 @@ namespace Cottle.Parsers.Default
 	{
 		#region Properties
 
-		public int		Column
+		public int Column
 		{
 			get
 			{
@@ -19,7 +19,7 @@ namespace Cottle.Parsers.Default
 			}
 		}
 
-		public Lexem	Current
+		public Lexem Current
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace Cottle.Parsers.Default
 			}
 		}
 
-		public int		Line
+		public int Line
 		{
 			get
 			{
@@ -39,25 +39,25 @@ namespace Cottle.Parsers.Default
 
 		#region Attributes
 
-		private int							column;
+		private int column;
 
-		private Lexem						current;
+		private Lexem current;
 
-		private readonly List<LexemCursor>	cursors;
+		private readonly List<LexemCursor> cursors;
 
-		private bool						eof;
+		private bool eof;
 
-		private readonly char				escape;
+		private readonly char escape;
 
-		private char						last;
+		private char last;
 
-		private int							line;
+		private int line;
 
-		private readonly Queue<char>		pending;
+		private readonly Queue<char> pending;
 
-		private TextReader					reader;
+		private TextReader reader;
 
-		private readonly LexemState			root;
+		private readonly LexemState root;
 
 		#endregion
 
@@ -122,9 +122,9 @@ namespace Cottle.Parsers.Default
 
 		private Lexem NextBlock ()
 		{
-			StringBuilder	buffer;
-			bool			dot;
-			char			end;
+			StringBuilder buffer;
+			bool dot;
+			char end;
 
 			while (true)
 			{
@@ -334,7 +334,7 @@ namespace Cottle.Parsers.Default
 
 		private Lexem NextChar (LexemType type)
 		{
-			Lexem	lexem;
+			Lexem lexem;
 
 			lexem = new Lexem (type, this.last.ToString ());
 
@@ -345,13 +345,13 @@ namespace Cottle.Parsers.Default
 
 		private Lexem NextRaw ()
 		{
-			StringBuilder	buffer;
-			int				copy;
-			int				first;
-			Lexem			lexem;
-			LexemCursor		next;
-			string			text;
-			StringBuilder	token;
+			StringBuilder buffer;
+			int copy;
+			int first;
+			Lexem lexem;
+			LexemCursor next;
+			string text;
+			StringBuilder token;
 
 			buffer = new StringBuilder ();
 

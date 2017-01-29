@@ -19,7 +19,7 @@ namespace Cottle.Maps
 
 		#region Properties / Static
 		
-		public static EmptyMap	Instance
+		public static EmptyMap Instance
 		{
 			get
 			{
@@ -31,9 +31,9 @@ namespace Cottle.Maps
 
 		#region Attributes
 		
-		private static readonly EmptyMap							instance = new EmptyMap ();
+		private static readonly EmptyMap instance = new EmptyMap ();
 
-		private static readonly IList<KeyValuePair<Value, Value>>	pairs = new KeyValuePair<Value, Value>[0];
+		private static readonly IList<KeyValuePair<Value, Value>> pairs = new KeyValuePair<Value, Value>[0];
 		
 		#endregion
 		

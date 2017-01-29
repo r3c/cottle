@@ -12,23 +12,23 @@ namespace Cottle
 
 		#region Attributes / Instance
 
-		public string[]		Arguments;
+		public string[] Arguments;
 
-		public Command		Body;
+		public Command Body;
 
-		public string		Key;
+		public string Key;
 
-		public StoreMode	Mode;
+		public StoreMode Mode;
 
-		public string		Name;
+		public string Name;
 
-		public Command		Next;
+		public Command Next;
 
-		public Expression	Operand;
+		public Expression Operand;
 
-		public string		Text;
+		public string Text;
 
-		public CommandType	Type;
+		public CommandType Type;
 
 		#endregion
 	}

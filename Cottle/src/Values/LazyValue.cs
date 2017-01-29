@@ -6,7 +6,7 @@ namespace Cottle.Values
 	{
 		#region Attributes
 
-		private readonly Func<Value>	resolver;
+		private readonly Func<Value> resolver;
 
 		#endregion
 

@@ -16,7 +16,7 @@ namespace Cottle.Documents
 	{
 		#region Attributes
 
-		private readonly Function	main;
+		private readonly Function main;
 
 		#endregion
 
@@ -24,7 +24,7 @@ namespace Cottle.Documents
 
 		public DynamicDocument (TextReader reader, ISetting setting)
 		{
-			IParser	parser = ParserFactory.BuildParser (setting);
+			IParser parser = ParserFactory.BuildParser (setting);
 
 			this.main = new Function (new string[0], parser.Parse (reader), setting.Trimmer, string.Empty);
 		}

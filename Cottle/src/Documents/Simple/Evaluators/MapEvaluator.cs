@@ -11,7 +11,7 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		private KeyValuePair<IEvaluator, IEvaluator>[]	elements;
+		private KeyValuePair<IEvaluator, IEvaluator>[] elements;
 
 		#endregion
 
@@ -30,8 +30,8 @@ namespace Cottle.Documents.Simple.Evaluators
 		{
 			return new MapValue (this.elements.Select ( (element) =>
 			{
-				Value	key;
-				Value	value;
+				Value key;
+				Value value;
 
 				key = element.Key.Evaluate (store, writer);
 				value = element.Value.Evaluate (store, writer);
@@ -42,8 +42,8 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public override string ToString ()
 		{
-			StringBuilder	builder;
-			bool			comma;
+			StringBuilder builder;
+			bool comma;
 
 			builder = new StringBuilder ();
 			builder.Append ('[');

@@ -8,7 +8,7 @@ namespace Cottle.Documents.Simple.Evaluators
 	{
 		#region Attributes
 
-		private readonly Value	symbol;
+		private readonly Value symbol;
 
 		#endregion
 
@@ -25,7 +25,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
 		public Value Evaluate (IStore store, TextWriter output)
 		{
-			Value	value;
+			Value value;
 
 			if (store.TryGet (this.symbol, out value))
 				return value;

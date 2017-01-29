@@ -9,7 +9,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override IFunction	AsFunction
+		public override IFunction AsFunction
 		{
 			get
 			{
@@ -17,7 +17,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IMap		Fields
+		public override IMap Fields
 		{
 			get
 			{
@@ -29,9 +29,9 @@ namespace Cottle.Values
 
 		#region Attributes
 
-		protected readonly Converter<Value, T>	converter;
+		protected readonly Converter<Value, T> converter;
 
-		protected readonly T					value;
+		protected readonly T value;
 
 		#endregion
 

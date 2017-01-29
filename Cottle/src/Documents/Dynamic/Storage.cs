@@ -6,9 +6,9 @@ namespace Cottle.Documents.Dynamic
 {
 	struct Storage
 	{
-		public readonly string[]	Strings;
+		public readonly string[] Strings;
 
-		public readonly Value[]		Values;
+		public readonly Value[] Values;
 
 		public Storage (IEnumerable<string> strings, IEnumerable<Value> values)
 		{

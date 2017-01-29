@@ -18,7 +18,7 @@ namespace Cottle.Maps
 
 		#region Attributes
 
-		private Dictionary<Value, Value>	hash;
+		private Dictionary<Value, Value> hash;
 
 		#endregion
 

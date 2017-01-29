@@ -6,9 +6,9 @@ namespace Cottle
 	{
 		#region Attributes
 
-		public Expression	Key;
+		public Expression Key;
 
-		public Expression	Value;
+		public Expression Value;
 
 		#endregion
 	}

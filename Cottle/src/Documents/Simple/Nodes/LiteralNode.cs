@@ -9,7 +9,7 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly string	text;
+		private readonly string text;
 		
 		#endregion
 
@@ -35,7 +35,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			StringBuilder	builder;
+			StringBuilder builder;
 
 			builder = new StringBuilder ()
 				.Append (this.text)

@@ -6,25 +6,25 @@ namespace Cottle
 	{
 		#region Attributes / Instance
 
-		public Expression[]			Arguments;
+		public Expression[] Arguments;
 
-		public ExpressionElement[]	Elements;
+		public ExpressionElement[] Elements;
 
-		public Expression			Source;
+		public Expression Source;
 
-		public Expression			Subscript;
+		public Expression Subscript;
 
-		public ExpressionType		Type;
+		public ExpressionType Type;
 
-		public Value				Value;
+		public Value Value;
 
 		#endregion
 
 		#region Attributes / Static
 
-		public static readonly Expression	Empty = new Expression
+		public static readonly Expression Empty = new Expression
 		{
-			Type	= ExpressionType.Void
+			Type = ExpressionType.Void
 		};
 
 		#endregion

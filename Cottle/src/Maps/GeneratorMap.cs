@@ -21,9 +21,9 @@ namespace Cottle.Maps
 
 		#region Attributes
 
-		private readonly int				count;
+		private readonly int count;
 
-		private readonly Func<int, Value>	generator;
+		private readonly Func<int, Value> generator;
 
 		#endregion
 
@@ -105,13 +105,13 @@ namespace Cottle.Maps
 
 			#region Attributes
 
-			private readonly int				count;
+			private readonly int count;
 
-			private KeyValuePair<Value, Value>	current;
+			private KeyValuePair<Value, Value> current;
 
-			private readonly Func<int, Value>	generator;
+			private readonly Func<int, Value> generator;
 
-			private int							index;
+			private int index;
 
 			#endregion
 

@@ -11,19 +11,19 @@ namespace Cottle.Documents.Dynamic
 	{
 		#region Attributes
 
-		private readonly ILGenerator							generator;
+		private readonly ILGenerator generator;
 
-		private readonly Dictionary<Type, Queue<LocalBuilder>>	locals;
+		private readonly Dictionary<Type, Queue<LocalBuilder>> locals;
 
-		private readonly List<string>							stringList;
+		private readonly List<string> stringList;
 
-		private readonly Dictionary<string, int>				stringMap;
+		private readonly Dictionary<string, int> stringMap;
 
-		private readonly Trimmer								trimmer;
+		private readonly Trimmer trimmer;
 
-		private readonly List<Value>							valueList;
+		private readonly List<Value> valueList;
 
-		private readonly Dictionary<Value, int>					valueMap;
+		private readonly Dictionary<Value, int> valueMap;
 
 		#endregion
 
@@ -46,10 +46,10 @@ namespace Cottle.Documents.Dynamic
 
 		public Storage Compile (IEnumerable<string> arguments, Command command)
 		{
-			Label	assign;
-			Label	copy;
-			Label	exit;
-			int		index;
+			Label assign;
+			Label copy;
+			Label exit;
+			int index;
 
 			// Create scope for program execution
 			this.EmitPushScope ();
@@ -116,14 +116,14 @@ namespace Cottle.Documents.Dynamic
 
 		private void CompileCommand (Command command, Label exit, int depth, bool isolate)
 		{
-			LocalBuilder	counter;
-			Label			empty;
-			LocalBuilder	enumerator;
-			LocalBuilder	fields;
-			Label			jump;
-			LocalBuilder	operand;
-			LocalBuilder	pair;
-			Label			skip;
+			LocalBuilder counter;
+			Label empty;
+			LocalBuilder enumerator;
+			LocalBuilder fields;
+			Label jump;
+			LocalBuilder operand;
+			LocalBuilder pair;
+			Label skip;
 
 			// Isolate command scope by entering a new scope level
 			if (isolate)
@@ -384,14 +384,14 @@ namespace Cottle.Documents.Dynamic
 
 		private void CompileExpression (Expression expression)
 		{
-			LocalBuilder	arguments;
-			ConstructorInfo	constructor;
-			Label			failure;
-			LocalBuilder	fields;
-			LocalBuilder	function;
-			LocalBuilder	key;
-			Label			success;
-			LocalBuilder	value;
+			LocalBuilder arguments;
+			ConstructorInfo constructor;
+			Label failure;
+			LocalBuilder fields;
+			LocalBuilder function;
+			LocalBuilder key;
+			Label success;
+			LocalBuilder value;
 
 			switch (expression.Type)
 			{
@@ -639,7 +639,7 @@ namespace Cottle.Documents.Dynamic
 
 		private void EmitPushString (string literal)
 		{
-			int	index;
+			int index;
 
 			if (!this.stringMap.TryGetValue (literal, out index))
 			{
@@ -658,7 +658,7 @@ namespace Cottle.Documents.Dynamic
 
 		private void EmitPushValue (Value constant)
 		{
-			int	index;
+			int index;
 
 			if (!this.valueMap.TryGetValue (constant, out index))
 			{
@@ -682,7 +682,7 @@ namespace Cottle.Documents.Dynamic
 
 		private void LocalRelease<T> (LocalBuilder local)
 		{
-			Queue<LocalBuilder>	queue;
+			Queue<LocalBuilder> queue;
 
 			if (!this.locals.TryGetValue (typeof (T), out queue))
 			{
@@ -696,7 +696,7 @@ namespace Cottle.Documents.Dynamic
 
 		private LocalBuilder LocalReserve<T> ()
 		{
-			Queue<LocalBuilder>	queue;
+			Queue<LocalBuilder> queue;
 
 			if (this.locals.TryGetValue (typeof (T), out queue) && queue.Count > 0)
 				return queue.Dequeue ();

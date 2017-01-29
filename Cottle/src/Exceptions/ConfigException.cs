@@ -7,7 +7,7 @@ namespace Cottle.Exceptions
 	{
 		#region Properties
 
-		public string	Name
+		public string Name
 		{
 			get
 			{
@@ -15,7 +15,7 @@ namespace Cottle.Exceptions
 			}
 		}
 
-		public string	Value
+		public string Value
 		{
 			get
 			{
@@ -27,9 +27,9 @@ namespace Cottle.Exceptions
 
 		#region Attributes
 
-		private readonly string	name;
+		private readonly string name;
 
-		private readonly string	value;
+		private readonly string value;
 
 		#endregion
 

@@ -18,7 +18,7 @@ namespace Cottle.Maps
 
 		#region Attributes
 
-		private readonly List<KeyValuePair<Value, Value>>	array;
+		private readonly List<KeyValuePair<Value, Value>> array;
 
 		#endregion
 

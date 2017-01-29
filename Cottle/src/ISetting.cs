@@ -6,32 +6,32 @@ namespace Cottle
 	{
 		#region Methods
 		
-		string	BlockBegin
+		string BlockBegin
 		{
 			get;
 		}
 
-		string	BlockContinue
+		string BlockContinue
 		{
 			get;
 		}
 
-		string	BlockEnd
+		string BlockEnd
 		{
 			get;
 		}
 
-		char	Escape
+		char Escape
 		{
 			get;
 		}
 
-		bool	Optimize
+		bool Optimize
 		{
 			get;
 		}
 
-		Trimmer	Trimmer
+		Trimmer Trimmer
 		{
 			get;
 		}

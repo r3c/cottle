@@ -10,13 +10,13 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly string[]	arguments;
+		private readonly string[] arguments;
 
-		private readonly INode		body;
+		private readonly INode body;
 
-		private readonly StoreMode	mode;
+		private readonly StoreMode mode;
 
-		private readonly string		name;
+		private readonly string name;
 
 		#endregion
 
@@ -39,21 +39,21 @@ namespace Cottle.Documents.Simple.Nodes
 			return object.ReferenceEquals (this, other) ? 0 : 1;
 		}
 
-		public bool	Equals (IFunction other)
+		public bool Equals (IFunction other)
 		{
 			return this.CompareTo (other) == 0;
 		}
 
 		public override bool Equals (object obj)
 		{
-			IFunction	other = obj as IFunction;
+			IFunction other = obj as IFunction;
 
 			return other != null && this.Equals (other);
 		}
 
 		public Value Execute (IList<Value> arguments, IStore store, TextWriter output)
 		{
-			Value	result;
+			Value result;
 
 			store.Enter ();
 
@@ -89,9 +89,9 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			bool	comma;
-			string	keyword;
-			string	link;
+			bool comma;
+			string keyword;
+			string link;
 
 			switch (this.mode)
 			{

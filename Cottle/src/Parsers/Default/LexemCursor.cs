@@ -5,9 +5,9 @@ namespace Cottle.Parsers.Default
 	{
 		#region Attributes
 
-		public readonly char	Character;
+		public readonly char Character;
 
-		public LexemState		State;
+		public LexemState State;
 
 		#endregion
 

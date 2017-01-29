@@ -10,13 +10,13 @@ namespace Cottle.Demo
 	{
 		#region Attributes
 
-		private NodeAssignDelegate	assign;
+		private NodeAssignDelegate assign;
 
 		#endregion
 
 		#region Constructors
 
-		public	NodeForm (NodeData data, NodeAssignDelegate assign)
+		public NodeForm (NodeData data, NodeAssignDelegate assign)
 		{
 			this.assign = assign;
 
@@ -65,9 +65,9 @@ namespace Cottle.Demo
 
 		#region Methods / Listeners
 
-		private void	buttonAccept_Click (object sender, EventArgs e)
+		private void buttonAccept_Click (object sender, EventArgs e)
 		{
-			string	key = this.textBoxName.Text;
+			string key = this.textBoxName.Text;
 			decimal number;
 
 			if (string.IsNullOrEmpty (key))
@@ -115,12 +115,12 @@ namespace Cottle.Demo
 			this.Close ();
 		}
 
-		private void	buttonCancel_Click (object sender, EventArgs e)
+		private void buttonCancel_Click (object sender, EventArgs e)
 		{
 			this.Close ();
 		}
 
-		private void	radioButtonValue_CheckedChanged (object sender, EventArgs e)
+		private void radioButtonValue_CheckedChanged (object sender, EventArgs e)
 		{
 			this.ApplyType ();
 		}
@@ -129,9 +129,9 @@ namespace Cottle.Demo
 
 		#region Methods / Private
 
-		private ValueContent	ApplyType ()
+		private ValueContent ApplyType ()
 		{
-			ValueContent	type;
+			ValueContent type;
 
 			if (this.radioButtonValueBoolean.Checked)
 				type = ValueContent.Boolean;
@@ -155,7 +155,7 @@ namespace Cottle.Demo
 
 		#region Types
 
-		public delegate void	NodeAssignDelegate (string key, Value value);
+		public delegate void NodeAssignDelegate (string key, Value value);
 
 		#endregion
 	}

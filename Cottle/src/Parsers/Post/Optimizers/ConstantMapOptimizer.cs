@@ -16,7 +16,7 @@ namespace Cottle.Parsers.Post.Optimizers
 
 		#region Attributes / Instance
 
-		private static readonly Predicate<ExpressionElement>	constants = (e) => e.Key.Type == ExpressionType.Constant && e.Value.Type == ExpressionType.Constant;
+		private static readonly Predicate<ExpressionElement> constants = (e) => e.Key.Type == ExpressionType.Constant && e.Value.Type == ExpressionType.Constant;
 
 		#endregion
 
@@ -24,7 +24,7 @@ namespace Cottle.Parsers.Post.Optimizers
 
 		public override Expression Optimize (Expression expression)
 		{
-			KeyValuePair<Value, Value>[]	pairs;
+			KeyValuePair<Value, Value>[] pairs;
 
 			if (expression.Type != ExpressionType.Map || !Array.TrueForAll (expression.Elements, ConstantMapOptimizer.constants))
 				return expression;
@@ -36,8 +36,8 @@ namespace Cottle.Parsers.Post.Optimizers
 
 			return new Expression
 			{
-				Type	= ExpressionType.Constant,
-				Value	= pairs
+				Type = ExpressionType.Constant,
+				Value = pairs
 			};
 		}
 

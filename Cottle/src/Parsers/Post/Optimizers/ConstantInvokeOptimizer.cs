@@ -36,8 +36,8 @@ namespace Cottle.Parsers.Post.Optimizers
 
 			return new Expression
 			{
-				Type	= ExpressionType.Constant,
-				Value	= function.Execute (expression.Arguments.Select( (a) => a.Value).ToList (), new SimpleStore (), new StringWriter ())
+				Type = ExpressionType.Constant,
+				Value = function.Execute (expression.Arguments.Select( (a) => a.Value).ToList (), new SimpleStore (), new StringWriter ())
 			};
 		}
 

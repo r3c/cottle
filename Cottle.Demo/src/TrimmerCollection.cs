@@ -9,13 +9,13 @@ namespace Cottle.Demo
 	{
 		#region Constants
 		
-		public const int	DEFAULT_INDEX = 2;
+		public const int DEFAULT_INDEX = 2;
 		
 		#endregion
 
 		#region Properties
 		
-		public static IEnumerable<string>	TrimmerNames
+		public static IEnumerable<string> TrimmerNames
 		{
 			get
 			{
@@ -28,7 +28,7 @@ namespace Cottle.Demo
 
 		#region Attributes
 
-		private static readonly KeyValuePair<string, Trimmer>[]	trimmers = new KeyValuePair<string, Trimmer>[]
+		private static readonly KeyValuePair<string, Trimmer>[] trimmers = new KeyValuePair<string, Trimmer>[]
 		{
 			new KeyValuePair<string, Trimmer> ("Blank characters",			BuiltinTrimmers.LeadAndTrailBlankCharacters),
 			new KeyValuePair<string, Trimmer> ("First and last lines",		BuiltinTrimmers.FirstAndLastBlankLines),
@@ -40,7 +40,7 @@ namespace Cottle.Demo
 		
 		#region Methods
 		
-		public static Trimmer	GetTrimmer (int index)
+		public static Trimmer GetTrimmer (int index)
 		{
 			if (index >= 0 && index < TrimmerCollection.trimmers.Length)
 				return TrimmerCollection.trimmers[index].Value;

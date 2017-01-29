@@ -4,8 +4,8 @@ namespace Cottle.Parsers.Default
 {
 	struct Operator
 	{
-		public IFunction	Function;
+		public IFunction Function;
 
-		public int			Precedence;
+		public int Precedence;
 	}
 }

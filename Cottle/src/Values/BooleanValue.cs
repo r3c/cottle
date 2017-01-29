@@ -13,7 +13,7 @@ namespace Cottle.Values
 
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -21,7 +21,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -29,7 +29,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -37,7 +37,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace Cottle.Values
 
 		#region Constructors
 
-		public	BooleanValue (bool value) :
+		public BooleanValue (bool value) :
 			base (value, (source) => source.AsBoolean)
 		{
 		}
@@ -58,7 +58,7 @@ namespace Cottle.Values
 
 		#region Methods
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return this.value ? "<true>" : "<false>";
 		}

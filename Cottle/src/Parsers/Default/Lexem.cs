@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace Cottle.Parsers.Default
 {
-	struct	Lexem
+	struct Lexem
 	{
 		#region Attributes
 
-		public readonly string		Content;
+		public readonly string Content;
 
-		public readonly LexemType	Type;
+		public readonly LexemType Type;
 
 		#endregion
 

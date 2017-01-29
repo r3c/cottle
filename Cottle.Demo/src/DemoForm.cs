@@ -18,18 +18,18 @@ namespace Cottle.Demo
 	{
 		#region Constants
 
-		private const string	AUTOLOAD = "autoload.ctv";
+		private const string AUTOLOAD = "autoload.ctv";
 
 		#endregion
 
 		#region Attributes / Instance
 
-		private SettingForm.Parameters	parameters = new SettingForm.Parameters
+		private SettingForm.Parameters parameters = new SettingForm.Parameters
 		{
-			BlockBegin		= DefaultSetting.Instance.BlockBegin,
-			BlockContinue	= DefaultSetting.Instance.BlockContinue,
-			BlockEnd		= DefaultSetting.Instance.BlockEnd,
-			TrimmerIndex	= TrimmerCollection.DEFAULT_INDEX
+			BlockBegin = DefaultSetting.Instance.BlockBegin,
+			BlockContinue = DefaultSetting.Instance.BlockContinue,
+			BlockEnd = DefaultSetting.Instance.BlockEnd,
+			TrimmerIndex = TrimmerCollection.DEFAULT_INDEX
 		};
 
 		#endregion
@@ -52,8 +52,8 @@ namespace Cottle.Demo
 
 		private void buttonClean_Click (object sender, EventArgs e)
 		{
-			SimpleDocument	document;
-			ISetting	    setting;
+			SimpleDocument document;
+			ISetting setting;
 
 			setting = this.SettingCreate ();
 
@@ -71,9 +71,9 @@ namespace Cottle.Demo
 
 		private void buttonEvaluate_Click (object sender, EventArgs e)
 		{
-			SimpleDocument	document;
-			ISetting		setting;
-			IStore			store;
+			SimpleDocument document;
+			ISetting setting;
+			IStore store;
 
 			setting = this.SettingCreate ();
 
@@ -98,7 +98,7 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemSetting_Click (object sender, EventArgs e)
 		{
-			Form	form;
+			Form form;
 
 			form = new SettingForm ((p) => this.parameters = p, this.parameters);
 			form.ShowDialog (this);
@@ -106,7 +106,7 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemFileLoad_Click (object sender, EventArgs e)
 		{
-			OpenFileDialog	dialog = new OpenFileDialog ();
+			OpenFileDialog dialog = new OpenFileDialog ();
 
 			dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
 
@@ -116,7 +116,7 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemFileSave_Click (object sender, EventArgs e)
 		{
-			SaveFileDialog	dialog = new SaveFileDialog ();
+			SaveFileDialog dialog = new SaveFileDialog ();
 
 			dialog.Filter = "Cottle values file (*.ctv)|*.ctv|Any file (*.*)|*.*";
 
@@ -126,11 +126,11 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemMoveDown_Click (object sender, EventArgs e)
 		{
-			TreeNodeCollection	collection;
-			int					index1;
-			int					index2;
-			TreeNode			node1 = this.contextMenuStripTree.Tag as TreeNode;
-			TreeNode			node2;
+			TreeNodeCollection collection;
+			int index1;
+			int index2;
+			TreeNode node1 = this.contextMenuStripTree.Tag as TreeNode;
+			TreeNode node2;
 
 			if (node1 != null && node1.Parent != null && node1.NextNode != null)
 			{
@@ -151,11 +151,11 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemMoveUp_Click (object sender, EventArgs e)
 		{
-			TreeNodeCollection	collection;
-			int					index1;
-			int					index2;
-			TreeNode			node1 = this.contextMenuStripTree.Tag as TreeNode;
-			TreeNode			node2;
+			TreeNodeCollection collection;
+			int index1;
+			int index2;
+			TreeNode node1 = this.contextMenuStripTree.Tag as TreeNode;
+			TreeNode node2;
 
 			if (node1 != null && node1.Parent != null && node1.PrevNode != null)
 			{
@@ -176,7 +176,7 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemNodeClone_Click (object sender, EventArgs e)
 		{
-			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
+			TreeNode node = this.contextMenuStripTree.Tag as TreeNode;
 
 			if (node != null && node.Parent != null)
 				node.Parent.Nodes.Insert (node.Index + 1, this.NodeClone (node));
@@ -184,14 +184,14 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemNodeCreate_Click (object sender, EventArgs e)
 		{
-			Form		form;
-			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
+			Form form;
+			TreeNode node = this.contextMenuStripTree.Tag as TreeNode;
 
 			if (node != null)
 			{
 				form = new NodeForm (null, delegate (string key, Value value)
 				{
-					TreeNode	child = this.NodeCreate (key, value);
+					TreeNode child = this.NodeCreate (key, value);
 
 					node.Nodes.Add (child);
 					node.Expand ();
@@ -203,7 +203,7 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemNodeDelete_Click (object sender, EventArgs e)
 		{
-			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
+			TreeNode node = this.contextMenuStripTree.Tag as TreeNode;
 
 			if (node != null && node.Parent != null)
 				node.Remove ();
@@ -211,8 +211,8 @@ namespace Cottle.Demo
 
 		private void toolStripMenuItemNodeUpdate_Click (object sender, EventArgs e)
 		{
-			Form		form;
-			TreeNode	node = this.contextMenuStripTree.Tag as TreeNode;
+			Form form;
+			TreeNode node = this.contextMenuStripTree.Tag as TreeNode;
 
 			if (node != null)
 			{
@@ -233,8 +233,8 @@ namespace Cottle.Demo
 
 		private void contextMenuStripTree_Opening (object sender, CancelEventArgs e)
 		{
-			TreeNode	node = this.treeViewValue.SelectedNode;
-			NodeData	data = node != null ? node.Tag as NodeData : null;
+			TreeNode node = this.treeViewValue.SelectedNode;
+			NodeData data = node != null ? node.Tag as NodeData : null;
 
 			this.toolStripMenuItemNodeClone.Enabled = node != null && node.Parent != null;
 			this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Map);
@@ -252,7 +252,7 @@ namespace Cottle.Demo
 
 		private void DisplayError (ParseException exception)
 		{
-			int	index;
+			int index;
 
 			index = this.textBoxInput.GetFirstCharIndexFromLine (exception.Line - 1) + exception.Column;
 
@@ -272,7 +272,7 @@ namespace Cottle.Demo
 
 		private void NodeAssign (TreeNode node, string key, Value value)
 		{
-			NodeData	data = new NodeData (key, value);
+			NodeData data = new NodeData (key, value);
 
 			node.ImageIndex = data.ImageIndex;
 			node.SelectedImageIndex = data.ImageIndex;
@@ -294,8 +294,8 @@ namespace Cottle.Demo
 
 		private TreeNode NodeClone (TreeNode node)
 		{
-			NodeData	data = node.Tag as NodeData;
-			TreeNode	copy;
+			NodeData data = node.Tag as NodeData;
+			TreeNode copy;
 
 			if (data != null)
 			{
@@ -317,9 +317,9 @@ namespace Cottle.Demo
 
 		private TreeNode NodeCreate (string key, Value value)
 		{
-			TreeNode	node;
-			TreeNode[]	range;
-			int			i;
+			TreeNode node;
+			TreeNode[] range;
+			int i;
 
 			node = new TreeNode ();
 
@@ -362,7 +362,7 @@ namespace Cottle.Demo
 
 		private ISetting SettingCreate ()
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.BlockBegin = this.parameters.BlockBegin;
@@ -375,9 +375,9 @@ namespace Cottle.Demo
 
 		private void StateLoad (string path, bool dialog)
 		{
-			TreeNode					root;
-			Dictionary<string, Value>   values;
-			int						 	version;
+			TreeNode root;
+			Dictionary<string, Value> values;
+			int version;
 
 			if (this.treeViewValue.Nodes.Count < 1)
 				return;
@@ -407,10 +407,10 @@ namespace Cottle.Demo
 
 					this.parameters = new SettingForm.Parameters
 					{
-						BlockBegin		= reader.ReadString (),
-						BlockContinue	= reader.ReadString (),
-						BlockEnd		= reader.ReadString (),
-						TrimmerIndex	= version > 1 ? reader.ReadInt32 () : TrimmerCollection.DEFAULT_INDEX
+						BlockBegin = reader.ReadString (),
+						BlockContinue = reader.ReadString (),
+						BlockEnd = reader.ReadString (),
+						TrimmerIndex = version > 1 ? reader.ReadInt32 () : TrimmerCollection.DEFAULT_INDEX
 					};
 
 					this.textBoxInput.Text = reader.ReadString ();
@@ -429,7 +429,7 @@ namespace Cottle.Demo
 
 		private void StateSave (string path)
 		{
-			Dictionary<string, Value>	values = new Dictionary<string, Value> ();
+			Dictionary<string, Value> values = new Dictionary<string, Value> ();
 
 			foreach (TreeNode root in this.treeViewValue.Nodes)
 			{
@@ -462,8 +462,8 @@ namespace Cottle.Demo
 
 		private List<KeyValuePair<Value, Value>> ValuesBuild (TreeNodeCollection nodes)
 		{
-			List<KeyValuePair<Value, Value>>	collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
-			NodeData							data;
+			List<KeyValuePair<Value, Value>> collection = new List<KeyValuePair<Value,Value>> (nodes.Count);
+			NodeData data;
 
 			foreach (TreeNode node in nodes)
 			{

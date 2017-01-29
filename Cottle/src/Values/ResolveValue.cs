@@ -6,7 +6,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -14,7 +14,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IFunction		AsFunction
+		public override IFunction AsFunction
 		{
 			get
 			{
@@ -22,7 +22,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -30,7 +30,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -38,7 +38,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override IMap			Fields
+		public override IMap Fields
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -58,15 +58,15 @@ namespace Cottle.Values
 
 		#region Attributes
 
-		private readonly object	mutex = new object ();
+		private readonly object mutex = new object ();
 
-		private Value			value = null;
+		private Value value = null;
 
 		#endregion
 
 		#region Methods / Abstract
 
-		protected abstract Value	Resolve ();
+		protected abstract Value Resolve ();
 
 		#endregion
 
@@ -82,7 +82,7 @@ namespace Cottle.Values
 			return this.Acquire ().GetHashCode ();
 		}
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
 			return this.Acquire ().ToString ();
 		}

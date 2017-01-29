@@ -15,7 +15,7 @@ namespace Cottle.Test
 	[TestFixture]
 	public class DocumentTester
 	{
-		public static readonly Func<string, ISetting, IDocument>[]	constructors =
+		public static readonly Func<string, ISetting, IDocument>[] constructors =
 		{
 			(source, setting) => new DynamicDocument (source, setting),
 			(source, setting) => new SimpleDocument (source, setting)
@@ -158,7 +158,7 @@ namespace Cottle.Test
 		[TestCase ("{\"xxxy\"}", 'x', "xy")]
 		public void EscapeCommand (string input, char escape, string expected)
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.Escape = escape;
@@ -173,7 +173,7 @@ namespace Cottle.Test
 		[TestCase ("--", '-', "-")]
 		public void EscapeText (string input, char escape, string expected)
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.Escape = escape;
@@ -197,7 +197,7 @@ namespace Cottle.Test
 		[TestCase ("ddd", "<void>")]
 		public void ExpressionAccess (string access, string expected)
 		{
-			Action<IStore>	populate;
+			Action<IStore> populate;
 
 			populate = (scope) =>
 			{
@@ -235,14 +235,14 @@ namespace Cottle.Test
 		[TestCase ("xyz", "17")]
 		public void ExpressionInvoke (string symbol, string expected)
 		{
-			Action<IStore>	populate;
+			Action<IStore> populate;
 
 			populate = (scope) =>
 			{
 				scope[symbol] = expected;
 				scope["f"] = new NativeFunction ((a, s, o) =>
 				{
-					string	value;
+					string value;
 	
 					value = s[a[0]].AsString;
 	
@@ -279,8 +279,8 @@ namespace Cottle.Test
 		[TestCase ("x", "missing", "x")]
 		public void ExpressionSymbol (string set, string get, string value)
 		{
-			string			expected;
-			Action<IStore>	populate;
+			string expected;
+			Action<IStore> populate;
 
 			expected = (set == get ? (Value)value : VoidValue.Instance).ToString ();
 			populate = (scope) =>
@@ -294,7 +294,7 @@ namespace Cottle.Test
 		[Test]
 		public void OptimizeConstantMap ()
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.Optimize = false;
@@ -309,7 +309,7 @@ namespace Cottle.Test
 		[Test]
 		public void OptimizeReturn ()
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.Optimize = false;
@@ -397,7 +397,7 @@ namespace Cottle.Test
 		[Test]
 		public void TestAmbiguous ()
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.BlockBegin = "<|";
@@ -436,7 +436,7 @@ namespace Cottle.Test
 		[TestCase ("df98gd76dfg5df4g321gh0", "[^0-9]", "", "9876543210")]
 		public void TextTrim (string value, string pattern, string replacement, string expected)
 		{
-			CustomSetting	setting;
+			CustomSetting setting;
 
 			setting = new CustomSetting ();
 			setting.Trimmer = (s) => Regex.Replace (s, pattern, replacement);
@@ -446,8 +446,8 @@ namespace Cottle.Test
 
 		private void AssertRender (string source, string expected, ISetting setting, Action<IStore> populate, Action<IDocument> listen)
 		{
-			IDocument	document;
-			IStore		store;
+			IDocument document;
+			IStore store;
 
 			foreach (Func<string, ISetting, IDocument> constructor in DocumentTester.constructors)
 			{
@@ -470,9 +470,9 @@ namespace Cottle.Test
 
 		private void AssertReturn (string source, string expected, ISetting setting, Action<IStore> populate, Action<IDocument> listen)
 		{
-			IDocument	document;
-			IStore		store;
-			Value		value;
+			IDocument document;
+			IStore store;
+			Value value;
 
 			foreach (Func<string, ISetting, IDocument> constructor in DocumentTester.constructors)
 			{
@@ -499,7 +499,7 @@ namespace Cottle.Test
 		{
 			return (s) =>
 			{
-				IFunction	function;
+				IFunction function;
 
 				foreach (string name in names)
 				{

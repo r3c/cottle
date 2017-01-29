@@ -8,7 +8,7 @@ namespace Cottle.Documents.Dynamic
 	{
 		public static ConstructorInfo Constructor<T> (Expression<T> lambda)
 		{
-			NewExpression	expression;
+			NewExpression expression;
 
 			expression = lambda.Body as NewExpression;
 
@@ -20,7 +20,7 @@ namespace Cottle.Documents.Dynamic
 
 		public static FieldInfo Field<T> (Expression<T> lambda)
 		{
-			MemberExpression	expression;
+			MemberExpression expression;
 
 			expression = lambda.Body as MemberExpression;
 
@@ -32,7 +32,7 @@ namespace Cottle.Documents.Dynamic
 
 		public static MethodInfo Method<T> (Expression<T> lambda)
 		{
-			MethodCallExpression	expression;
+			MethodCallExpression expression;
 
 			expression = lambda.Body as MethodCallExpression;
 
@@ -44,7 +44,7 @@ namespace Cottle.Documents.Dynamic
 
 		public static PropertyInfo Property<T> (Expression<T> lambda)
 		{
-			MemberExpression	expression;
+			MemberExpression expression;
 
 			expression = lambda.Body as MemberExpression;
 

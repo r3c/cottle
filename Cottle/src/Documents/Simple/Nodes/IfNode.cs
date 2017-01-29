@@ -9,9 +9,9 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly KeyValuePair<IEvaluator, INode>[]	branches;
+		private readonly KeyValuePair<IEvaluator, INode>[] branches;
 
-		private readonly INode								fallback;
+		private readonly INode fallback;
 
 		#endregion
 
@@ -29,7 +29,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			bool	halt;
+			bool halt;
 
 			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
 			{
@@ -63,7 +63,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public void Source (ISetting setting, TextWriter output)
 		{
-			bool	first;
+			bool first;
 			
 			first = true;
 

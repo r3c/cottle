@@ -8,15 +8,15 @@ namespace Cottle.Documents.Simple.Nodes
 	{
 		#region Attributes
 
-		private readonly INode		body;
+		private readonly INode body;
 
-		private readonly INode		empty;
+		private readonly INode empty;
 
-		private readonly IEvaluator	from;
+		private readonly IEvaluator from;
 
-		private readonly string		key;
+		private readonly string key;
 
-		private readonly string		value;
+		private readonly string value;
 
 		#endregion
 
@@ -37,7 +37,7 @@ namespace Cottle.Documents.Simple.Nodes
 
 		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			IMap	fields;
+			IMap fields;
 
 			fields = this.from.Evaluate (store, output).Fields;
 

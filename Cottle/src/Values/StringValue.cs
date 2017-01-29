@@ -7,7 +7,7 @@ namespace Cottle.Values
 	{
 		#region Properties
 
-		public override bool			AsBoolean
+		public override bool AsBoolean
 		{
 			get
 			{
@@ -15,7 +15,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override decimal			AsNumber
+		public override decimal AsNumber
 		{
 			get
 			{
@@ -25,7 +25,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override string			AsString
+		public override string AsString
 		{
 			get
 			{
@@ -33,7 +33,7 @@ namespace Cottle.Values
 			}
 		}
 
-		public override ValueContent	Type
+		public override ValueContent Type
 		{
 			get
 			{
@@ -45,12 +45,12 @@ namespace Cottle.Values
 
 		#region Constructors
 
-		public	StringValue (string value) :
+		public StringValue (string value) :
 			base (value, (source) => source.AsString)
 		{
 		}
 
-		public	StringValue (char value) :
+		public StringValue (char value) :
 			this (value.ToString ())
 		{
 		}
@@ -59,9 +59,9 @@ namespace Cottle.Values
 
 		#region Methods
 
-		public override string	ToString ()
+		public override string ToString ()
 		{
-			StringBuilder	builder;
+			StringBuilder builder;
 
 			builder = new StringBuilder ();
 			builder.Append ('"');

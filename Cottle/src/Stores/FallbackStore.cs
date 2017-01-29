@@ -26,9 +26,9 @@ namespace Cottle.Stores
 		
 		#region Attributes
 
-		private readonly IStore	constant;
+		private readonly IStore constant;
 
-		private readonly IStore	mutable;
+		private readonly IStore mutable;
 
 		#endregion
 		

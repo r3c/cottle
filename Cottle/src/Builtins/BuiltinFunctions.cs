@@ -13,7 +13,7 @@ namespace Cottle.Builtins
 	{
 		#region Properties
 
-		public static IEnumerable<KeyValuePair<string, IFunction>>	Instances
+		public static IEnumerable<KeyValuePair<string, IFunction>> Instances
 		{
 			get
 			{
@@ -25,15 +25,15 @@ namespace Cottle.Builtins
 
 		#region Attributes
 
-		private static readonly DateTime	epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+		private static readonly DateTime epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-		private static readonly IFunction	functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
+		private static readonly IFunction functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionCall = new NativeFunction ((values, scope, output) =>
+		private static readonly IFunction functionCall = new NativeFunction ((values, scope, output) =>
 		{
-			Value[]		arguments;
-			IFunction	function;
-			int			i;
+			Value[] arguments;
+			IFunction function;
+			int i;
 
 			function = values[0].AsFunction;
 
@@ -49,7 +49,7 @@ namespace Cottle.Builtins
 			return function.Execute (arguments, scope, output);
 		}, 2);
 
-		private static readonly IFunction	functionCast = new NativeFunction ((values) =>
+		private static readonly IFunction functionCast = new NativeFunction ((values) =>
 		{
 			switch (values[1].AsString)
 			{
@@ -70,10 +70,10 @@ namespace Cottle.Builtins
 			}
 		}, 2);
 
-		private static readonly IFunction	functionCat = new NativeFunction ((values) =>
+		private static readonly IFunction functionCat = new NativeFunction ((values) =>
 		{
-			StringBuilder	builder;
-			List<Value>		list;
+			StringBuilder builder;
+			List<Value> list;
 
 			if (values[0].Type == ValueContent.Map)
 			{
@@ -98,9 +98,9 @@ namespace Cottle.Builtins
 			}
 		}, 1, -1);
 
-		private static readonly IFunction	functionCeiling = new NativeFunction ((v) => Math.Ceiling (v[0].AsNumber), 1);
+		private static readonly IFunction functionCeiling = new NativeFunction ((v) => Math.Ceiling (v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionChar = new NativeFunction ((values) =>
+		private static readonly IFunction functionChar = new NativeFunction ((values) =>
 		{
 			try
 			{
@@ -112,14 +112,14 @@ namespace Cottle.Builtins
 			}
 		}, 1);
 
-		private static readonly IFunction	functionCompare = new NativeFunction ((v) => v[0].CompareTo (v[1]), 2);
+		private static readonly IFunction functionCompare = new NativeFunction ((v) => v[0].CompareTo (v[1]), 2);
 
-		private static readonly IFunction	functionCosine = new NativeFunction ((v) => Math.Cos ((double)v[0].AsNumber), 1);
+		private static readonly IFunction functionCosine = new NativeFunction ((v) => Math.Cos ((double)v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionCross = new NativeFunction ((values) =>
+		private static readonly IFunction functionCross = new NativeFunction ((values) =>
 		{
-			bool								insert;
-			List<KeyValuePair<Value, Value>>	pairs;
+			bool insert;
+			List<KeyValuePair<Value, Value>> pairs;
 
 			pairs = new List<KeyValuePair<Value, Value>> ();
 
@@ -144,14 +144,14 @@ namespace Cottle.Builtins
 			return pairs;
 		}, 1, -1);
 
-		private static readonly IFunction	functionDefault = new NativeFunction ((v) => v[0].AsBoolean ? v[0] : v[1], 2);
+		private static readonly IFunction functionDefault = new NativeFunction ((v) => v[0].AsBoolean ? v[0] : v[1], 2);
 
-		private static readonly IFunction	functionDefined = new NativeFunction ((values) => values[0].Type != ValueContent.Void, 1);
+		private static readonly IFunction functionDefined = new NativeFunction ((values) => values[0].Type != ValueContent.Void, 1);
 
-		private static readonly IFunction	functionExcept = new NativeFunction ((values) =>
+		private static readonly IFunction functionExcept = new NativeFunction ((values) =>
 		{
-			bool								insert;
-			List<KeyValuePair<Value, Value>>	pairs;
+			bool insert;
+			List<KeyValuePair<Value, Value>> pairs;
 
 			pairs = new List<KeyValuePair<Value, Value>> ();
 
@@ -176,11 +176,11 @@ namespace Cottle.Builtins
 			return pairs;
 		}, 1, -1);
 
-		private static readonly IFunction	functionFilter = new NativeFunction ((values, scope, output) =>
+		private static readonly IFunction functionFilter = new NativeFunction ((values, scope, output) =>
 		{
-			List<Value>							arguments;
-			IFunction							callback;
-			List<KeyValuePair<Value, Value>>	result;
+			List<Value> arguments;
+			IFunction callback;
+			List<KeyValuePair<Value, Value>> result;
 
 			callback = values[1].AsFunction;
 
@@ -205,12 +205,12 @@ namespace Cottle.Builtins
 			return result;
 		});
 
-		private static readonly IFunction	functionFind = new NativeFunction ((values) =>
+		private static readonly IFunction functionFind = new NativeFunction ((values) =>
 		{
-			int		index;
-			int		offset;
-			Value	search;
-			Value	source;
+			int index;
+			int offset;
+			Value search;
+			Value source;
 
 			offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
 			search = values[1];
@@ -232,10 +232,10 @@ namespace Cottle.Builtins
 				return source.AsString.IndexOf (search.AsString, offset, StringComparison.Ordinal);
 		}, 2, 3);
 
-		private static readonly IFunction	functionFlip = new NativeFunction ((values) =>
+		private static readonly IFunction functionFlip = new NativeFunction ((values) =>
 		{
-			KeyValuePair<Value, Value>[]	flip;
-			int								i;
+			KeyValuePair<Value, Value>[] flip;
+			int i;
 
 			flip = new KeyValuePair<Value, Value>[values[0].Fields.Count];
 			i = 0;
@@ -246,14 +246,14 @@ namespace Cottle.Builtins
 			return flip;
 		}, 1);
 
-		private static readonly IFunction	functionFloor = new NativeFunction ((v) => Math.Floor (v[0].AsNumber), 1);
+		private static readonly IFunction functionFloor = new NativeFunction ((v) => Math.Floor (v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionFormat = new NativeFunction ((values) =>
+		private static readonly IFunction functionFormat = new NativeFunction ((values) =>
 		{
-			CultureInfo	culture;
-			string		format;
-			int			index;
-			object		target;
+			CultureInfo culture;
+			string format;
+			int index;
+			object target;
 
 #if CORECLR
 			culture = values.Count > 2 ? new CultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
@@ -329,9 +329,9 @@ namespace Cottle.Builtins
 			return string.Format (culture, "{0:" + format.Substring (index + 1) + "}", target);
 		}, 2, 3);
 
-		private static readonly IFunction	functionHas = new NativeFunction ((values) =>
+		private static readonly IFunction functionHas = new NativeFunction ((values) =>
 		{
-			Value	source;
+			Value source;
 
 			source = values[0];
 
@@ -342,11 +342,11 @@ namespace Cottle.Builtins
 			return true;
 		}, 1, -1);
 
-		private static readonly IFunction	functionJoin = new NativeFunction ((values) =>
+		private static readonly IFunction functionJoin = new NativeFunction ((values) =>
 		{
-			StringBuilder	builder;
-			bool			first;
-			string			split;
+			StringBuilder builder;
+			bool first;
+			string split;
 
 			if (values.Count > 1)
 				split = values[1].AsString;
@@ -369,7 +369,7 @@ namespace Cottle.Builtins
 			return builder.ToString ();
 		}, 1, 2);
 
-		private static readonly IFunction	functionLength = new NativeFunction ((values) =>
+		private static readonly IFunction functionLength = new NativeFunction ((values) =>
 		{
 			if (values[0].Type == ValueContent.Map)
 				return values[0].Fields.Count;
@@ -377,14 +377,14 @@ namespace Cottle.Builtins
 			return values[0].AsString.Length;
 		}, 1);
 
-		private static readonly IFunction	functionLowerCase = new NativeFunction ((v) => v[0].AsString.ToLowerInvariant (), 1);
+		private static readonly IFunction functionLowerCase = new NativeFunction ((v) => v[0].AsString.ToLowerInvariant (), 1);
 
-		private static readonly IFunction	functionMap = new NativeFunction ((values, scope, output) =>
+		private static readonly IFunction functionMap = new NativeFunction ((values, scope, output) =>
 		{
-			List<Value>						arguments;
-			IFunction						callback;
-			KeyValuePair<Value, Value>[]	result;
-			int								i;
+			List<Value> arguments;
+			IFunction callback;
+			KeyValuePair<Value, Value>[] result;
+			int i;
 
 			callback = values[1].AsFunction;
 
@@ -409,10 +409,10 @@ namespace Cottle.Builtins
 			return result;
 		}, 2, -1);
 
-		private static readonly IFunction	functionMatch = new NativeFunction ((values) =>
+		private static readonly IFunction functionMatch = new NativeFunction ((values) =>
 		{
-			List<Value>	groups;
-			Match		match;
+			List<Value> groups;
+			Match match;
 
 			match = Regex.Match (values[0].AsString, values[1].AsString);
 
@@ -427,7 +427,7 @@ namespace Cottle.Builtins
 			return groups;
 		}, 2, 3);
 
-		private static readonly IFunction	functionMaximum = new NativeFunction ((values) =>
+		private static readonly IFunction functionMaximum = new NativeFunction ((values) =>
 		{
 			decimal max;
 
@@ -439,7 +439,7 @@ namespace Cottle.Builtins
 			return max;
 		}, 1, -1);
 
-		private static readonly IFunction	functionMinimum = new NativeFunction ((values) =>
+		private static readonly IFunction functionMinimum = new NativeFunction ((values) =>
 		{
 			decimal min;
 
@@ -451,18 +451,18 @@ namespace Cottle.Builtins
 			return min;
 		}, 1, -1);
 
-		private static readonly IFunction	functionOrd = new NativeFunction ((values) =>
+		private static readonly IFunction functionOrd = new NativeFunction ((values) =>
 		{
-			string	str;
+			string str;
 
 			str = values[0].AsString;
 
 			return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
 		}, 1);
 
-		private static readonly IFunction	functionPower = new NativeFunction ((v) => Math.Pow ((double)v[0].AsNumber, (double)v[1].AsNumber), 2);
+		private static readonly IFunction functionPower = new NativeFunction ((v) => Math.Pow ((double)v[0].AsNumber, (double)v[1].AsNumber), 2);
 
-		private static readonly IFunction	functionRandom = new NativeFunction ((values) =>
+		private static readonly IFunction functionRandom = new NativeFunction ((values) =>
 		{
 			lock (BuiltinFunctions.random)
 			{
@@ -480,12 +480,12 @@ namespace Cottle.Builtins
 			}
 		}, 0, 2);
 
-		private static readonly IFunction	functionRange = new NativeFunction ((values) =>
+		private static readonly IFunction functionRange = new NativeFunction ((values) =>
 		{
 			int sign;
-			int	start;
-			int	step;
-			int	stop;
+			int start;
+			int step;
+			int stop;
 
 			start = values.Count > 1 ? (int)values[0].AsNumber : 0;
 			step = values.Count > 2 ? (int)values[2].AsNumber : 1;
@@ -512,7 +512,7 @@ namespace Cottle.Builtins
 			return new MapValue ((i) => start + step * i, (stop - start + step + sign) / step);
 		}, 1, 3);
 
-		private static readonly IFunction	functionRound = new NativeFunction ((values) =>
+		private static readonly IFunction functionRound = new NativeFunction ((values) =>
 		{
 			if (values.Count > 1)
 				return Math.Round (values[0].AsNumber, (int)values[1].AsNumber);
@@ -520,17 +520,17 @@ namespace Cottle.Builtins
 			return Math.Round (values[0].AsNumber);
 		}, 1, 2);
 
-		private static readonly IFunction	functionSine = new NativeFunction ((v) => Math.Sin ((double)v[0].AsNumber), 1);
+		private static readonly IFunction functionSine = new NativeFunction ((v) => Math.Sin ((double)v[0].AsNumber), 1);
 
-		private static readonly IFunction	functionSlice = new NativeFunction ((values) =>
+		private static readonly IFunction functionSlice = new NativeFunction ((values) =>
 		{
-			int										count;
-			IEnumerator<KeyValuePair<Value, Value>>	enumerator;
-			int										length;
-			int										offset;
-			Value									source;
-			Value[]									target;
-			int										i;
+			int count;
+			IEnumerator<KeyValuePair<Value, Value>> enumerator;
+			int length;
+			int offset;
+			Value source;
+			Value[] target;
+			int i;
 
 			source = values[0];
 			length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
@@ -556,10 +556,10 @@ namespace Cottle.Builtins
 			return source.AsString.Substring (offset, count);
 		}, 2, 3);
 
-		private static readonly IFunction	functionSort = new NativeFunction ((values, scope, output) =>
+		private static readonly IFunction functionSort = new NativeFunction ((values, scope, output) =>
 		{
-			IFunction							callback;
-			List<KeyValuePair<Value, Value>>	sorted;
+			IFunction callback;
+			List<KeyValuePair<Value, Value>> sorted;
 
 			callback = values.Count > 1 ? values[1].AsFunction : null;
 			sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
@@ -572,14 +572,14 @@ namespace Cottle.Builtins
 			return sorted;
 		}, 1, 2);
 
-		private static readonly IFunction	functionSplit = new NativeFunction ((v) => (v[0].AsString.Split ( new [] {v[1].AsString}, StringSplitOptions.None).Select( (s) => new StringValue (s)).ToArray ()), 2);
+		private static readonly IFunction functionSplit = new NativeFunction ((v) => (v[0].AsString.Split ( new [] {v[1].AsString}, StringSplitOptions.None).Select( (s) => new StringValue (s)).ToArray ()), 2);
 
-		private static readonly IFunction	functionToken = new NativeFunction ((values) =>
+		private static readonly IFunction functionToken = new NativeFunction ((values) =>
 		{
-			string	search;
-			string	source;
-			int		start;
-			int		stop;
+			string search;
+			string source;
+			int start;
+			int stop;
 
 			search = values[1].AsString;
 			source = values[0].AsString;
@@ -620,11 +620,11 @@ namespace Cottle.Builtins
 			}
         }, 3, 4);
 
-		private static readonly IFunction	functionType = new NativeFunction ((values) => values[0].Type.ToString ().ToLowerInvariant (), 1);
+		private static readonly IFunction functionType = new NativeFunction ((values) => values[0].Type.ToString ().ToLowerInvariant (), 1);
 
-		private static readonly IFunction	functionUnion = new NativeFunction ((values) =>
+		private static readonly IFunction functionUnion = new NativeFunction ((values) =>
 		{
-			Dictionary<Value, Value>	result;
+			Dictionary<Value, Value> result;
 
 			result = new Dictionary<Value, Value> ();
 
@@ -637,9 +637,9 @@ namespace Cottle.Builtins
 			return result;
 		}, 0, -1);
 
-		private static readonly IFunction	functionUpperCase = new NativeFunction ((v) => v[0].AsString.ToUpperInvariant (), 1);
+		private static readonly IFunction functionUpperCase = new NativeFunction ((v) => v[0].AsString.ToUpperInvariant (), 1);
 
-		private static readonly IFunction	functionWhen = new NativeFunction ((values) =>
+		private static readonly IFunction functionWhen = new NativeFunction ((values) =>
 		{
 			if (values[0].AsBoolean)
 				return values[1];
@@ -647,7 +647,7 @@ namespace Cottle.Builtins
 			return values.Count > 2 ? values[2] : VoidValue.Instance;
 		}, 2, 3);
 
-		private static readonly IFunction	functionXor = new NativeFunction ((values) =>
+		private static readonly IFunction functionXor = new NativeFunction ((values) =>
 		{
 			int count;
 
@@ -662,13 +662,13 @@ namespace Cottle.Builtins
 			return count == 1;
 		});
 
-		private static readonly IFunction	functionZip = new NativeFunction ((values) =>
+		private static readonly IFunction functionZip = new NativeFunction ((values) =>
 		{
 			IEnumerator<KeyValuePair<Value, Value>> enumerator1;
 			IEnumerator<KeyValuePair<Value, Value>> enumerator2;
-			IMap									map1;
-			IMap									map2;
-			List<KeyValuePair<Value, Value>>		result;
+			IMap map1;
+			IMap map2;
+			List<KeyValuePair<Value, Value>> result;
 
 			map1 = values[0].Fields;
 			map2 = values[1].Fields;
@@ -683,7 +683,7 @@ namespace Cottle.Builtins
 			return result;
 		}, 2);
 
-		private static readonly Dictionary<string, IFunction>	instances = new Dictionary<string, IFunction>
+		private static readonly Dictionary<string, IFunction> instances = new Dictionary<string, IFunction>
 		{
 			{"abs",		BuiltinFunctions.functionAbsolute},
 			{"add",		BuiltinOperators.operatorAdd},
@@ -742,7 +742,7 @@ namespace Cottle.Builtins
 			{"zip",		BuiltinFunctions.functionZip}
 		};
 
-		private static readonly Random	random = new Random ();
+		private static readonly Random random = new Random ();
 
 		#endregion
 
