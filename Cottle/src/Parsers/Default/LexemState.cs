@@ -4,6 +4,12 @@ namespace Cottle.Parsers.Default
 {
 	class LexemState
 	{
+		#region Constants
+
+		private const int  BRANCH_LIMIT = 256;
+
+		#endregion
+
 		#region Properties
 
 		public LexemType	Type
@@ -18,9 +24,11 @@ namespace Cottle.Parsers.Default
 
 		#region Attributes
 
-		private readonly Dictionary<char, LexemState>	branches = new Dictionary<char, LexemState> ();
+		private Dictionary<char, LexemState>	branchesHigh = null;
 
-		private LexemType								type = LexemType.None;
+		private LexemState[]					branchesLow = null;
+
+		private LexemType						type = LexemType.None;
 
 		#endregion
 
@@ -30,7 +38,9 @@ namespace Cottle.Parsers.Default
 		{
 			LexemState	state;
 
-			if (this.branches.TryGetValue (character, out state))
+			if (this.branchesLow != null && character < LexemState.BRANCH_LIMIT)
+				return this.branchesLow[character];
+			else if (this.branchesHigh != null && this.branchesHigh.TryGetValue (character, out state))
 				return state;
 
 			return null;
@@ -38,30 +48,49 @@ namespace Cottle.Parsers.Default
 
 		public bool Store (LexemType type, string content)
 		{
-			char		character;
-			LexemState	state;
+			LexemState  current;
+			LexemState  next;
 
-			if (content.Length > 0)
+			current = this;
+
+			foreach (char character in content)
 			{
-				character = content[0];
-
-				if (!this.branches.TryGetValue (character, out state))
+				if (character < LexemState.BRANCH_LIMIT)
 				{
-					state = new LexemState ();
+					if (current.branchesLow == null)
+						current.branchesLow = new LexemState[LexemState.BRANCH_LIMIT];
 
-					this.branches[character] = state;
+					next = current.branchesLow[character];
+
+					if (next == null)
+					{
+						next = new LexemState ();
+
+						current.branchesLow[character] = next;
+					}
+				}
+				else
+				{
+					if (current.branchesHigh == null)
+						current.branchesHigh = new Dictionary<char, LexemState> ();
+
+					if (!current.branchesHigh.TryGetValue (character, out next))
+					{
+						next = new LexemState ();
+
+						current.branchesHigh[character] = next;
+					}
 				}
 
-				return state.Store (type, content.Substring (1));
-			}
-			else if (this.type == LexemType.None)
-			{
-				this.type = type;
-
-				return true;
+				current = next;
 			}
 
-			return false;
+			if (current.type != LexemType.None)
+				return false;
+
+			current.type = type;
+
+			return true;
 		}
 
 		#endregion
