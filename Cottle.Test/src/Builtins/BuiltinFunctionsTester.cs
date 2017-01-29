@@ -44,6 +44,16 @@ namespace Cottle.Test.Builtins
 		}
 
 		[Test]
+		[TestCase ("format(1339936496, 'd:yyyy-MM-dd HH:mm:ss')", "2012-06-17 12:34:56")]
+		[TestCase ("format(0.165, 'n:e3', 'en-US')", "1.650e-001")]
+		[TestCase ("format(0.165, 'n:p2', 'fr-FR')", "16,50 %")]
+		[TestCase ("format(1, 'b:n2')", "True")]
+		public void FunctionFormat (string expression, string expected)
+		{
+			BuiltinFunctionsTester.AssertPrint (expression, expected);
+		}
+
+		[Test]
 		[TestCase ("range(3)", "[0, 1, 2]")]
 		[TestCase ("range(10)", "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]")]
 		[TestCase ("range(-2)", "[]")]
