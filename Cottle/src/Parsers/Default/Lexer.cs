@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using Cottle.Exceptions;
@@ -38,6 +37,9 @@ namespace Cottle.Parsers.Default
 		#endregion
 
 		#region Attributes
+
+		// A buffer containing more than 85000 bytes will be allocated on LOH
+		private const int MaxBufferSize = 84000 / sizeof (char);
 
 		private int column;
 
@@ -350,7 +352,6 @@ namespace Cottle.Parsers.Default
 			int first;
 			Lexem lexem;
 			LexemCursor next;
-			string text;
 			StringBuilder token;
 
 			buffer = new StringBuilder ();
@@ -393,17 +394,15 @@ namespace Cottle.Parsers.Default
 						while (candidate < this.cursors.Count)
 							token.Append (this.cursors[candidate++].Character);
 
-						text = buffer.ToString ();
-
 						// Return lexem if no text was located before or enqueue otherwise
-						if (string.IsNullOrEmpty (text))
+						if (buffer.Length < 1)
 							lexem = new Lexem (next.State.Type, token.ToString ());
 						else
 						{
 							for (int i = 0; i < token.Length; ++i)
 								this.pending.Enqueue (token[i]);
 
-							lexem = new Lexem (LexemType.Text, text);
+							lexem = new Lexem (LexemType.Text, buffer.ToString ());
 						}
 
 						this.Read ();
@@ -428,6 +427,14 @@ namespace Cottle.Parsers.Default
 
 						this.cursors.RemoveRange (copy, this.cursors.Count - copy);
 					}
+
+					// Stop appending to buffer if we're about to reach LOH size and no cursor is pending
+					if (buffer.Length > MaxBufferSize && this.cursors.Count < 1)
+					{
+						this.Read ();
+
+						return new Lexem (LexemType.Text, buffer.ToString ());
+					}
 				}
 			}
 
@@ -436,10 +443,8 @@ namespace Cottle.Parsers.Default
 
 			this.cursors.Clear ();
 
-			text = buffer.ToString ();
-
-			if (!string.IsNullOrEmpty (text))
-				return new Lexem (LexemType.Text, text);
+			if (buffer.Length > 0)
+				return new Lexem (LexemType.Text, buffer.ToString ());
 
 			return new Lexem (LexemType.EndOfFile, "<EOF>");
 		}

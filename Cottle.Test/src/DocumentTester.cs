@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Cottle.Builtins;
 using Cottle.Documents;
@@ -428,6 +429,39 @@ namespace Cottle.Test
 		public void TextLiteral (string expected)
 		{
 			this.AssertRender (expected, expected);
+		}
+
+		[Test]
+		[TestCase ("", 45000)]
+		[TestCase ("", 90000)]
+		[TestCase ("", 200000)]
+		[TestCase ("{foo}", 45000)]
+		[TestCase ("{foo}", 90000)]
+		[TestCase ("{foo}", 200000)]
+		public void TextTooLong (string variable, int characters)
+		{
+			var builder = new StringBuilder ();
+			var store = new SimpleStore ();
+			string input;
+
+			// Add some variables in the text to test a use case where we don't have only text
+			if (!string.IsNullOrEmpty (variable))
+				builder.Append (variable);
+
+			builder.Append ('a', characters);
+
+			// Add some variables in the text to test a use case where we don't have only text
+			if (!string.IsNullOrEmpty (variable))
+				builder.Append (variable);
+
+			input = builder.ToString ();
+
+			store["foo"] = "{foo}";
+
+			var document = new SimpleDocument (input);
+			var output = document.Render (store);
+
+			Assert.AreEqual (input, output);
 		}
 
 		[Test]
