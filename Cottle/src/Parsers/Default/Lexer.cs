@@ -37,6 +37,8 @@ namespace Cottle.Parsers.Default
 		#endregion
 
 		#region Attributes
+		// A buffer containing more than 85000 bytes will be allocated on LOH
+		private const int MaxBufferSize = 84000 / sizeof (char);
 
 		// A buffer containing more than 85000 bytes will be allocated on LOH
 		private const int MaxBufferSize = 84000 / sizeof (char);
@@ -380,13 +382,22 @@ namespace Cottle.Parsers.Default
 
 						this.cursors[candidate] = next;
 
-						// No lexem matched for this cursor, continue loop
-						if (next.State == null || next.State.Type == LexemType.None)
+						// No lexem matched for this cursor (and no risk of LOH allocation), continue loop
+						if ((next.State == null || next.State.Type == LexemType.None) && (buffer.Length < MaxBufferSize || this.pending.Count > 0 ))
 							continue;
 
 						// Lexem matched, flush characters located before it
+						// Or text too long, risk for LOH
 						for (int i = 0; i < candidate; ++i)
-							buffer.Append (this.cursors[i].Character);
+							buffer.Append(this.cursors[i].Character);
+
+						text = buffer.ToString ();
+						// We were in the case of No lexem matched for this cursor
+						if (next.State == null || next.State.Type == LexemType.None)
+						{
+							this.Read ();
+							return new Lexem (LexemType.Text, text);
+						}
 
 						// Concatenate matched characters to build matched lexem string
 						token = new StringBuilder ();

@@ -478,6 +478,32 @@ namespace Cottle.Test
 			this.AssertRender (value, expected, setting, (s) => {}, (d) => {});
 		}
 
+		[Test]
+		[TestCase ("")]
+		[TestCase ("{foo}")]
+		public void TooLongStringsTest (string variable)
+		{
+			var sb = new StringBuilder();
+			string input;
+
+			// Add some variables in the text to test a use case where we don't have only text
+			if (!string.IsNullOrEmpty(variable))
+				sb.Append(variable);
+
+			sb.Append('a', 45000);
+
+			// Add some variables in the text to test a use case where we don't have only text
+			if (!string.IsNullOrEmpty(variable))
+				sb.Append(variable);
+
+			input = sb.ToString ();
+			IStore store = new SimpleStore ();
+			store["foo"] = "{foo}";
+			var doc = new SimpleDocument (input);
+			var res = doc.Render (store);
+			Assert.AreEqual (input, res);
+		}
+
 		private void AssertRender (string source, string expected, ISetting setting, Action<IStore> populate, Action<IDocument> listen)
 		{
 			IDocument document;
