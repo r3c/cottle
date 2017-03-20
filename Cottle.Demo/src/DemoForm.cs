@@ -96,6 +96,33 @@ namespace Cottle.Demo
 			}
 		}
 
+		private void buttonSave_Click (object sender, EventArgs e)
+		{
+			ISetting setting = this.SettingCreate ();
+
+			using (var dialog = new SaveFileDialog ())
+			{
+				dialog.AddExtension = true;
+				dialog.DefaultExt = "dll";
+				dialog.Filter = "DLL files (*.dll)|*.dll";
+				dialog.OverwritePrompt = true;
+
+				if (dialog.ShowDialog (this) == DialogResult.OK)
+				{
+					try
+					{
+						DynamicDocument.Save (new StringReader (this.textBoxInput.Text), setting, Path.GetFileNameWithoutExtension (dialog.FileName), Path.GetFileName (dialog.FileName));
+
+						this.DisplayText ("File saved.");
+					}
+					catch (ParseException exception)
+					{
+						this.DisplayError (exception);
+					}
+				}
+			}
+		}
+
 		private void toolStripMenuItemSetting_Click (object sender, EventArgs e)
 		{
 			Form form;

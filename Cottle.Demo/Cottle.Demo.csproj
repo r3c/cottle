@@ -21,7 +21,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <ProjectGuid>{55D11299-1D83-48F3-BCDC-966017C44CC9}</ProjectGuid>
   </PropertyGroup>
@@ -32,6 +32,9 @@
     <RootNamespace>Cottle.Demo</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />

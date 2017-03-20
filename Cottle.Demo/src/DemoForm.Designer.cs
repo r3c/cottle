@@ -51,15 +51,18 @@
 			this.toolStripMenuItemTreeExpand = new System.Windows.Forms.ToolStripMenuItem();
 			this.imageListTree = new System.Windows.Forms.ImageList(this.components);
 			this.groupBoxResult = new System.Windows.Forms.GroupBox();
+			this.buttonSave = new System.Windows.Forms.Button();
 			this.buttonClean = new System.Windows.Forms.Button();
 			this.buttonEvaluate = new System.Windows.Forms.Button();
 			this.groupBoxInput = new System.Windows.Forms.GroupBox();
 			this.textBoxInput = new System.Windows.Forms.TextBox();
 			this.groupBoxOutput = new System.Windows.Forms.GroupBox();
 			this.textBoxPrint = new System.Windows.Forms.TextBox();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerInput)).BeginInit();
 			this.splitContainerInput.Panel1.SuspendLayout();
 			this.splitContainerInput.Panel2.SuspendLayout();
 			this.splitContainerInput.SuspendLayout();
@@ -133,20 +136,20 @@
 			// contextMenuStripTree
 			// 
 			this.contextMenuStripTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.toolStripMenuItemNodeCreate,
-									this.toolStripSeparator1,
-									this.toolStripMenuItemNodeClone,
-									this.toolStripMenuItemNodeUpdate,
-									this.toolStripMenuItemNodeDelete,
-									this.toolStripMenuItemMoveUp,
-									this.toolStripMenuItemMoveDown,
-									this.toolStripSeparator2,
-									this.toolStripMenuItemFileLoad,
-									this.toolStripMenuItemFileSave,
-									this.toolStripMenuItemSetting,
-									this.toolStripSeparator3,
-									this.toolStripMenuItemTreeCollapse,
-									this.toolStripMenuItemTreeExpand});
+			this.toolStripMenuItemNodeCreate,
+			this.toolStripSeparator1,
+			this.toolStripMenuItemNodeClone,
+			this.toolStripMenuItemNodeUpdate,
+			this.toolStripMenuItemNodeDelete,
+			this.toolStripMenuItemMoveUp,
+			this.toolStripMenuItemMoveDown,
+			this.toolStripSeparator2,
+			this.toolStripMenuItemFileLoad,
+			this.toolStripMenuItemFileSave,
+			this.toolStripMenuItemSetting,
+			this.toolStripSeparator3,
+			this.toolStripMenuItemTreeCollapse,
+			this.toolStripMenuItemTreeExpand});
 			this.contextMenuStripTree.Name = "contextMenuStripTree";
 			this.contextMenuStripTree.Size = new System.Drawing.Size(161, 264);
 			this.contextMenuStripTree.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStripTree_Opening);
@@ -269,7 +272,8 @@
 			// groupBoxResult
 			// 
 			this.groupBoxResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBoxResult.Controls.Add(this.buttonSave);
 			this.groupBoxResult.Controls.Add(this.buttonClean);
 			this.groupBoxResult.Controls.Add(this.buttonEvaluate);
 			this.groupBoxResult.Location = new System.Drawing.Point(0, 353);
@@ -279,6 +283,19 @@
 			this.groupBoxResult.TabStop = false;
 			this.groupBoxResult.Text = "Control:";
 			// 
+			// buttonSave
+			// 
+			this.buttonSave.Image = global::Cottle.Demo.Properties.Resources.button_save;
+			this.buttonSave.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonSave.Location = new System.Drawing.Point(218, 19);
+			this.buttonSave.Name = "buttonSave";
+			this.buttonSave.Size = new System.Drawing.Size(100, 23);
+			this.buttonSave.TabIndex = 3;
+			this.buttonSave.Text = "Save as DLL";
+			this.buttonSave.UseVisualStyleBackColor = true;
+			this.buttonSave.Visible = false;
+			this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
+			// 
 			// buttonClean
 			// 
 			this.buttonClean.Image = global::Cottle.Demo.Properties.Resources.button_clean;
@@ -287,7 +304,7 @@
 			this.buttonClean.Name = "buttonClean";
 			this.buttonClean.Size = new System.Drawing.Size(100, 23);
 			this.buttonClean.TabIndex = 2;
-			this.buttonClean.Text = "Auto-indent";
+			this.buttonClean.Text = "Indent code";
 			this.buttonClean.UseVisualStyleBackColor = true;
 			this.buttonClean.Click += new System.EventHandler(this.buttonClean_Click);
 			// 
@@ -306,8 +323,8 @@
 			// groupBoxInput
 			// 
 			this.groupBoxInput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBoxInput.Controls.Add(this.textBoxInput);
 			this.groupBoxInput.Location = new System.Drawing.Point(0, 0);
 			this.groupBoxInput.Name = "groupBoxInput";
@@ -365,9 +382,11 @@
 			this.Text = "Cottle Demo";
 			this.splitContainer.Panel1.ResumeLayout(false);
 			this.splitContainer.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
 			this.splitContainer.ResumeLayout(false);
 			this.splitContainerInput.Panel1.ResumeLayout(false);
 			this.splitContainerInput.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainerInput)).EndInit();
 			this.splitContainerInput.ResumeLayout(false);
 			this.groupBoxValue.ResumeLayout(false);
 			this.contextMenuStripTree.ResumeLayout(false);
@@ -377,6 +396,7 @@
 			this.groupBoxOutput.ResumeLayout(false);
 			this.groupBoxOutput.PerformLayout();
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.Button buttonClean;
 
@@ -408,5 +428,6 @@
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTreeCollapse;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemTreeExpand;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemSetting;
+		private System.Windows.Forms.Button buttonSave;
 	}
 }
