@@ -15,15 +15,15 @@ namespace Cottle.Documents.Dynamic
 
 		private readonly Dictionary<Type, Queue<LocalBuilder>> locals;
 
-		private readonly List<string> stringList;
+		private readonly List<string> strings;
 
-		private readonly Dictionary<string, int> stringMap;
+		private readonly Dictionary<string, int> stringIndices;
 
 		private readonly Trimmer trimmer;
 
-		private readonly List<Value> valueList;
+		private readonly List<Value> values;
 
-		private readonly Dictionary<Value, int> valueMap;
+		private readonly Dictionary<Value, int> valueIndices;
 
 		#endregion
 
@@ -33,11 +33,11 @@ namespace Cottle.Documents.Dynamic
 		{
 			this.generator = generator;
 			this.locals = new Dictionary<Type, Queue<LocalBuilder>> ();
-			this.stringList = new List<string> ();
-			this.stringMap = new Dictionary<string, int> ();
+			this.strings = new List<string> ();
+			this.stringIndices = new Dictionary<string, int> ();
 			this.trimmer = trimmer;
-			this.valueList = new List<Value> ();
-			this.valueMap = new Dictionary<Value, int> ();
+			this.values = new List<Value> ();
+			this.valueIndices = new Dictionary<Value, int> ();
 		}
 
 		#endregion
@@ -52,7 +52,7 @@ namespace Cottle.Documents.Dynamic
 			int index;
 
 			// Create scope for program execution
-			this.EmitPushScope ();
+			this.EmitLoadScope ();
 			this.EmitCallStoreEnter ();
 
 			// Assign provided values to arguments
@@ -63,24 +63,24 @@ namespace Cottle.Documents.Dynamic
 				assign = this.generator.DefineLabel ();
 				copy = this.generator.DefineLabel ();
 
-				this.EmitPushScope ();
-				this.EmitPushValue (argument);
+				this.EmitLoadScope ();
+				this.EmitLoadValue (argument);
 
 				// Check if a value is available for current argument 
-				this.EmitPushArguments ();
+				this.EmitLoadArguments ();
 
 				this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IList<Value>, int>> ((a) => a.Count).GetGetMethod ());
 				this.generator.Emit (OpCodes.Ldc_I4, index);
 				this.generator.Emit (OpCodes.Bgt_S, copy);
 
 				// Push void value for current argument
-				this.EmitPushVoid ();
+				this.EmitLoadVoid ();
 
 				this.generator.Emit (OpCodes.Br, assign);
 
 				// Fetch argument value from arguments array
 				this.generator.MarkLabel (copy);
-				this.EmitPushArguments ();
+				this.EmitLoadArguments ();
 
 				this.generator.Emit (OpCodes.Ldc_I4, index);
 				this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IList<Value>, int, Value>> ((a, j) => a[j]));
@@ -97,17 +97,17 @@ namespace Cottle.Documents.Dynamic
 			exit = this.generator.DefineLabel ();
 
 			this.CompileCommand (command, exit, 0, false);
-			this.EmitPushVoid ();
+			this.EmitLoadVoid ();
 
 			this.generator.MarkLabel (exit);
 
 			// Leave scope and return
-			this.EmitPushScope ();
+			this.EmitLoadScope ();
 			this.EmitCallStoreLeave ();
 
 			this.generator.Emit (OpCodes.Ret);
 
-			return new Storage (this.stringList, this.valueList);
+			return new Storage (this.strings, this.values);
 		}
 
 		#endregion
@@ -128,7 +128,7 @@ namespace Cottle.Documents.Dynamic
 			// Isolate command scope by entering a new scope level
 			if (isolate)
 			{
-				this.EmitPushScope ();
+				this.EmitLoadScope ();
 				this.EmitCallStoreEnter ();
 
 				++depth;
@@ -138,9 +138,9 @@ namespace Cottle.Documents.Dynamic
 			switch (command.Type)
 			{
 				case CommandType.AssignFunction:
-					this.EmitPushScope ();
-					this.EmitPushValue (command.Name);
-					this.EmitPushValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer, string.Empty)));
+					this.EmitLoadScope ();
+					this.EmitLoadValue (command.Name);
+					this.EmitLoadValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer, string.Empty)));
 					this.EmitCallStoreSet (command.Mode);
 
 					break;
@@ -152,8 +152,8 @@ namespace Cottle.Documents.Dynamic
 
 					this.generator.Emit (OpCodes.Stloc, operand);
 
-					this.EmitPushScope ();
-					this.EmitPushValue (command.Name);
+					this.EmitLoadScope ();
+					this.EmitLoadValue (command.Name);
 
 					this.generator.Emit (OpCodes.Ldloc, operand);
 
@@ -175,7 +175,7 @@ namespace Cottle.Documents.Dynamic
 
 					this.generator.Emit (OpCodes.Stloc, operand);
 
-					this.EmitPushOutput ();
+					this.EmitLoadOutput ();
 
 					this.generator.Emit (OpCodes.Ldloc, operand);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((w, v) => w.Write (v)));
@@ -191,7 +191,7 @@ namespace Cottle.Documents.Dynamic
 
 					this.generator.Emit (OpCodes.Stloc, operand);
 
-					this.EmitPushOutput ();
+					this.EmitLoadOutput ();
 
 					this.generator.Emit (OpCodes.Ldloc, operand);
 					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((v) => v.AsString).GetGetMethod ());
@@ -239,16 +239,17 @@ namespace Cottle.Documents.Dynamic
 
 					this.LocalRelease<IEnumerator<KeyValuePair<Value, Value>>> (enumerator);
 
+					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>> ((e) => e.Current).GetGetMethod ());
+
 					pair = this.LocalReserve<KeyValuePair<Value, Value>> ();
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>> ((e) => e.Current).GetGetMethod ());
 					this.generator.Emit (OpCodes.Stloc, pair);
 
 					// Store current element key if required
 					if (!string.IsNullOrEmpty (command.Key))
 					{
-						this.EmitPushScope ();
-						this.EmitPushValue (command.Key);
+						this.EmitLoadScope ();
+						this.EmitLoadValue (command.Key);
 
 						this.generator.Emit (OpCodes.Ldloca, pair);
 						this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Key).GetGetMethod ());
@@ -257,8 +258,8 @@ namespace Cottle.Documents.Dynamic
 					}
 
 					// Store current element value
-					this.EmitPushScope ();
-					this.EmitPushValue (command.Name);
+					this.EmitLoadScope ();
+					this.EmitLoadValue (command.Name);
 
 					this.generator.Emit (OpCodes.Ldloca, pair);
 					this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Value).GetGetMethod ());
@@ -313,8 +314,8 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case CommandType.Literal:
-					this.EmitPushOutput ();
-					this.EmitPushString (this.trimmer (command.Text));
+					this.EmitLoadOutput ();
+					this.EmitLoadString (this.trimmer (command.Text));
 					this.EmitCallWriteString ();
 
 					break;
@@ -325,14 +326,17 @@ namespace Cottle.Documents.Dynamic
 					// Leave all opened scopes if any
 					if (depth > 0)
 					{
+						this.generator.Emit (OpCodes.Ldc_I4, depth);
+
 						counter = this.LocalReserve<int> ();
+
+						this.generator.Emit (OpCodes.Stloc, counter);
+
 						jump = this.generator.DefineLabel ();
 
-						this.generator.Emit (OpCodes.Ldc_I4, depth);
-						this.generator.Emit (OpCodes.Stloc, counter);
 						this.generator.MarkLabel (jump);
 
-						this.EmitPushScope ();
+						this.EmitLoadScope ();
 						this.EmitCallStoreLeave ();
 
 						this.generator.Emit (OpCodes.Ldloc, counter);
@@ -377,7 +381,7 @@ namespace Cottle.Documents.Dynamic
 			{
 				--depth;
 
-				this.EmitPushScope ();
+				this.EmitLoadScope ();
 				this.EmitCallStoreLeave ();
 			}
 		}
@@ -421,7 +425,7 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Brtrue, success);
 
 					// Emit void value on error
-					this.EmitPushVoid ();
+					this.EmitLoadVoid ();
 
 					this.generator.Emit (OpCodes.Stloc, value);
 
@@ -434,7 +438,7 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case ExpressionType.Constant:
-					this.EmitPushValue (expression.Value);
+					this.EmitLoadValue (expression.Value);
 
 					break;
 
@@ -454,10 +458,11 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Brfalse, failure);
 
 					// Create array to store evaluated values
-					arguments = this.LocalReserve<Value[]> ();
-
 					this.generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
 					this.generator.Emit (OpCodes.Newarr, typeof (Value));
+
+					arguments = this.LocalReserve<Value[]> ();
+
 					this.generator.Emit (OpCodes.Stloc, arguments);
 
 					// Evaluate arguments and store into array
@@ -482,19 +487,19 @@ namespace Cottle.Documents.Dynamic
 
 					this.LocalRelease<Value[]> (arguments);
 					this.LocalRelease<IFunction> (function);
-					this.EmitPushScope ();
-					this.EmitPushOutput ();
+					this.EmitLoadScope ();
+					this.EmitLoadOutput ();
+					this.EmitCallFunctionExecute ();
 
 					value = this.LocalReserve<Value> ();
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
 					this.generator.Emit (OpCodes.Stloc, value);
 					this.generator.Emit (OpCodes.Br_S, success);
 
 					// Emit void value on error
 					this.generator.MarkLabel (failure);
 
-					this.EmitPushVoid ();
+					this.EmitLoadVoid ();
 
 					this.generator.Emit (OpCodes.Stloc, value);
 
@@ -507,11 +512,12 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case ExpressionType.Map:
-					arguments = this.LocalReserve<KeyValuePair<Value, Value>[]> ();
-
 					// Create array to store evaluated pairs
 					this.generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
 					this.generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
+
+					arguments = this.LocalReserve<KeyValuePair<Value, Value>[]> ();
+
 					this.generator.Emit (OpCodes.Stloc, arguments);
 
 					// Evaluate elements and store into array 
@@ -556,8 +562,8 @@ namespace Cottle.Documents.Dynamic
 					success = this.generator.DefineLabel ();
 
 					// Get variable from scope
-					this.EmitPushScope ();
-					this.EmitPushValue (expression.Value);
+					this.EmitLoadScope ();
+					this.EmitLoadValue (expression.Value);
 
 					value = this.LocalReserve<Value> ();
 
@@ -566,7 +572,7 @@ namespace Cottle.Documents.Dynamic
 					this.generator.Emit (OpCodes.Brtrue, success);
 
 					// Emit void value on error
-					this.EmitPushVoid ();
+					this.EmitLoadVoid ();
 
 					this.generator.Emit (OpCodes.Stloc, value);
 
@@ -579,10 +585,15 @@ namespace Cottle.Documents.Dynamic
 					break;
 
 				case ExpressionType.Void:
-					this.EmitPushVoid ();
+					this.EmitLoadVoid ();
 
 					break;
 			}
+		}
+
+		private void EmitCallFunctionExecute ()
+		{
+			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
 		}
 
 		private void EmitCallStoreEnter ()
@@ -617,65 +628,65 @@ namespace Cottle.Documents.Dynamic
 			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>> ((w, v) => w.Write (v)));
 		}
 
-		private void EmitPushArguments ()
+		private void EmitLoadArguments ()
 		{
 			this.generator.Emit (OpCodes.Ldarg_1);
 		}
 
-		private void EmitPushContext ()
+		private void EmitLoadContext ()
 		{
 			this.generator.Emit (OpCodes.Ldarga, 0);
 		}
 
-		private void EmitPushOutput ()
+		private void EmitLoadOutput ()
 		{
 			this.generator.Emit (OpCodes.Ldarg_3);
 		}
 
-		private void EmitPushScope ()
+		private void EmitLoadScope ()
 		{
 			this.generator.Emit (OpCodes.Ldarg_2);
 		}
 
-		private void EmitPushString (string literal)
+		private void EmitLoadString (string literal)
 		{
 			int index;
 
-			if (!this.stringMap.TryGetValue (literal, out index))
+			if (!this.stringIndices.TryGetValue (literal, out index))
 			{
-				index = this.stringList.Count;
+				index = this.strings.Count;
 
-				this.stringList.Add (literal);
-				this.stringMap[literal] = index;
+				this.stringIndices[literal] = index;
+				this.strings.Add (literal);
 			}
 
-			this.EmitPushContext ();
+			this.EmitLoadContext ();
 
 			this.generator.Emit (OpCodes.Ldfld, Resolver.Field<Func<Storage, string[]>> ((c) => c.Strings));
 			this.generator.Emit (OpCodes.Ldc_I4, index);
 			this.generator.Emit (OpCodes.Ldelem_Ref);
 		}
 
-		private void EmitPushValue (Value constant)
+		private void EmitLoadValue (Value constant)
 		{
 			int index;
 
-			if (!this.valueMap.TryGetValue (constant, out index))
+			if (!this.valueIndices.TryGetValue (constant, out index))
 			{
-				index = this.valueList.Count;
+				index = this.values.Count;
 
-				this.valueList.Add (constant);
-				this.valueMap[constant] = index;
+				this.valueIndices[constant] = index;
+				this.values.Add (constant);
 			}
 
-			this.EmitPushContext ();
+			this.EmitLoadContext ();
 
 			this.generator.Emit (OpCodes.Ldfld, Resolver.Field<Func<Storage, Value[]>> ((c) => c.Values));
 			this.generator.Emit (OpCodes.Ldc_I4, index);
 			this.generator.Emit (OpCodes.Ldelem_Ref);
 		}
 
-		private void EmitPushVoid ()
+		private void EmitLoadVoid ()
 		{
 			this.generator.Emit (OpCodes.Call, Resolver.Property<Func<Value>> (() => VoidValue.Instance).GetGetMethod ());
 		}
