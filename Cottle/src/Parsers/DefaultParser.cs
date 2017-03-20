@@ -24,11 +24,11 @@ namespace Cottle.Parsers
 			{"_",		(p) => p.ParseKeywordComment ()},
 			{"declare",	(p) => p.ParseKeywordDeclare ()},
 			{"define",	(p) => p.ParseKeywordSet ()},
-			{"dump",	(p) => p.ParseKeywordDump ()},
-			{"echo",	(p) => p.ParseKeywordEcho ()},
+			{"dump",	(p) => p.ParseKeywordOperand (CommandType.Dump)},
+			{"echo",	(p) => p.ParseKeywordOperand (CommandType.Echo)},
 			{"for",		(p) => p.ParseKeywordFor ()},
 			{"if",		(p) => p.ParseKeywordIf ()},
-			{"return",	(p) => p.ParseKeywordReturn ()},
+			{"return",	(p) => p.ParseKeywordOperand (CommandType.Return)},
 			{"set",		(p) => p.ParseKeywordSet ()},
 			{"while",	(p) => p.ParseKeywordWhile ()}
 		};
@@ -197,7 +197,7 @@ namespace Cottle.Parsers
 						if (this.lexer.Current.Type == LexemType.Symbol && DefaultParser.keywords.TryGetValue (this.lexer.Current.Content, out parse))
 							this.lexer.Next (LexerMode.Block);
 						else
-							parse = (p) => p.ParseKeywordEcho ();
+							parse = (p) => p.ParseKeywordOperand (CommandType.Echo);
 			
 						current = parse (this);
 
@@ -445,24 +445,6 @@ namespace Cottle.Parsers
 			return this.ParseAssignment (StoreMode.Local);
 		}
 
-		private Command ParseKeywordDump ()
-		{
-			return new Command
-			{
-				Operand = this.ParseOperand (),
-				Type = CommandType.Dump 
-			};
-		}
-
-		private Command ParseKeywordEcho ()
-		{
-			return new Command
-			{
-				Operand = this.ParseOperand (),
-				Type = CommandType.Echo 
-			};
-		}
-
 		private Command ParseKeywordFor ()
 		{
 			Command body;
@@ -565,12 +547,12 @@ namespace Cottle.Parsers
 			return result;
 		}
 
-		private Command ParseKeywordReturn ()
+		private Command ParseKeywordOperand (CommandType type)
 		{
 			return new Command
 			{
 				Operand = this.ParseOperand (),
-				Type = CommandType.Return 
+				Type = type 
 			};
 		}
 
