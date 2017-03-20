@@ -82,11 +82,7 @@ namespace Cottle.Parsers
 		private Command ParseAssignment (StoreMode mode)
 		{
 			List<string> arguments;
-			Func<StoreMode, Command> command;
-			string name;
-
-			arguments = new List<string> ();
-			name = this.ParseSymbol ();
+			string name = this.ParseSymbol ();
 
 			switch (this.lexer.Current.Type)
 			{
@@ -101,63 +97,57 @@ namespace Cottle.Parsers
 							this.lexer.Next (LexerMode.Block);
 					}
 
-					this.lexer.Next (LexerMode.Block);
-
-					command = (m) => new Command
-					{
-						Arguments = arguments.ToArray (),
-						Body = this.ParseBody (),
-						Mode = m,
-						Name = name,
-						Type = CommandType.AssignFunction
-					};
+					this.lexer.Next (LexerMode.Block); 
 
 					break;
 
 				default:
-					command = (m) => new Command
-					{
-						Mode = m,
-						Name = name,
-						Operand = this.ParseOperand (),
-						Type = CommandType.AssignValue
-					};
+					arguments = null;
 
 					break;
 			}
 
-			switch (this.lexer.Current.Type)
+			// Parse 'as' or 'to' keyword
+			if (mode == StoreMode.Global)
 			{
-				case LexemType.Symbol:
-					if (mode == StoreMode.Global)
-					{
-						// <TODO> remove legacy keywords handling
-						// FIXME: should raise event
-						if (this.lexer.Current.Content == "as")
-						{
-							this.lexer.Next (LexerMode.Block);
+				// <TODO> remove legacy keywords handling
+				// FIXME: should raise event
+				if (this.lexer.Current.Type == LexemType.Symbol && this.lexer.Current.Content == "as")
+				{
+					this.lexer.Next (LexerMode.Block);
 
-							mode = StoreMode.Local;
-						}
-						else
-						// </TODO>
-							this.ParseExpected (LexemType.Symbol, "to", "'to' keyword");
-					}
-					else
-						this.ParseExpected (LexemType.Symbol, "as", "'as' keyword");
+					mode = StoreMode.Local;
+				}
+				else
+				// </TODO>
+					this.ParseExpected (LexemType.Symbol, "to", "'to' keyword");
+			}
+			else
+				this.ParseExpected (LexemType.Symbol, "as", "'as' keyword");
 
-					return command (mode);
+			// Arguments were defined, build function assignment
+			if (arguments != null)
+			{
+				return new Command
+				{
+					Arguments = arguments.ToArray (),
+					Body = this.ParseBody (),
+					Mode = mode,
+					Name = name,
+					Type = CommandType.AssignFunction
+				};
+			}
 
-				default:
-					this.lexer.Next (LexerMode.Raw);
-
-					return new Command
-					{
-						Mode = mode,
-						Operand = Expression.Empty,
-						Type = CommandType.AssignValue,
-						Name = name
-					};
+			// Arguments where not defined, build value assignment
+			else
+			{
+				return new Command
+				{
+					Mode = mode,
+					Name = name,
+					Operand = this.ParseOperand (),
+					Type = CommandType.AssignValue
+				};
 			}
 		}
 
