@@ -138,6 +138,18 @@ namespace Cottle.Parsers
 				};
 			}
 
+			// Arguments where not defined and literal body follows, build render assignment
+			else if (this.lexer.Current.Type == LexemType.Colon)
+			{
+				return new Command
+				{
+					Body = this.ParseBody (),
+					Mode = mode,
+					Name = name,
+					Type = CommandType.AssignRender
+				};
+			}
+
 			// Arguments where not defined, build value assignment
 			else
 			{

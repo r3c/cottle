@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using Cottle.Values;
 
-namespace Cottle.Documents.Simple.Nodes
+namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
-	class AssignFunctionNode : IFunction, INode
+	class FunctionAssignNode : AssignNode, IFunction
 	{
 		#region Attributes
 
@@ -14,25 +14,20 @@ namespace Cottle.Documents.Simple.Nodes
 
 		private readonly INode body;
 
-		private readonly StoreMode mode;
-
-		private readonly string name;
-
 		#endregion
 
 		#region Constructors
 
-		public AssignFunctionNode (string name, IEnumerable<string> arguments, INode body, StoreMode mode)
+		public FunctionAssignNode (string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
+			base (name, mode)
 		{
 			this.arguments = arguments.ToArray ();
 			this.body = body;
-			this.mode = mode;
-			this.name = name;
 		}
 
 		#endregion
 
-		#region Methods
+		#region Methods / Public
 
 		public int CompareTo (IFunction other)
 		{
@@ -73,48 +68,25 @@ namespace Cottle.Documents.Simple.Nodes
 			{
 				return
 					(this.body.GetHashCode () &	(int)0xFFFFFF00) |
-					(this.mode.GetHashCode () &	(int)0x000000C0) |
-					(this.name.GetHashCode () &	(int)0x0000003F);
+					(base.GetHashCode () &	(int)0x000000FF);
 			}
 		}
 
-		public bool Render (IStore store, TextWriter output, out Value result)
+		#endregion
+
+		#region Methods / Protected
+
+		protected override Value Evaluate (IStore store, TextWriter output)
 		{
-			store.Set (this.name, new FunctionValue (this), mode);
-
-			result = VoidValue.Instance;
-
-			return false;
+			return new FunctionValue (this);
 		}
 
-		public void Source (ISetting setting, TextWriter output)
+		protected override void SourceSymbol (string name, TextWriter output)
 		{
-			bool comma;
-			string keyword;
-			string link;
+			bool comma = false;
 
-			switch (this.mode)
-			{
-				case StoreMode.Local:
-					keyword = "declare";
-					link = "as";
-
-					break;
-
-				default:
-					keyword = "set";
-					link = "to";
-
-					break;
-			}
-
-			output.Write (setting.BlockBegin);
-			output.Write (keyword);
-			output.Write (' ');
-			output.Write (this.name);
+			output.Write (name);
 			output.Write ('(');
-
-			comma = false;
 
 			foreach (string argument in this.arguments)
 			{
@@ -126,18 +98,14 @@ namespace Cottle.Documents.Simple.Nodes
 				output.Write (argument);
 			}
 
-			output.Write (") ");
-			output.Write (link);
-			output.Write (": ");
-
-			this.body.Source (setting, output);
-
-			output.Write (setting.BlockEnd);
+			output.Write (' ');
 		}
 
-		public override string ToString ()
+		protected override void SourceValue (ISetting setting, TextWriter output)
 		{
-			return this.name;
+			output.Write (':');
+
+			this.body.Source (setting, output);
 		}
 
 		#endregion

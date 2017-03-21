@@ -73,8 +73,10 @@
     <Compile Include="src\Documents\Simple\Evaluators\VoidEvaluator.cs" />
     <Compile Include="src\Documents\Simple\IEvaluator.cs" />
     <Compile Include="src\Documents\Simple\INode.cs" />
-    <Compile Include="src\Documents\Simple\Nodes\AssignFunctionNode.cs" />
-    <Compile Include="src\Documents\Simple\Nodes\AssignValueNode.cs" />
+    <Compile Include="src\Documents\Simple\Nodes\AssignNodes\FunctionAssignNode.cs" />
+    <Compile Include="src\Documents\Simple\Nodes\AssignNode.cs" />
+    <Compile Include="src\Documents\Simple\Nodes\AssignNodes\RenderAssignNode.cs" />
+    <Compile Include="src\Documents\Simple\Nodes\AssignNodes\ValueAssignNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\CompositeNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\DumpNode.cs" />
     <Compile Include="src\Documents\Simple\Nodes\EchoNode.cs" />
@@ -146,6 +148,7 @@
     <Folder Include="src\Documents\Simple" />
     <Folder Include="src\Documents\Simple\Evaluators" />
     <Folder Include="src\Documents\Simple\Nodes" />
+    <Folder Include="src\Documents\Simple\Nodes\AssignNodes" />
     <Folder Include="src\Maps" />
     <Folder Include="src\Documents" />
     <Folder Include="src\Builtins" />

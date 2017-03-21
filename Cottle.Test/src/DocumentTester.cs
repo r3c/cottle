@@ -23,6 +23,16 @@ namespace Cottle.Test
 		};
 
 		[Test]
+		[TestCase ("expression", "{3}", "3")]
+		[TestCase ("mixed", "A{'B'}C", "ABC")]
+		[TestCase ("number", "1", "1")]
+		[TestCase ("text", "something", "something")]
+		public void CommandDeclareRender (string name, string body, string expected)
+		{
+			this.AssertRender ("{declare " + name + " as:" + body + "}{echo " + name + "}", expected);
+		}
+
+		[Test]
 		[TestCase ("var", "1", "1")]
 		[TestCase ("_", "'A'", "\"A\"")]
 		[TestCase ("some_symbol_name", "[]", "[]")]

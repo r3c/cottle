@@ -4,11 +4,9 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class AssignValueNode : INode
+	abstract class AssignNode : INode
 	{
 		#region Attributes
-
-		private readonly IEvaluator expression;
 
 		private readonly StoreMode mode;
 
@@ -18,20 +16,39 @@ namespace Cottle.Documents.Simple.Nodes
 
 		#region Constructors
 
-		public AssignValueNode (string name, IEvaluator expression, StoreMode mode)
+		protected AssignNode (string name, StoreMode mode)
 		{
-			this.expression = expression;
 			this.mode = mode;
 			this.name = name;
 		}
 
 		#endregion
 
-		#region Methods
+		#region Methods / Abstract
+
+		protected abstract Value Evaluate (IStore store, TextWriter output);
+
+		protected abstract void SourceSymbol (string name, TextWriter output);
+
+		protected abstract void SourceValue (ISetting setting, TextWriter output);
+
+		#endregion
+
+		#region Methods / Public
+
+		public override int GetHashCode ()
+		{
+			unchecked
+			{
+				return
+					(this.mode.GetHashCode () &	(int)0xFFFF0000) |
+					(this.name.GetHashCode () &	(int)0x0000FFFF);
+			}
+		}
 
 		public bool Render (IStore store, TextWriter output, out Value result)
 		{
-			store.Set (this.name, this.expression.Evaluate (store, output), this.mode);
+			store.Set (this.name, this.Evaluate (store, output), this.mode);
 
 			result = VoidValue.Instance;
 
@@ -61,12 +78,20 @@ namespace Cottle.Documents.Simple.Nodes
 			output.Write (setting.BlockBegin);
 			output.Write (keyword);
 			output.Write (' ');
-			output.Write (this.name);
+
+			this.SourceSymbol (name, output);
+
 			output.Write (' ');
 			output.Write (link);
-			output.Write (' ');
-			output.Write (this.expression);
+
+			this.SourceValue (setting, output);
+
 			output.Write (setting.BlockEnd);
+		}
+
+		public override string ToString ()
+		{
+			return this.name;
 		}
 
 		#endregion

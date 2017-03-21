@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Values;
@@ -109,6 +110,7 @@ namespace Cottle.Documents.Dynamic
 
 		private void CompileCommand (Command command, Label exit, int depth)
 		{
+			LocalBuilder buffer;
 			LocalBuilder counter;
 			Label empty;
 			LocalBuilder enumerator;
@@ -124,7 +126,45 @@ namespace Cottle.Documents.Dynamic
 				case CommandType.AssignFunction:
 					this.EmitLoadStore ();
 					this.EmitLoadValue (command.Name);
+
 					this.EmitLoadValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer)));
+					this.EmitStoreSetCall (command.Mode);
+
+					break;
+
+				case CommandType.AssignRender:
+					// Prepare new buffer to store sub-rendering
+					buffer = this.LocalReserve<TextWriter> ();
+
+					this.generator.Emit (OpCodes.Newobj, Resolver.Constructor<Func<StringWriter>> (() => new StringWriter ()));
+					this.generator.Emit (OpCodes.Stloc, buffer);
+
+					// Load function, empty arguments array, store and text writer onto stack
+					this.EmitLoadValue (new FunctionValue (new Function (Enumerable.Empty<string> (), command.Body, this.trimmer)));
+
+					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IFunction>> ((v) => v.AsFunction).GetGetMethod ());
+					this.generator.Emit (OpCodes.Ldc_I4, 0);
+					this.generator.Emit (OpCodes.Newarr, typeof (Value));
+
+					this.EmitLoadStore ();
+
+					this.generator.Emit (OpCodes.Ldloc, buffer);
+
+					this.EmitCallFunctionExecute ();
+
+					this.generator.Emit (OpCodes.Pop);
+
+					// Convert buffer into string and set to store
+					this.EmitLoadStore ();
+					this.EmitLoadValue (command.Name);
+
+					this.generator.Emit (OpCodes.Ldloc, buffer);
+					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<StringWriter, string>> ((w) => w.ToString ()));
+
+					this.LocalRelease<Value> (buffer);
+
+					this.generator.Emit (OpCodes.Newobj, Resolver.Constructor<Func<string, Value>> ((s) => new StringValue (s)));
+
 					this.EmitStoreSetCall (command.Mode);
 
 					break;
@@ -481,9 +521,10 @@ namespace Cottle.Documents.Dynamic
 					this.LocalRelease<IFunction> (function);
 					this.EmitLoadStore ();
 					this.EmitLoadOutput ();
-					this.EmitCallFunctionExecute ();
 
 					value = this.LocalReserve<Value> ();
+
+					this.EmitCallFunctionExecute ();
 
 					this.generator.Emit (OpCodes.Stloc, value);
 					this.generator.Emit (OpCodes.Br_S, success);

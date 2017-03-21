@@ -5,6 +5,7 @@ namespace Cottle
 	{
 		None,
 		AssignFunction,
+		AssignRender,
 		AssignValue,
 		Composite,
 		Dump,

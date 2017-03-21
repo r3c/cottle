@@ -5,6 +5,7 @@ using System.IO;
 using Cottle.Documents.Simple;
 using Cottle.Documents.Simple.Evaluators;
 using Cottle.Documents.Simple.Nodes;
+using Cottle.Documents.Simple.Nodes.AssignNodes;
 using Cottle.Settings;
 
 namespace Cottle.Documents
@@ -95,10 +96,13 @@ namespace Cottle.Documents
 			switch (command.Type)
 			{
 				case CommandType.AssignFunction:
-					return new AssignFunctionNode (command.Name, command.Arguments, this.CompileCommand (command.Body, trimmer), command.Mode);
+					return new FunctionAssignNode (command.Name, command.Arguments, this.CompileCommand (command.Body, trimmer), command.Mode);
+
+				case CommandType.AssignRender:
+					return new RenderAssignNode (command.Name, this.CompileCommand (command.Body, trimmer), command.Mode);
 
 				case CommandType.AssignValue:
-					return new AssignValueNode (command.Name, this.CompileExpression (command.Operand), command.Mode);
+					return new ValueAssignNode (command.Name, this.CompileExpression (command.Operand), command.Mode);
 
 				case CommandType.Composite:
 					nodes = new List<INode> ();

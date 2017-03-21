@@ -3,7 +3,7 @@
     "win": {}
   },
   "frameworks": {
-    "net35": {}
+    "net40": {}
   },
   "dependencies": {
     "NUnit": "3.0.1"
