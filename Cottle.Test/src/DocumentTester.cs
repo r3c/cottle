@@ -23,6 +23,12 @@ namespace Cottle.Test
 		};
 
 		[Test]
+		public void CommandDeclare ()
+		{
+			this.AssertRender ("{declare var}", string.Empty);
+		}
+
+		[Test]
 		[TestCase ("expression", "{3}", "3")]
 		[TestCase ("mixed", "A{'B'}C", "ABC")]
 		[TestCase ("number", "1", "1")]
@@ -111,6 +117,12 @@ namespace Cottle.Test
 		public void CommandReturnNested (string a, string b, string expected)
 		{
 			this.AssertReturn ("{if " + a + ":{if " + b + ":{return 'AA'}|else:{return 'AB'}}|else:{return 'B'}}", expected);
+		}
+
+		[Test]
+		public void CommandSet ()
+		{
+			this.AssertRender ("{set var}", string.Empty);
 		}
 
 		[Test]

@@ -84,27 +84,52 @@ namespace Cottle.Parsers
 			List<string> arguments;
 			string name = this.ParseSymbol ();
 
-			switch (this.lexer.Current.Type)
+			// Parse function arguments if provided
+			if (this.lexer.Current.Type == LexemType.ParenthesisBegin)
 			{
-				case LexemType.ParenthesisBegin:
-					arguments = new List<string> ();
+				arguments = new List<string> ();
 
-					for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+				for (this.lexer.Next (LexerMode.Block); this.lexer.Current.Type != LexemType.ParenthesisEnd; )
+				{
+					arguments.Add (this.ParseSymbol ());
+
+					if (this.lexer.Current.Type == LexemType.Comma)
+						this.lexer.Next (LexerMode.Block);
+				}
+
+				this.lexer.Next (LexerMode.Block);
+			}
+			else
+				arguments = null;
+
+			// Early exit if no body, render nor value is defined
+			if (this.lexer.Current.Type != LexemType.Symbol)
+			{
+				this.lexer.Next (LexerMode.Raw);
+
+				// Arguments were defined, build function assignment
+				if (arguments != null)
+				{
+					return new Command
 					{
-						arguments.Add (this.ParseSymbol ());
-
-						if (this.lexer.Current.Type == LexemType.Comma)
-							this.lexer.Next (LexerMode.Block);
-					}
-
-					this.lexer.Next (LexerMode.Block); 
-
-					break;
-
-				default:
-					arguments = null;
-
-					break;
+						Arguments = arguments.ToArray (),
+						Mode = mode,
+						Name = name,
+						Type = CommandType.AssignFunction
+					};
+				}
+	
+				// Arguments where not defined, build value assignment
+				else
+				{
+					return new Command
+					{
+						Mode = mode,
+						Name = name,
+						Operand = Expression.Empty,
+						Type = CommandType.AssignValue
+					};
+				}
 			}
 
 			// Parse 'as' or 'to' keyword
@@ -112,7 +137,7 @@ namespace Cottle.Parsers
 			{
 				// <TODO> remove legacy keywords handling
 				// FIXME: should raise event
-				if (this.lexer.Current.Type == LexemType.Symbol && this.lexer.Current.Content == "as")
+				if (this.lexer.Current.Content == "as")
 				{
 					this.lexer.Next (LexerMode.Block);
 
@@ -138,7 +163,7 @@ namespace Cottle.Parsers
 				};
 			}
 
-			// Arguments where not defined and literal body follows, build render assignment
+			// No arguments provided and literal body follows, build render assignment
 			else if (this.lexer.Current.Type == LexemType.Colon)
 			{
 				return new Command
@@ -150,7 +175,7 @@ namespace Cottle.Parsers
 				};
 			}
 
-			// Arguments where not defined, build value assignment
+			// No arguments and no literal body, build value assignment
 			else
 			{
 				return new Command
