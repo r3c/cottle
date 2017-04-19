@@ -27,9 +27,12 @@ user manual (see "Installation" section).
 
 Installation
 ------------
+You can quickly install Cottle from Nuget and use it in your project
+<pre>
+Install-Package Cottle
+</pre>
 
 This repository contains a Visual Studio 2010 C# solution with two projects:
-
 - Cottle, the library itself, which is the project you'll include in your own
 solution if you want to use it. It is compatible with .NET 4.0 and above.
 - Demo, a simple Windows Form test program that allows you to write templates
