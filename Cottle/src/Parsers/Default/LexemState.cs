@@ -4,12 +4,6 @@ namespace Cottle.Parsers.Default
 {
 	class LexemState
 	{
-		#region Constants
-
-		private const int BRANCH_LIMIT = 256;
-
-		#endregion
-
 		#region Properties
 
 		public LexemType Type
@@ -24,9 +18,7 @@ namespace Cottle.Parsers.Default
 
 		#region Attributes
 
-		private Dictionary<char, LexemState> branchesHigh = null;
-
-		private LexemState[] branchesLow = null;
+		private Dictionary<char, LexemState> branches = null;
 
 		private LexemType type = LexemType.None;
 
@@ -38,9 +30,7 @@ namespace Cottle.Parsers.Default
 		{
 			LexemState state;
 
-			if (this.branchesLow != null && character < LexemState.BRANCH_LIMIT)
-				return this.branchesLow[character];
-			else if (this.branchesHigh != null && this.branchesHigh.TryGetValue (character, out state))
+			if (this.branches != null && this.branches.TryGetValue (character, out state))
 				return state;
 
 			return null;
@@ -55,32 +45,15 @@ namespace Cottle.Parsers.Default
 
 			foreach (char character in content)
 			{
-				if (character < LexemState.BRANCH_LIMIT)
-				{
-					if (current.branchesLow == null)
-						current.branchesLow = new LexemState[LexemState.BRANCH_LIMIT];
+			    if (current.branches == null)
+				    current.branches = new Dictionary<char, LexemState> ();
 
-					next = current.branchesLow[character];
+			    if (!current.branches.TryGetValue (character, out next))
+			    {
+				    next = new LexemState ();
 
-					if (next == null)
-					{
-						next = new LexemState ();
-
-						current.branchesLow[character] = next;
-					}
-				}
-				else
-				{
-					if (current.branchesHigh == null)
-						current.branchesHigh = new Dictionary<char, LexemState> ();
-
-					if (!current.branchesHigh.TryGetValue (character, out next))
-					{
-						next = new LexemState ();
-
-						current.branchesHigh[character] = next;
-					}
-				}
+				    current.branches[character] = next;
+			    }
 
 				current = next;
 			}
