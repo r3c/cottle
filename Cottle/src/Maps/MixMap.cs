@@ -31,7 +31,7 @@ namespace Cottle.Maps
 			this.array = new List<KeyValuePair<Value, Value>> (pairs);
 			this.hash = new Dictionary<Value, Value> ();
 
-			foreach (KeyValuePair<Value, Value> pair in pairs)
+			foreach (KeyValuePair<Value, Value> pair in this.array)
 				this.hash[pair.Key] = pair.Value;
 		}
 
