@@ -79,7 +79,7 @@ namespace Cottle.Documents.Dynamic
 			ModuleBuilder module;
 			TypeBuilder program;
 
-#if CORECLR
+#if NETSTANDARD1_5 || NETSTANDARD2_0
 			assembly = AssemblyBuilder.DefineDynamicAssembly (new AssemblyName (assemblyName), AssemblyBuilderAccess.Run);
 			module = assembly.DefineDynamicModule (fileName);
 #else
@@ -93,7 +93,7 @@ namespace Cottle.Documents.Dynamic
 			compiler = new Compiler (method.GetILGenerator (), trimmer);
 			compiler.Compile (Enumerable.Empty<string> (), command);
 
-#if CORECLR
+#if NETSTANDARD1_5 || NETSTANDARD2_0
 			program.CreateTypeInfo ();
 #else
 			program.CreateType ();

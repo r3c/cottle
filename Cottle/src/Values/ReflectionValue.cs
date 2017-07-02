@@ -74,7 +74,7 @@ namespace Cottle.Values
 				return converter (this.source);
 
 			// Return undefined value for other primitive types
-#if CORECLR
+#if NETSTANDARD1_5
 			if (type.GetTypeInfo ().IsPrimitive)
 #else
 			if (type.IsPrimitive)
