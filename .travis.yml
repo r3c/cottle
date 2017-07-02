@@ -5,9 +5,8 @@ matrix:
   include:
     - os: linux
       dist: trusty
-      dotnet: 1.0.0-preview2-003121
+      dotnet: 1.0.4
       mono: latest
-      env: DOTNETCORE=1
 
 install:
   - nuget restore Cottle.sln
@@ -18,6 +17,8 @@ script:
   - mono ./tests/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Cottle.Test/bin/Release/Cottle.Test.dll
 # - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj
   - rm -fr ./artifacts
-  - dotnet restore
-  - dotnet test ./Cottle.Test -c Release -f netcoreapp1.0
-  - dotnet pack ./Cottle -c Release -o ./artifacts
+  - dotnet restore Cottle.dotnetcore.sln
+  - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard1.5
+  - dotnet build ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp1.1
+  - dotnet test ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp1.1
+#  - dotnet pack ./Cottle/Cottle.dotnetcore.csproj -c Release -o ./artifacts
