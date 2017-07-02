@@ -27,31 +27,30 @@ user manual (see "Installation" section).
 
 Installation
 ------------
-You can quickly install Cottle from Nuget and use it in your project
+
+Cottle can be installed from Nuget into your project using following command:
 <pre>
 Install-Package Cottle
 </pre>
 
 This repository contains a Visual Studio 2010 C# solution with two projects:
+
 - Cottle, the library itself, which is the project you'll include in your own
 solution if you want to use it. It is compatible with .NET 4.0 and above.
-- Demo, a simple Windows Form test program that allows you to write templates
-directly in a text box and render them using predefined data.
+- Cottle.Demo, a simple Windows Form test program that allows you to write
+templates directly in a text box and render them using predefined data.
 
-User manual is available at http://r3c.github.io/cottle/ (or in "gh-pages"
+User manual is available at http://r3c.github.io/cottle/ (or in `gh-pages`
 branch of this repository) and explains how to use the library with many code
 snippets and examples.
 
 Licence
 -------
 
-This project is open-source, released under MIT licence. See "LICENSE" file for
-more information. Any contribution would be of course highly welcomed!
+This project is open-source, released under MIT licence. See `LICENSE.md` file
+for details.
 
 Author
 ------
 
-Rémi Caput (cottle [at] mirari [dot] fr)
-http://remi.caput.fr/
-
-If you use my library, please drop me a line!
+[Rémi Caput](http://remi.caput.fr/) (github.com+cottle [at] mirari [dot] fr)
