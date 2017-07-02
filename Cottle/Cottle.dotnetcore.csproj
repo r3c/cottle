@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Lightweight &amp; extensible template library for .NET 4.0 and above.</Description>
+    <AssemblyTitle>Cottle: Compact Object to Text Transform Language</AssemblyTitle>
+    <Version>1.4.0.2</Version>
+    <Authors>Remi Caput</Authors>
+    <TargetFrameworks>netstandard1.5;net40</TargetFrameworks>
+    <AssemblyName>Cottle</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageId>Cottle</PackageId>
+    <PackageTags>Template Templating Engine HTML JavaScript Email</PackageTags>
+    <PackageIconUrl>https://raw.github.com/r3c/cottle/master/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://r3c.github.io/cottle/</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.github.com/r3c/cottle/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git://github.com/r3c/cottle</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
+    <DefineConstants>$(DefineConstants);CORECLR</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
