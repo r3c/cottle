@@ -1,1 +1,1 @@
-nuget pack -p Configuration=Release;Platform=AnyCPU Cottle.csproj
+dotnet pack -c Release Cottle.dotnetcore.csproj
