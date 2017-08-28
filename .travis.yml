@@ -5,7 +5,7 @@ matrix:
   include:
     - os: linux
       dist: trusty
-      dotnet: 1.0.4
+      dotnet: 2.0.0
       mono: latest
 
 install:
@@ -19,6 +19,7 @@ script:
   - rm -fr ./artifacts
   - dotnet restore Cottle.dotnetcore.sln
   - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard1.5
-  - dotnet build ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp1.1
-  - dotnet test ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp1.1
+  - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard2.0
+  - dotnet build ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0
+  - dotnet test ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0
 #  - dotnet pack ./Cottle/Cottle.dotnetcore.csproj -c Release -o ./artifacts
