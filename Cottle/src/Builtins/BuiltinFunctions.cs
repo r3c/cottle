@@ -255,11 +255,7 @@ namespace Cottle.Builtins
 			int index;
 			object target;
 
-#if NETSTANDARD1_5
-			culture = values.Count > 2 ? new CultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
-#else
 			culture = values.Count > 2 ? CultureInfo.GetCultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
-#endif
 			format = values[1].AsString;
 			index = format.IndexOf (':');
 
