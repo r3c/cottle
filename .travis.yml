@@ -18,7 +18,6 @@ script:
 # - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj
   - rm -fr ./artifacts
   - dotnet restore Cottle.dotnetcore.sln
-  - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard1.5
   - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard2.0
   - dotnet build ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0
   - dotnet test ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0

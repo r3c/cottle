@@ -3,9 +3,9 @@
   <PropertyGroup>
     <Description>Lightweight &amp; extensible template library for .NET 4.0 and above.</Description>
     <AssemblyTitle>Cottle: Compact Object to Text Transform Language</AssemblyTitle>
-    <Version>1.4.0.3</Version>
+    <Version>1.4.0.4</Version>
     <Authors>Remi Caput</Authors>
-    <TargetFrameworks>netstandard1.5;netstandard2.0;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
     <AssemblyName>Cottle</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageId>Cottle</PackageId>
@@ -17,14 +17,11 @@
     <RepositoryUrl>git://github.com/r3c/cottle</RepositoryUrl>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' OR '$(TargetFramework)' == 'netstandard2.0' ">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

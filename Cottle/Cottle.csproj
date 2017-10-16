@@ -132,7 +132,6 @@
     <Compile Include="src\Value.cs" />
     <Compile Include="src\ValueContent.cs" />
     <Compile Include="src\Values\BooleanValue.cs" />
-    <Compile Include="src\Values\Converter.cs" />
     <Compile Include="src\Values\LazyValue.cs" />
     <Compile Include="src\Values\MapValue.cs" />
     <Compile Include="src\Values\ReflectionValue.cs" />
