@@ -2,6 +2,8 @@ Cottle: Compact Object to Text Transform Language
 =================================================
 
 [![Build Status](https://travis-ci.org/r3c/cottle.svg?branch=master)](https://travis-ci.org/r3c/cottle)
+[![NuGet](https://img.shields.io/nuget/v/Cottle.svg)](https://www.nuget.org/packages/Cottle/)
+[![license](https://img.shields.io/badge/license-mit-blue.svg)](https://opensource.org/licenses/MIT)
 
 Overview
 --------
