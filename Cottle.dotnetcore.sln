@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26403.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.dotnetcore", "Cottle\Cottle.dotnetcore.csproj", "{E0D2D6BB-43EE-4024-A742-7087C4EF3FAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle", "Cottle\Cottle.csproj", "{E0D2D6BB-43EE-4024-A742-7087C4EF3FAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Test.dotnetcore", "Cottle.Test\Cottle.Test.dotnetcore.csproj", "{A8693ACD-518F-4FE1-BC3F-3CDB5329F68E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Test", "Cottle.Test\Cottle.Test.csproj", "{A8693ACD-518F-4FE1-BC3F-3CDB5329F68E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

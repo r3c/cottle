@@ -35,10 +35,11 @@ Cottle can be installed from Nuget into your project using following command:
 Install-Package Cottle
 </pre>
 
-This repository contains a Visual Studio 2010 C# solution with two projects:
+This repository contains a Visual Studio 2017 / .NET Core C# solution with two
+projects:
 
 - Cottle, the library itself, which is the project you'll include in your own
-solution if you want to use it. It is compatible with .NET 4.0 and above.
+solution if you want to use it. It is compatible with .NET 4.7.2 and above.
 - Cottle.Demo, a simple Windows Form test program that allows you to write
 templates directly in a text box and render them using predefined data.
 
