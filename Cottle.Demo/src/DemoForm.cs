@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET472
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -519,3 +520,4 @@ namespace Cottle.Demo
 		#endregion
 	}
 }
+#endif

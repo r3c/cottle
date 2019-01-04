@@ -1,4 +1,5 @@
-﻿namespace Cottle.Demo
+﻿#if NET472
+namespace Cottle.Demo
 {
 	partial class DemoForm
 	{
@@ -431,3 +432,4 @@
 		private System.Windows.Forms.Button buttonSave;
 	}
 }
+#endif
