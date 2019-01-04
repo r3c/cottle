@@ -1,3 +1,4 @@
+/.vscode/
 /Cottle/bin/
 /Cottle/obj/
 /Cottle.Demo/bin/
@@ -6,8 +7,8 @@
 /Cottle.Test/obj/
 /packages/
 /tests/
-/Cottle.*.nupkg
 /TestResult.xml
+Cottle.*.nupkg
 project.lock.json
 *.project.lock.json
 *.sln.sdsettings

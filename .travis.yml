@@ -6,19 +6,9 @@ matrix:
     - os: linux
       dist: trusty
       dotnet: 2.0.0
-      mono: latest
-
-install:
-  - nuget restore Cottle.sln
-  - nuget install NUnit.Console -Version 3.0.1 -OutputDirectory tests
 
 script:
-  - xbuild /p:Configuration=Release Cottle.sln
-  - mono ./tests/NUnit.Console.3.0.1/tools/nunit3-console.exe ./Cottle.Test/bin/Release/Cottle.Test.dll
-# - nuget pack -Prop Configuration=Release -Prop Platform=AnyCPU ./Cottle/Cottle.csproj
-  - rm -fr ./artifacts
-  - dotnet restore Cottle.dotnetcore.sln
-  - dotnet build ./Cottle/Cottle.dotnetcore.csproj -c Release -f netstandard2.0
-  - dotnet build ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0
-  - dotnet test ./Cottle.Test/Cottle.Test.dotnetcore.csproj -c Release -f netcoreapp2.0
-#  - dotnet pack ./Cottle/Cottle.dotnetcore.csproj -c Release -o ./artifacts
+  - dotnet restore Cottle.sln
+  - dotnet build ./Cottle/Cottle.csproj -c Release -f netstandard2.0
+  - dotnet build ./Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0
+  - dotnet test ./Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0

@@ -1,4 +1,5 @@
-﻿namespace Cottle.Demo
+﻿#if NET472
+namespace Cottle.Demo
 {
 	partial class NodeForm
 	{
@@ -247,3 +248,4 @@
 		private System.Windows.Forms.CheckBox checkBoxValueBoolean;
 	}
 }
+#endif
