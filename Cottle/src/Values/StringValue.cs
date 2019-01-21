@@ -3,82 +3,58 @@ using System.Text;
 
 namespace Cottle.Values
 {
-	public sealed class StringValue : ScalarValue<string>
-	{
-		#region Properties
+    public sealed class StringValue : ScalarValue<string>
+    {
+        #region Methods
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return !string.IsNullOrEmpty (this.value);
-			}
-		}
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				decimal number;
+            builder.Append('"');
 
-				return decimal.TryParse (this.value, NumberStyles.Number, CultureInfo.InvariantCulture, out number) ? number : 0;
-			}
-		}
+            foreach (var c in Value)
+            {
+                if (c == '\\' || c == '"')
+                    builder.Append('\\');
 
-		public override string AsString
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+                builder.Append(c);
+            }
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.String;
-			}
-		}
+            builder.Append('"');
 
-		#endregion
+            return builder.ToString();
+        }
 
-		#region Constructors
+        #endregion
 
-		public StringValue (string value) :
-			base (value, (source) => source.AsString)
-		{
-		}
+        #region Properties
 
-		public StringValue (char value) :
-			this (value.ToString ())
-		{
-		}
+        public override bool AsBoolean => !string.IsNullOrEmpty(Value);
 
-		#endregion
+        public override decimal AsNumber =>
+            decimal.TryParse(Value, NumberStyles.Number, CultureInfo.InvariantCulture, out var number)
+                ? number
+                : 0;
 
-		#region Methods
+        public override string AsString => Value;
 
-		public override string ToString ()
-		{
-			StringBuilder builder;
+        public override ValueContent Type => ValueContent.String;
 
-			builder = new StringBuilder ();
-			builder.Append ('"');
+        #endregion
 
-			foreach (char c in this.value)
-			{
-				if (c == '\\' || c == '"')
-					builder.Append ('\\');
+        #region Constructors
 
-				builder.Append (c);
-			}
+        public StringValue(string value) :
+            base(value, source => source.AsString)
+        {
+        }
 
-			builder.Append ('"');
+        public StringValue(char value) :
+            this(value.ToString())
+        {
+        }
 
-			return builder.ToString ();
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

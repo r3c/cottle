@@ -1,53 +1,29 @@
-﻿using System;
-
-namespace Cottle.Demo
+﻿namespace Cottle.Demo
 {
-	public class NodeData
-	{
-		#region Properties
+    public class NodeData
+    {
+        #region Constructors
 
-		public int ImageIndex
-		{
-			get
-			{
-				return (int)this.value.Type;
-			}
-		}
+        public NodeData(string key, Value value)
+        {
+            Key = key;
+            Value = value;
+        }
 
-		public string Key
-		{
-			get
-			{
-				return this.key;
-			}
-		}
+        #endregion
 
-		public Value Value
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+        #region Properties
 
-		#endregion
+        public int ImageIndex => (int) Value.Type;
 
-		#region Attributes
+        public string Key { get; }
 
-		private readonly string key;
+        public Value Value { get; }
 
-		private readonly Value value;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
-
-		public NodeData (string key, Value value)
-		{
-			this.key = key;
-			this.value = value;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace Cottle
+﻿namespace Cottle
 {
-	struct ExpressionElement
-	{
-		#region Attributes
+    internal struct ExpressionElement
+    {
+        #region Attributes
 
-		public Expression Key;
+        public Expression Key;
 
-		public Expression Value;
+        public Expression Value;
 
-		#endregion
-	}
+        #endregion
+    }
 }

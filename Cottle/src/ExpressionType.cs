@@ -1,13 +1,12 @@
-﻿
-namespace Cottle
+﻿namespace Cottle
 {
-	enum ExpressionType
-	{
-		Access,
-		Constant,
-		Invoke,
-		Map,
-		Symbol,
-		Void
-	}
+    internal enum ExpressionType
+    {
+        Access,
+        Constant,
+        Invoke,
+        Map,
+        Symbol,
+        Void
+    }
 }

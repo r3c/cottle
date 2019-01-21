@@ -1,115 +1,112 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class ForNode : INode
-	{
-		#region Attributes
+    internal class ForNode : INode
+    {
+        #region Constructors
 
-		private readonly INode body;
+        public ForNode(IEvaluator from, string key, string value, INode body, INode empty)
+        {
+            _body = body;
+            _empty = empty;
+            _from = from;
+            _key = key;
+            _value = value;
+        }
 
-		private readonly INode empty;
+        #endregion
 
-		private readonly IEvaluator from;
+        #region Attributes
 
-		private readonly string key;
+        private readonly INode _body;
 
-		private readonly string value;
+        private readonly INode _empty;
 
-		#endregion
+        private readonly IEvaluator _from;
 
-		#region Constructors
+        private readonly string _key;
 
-		public ForNode (IEvaluator from, string key, string value, INode body, INode empty)
-		{
-			this.body = body;
-			this.empty = empty;
-			this.from = from;
-			this.key = key;
-			this.value = value;
-		}
+        private readonly string _value;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			IMap fields;
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            var fields = _from.Evaluate(store, output).Fields;
 
-			fields = this.from.Evaluate (store, output).Fields;
+            if (fields.Count > 0)
+            {
+                foreach (var pair in fields)
+                {
+                    store.Enter();
 
-			if (fields.Count > 0)
-			{
-				foreach (KeyValuePair<Value, Value> pair in fields)
-				{
-					store.Enter ();
+                    if (!string.IsNullOrEmpty(_key))
+                        store.Set(_key, pair.Key, StoreMode.Local);
 
-					if (!string.IsNullOrEmpty (this.key))
-						store.Set (this.key, pair.Key, StoreMode.Local);
+                    store.Set(_value, pair.Value, StoreMode.Local);
 
-					store.Set (this.value, pair.Value, StoreMode.Local);
+                    if (_body.Render(store, output, out result))
+                    {
+                        store.Leave();
 
-					if (this.body.Render (store, output, out result))
-					{
-						store.Leave ();
+                        return true;
+                    }
 
-						return true;
-					}
+                    store.Leave();
+                }
+            }
+            else if (_empty != null)
+            {
+                store.Enter();
 
-					store.Leave ();
-				}
-			}
-			else if (this.empty != null)
-			{
-				store.Enter ();
+                if (_empty.Render(store, output, out result))
+                {
+                    store.Leave();
 
-				if (this.empty.Render (store, output, out result))
-				{
-					store.Leave ();
+                    return true;
+                }
 
-					return true;
-				}
+                store.Leave();
+            }
 
-				store.Leave ();
-			}
+            result = VoidValue.Instance;
 
-			result = VoidValue.Instance;
-			
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			output.Write (setting.BlockBegin);
-			output.Write ("for ");
+        public void Source(ISetting setting, TextWriter output)
+        {
+            output.Write(setting.BlockBegin);
+            output.Write("for ");
 
-			if (!string.IsNullOrEmpty (this.key))
-			{
-				output.Write (this.key);
-				output.Write (", ");
-			}
+            if (!string.IsNullOrEmpty(_key))
+            {
+                output.Write(_key);
+                output.Write(", ");
+            }
 
-			output.Write (this.value);
-			output.Write (" in ");
-			output.Write (this.from);
-			output.Write (":");
+            output.Write(_value);
+            output.Write(" in ");
+            output.Write(_from);
+            output.Write(":");
 
-			this.body.Source (setting, output);
+            _body.Source(setting, output);
 
-			if (this.empty != null)
-			{
-				output.Write (setting.BlockContinue);
-				output.Write ("empty:");
+            if (_empty != null)
+            {
+                output.Write(setting.BlockContinue);
+                output.Write("empty:");
 
-				this.empty.Source (setting, output);
-			}
+                _empty.Source(setting, output);
+            }
 
-			output.Write (setting.BlockEnd);
-		}
+            output.Write(setting.BlockEnd);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,35 +1,33 @@
-﻿using System;
-
-namespace Cottle
+﻿namespace Cottle
 {
-	class Command
-	{
-		#region Attributes / Static
+    internal class Command
+    {
+        #region Attributes / Static
 
-		public static readonly Command NoOp = new Command { Type = CommandType.None };
- 
-		#endregion
+        public static readonly Command NoOp = new Command {Type = CommandType.None};
 
-		#region Attributes / Instance
+        #endregion
 
-		public string[] Arguments;
+        #region Attributes / Instance
 
-		public Command Body;
+        public string[] Arguments;
 
-		public string Key;
+        public Command Body;
 
-		public StoreMode Mode;
+        public string Key;
 
-		public string Name;
+        public StoreMode Mode;
 
-		public Command Next;
+        public string Name;
 
-		public Expression Operand;
+        public Command Next;
 
-		public string Text;
+        public Expression Operand;
 
-		public CommandType Type;
+        public string Text;
 
-		#endregion
-	}
+        public CommandType Type;
+
+        #endregion
+    }
 }

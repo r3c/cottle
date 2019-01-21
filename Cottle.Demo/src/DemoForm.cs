@@ -30,7 +30,7 @@ namespace Cottle.Demo
 			BlockBegin = DefaultSetting.Instance.BlockBegin,
 			BlockContinue = DefaultSetting.Instance.BlockContinue,
 			BlockEnd = DefaultSetting.Instance.BlockEnd,
-			TrimmerIndex = TrimmerCollection.DEFAULT_INDEX
+			TrimmerIndex = TrimmerCollection.DefaultIndex
 		};
 
 		#endregion
@@ -265,10 +265,13 @@ namespace Cottle.Demo
 			NodeData data = node != null ? node.Tag as NodeData : null;
 
 			this.toolStripMenuItemNodeClone.Enabled = node != null && node.Parent != null;
-			this.toolStripMenuItemNodeCreate.Enabled = node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Map);
+			this.toolStripMenuItemNodeCreate.Enabled =
+ node != null && node.Parent == null || (data != null && data.Value.Type == ValueContent.Map);
 			this.toolStripMenuItemNodeDelete.Enabled = node != null && node.Parent != null;
-			this.toolStripMenuItemMoveDown.Enabled = node != null && node.Parent != null && node != null && node.NextNode != null;
-			this.toolStripMenuItemMoveUp.Enabled = node != null && node.Parent != null && node != null && node.PrevNode != null;
+			this.toolStripMenuItemMoveDown.Enabled =
+ node != null && node.Parent != null && node != null && node.NextNode != null;
+			this.toolStripMenuItemMoveUp.Enabled =
+ node != null && node.Parent != null && node != null && node.PrevNode != null;
 			this.toolStripMenuItemNodeUpdate.Enabled = node != null && node.Parent != null;
 
 			this.contextMenuStripTree.Tag = node;
@@ -284,7 +287,8 @@ namespace Cottle.Demo
 
 			index = this.textBoxInput.GetFirstCharIndexFromLine (exception.Line - 1) + exception.Column;
 
-			this.textBoxInput.SelectionStart = Math.Max (Math.Min (index - exception.Lexem.Length - 1, this.textBoxInput.Text.Length - 1), 0);
+			this.textBoxInput.SelectionStart =
+ Math.Max (Math.Min (index - exception.Lexem.Length - 1, this.textBoxInput.Text.Length - 1), 0);
 			this.textBoxInput.SelectionLength = exception.Lexem.Length;
 			this.textBoxInput.Focus ();
 
@@ -438,7 +442,7 @@ namespace Cottle.Demo
 						BlockBegin = reader.ReadString (),
 						BlockContinue = reader.ReadString (),
 						BlockEnd = reader.ReadString (),
-						TrimmerIndex = version > 1 ? reader.ReadInt32 () : TrimmerCollection.DEFAULT_INDEX
+						TrimmerIndex = version > 1 ? reader.ReadInt32 () : TrimmerCollection.DefaultIndex
 					};
 
 					this.textBoxInput.Text = reader.ReadString ();

@@ -2,70 +2,57 @@
 
 namespace Cottle.Parsers.Default
 {
-	class LexemState
-	{
-		#region Properties
+    internal class LexemState
+    {
+        #region Properties
 
-		public LexemType Type
-		{
-			get
-			{
-				return this.type;
-			}
-		}
+        public LexemType Type { get; private set; } = LexemType.None;
 
-		#endregion
+        #endregion
 
-		#region Attributes
+        #region Attributes
 
-		private Dictionary<char, LexemState> branches = null;
+        private Dictionary<char, LexemState> _branches;
 
-		private LexemType type = LexemType.None;
+        #endregion
 
-		#endregion
+        #region Methods
 
-		#region Methods
+        public LexemState Follow(char character)
+        {
+            if (_branches != null && _branches.TryGetValue(character, out var state))
+                return state;
 
-		public LexemState Follow (char character)
-		{
-			LexemState state;
+            return null;
+        }
 
-			if (this.branches != null && this.branches.TryGetValue (character, out state))
-				return state;
+        public bool Store(LexemType type, string content)
+        {
+            var current = this;
 
-			return null;
-		}
+            foreach (var character in content)
+            {
+                if (current._branches == null)
+                    current._branches = new Dictionary<char, LexemState>();
 
-		public bool Store (LexemType type, string content)
-		{
-			LexemState current;
-			LexemState next;
+                if (!current._branches.TryGetValue(character, out var next))
+                {
+                    next = new LexemState();
 
-			current = this;
+                    current._branches[character] = next;
+                }
 
-			foreach (char character in content)
-			{
-			    if (current.branches == null)
-				    current.branches = new Dictionary<char, LexemState> ();
+                current = next;
+            }
 
-			    if (!current.branches.TryGetValue (character, out next))
-			    {
-				    next = new LexemState ();
+            if (current.Type != LexemType.None)
+                return false;
 
-				    current.branches[character] = next;
-			    }
+            current.Type = type;
 
-				current = next;
-			}
+            return true;
+        }
 
-			if (current.type != LexemType.None)
-				return false;
-
-			current.type = type;
-
-			return true;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

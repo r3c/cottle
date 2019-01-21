@@ -1,99 +1,17 @@
-﻿using System;
-
-namespace Cottle.Settings
+﻿namespace Cottle.Settings
 {
-	public sealed class CustomSetting : ISetting
-	{
-		#region Properties
+    public sealed class CustomSetting : ISetting
+    {
+        public string BlockBegin { get; set; } = DefaultSetting.Instance.BlockBegin;
 
-		public string BlockBegin
-		{
-			get
-			{
-				return this.blockBegin;
-			}
-			set
-			{
-				this.blockBegin = value;
-			}
-		}
+        public string BlockContinue { get; set; } = DefaultSetting.Instance.BlockContinue;
 
-		public string BlockContinue
-		{
-			get
-			{
-				return this.blockContinue;
-			}
-			set
-			{
-				this.blockContinue = value;
-			}
-		}
+        public string BlockEnd { get; set; } = DefaultSetting.Instance.BlockEnd;
 
-		public string BlockEnd
-		{
-			get
-			{
-				return this.blockEnd;
-			}
-			set
-			{
-				this.blockEnd = value;
-			}
-		}
+        public char Escape { get; set; } = DefaultSetting.Instance.Escape;
 
-		public char Escape
-		{
-			get
-			{
-				return this.escape;
-			}
-			set
-			{
-				this.escape = value;
-			}
-		}
+        public bool Optimize { get; set; } = DefaultSetting.Instance.Optimize;
 
-		public bool Optimize
-		{
-			get
-			{
-				return this.optimize;
-			}
-			set
-			{
-				this.optimize = value;
-			}
-		}
-
-		public Trimmer Trimmer
-		{
-			get
-			{
-				return this.trimmer;
-			}
-			set
-			{
-				this.trimmer = value;
-			}
-		}
-
-		#endregion
-
-		#region Attributes
-
-		private string blockBegin = DefaultSetting.Instance.BlockBegin;
-
-		private string blockContinue = DefaultSetting.Instance.BlockContinue;
-
-		private string blockEnd = DefaultSetting.Instance.BlockEnd;
-
-		private char escape = DefaultSetting.Instance.Escape;
-
-		private bool optimize = DefaultSetting.Instance.Optimize;
-
-		private Trimmer trimmer = DefaultSetting.Instance.Trimmer;
-
-		#endregion
-	}
+        public Trimmer Trimmer { get; set; } = DefaultSetting.Instance.Trimmer;
+    }
 }

@@ -1,41 +1,35 @@
-﻿using System;
-using Cottle.Values;
+﻿using Cottle.Values;
 
 namespace Cottle.Stores
 {
-	public abstract class AbstractStore : IStore
-	{
-		#region Properties
+    public abstract class AbstractStore : IStore
+    {
+        #region Properties
 
-		public Value this[Value symbol]
-		{
-			get
-			{
-				Value value;
+        public Value this[Value symbol]
+        {
+            get
+            {
+                if (TryGet(symbol, out var value))
+                    return value;
 
-				if (this.TryGet (symbol, out value))
-					return value;
+                return VoidValue.Instance;
+            }
+            set => Set(symbol, value, StoreMode.Global);
+        }
 
-				return VoidValue.Instance;
-			}
-			set
-			{
-				this.Set (symbol, value, StoreMode.Global);
-			}
-		}
+        #endregion
 
-		#endregion
+        #region Methods
 
-		#region Methods
-		
-		public abstract void Enter ();
-	
-		public abstract bool Leave ();
+        public abstract void Enter();
 
-		public abstract void Set (Value symbol, Value value, StoreMode mode);
+        public abstract bool Leave();
 
-		public abstract bool TryGet (Value symbol, out Value value);
+        public abstract void Set(Value symbol, Value value, StoreMode mode);
 
-		#endregion
-	}
+        public abstract bool TryGet(Value symbol, out Value value);
+
+        #endregion
+    }
 }

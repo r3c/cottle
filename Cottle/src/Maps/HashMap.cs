@@ -2,52 +2,46 @@
 
 namespace Cottle.Maps
 {
-	class HashMap : AbstractMap
-	{
-		#region Properties
+    internal class HashMap : AbstractMap
+    {
+        #region Attributes
 
-		public override int Count
-		{
-			get
-			{
-				return this.hash.Count;
-			}
-		}
+        private readonly Dictionary<Value, Value> _hash;
 
-		#endregion
+        #endregion
 
-		#region Attributes
+        #region Constructors
 
-		private Dictionary<Value, Value> hash;
+        public HashMap(IDictionary<Value, Value> hash)
+        {
+            _hash = new Dictionary<Value, Value>(hash);
+        }
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Properties
 
-		public HashMap (IDictionary<Value, Value> hash)
-		{
-			this.hash = new Dictionary<Value, Value> (hash);
-		}
+        public override int Count => _hash.Count;
 
-		#endregion
+        #endregion
 
-		#region Methods
-		
-		public override bool Contains (Value key)
-		{
-			return this.hash.ContainsKey (key);
-		}
+        #region Methods
 
-		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-		{
-			return this.hash.GetEnumerator ();
-		}
+        public override bool Contains(Value key)
+        {
+            return _hash.ContainsKey(key);
+        }
 
-		public override bool TryGet (Value key, out Value value)
-		{
-			return this.hash.TryGetValue (key, out value);
-		}
+        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
+        {
+            return _hash.GetEnumerator();
+        }
 
-		#endregion
-	}
+        public override bool TryGet(Value key, out Value value)
+        {
+            return _hash.TryGetValue(key, out value);
+        }
+
+        #endregion
+    }
 }

@@ -1,41 +1,21 @@
-﻿using System;
-
-namespace Cottle
+﻿namespace Cottle
 {
-	public interface ISetting
-	{
-		#region Methods
-		
-		string BlockBegin
-		{
-			get;
-		}
+    public interface ISetting
+    {
+        #region Methods
 
-		string BlockContinue
-		{
-			get;
-		}
+        string BlockBegin { get; }
 
-		string BlockEnd
-		{
-			get;
-		}
+        string BlockContinue { get; }
 
-		char Escape
-		{
-			get;
-		}
+        string BlockEnd { get; }
 
-		bool Optimize
-		{
-			get;
-		}
+        char Escape { get; }
 
-		Trimmer Trimmer
-		{
-			get;
-		}
-		
-		#endregion
-	}
+        bool Optimize { get; }
+
+        Trimmer Trimmer { get; }
+
+        #endregion
+    }
 }

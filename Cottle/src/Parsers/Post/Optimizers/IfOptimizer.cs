@@ -1,33 +1,31 @@
-﻿using System;
-
-namespace Cottle.Parsers.Post.Optimizers
+﻿namespace Cottle.Parsers.Post.Optimizers
 {
-	/// <summary>
-	/// Simplify "if" command with constant condition.
-	/// </summary>
-	class IfOptimizer : AbstractOptimizer
-	{
-		#region Attributes
+    /// <summary>
+    ///     Simplify "if" command with constant condition.
+    /// </summary>
+    internal class IfOptimizer : AbstractOptimizer
+    {
+        #region Attributes
 
-		public static readonly IfOptimizer Instance = new IfOptimizer ();
+        public static readonly IfOptimizer Instance = new IfOptimizer();
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public override Command Optimize (Command command)
-		{
-			while (command != null && command.Type == CommandType.If && command.Operand.Type == ExpressionType.Constant)
-			{
-				if (command.Operand.Value.AsBoolean)
-					return command.Body;
+        public override Command Optimize(Command command)
+        {
+            while (command != null && command.Type == CommandType.If && command.Operand.Type == ExpressionType.Constant)
+            {
+                if (command.Operand.Value.AsBoolean)
+                    return command.Body;
 
-				command = command.Next;
-			}
+                command = command.Next;
+            }
 
-			return command ?? Command.NoOp;
-		}
+            return command ?? Command.NoOp;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

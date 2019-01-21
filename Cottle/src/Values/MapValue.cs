@@ -1,163 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Cottle.Maps;
 
 namespace Cottle.Values
 {
-	public sealed class MapValue : Value
-	{
-		#region Properties / Instance
+    public sealed class MapValue : Value
+    {
+        #region Properties / Static
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return this.fields.Count > 0;
-			}
-		}
+        public static MapValue Empty { get; } = new MapValue();
 
-		public override IFunction AsFunction
-		{
-			get
-			{
-				return null;
-			}
-		}
+        #endregion
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return this.fields.Count;
-			}
-		}
+        #region Properties / Instance
 
-		public override string AsString
-		{
-			get
-			{
-				return string.Empty;
-			}
-		}
+        public override bool AsBoolean => Fields.Count > 0;
 
-		public override IMap Fields
-		{
-			get
-			{
-				return this.fields;
-			}
-		}
+        public override IFunction AsFunction => null;
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.Map;
-			}
-		}
+        public override decimal AsNumber => Fields.Count;
 
-		#endregion
+        public override string AsString => string.Empty;
 
-		#region Properties / Static
+        public override IMap Fields { get; }
 
-		public static MapValue Empty
-		{
-			get
-			{
-				return MapValue.empty;
-			}
-		}
+        public override ValueContent Type => ValueContent.Map;
 
-		#endregion
+        #endregion
 
-		#region Attributes / Instance
+        #region Constructors
 
-		private readonly IMap fields;
+        public MapValue(Func<int, Value> generator, int count)
+        {
+            Fields = new GeneratorMap(generator, count);
+        }
 
-		#endregion
+        public MapValue(IDictionary<Value, Value> hash)
+        {
+            Fields = new HashMap(hash);
+        }
 
-		#region Attributes / Static
+        public MapValue(IEnumerable<KeyValuePair<Value, Value>> pairs)
+        {
+            Fields = new MixMap(pairs);
+        }
 
-		private static readonly MapValue empty = new MapValue ();
+        public MapValue(IEnumerable<Value> values)
+        {
+            Fields = new ArrayMap(values);
+        }
 
-		#endregion
+        public MapValue()
+        {
+            Fields = EmptyMap.Instance;
+        }
 
-		#region Constructors
+        #endregion
 
-		public MapValue (Func<int, Value> generator, int count)
-		{
-			this.fields = new GeneratorMap (generator, count);
-		}
-		
-		public MapValue (IDictionary<Value, Value> hash)
-		{
-			this.fields = new HashMap (hash);
-		}
+        #region Methods
 
-		public MapValue (IEnumerable<KeyValuePair<Value, Value>> pairs)
-		{
-			this.fields = new MixMap (pairs);
-		}
+        public override int CompareTo(Value other)
+        {
+            if (other == null)
+                return 1;
 
-		public MapValue (IEnumerable<Value> values)
-		{
-			this.fields = new ArrayMap (values);
-		}
+            if (Type != other.Type)
+                return ((int) Type).CompareTo((int) other.Type);
 
-		public MapValue ()
-		{
-			this.fields = EmptyMap.Instance;
-		}
+            return Fields.CompareTo(other.Fields);
+        }
 
-		#endregion
+        public override int GetHashCode()
+        {
+            return Fields.GetHashCode();
+        }
 
-		#region Methods
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            var separator = false;
 
-		public override int CompareTo (Value other)
-		{
-			if (other == null)
-				return 1;
+            builder.Append('[');
 
-			if (this.Type != other.Type)
-				return ((int)this.Type).CompareTo ((int)other.Type);
+            foreach (var pair in Fields)
+            {
+                if (separator)
+                    builder.Append(", ");
+                else
+                    separator = true;
 
-			return this.fields.CompareTo (other.Fields);
-		}
+                builder.Append(pair.Key);
+                builder.Append(": ");
+                builder.Append(pair.Value);
+            }
 
-		public override int GetHashCode ()
-		{
-			return this.fields.GetHashCode ();
-		}
+            builder.Append(']');
 
-		public override string ToString ()
-		{
-			StringBuilder builder;
-			bool separator;
+            return builder.ToString();
+        }
 
-			builder = new StringBuilder ();
-			builder.Append ('[');
-
-			separator = false;
-
-			foreach (KeyValuePair<Value, Value> pair in this.fields)
-			{
-				if (separator)
-					builder.Append (", ");
-				else
-					separator = true;
-
-				builder.Append (pair.Key);
-				builder.Append (": ");
-				builder.Append (pair.Value);
-			}
-
-			builder.Append (']');
-
-			return builder.ToString ();
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

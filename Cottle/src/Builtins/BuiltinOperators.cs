@@ -1,97 +1,84 @@
-﻿using System;
-using Cottle.Functions;
+﻿using Cottle.Functions;
 using Cottle.Values;
 
 namespace Cottle.Builtins
 {
-	static class BuiltinOperators
-	{
-		public static readonly IFunction operatorAdd = new NativeFunction ((v) => v[0].AsNumber + v[1].AsNumber, 2);
+    internal static class BuiltinOperators
+    {
+        public static readonly IFunction OperatorAdd = new NativeFunction(v => v[0].AsNumber + v[1].AsNumber, 2);
 
-		public static readonly IFunction operatorAnd = new NativeFunction ((values) =>
-		{
-			foreach (Value value in values)
-			{
-				if (!value.AsBoolean)
-					return false;
-			}
+        public static readonly IFunction OperatorAnd = new NativeFunction(values =>
+        {
+            foreach (var value in values)
+                if (!value.AsBoolean)
+                    return false;
 
-			return true;
-		});
+            return true;
+        });
 
-		public static readonly IFunction operatorDiv = new NativeFunction ((values) =>
-		{
-			decimal denominator;
+        public static readonly IFunction OperatorDiv = new NativeFunction(values =>
+        {
+            var denominator = values[1].AsNumber;
 
-			denominator = values[1].AsNumber;
+            if (denominator == 0)
+                return VoidValue.Instance;
 
-			if (denominator == 0)
-				return VoidValue.Instance;
+            return values[0].AsNumber / denominator;
+        }, 2);
 
-			return values[0].AsNumber / denominator;
-		}, 2);
+        public static readonly IFunction OperatorEqual = new NativeFunction(values =>
+        {
+            var first = values[0];
 
-		public static readonly IFunction operatorEqual = new NativeFunction ((values) =>
-		{
-			Value first;
+            for (var i = 1; i < values.Count; ++i)
+                if (values[i].CompareTo(first) != 0)
+                    return false;
 
-			first = values[0];
+            return true;
+        }, 1, -1);
 
-			for (int i = 1; i < values.Count; ++i)
-				if (values[i].CompareTo (first) != 0)
-					return false;
+        public static readonly IFunction OperatorGreaterEqual = new NativeFunction(v => v[0].CompareTo(v[1]) >= 0, 2);
 
-			return true;
-		}, 1, -1);
+        public static readonly IFunction OperatorGreaterThan = new NativeFunction(v => v[0].CompareTo(v[1]) > 0, 2);
 
-		public static readonly IFunction operatorGreaterEqual = new NativeFunction ((v) => v[0].CompareTo (v[1]) >= 0, 2);
+        public static readonly IFunction OperatorLowerEqual = new NativeFunction(v => v[0].CompareTo(v[1]) <= 0, 2);
 
-		public static readonly IFunction operatorGreaterThan = new NativeFunction ((v) => v[0].CompareTo (v[1]) > 0, 2);
+        public static readonly IFunction OperatorLowerThan = new NativeFunction(v => v[0].CompareTo(v[1]) < 0, 2);
 
-		public static readonly IFunction operatorLowerEqual = new NativeFunction ((v) => v[0].CompareTo (v[1]) <= 0, 2);
+        public static readonly IFunction OperatorMod = new NativeFunction(values =>
+        {
+            var denominator = values[1].AsNumber;
 
-		public static readonly IFunction operatorLowerThan = new NativeFunction ((v) => v[0].CompareTo (v[1]) < 0, 2);
+            if (denominator == 0)
+                return VoidValue.Instance;
 
-		public static readonly IFunction operatorMod = new NativeFunction ((values) =>
-		{
-			decimal denominator;
+            return values[0].AsNumber % denominator;
+        }, 2);
 
-			denominator = values[1].AsNumber;
+        public static readonly IFunction OperatorMul = new NativeFunction(v => v[0].AsNumber * v[1].AsNumber, 2);
 
-			if (denominator == 0)
-				return VoidValue.Instance;
+        public static readonly IFunction OperatorNot = new NativeFunction(v => !v[0].AsBoolean, 1);
 
-			return values[0].AsNumber % denominator;
-		}, 2);
+        public static readonly IFunction OperatorNotEqual = new NativeFunction(values =>
+        {
+            var first = values[0];
 
-		public static readonly IFunction operatorMul = new NativeFunction ((v) => v[0].AsNumber * v[1].AsNumber, 2);
+            for (var i = 1; i < values.Count; ++i)
+                if (values[i].CompareTo(first) == 0)
+                    return false;
 
-		public static readonly IFunction operatorNot = new NativeFunction ((v) => !v[0].AsBoolean, 1);
+            return true;
+        }, 1, -1);
 
-		public static readonly IFunction operatorNotEqual = new NativeFunction ((values) =>
-		{
-			Value first;
+        public static readonly IFunction OperatorOr = new NativeFunction(values =>
+        {
+            foreach (var value in values)
+                if (value.AsBoolean)
+                    return true;
 
-			first = values[0];
+            return false;
+        });
 
-			for (int i = 1; i < values.Count; ++i)
-				if (values[i].CompareTo (first) == 0)
-					return false;
-
-			return true;
-		}, 1, -1);
-
-		public static readonly IFunction operatorOr = new NativeFunction ((values) =>
-		{
-			foreach (Value value in values)
-			{
-				if (value.AsBoolean)
-					return true;
-			}
-
-			return false;
-		});
-
-		public static readonly IFunction operatorSub = new NativeFunction ((v) => v[0].AsNumber - v[1].AsNumber, 2);
-	}
+        public static readonly IFunction OperatorSub = new NativeFunction(v => v[0].AsNumber - v[1].AsNumber, 2);
+    }
 }

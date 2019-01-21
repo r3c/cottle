@@ -1,66 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cottle.Maps
 {
-	class EmptyMap : AbstractMap
-	{
-		#region Properties / Instance
+    internal class EmptyMap : AbstractMap
+    {
+        #region Properties / Instance
 
-		public override int Count
-		{
-			get
-			{
-				return 0;
-			}
-		}
+        public override int Count => 0;
 
-		#endregion
+        #endregion
 
-		#region Properties / Static
-		
-		public static EmptyMap Instance
-		{
-			get
-			{
-				return EmptyMap.instance;
-			}
-		}
+        #region Properties / Static
 
-		#endregion
+        public static EmptyMap Instance { get; } = new EmptyMap();
 
-		#region Attributes
-		
-		private static readonly EmptyMap instance = new EmptyMap ();
+        #endregion
 
-		private static readonly IList<KeyValuePair<Value, Value>> pairs = new KeyValuePair<Value, Value>[0];
-		
-		#endregion
-		
-		#region Methods
+        #region Attributes
 
-		public override bool Contains (Value key)
-		{
-			return false;
-		}
-		
-		public override bool TryGet (Value key, out Value value)
-		{
-			value = default (Value);
+        private static readonly IList<KeyValuePair<Value, Value>> Pairs = new KeyValuePair<Value, Value>[0];
 
-			return false;
-		}
+        #endregion
 
-		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-		{
-			return EmptyMap.pairs.GetEnumerator ();
-		}
+        #region Methods
 
-		public override int GetHashCode ()
-		{
-			return 0;
-		}
+        public override bool Contains(Value key)
+        {
+            return false;
+        }
 
-		#endregion
-	}
+        public override bool TryGet(Value key, out Value value)
+        {
+            value = default(Value);
+
+            return false;
+        }
+
+        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
+        {
+            return Pairs.GetEnumerator();
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+
+        #endregion
+    }
 }

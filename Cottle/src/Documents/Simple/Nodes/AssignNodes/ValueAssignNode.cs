@@ -1,43 +1,42 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
-	class ValueAssignNode : AssignNode
-	{
-		#region Attributes
+    internal class ValueAssignNode : AssignNode
+    {
+        #region Attributes
 
-		private readonly IEvaluator expression;
+        private readonly IEvaluator _expression;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ValueAssignNode (string name, IEvaluator expression, StoreMode mode) :
-			base (name, mode)
-		{
-			this.expression = expression;
-		}
+        public ValueAssignNode(string name, IEvaluator expression, StoreMode mode) :
+            base(name, mode)
+        {
+            _expression = expression;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		protected override Value Evaluate (IStore store, TextWriter output)
-		{
-			return this.expression.Evaluate (store, output);
-		}
+        protected override Value Evaluate(IStore store, TextWriter output)
+        {
+            return _expression.Evaluate(store, output);
+        }
 
-		protected override void SourceSymbol (string name, TextWriter output)
-		{
-			output.Write (name);
-		}
+        protected override void SourceSymbol(string name, TextWriter output)
+        {
+            output.Write(name);
+        }
 
-		protected override void SourceValue (ISetting setting, TextWriter output)
-		{
-			output.Write (this.expression);
-		}
+        protected override void SourceValue(ISetting setting, TextWriter output)
+        {
+            output.Write(_expression);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

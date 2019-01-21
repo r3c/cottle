@@ -4,53 +4,49 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class AccessEvaluator : IEvaluator
-	{
-		#region Attributes
+    internal class AccessEvaluator : IEvaluator
+    {
+        #region Constructors
 
-		private readonly IEvaluator source;
+        public AccessEvaluator(IEvaluator source, IEvaluator subscript)
+        {
+            _source = source;
+            _subscript = subscript;
+        }
 
-		private readonly IEvaluator subscript;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly IEvaluator _source;
 
-		public AccessEvaluator (IEvaluator source, IEvaluator subscript)
-		{
-			this.source = source;
-			this.subscript = subscript;
-		}
+        private readonly IEvaluator _subscript;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public Value Evaluate (IStore store, TextWriter output)
-		{
-			Value key;
-			Value map;
-			Value value;
+        public Value Evaluate(IStore store, TextWriter output)
+        {
+            var key = _subscript.Evaluate(store, output);
+            var map = _source.Evaluate(store, output);
 
-			key = this.subscript.Evaluate (store, output);
-			map = this.source.Evaluate (store, output);
+            if (map.Fields.TryGet(key, out var value))
+                return value;
 
-			if (map.Fields.TryGet (key, out value))
-				return value;
+            return VoidValue.Instance;
+        }
 
-			return VoidValue.Instance;
-		}
+        public override string ToString()
+        {
+            return new StringBuilder()
+                .Append(_source)
+                .Append('[')
+                .Append(_subscript)
+                .Append(']')
+                .ToString();
+        }
 
-		public override string ToString ()
-		{
-			return new StringBuilder ()
-				.Append (this.source)
-				.Append ('[')
-				.Append (this.subscript)
-				.Append (']')
-				.ToString ();
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

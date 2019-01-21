@@ -1,80 +1,80 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Cottle.Builtins
 {
-	public static class BuiltinTrimmers
-	{
-		#region Attributes / Public
+    public static class BuiltinTrimmers
+    {
+        #region Attributes / Private
 
-		public static readonly Trimmer CollapseBlankCharacters = (text) => BuiltinTrimmers.collapseBlankCharacters.Replace (text, " ");
+        public static readonly Trimmer CollapseBlankCharacters =
+            text => CollapseBlankCharactersRegex.Replace(text, " ");
 
-		public static readonly Trimmer FirstAndLastBlankLines = (text) =>
-		{
-			int index;
-			int start;
-			int stop;
+        private static readonly Regex CollapseBlankCharactersRegex = new Regex("\\s{2,}", RegexOptions.Multiline);
 
-			// Skip first line if any
-			for (index = 0; index < text.Length && text[index] <= ' ' && text[index] != '\n' && text[index] != '\r'; )
-				++index;
+        #endregion
 
-			if (index >= text.Length || (text[index] != '\n' && text[index] != '\r'))
-				start = 0;
-			else if (index + 1 >= text.Length || text[index] == text[index + 1] || (text[index + 1] != '\n' && text[index + 1] != '\r'))
-				start = index + 1;
-			else
-				start = index + 2;
+        #region Attributes / Public
 
-			// Skip last line if any
-			for (index = text.Length - 1; index >= 0 && text[index] <= ' ' && text[index] != '\n' && text[index] != '\r'; )
-				--index;
+        public static readonly Trimmer FirstAndLastBlankLines = text =>
+        {
+            int index;
+            int start;
+            int stop;
 
-			if (index < 0 || (text[index] != '\n' && text[index] != '\r'))
-				stop = text.Length;
-			else if (index < 1 || text[index] == text[index - 1] || (text[index - 1] != '\n' && text[index - 1] != '\r'))
-				stop = index;
-			else
-				stop = index - 1;
+            // Skip first line if any
+            for (index = 0; index < text.Length && text[index] <= ' ' && text[index] != '\n' && text[index] != '\r';)
+                ++index;
 
-			// Select inner content if any, whole text else
-			if (start < stop)
-				return text.Substring (start, stop - start);
+            if (index >= text.Length || text[index] != '\n' && text[index] != '\r')
+                start = 0;
+            else if (index + 1 >= text.Length || text[index] == text[index + 1] ||
+                     text[index + 1] != '\n' && text[index + 1] != '\r')
+                start = index + 1;
+            else
+                start = index + 2;
 
-			return text;
-		};
+            // Skip last line if any
+            for (index = text.Length - 1;
+                index >= 0 && text[index] <= ' ' && text[index] != '\n' && text[index] != '\r';)
+                --index;
 
-		public static readonly Trimmer LeadAndTrailBlankCharacters = (text) =>
-		{
-			int index;
-			int start;
-			int stop;
+            if (index < 0 || text[index] != '\n' && text[index] != '\r')
+                stop = text.Length;
+            else if (index < 1 || text[index] == text[index - 1] || text[index - 1] != '\n' && text[index - 1] != '\r')
+                stop = index;
+            else
+                stop = index - 1;
 
-			// Skip all leading blank characters
-			for (index = 0; index < text.Length && text[index] <= ' '; )
-				++index;
+            // Select inner content if any, whole text else
+            if (start < stop)
+                return text.Substring(start, stop - start);
 
-			start = index;
+            return text;
+        };
 
-			// Skip all trailing blank characters
-			for (index = text.Length - 1; index >= 0 && text[index] <= ' '; )
-				--index;
+        public static readonly Trimmer LeadAndTrailBlankCharacters = text =>
+        {
+            int index;
 
-			stop = index + 1;
+            // Skip all leading blank characters
+            for (index = 0; index < text.Length && text[index] <= ' ';)
+                ++index;
 
-			// Select inner content if any, empty string else
-			if (start < stop)
-				return text.Substring (start, stop - start);
+            var start = index;
 
-			return string.Empty;
-		};
+            // Skip all trailing blank characters
+            for (index = text.Length - 1; index >= 0 && text[index] <= ' ';)
+                --index;
 
-		#endregion
+            var stop = index + 1;
 
-		#region Attributes / Private
+            // Select inner content if any, empty string else
+            if (start < stop)
+                return text.Substring(start, stop - start);
 
-		private static readonly Regex collapseBlankCharacters = new Regex ("\\s{2,}", RegexOptions.Multiline);
+            return string.Empty;
+        };
 
-		#endregion
-	}
+        #endregion
+    }
 }

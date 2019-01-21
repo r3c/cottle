@@ -1,11 +1,9 @@
-﻿using System;
-
-namespace Cottle.Parsers.Default
+﻿namespace Cottle.Parsers.Default
 {
-	struct Operator
-	{
-		public IFunction Function;
+    internal struct Operator
+    {
+        public IFunction Function;
 
-		public int Precedence;
-	}
+        public int Precedence;
+    }
 }

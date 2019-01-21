@@ -1,28 +1,27 @@
-﻿using System;
-
-namespace Cottle.Parsers.Post.Optimizers
+﻿namespace Cottle.Parsers.Post.Optimizers
 {
-	/// <summary>
-	/// Remove all commands following "return" in a composite command.
-	/// </summary>
-	class ReturnOptimizer : AbstractOptimizer
-	{
-		#region Attributes
+    /// <summary>
+    ///     Remove all commands following "return" in a composite command.
+    /// </summary>
+    internal class ReturnOptimizer : AbstractOptimizer
+    {
+        #region Attributes
 
-		public static readonly ReturnOptimizer Instance = new ReturnOptimizer ();
+        public static readonly ReturnOptimizer Instance = new ReturnOptimizer();
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public override Command Optimize (Command command)
-		{
-			if (command.Type == CommandType.Composite && command.Body != null && command.Body.Type == CommandType.Return)
-				return command.Body;
+        public override Command Optimize(Command command)
+        {
+            if (command.Type == CommandType.Composite && command.Body != null &&
+                command.Body.Type == CommandType.Return)
+                return command.Body;
 
-			return command;
-		}
+            return command;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

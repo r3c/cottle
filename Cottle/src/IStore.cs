@@ -1,28 +1,23 @@
-﻿
-namespace Cottle
+﻿namespace Cottle
 {
-	public interface IStore
-	{
-		#region Properties
-		
-		Value this[Value symbol]
-		{
-			get;
-			set;
-		}
+    public interface IStore
+    {
+        #region Properties
 
-		#endregion
-		
-		#region Methods
+        Value this[Value symbol] { get; set; }
 
-		void Enter ();
+        #endregion
 
-		bool Leave ();
+        #region Methods
 
-		void Set (Value symbol, Value value, StoreMode mode);
+        void Enter();
 
-		bool TryGet (Value symbol, out Value value);
+        bool Leave();
 
-		#endregion
-	}
+        void Set(Value symbol, Value value, StoreMode mode);
+
+        bool TryGet(Value symbol, out Value value);
+
+        #endregion
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Cottle.Documents.Simple;
@@ -10,185 +9,178 @@ using Cottle.Settings;
 
 namespace Cottle.Documents
 {
-	/// <summary>
-	/// Simple document renders templates using an interpreter. If offers
-	/// better garbage collection and easier debugging but average rendering
-	/// performance.
-	/// </summary>
-	public sealed class SimpleDocument : AbstractDocument
-	{
-		#region Attributes
+    /// <summary>
+    ///     Simple document renders templates using an interpreter. If offers
+    ///     better garbage collection and easier debugging but average rendering
+    ///     performance.
+    /// </summary>
+    public sealed class SimpleDocument : AbstractDocument
+    {
+        #region Attributes
 
-		private readonly INode renderer;
+        private readonly INode _renderer;
 
-		private readonly ISetting setting;
+        private readonly ISetting _setting;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public SimpleDocument (TextReader reader, ISetting setting)
-		{
-			IParser parser = ParserFactory.BuildParser (setting);
-			Command root = parser.Parse (reader);
+        public SimpleDocument(TextReader reader, ISetting setting)
+        {
+            var parser = ParserFactory.BuildParser(setting);
+            var root = parser.Parse(reader);
 
-			this.renderer = this.CompileCommand (root, setting.Trimmer);
-			this.setting = setting;
-		}
+            _renderer = CompileCommand(root, setting.Trimmer);
+            _setting = setting;
+        }
 
-		public SimpleDocument (TextReader reader) :
-			this (reader, DefaultSetting.Instance)
-		{
-		}
+        public SimpleDocument(TextReader reader) :
+            this(reader, DefaultSetting.Instance)
+        {
+        }
 
-		public SimpleDocument (string template, ISetting setting) :
-			this (new StringReader (template), setting)
-		{
-		}
+        public SimpleDocument(string template, ISetting setting) :
+            this(new StringReader(template), setting)
+        {
+        }
 
-		public SimpleDocument (string template) :
-			this (new StringReader (template), DefaultSetting.Instance)
-		{
-		}
+        public SimpleDocument(string template) :
+            this(new StringReader(template), DefaultSetting.Instance)
+        {
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Methods / Public
 
-		public override Value Render (IStore store, TextWriter writer)
-		{
-			Value result;
+        public override Value Render(IStore store, TextWriter writer)
+        {
+            store.Enter();
 
-			store.Enter ();
+            _renderer.Render(store, writer, out var result);
 
-			this.renderer.Render (store, writer, out result);
+            store.Leave();
 
-			store.Leave ();
+            return result;
+        }
 
-			return result;
-		}
+        public void Source(TextWriter writer)
+        {
+            _renderer.Source(_setting, writer);
+        }
 
-		public void Source (TextWriter writer)
-		{
-			this.renderer.Source (this.setting, writer);
-		}
+        public string Source()
+        {
+            var writer = new StringWriter(CultureInfo.InvariantCulture);
 
-		public string Source ()
-		{
-			StringWriter writer;
+            Source(writer);
 
-			writer = new StringWriter (CultureInfo.InvariantCulture);
+            return writer.ToString();
+        }
 
-			this.Source (writer);
+        #endregion
 
-			return writer.ToString ();
-		}
+        #region Methods / Private
 
-		#endregion
+        private INode CompileCommand(Command command, Trimmer trimmer)
+        {
+            switch (command.Type)
+            {
+                case CommandType.AssignFunction:
+                    return new FunctionAssignNode(command.Name, command.Arguments,
+                        CompileCommand(command.Body, trimmer), command.Mode);
 
-		#region Methods / Private
+                case CommandType.AssignRender:
+                    return new RenderAssignNode(command.Name, CompileCommand(command.Body, trimmer), command.Mode);
 
-		private INode CompileCommand (Command command, Trimmer trimmer)
-		{
-			List<KeyValuePair<IEvaluator, INode>> branches;
-			List<INode> nodes;
+                case CommandType.AssignValue:
+                    return new ValueAssignNode(command.Name, CompileExpression(command.Operand), command.Mode);
 
-			switch (command.Type)
-			{
-				case CommandType.AssignFunction:
-					return new FunctionAssignNode (command.Name, command.Arguments, this.CompileCommand (command.Body, trimmer), command.Mode);
+                case CommandType.Composite:
+                    var nodes = new List<INode>();
 
-				case CommandType.AssignRender:
-					return new RenderAssignNode (command.Name, this.CompileCommand (command.Body, trimmer), command.Mode);
+                    for (; command.Type == CommandType.Composite; command = command.Next)
+                        nodes.Add(CompileCommand(command.Body, trimmer));
 
-				case CommandType.AssignValue:
-					return new ValueAssignNode (command.Name, this.CompileExpression (command.Operand), command.Mode);
+                    nodes.Add(CompileCommand(command, trimmer));
 
-				case CommandType.Composite:
-					nodes = new List<INode> ();
+                    return new CompositeNode(nodes);
 
-					for (; command.Type == CommandType.Composite; command = command.Next)
-						nodes.Add (this.CompileCommand (command.Body, trimmer));
+                case CommandType.Dump:
+                    return new DumpNode(CompileExpression(command.Operand));
 
-					nodes.Add (this.CompileCommand (command, trimmer));
+                case CommandType.Echo:
+                    return new EchoNode(CompileExpression(command.Operand));
 
-					return new CompositeNode (nodes);
+                case CommandType.For:
+                    return new ForNode(CompileExpression(command.Operand), command.Key, command.Name,
+                        CompileCommand(command.Body, trimmer),
+                        command.Next != null ? CompileCommand(command.Next, trimmer) : null);
 
-				case CommandType.Dump:
-					return new DumpNode (this.CompileExpression (command.Operand));
+                case CommandType.If:
+                    var branches = new List<KeyValuePair<IEvaluator, INode>>();
 
-				case CommandType.Echo:
-					return new EchoNode (this.CompileExpression (command.Operand));
+                    for (; command != null && command.Type == CommandType.If; command = command.Next)
+                        branches.Add(new KeyValuePair<IEvaluator, INode>(CompileExpression(command.Operand),
+                            CompileCommand(command.Body, trimmer)));
 
-				case CommandType.For:
-					return new ForNode (this.CompileExpression (command.Operand), command.Key, command.Name, this.CompileCommand (command.Body, trimmer), command.Next != null ? this.CompileCommand (command.Next, trimmer) : null);
+                    return new IfNode(branches, command != null ? CompileCommand(command, trimmer) : null);
 
-				case CommandType.If:
-					branches = new List<KeyValuePair<IEvaluator, INode>> ();
+                case CommandType.Literal:
+                    return new LiteralNode(trimmer(command.Text));
 
-					for (; command != null && command.Type == CommandType.If; command = command.Next)
-						branches.Add (new KeyValuePair<IEvaluator, INode> (this.CompileExpression (command.Operand), this.CompileCommand (command.Body, trimmer)));
+                case CommandType.Return:
+                    return new ReturnNode(CompileExpression(command.Operand));
 
-					return new IfNode (branches, command != null ? this.CompileCommand (command, trimmer) : null);
+                case CommandType.While:
+                    return new WhileNode(CompileExpression(command.Operand), CompileCommand(command.Body, trimmer));
 
-				case CommandType.Literal:
-					return new LiteralNode (trimmer (command.Text));
+                default:
+                    return new LiteralNode(string.Empty);
+            }
+        }
 
-				case CommandType.Return:
-					return new ReturnNode (this.CompileExpression (command.Operand));
+        private IEvaluator CompileExpression(Expression expression)
+        {
+            switch (expression.Type)
+            {
+                case ExpressionType.Access:
+                    return new AccessEvaluator(CompileExpression(expression.Source),
+                        CompileExpression(expression.Subscript));
 
-				case CommandType.While:
-					return new WhileNode (this.CompileExpression (command.Operand), this.CompileCommand (command.Body, trimmer));
+                case ExpressionType.Constant:
+                    return new ConstantEvaluator(expression.Value);
 
-				default:
-					return new LiteralNode (string.Empty);
-			}
-		}
+                case ExpressionType.Invoke:
+                    var arguments = new IEvaluator[expression.Arguments.Length];
 
-		private IEvaluator CompileExpression (Expression expression)
-		{
-			IEvaluator[] arguments;
-			KeyValuePair<IEvaluator, IEvaluator>[] elements;
-			IEvaluator key;
-			IEvaluator value;
+                    for (var i = 0; i < arguments.Length; ++i)
+                        arguments[i] = CompileExpression(expression.Arguments[i]);
 
-			switch (expression.Type)
-			{
-				case ExpressionType.Access:
-					return new AccessEvaluator (this.CompileExpression (expression.Source), this.CompileExpression (expression.Subscript));
+                    return new InvokeEvaluator(CompileExpression(expression.Source), arguments);
 
-				case ExpressionType.Constant:
-					return new ConstantEvaluator (expression.Value);
+                case ExpressionType.Map:
+                    var elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
 
-				case ExpressionType.Invoke:
-					arguments = new IEvaluator[expression.Arguments.Length];
+                    for (var i = 0; i < elements.Length; ++i)
+                    {
+                        var key = CompileExpression(expression.Elements[i].Key);
+                        var value = CompileExpression(expression.Elements[i].Value);
 
-					for (int i = 0; i < arguments.Length; ++i)
-						arguments[i] = this.CompileExpression (expression.Arguments[i]);
+                        elements[i] = new KeyValuePair<IEvaluator, IEvaluator>(key, value);
+                    }
 
-					return new InvokeEvaluator (this.CompileExpression (expression.Source), arguments);					
+                    return new MapEvaluator(elements);
 
-				case ExpressionType.Map:
-					elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
+                case ExpressionType.Symbol:
+                    return new SymbolEvaluator(expression.Value);
 
-					for (int i = 0; i < elements.Length; ++i)
-					{
-						key = this.CompileExpression (expression.Elements[i].Key);
-						value = this.CompileExpression (expression.Elements[i].Value);
+                default:
+                    return VoidEvaluator.Instance;
+            }
+        }
 
-						elements[i] = new KeyValuePair<IEvaluator, IEvaluator> (key, value);
-					}
-
-					return new MapEvaluator (elements);
-
-				case ExpressionType.Symbol:
-					return new SymbolEvaluator (expression.Value);
-
-				default:
-					return VoidEvaluator.Instance;
-			}
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

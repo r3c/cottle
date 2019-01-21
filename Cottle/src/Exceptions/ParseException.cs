@@ -3,56 +3,29 @@ using System.Globalization;
 
 namespace Cottle.Exceptions
 {
-	public class ParseException : Exception
-	{
-		#region Properties
+    public class ParseException : Exception
+    {
+        #region Constructors
 
-		public int Column
-		{
-			get
-			{
-				return this.column;
-			}
-		}
+        public ParseException(int column, int line, string lexem, string expected) :
+            base(string.Format(CultureInfo.InvariantCulture,
+                !string.IsNullOrEmpty(expected) ? "expected '{1}', found '{0}'" : "unexpected '{0}'", lexem, expected))
+        {
+            Column = column;
+            Lexem = lexem;
+            Line = line;
+        }
 
-		public string Lexem
-		{
-			get
-			{
-				return this.lexem;
-			}
-		}
+        #endregion
 
-		public int Line
-		{
-			get
-			{
-				return this.line;
-			}
-		}
+        #region Properties
 
-		#endregion
+        public int Column { get; }
 
-		#region Attributes
+        public string Lexem { get; }
 
-		private readonly int column;
+        public int Line { get; }
 
-		private readonly string lexem;
-
-		private readonly int line;
-
-		#endregion
-
-		#region Constructors
-
-		public ParseException (int column, int line, string lexem, string expected) :
-			base (string.Format (CultureInfo.InvariantCulture, !string.IsNullOrEmpty (expected) ? "expected '{1}', found '{0}'" : "unexpected '{0}'", lexem, expected))
-		{
-			this.column = column;
-			this.lexem = lexem;
-			this.line = line;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

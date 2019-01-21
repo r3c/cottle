@@ -1,30 +1,27 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 
 namespace Cottle.Documents
 {
-	public abstract class AbstractDocument : IDocument
-	{
-		#region Methods / Abstract
+    public abstract class AbstractDocument : IDocument
+    {
+        #region Methods / Abstract
 
-		public abstract Value Render (IStore store, TextWriter writer);
+        public abstract Value Render(IStore store, TextWriter writer);
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Methods / Public
 
-		public string Render (IStore store)
-		{
-			StringWriter writer;
+        public string Render(IStore store)
+        {
+            var writer = new StringWriter(CultureInfo.InvariantCulture);
 
-			writer = new StringWriter (CultureInfo.InvariantCulture);
+            Render(store, writer);
 
-			this.Render (store, writer);
+            return writer.ToString();
+        }
 
-			return writer.ToString ();
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

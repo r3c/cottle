@@ -1,19 +1,18 @@
-﻿
-namespace Cottle
+﻿namespace Cottle
 {
-	enum CommandType
-	{
-		None,
-		AssignFunction,
-		AssignRender,
-		AssignValue,
-		Composite,
-		Dump,
-		Echo,
-		For,
-		If,
-		Literal,
-		Return,
-		While
-	}
+    internal enum CommandType
+    {
+        None,
+        AssignFunction,
+        AssignRender,
+        AssignValue,
+        Composite,
+        Dump,
+        Echo,
+        For,
+        If,
+        Literal,
+        Return,
+        While
+    }
 }

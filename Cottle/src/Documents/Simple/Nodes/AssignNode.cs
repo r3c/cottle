@@ -1,99 +1,98 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	abstract class AssignNode : INode
-	{
-		#region Attributes
+    internal abstract class AssignNode : INode
+    {
+        #region Constructors
 
-		private readonly StoreMode mode;
+        protected AssignNode(string name, StoreMode mode)
+        {
+            _mode = mode;
+            _name = name;
+        }
 
-		private readonly string name;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly StoreMode _mode;
 
-		protected AssignNode (string name, StoreMode mode)
-		{
-			this.mode = mode;
-			this.name = name;
-		}
+        private readonly string _name;
 
-		#endregion
+        #endregion
 
-		#region Methods / Abstract
+        #region Methods / Abstract
 
-		protected abstract Value Evaluate (IStore store, TextWriter output);
+        protected abstract Value Evaluate(IStore store, TextWriter output);
 
-		protected abstract void SourceSymbol (string name, TextWriter output);
+        protected abstract void SourceSymbol(string name, TextWriter output);
 
-		protected abstract void SourceValue (ISetting setting, TextWriter output);
+        protected abstract void SourceValue(ISetting setting, TextWriter output);
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Methods / Public
 
-		public override int GetHashCode ()
-		{
-			unchecked
-			{
-				return
-					(this.mode.GetHashCode () &	(int)0xFFFF0000) |
-					(this.name.GetHashCode () &	(int)0x0000FFFF);
-			}
-		}
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return
+                    (_mode.GetHashCode() & (int) 0xFFFF0000) |
+                    (_name.GetHashCode() & 0x0000FFFF);
+            }
+        }
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			store.Set (this.name, this.Evaluate (store, output), this.mode);
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            store.Set(_name, Evaluate(store, output), _mode);
 
-			result = VoidValue.Instance;
+            result = VoidValue.Instance;
 
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			string keyword;
-			string link;
+        public void Source(ISetting setting, TextWriter output)
+        {
+            string keyword;
+            string link;
 
-			switch (this.mode)
-			{
-				case StoreMode.Local:
-					keyword = "declare";
-					link = "as";
+            switch (_mode)
+            {
+                case StoreMode.Local:
+                    keyword = "declare";
+                    link = "as";
 
-					break;
+                    break;
 
-				default:
-					keyword = "set";
-					link = "to";
+                default:
+                    keyword = "set";
+                    link = "to";
 
-					break;
-			}
+                    break;
+            }
 
-			output.Write (setting.BlockBegin);
-			output.Write (keyword);
-			output.Write (' ');
+            output.Write(setting.BlockBegin);
+            output.Write(keyword);
+            output.Write(' ');
 
-			this.SourceSymbol (name, output);
+            SourceSymbol(_name, output);
 
-			output.Write (' ');
-			output.Write (link);
+            output.Write(' ');
+            output.Write(link);
 
-			this.SourceValue (setting, output);
+            SourceValue(setting, output);
 
-			output.Write (setting.BlockEnd);
-		}
+            output.Write(setting.BlockEnd);
+        }
 
-		public override string ToString ()
-		{
-			return this.name;
-		}
+        public override string ToString()
+        {
+            return _name;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

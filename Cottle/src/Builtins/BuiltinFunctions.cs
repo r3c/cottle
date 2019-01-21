@@ -9,746 +9,658 @@ using Cottle.Values;
 
 namespace Cottle.Builtins
 {
-	public static class BuiltinFunctions
-	{
-		#region Properties
-
-		public static IEnumerable<KeyValuePair<string, IFunction>> Instances
-		{
-			get
-			{
-				return BuiltinFunctions.instances;
-			}
-		}
-
-		#endregion
-
-		#region Attributes
-
-		private static readonly DateTime epoch = new DateTime (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-		private static readonly IFunction functionAbsolute = new NativeFunction ((v) => Math.Abs (v[0].AsNumber), 1);
-
-		private static readonly IFunction functionCall = new NativeFunction ((values, scope, output) =>
-		{
-			Value[] arguments;
-			IFunction function;
-			int i;
-
-			function = values[0].AsFunction;
-
-			if (function == null)
-				return VoidValue.Instance;
-
-			arguments = new Value[values[1].Fields.Count];
-			i = 0;
-
-			foreach (KeyValuePair<Value, Value> pair in values[1].Fields)
-				arguments[i++] = pair.Value;
-
-			return function.Execute (arguments, scope, output);
-		}, 2);
+    public static class BuiltinFunctions
+    {
+        #region Properties
 
-		private static readonly IFunction functionCast = new NativeFunction ((values) =>
-		{
-			switch (values[1].AsString)
-			{
-				case "b":
-				case "boolean":
-					return values[0].AsBoolean;
+        public static IEnumerable<KeyValuePair<string, IFunction>> Instances => InstanceDictionary;
 
-				case "n":
-				case "number":
-					return values[0].AsNumber;
+        #endregion
 
-				case "s":
-				case "string":
-					return values[0].AsString;
-
-				default:
-					return VoidValue.Instance;
-			}
-		}, 2);
+        #region Methods
 
-		private static readonly IFunction functionCat = new NativeFunction ((values) =>
-		{
-			StringBuilder builder;
-			List<Value> list;
-
-			if (values[0].Type == ValueContent.Map)
-			{
-				list = new List<Value> (values[0].Fields.Count * 2 + 1);
-
-				foreach (Value value in values)
-				{
-					foreach (KeyValuePair<Value, Value> field in value.Fields)
-						list.Add (field.Value);
-				}
+        public static bool TryGet(string name, out IFunction function)
+        {
+            return InstanceDictionary.TryGetValue(name, out function);
+        }
 
-				return list;
-			}
-			else
-			{
-				builder = new StringBuilder ();
+        #endregion
 
-				foreach (Value value in values)
-					builder.Append (value.AsString);
+        #region Attributes
 
-				return builder.ToString ();
-			}
-		}, 1, -1);
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-		private static readonly IFunction functionCeiling = new NativeFunction ((v) => Math.Ceiling (v[0].AsNumber), 1);
+        private static readonly IFunction FunctionAbsolute = new NativeFunction(v => Math.Abs(v[0].AsNumber), 1);
 
-		private static readonly IFunction functionChar = new NativeFunction ((values) =>
-		{
-			try
-			{
-				return char.ConvertFromUtf32 ((int)values[0].AsNumber);
-			}
-			catch
-			{
-				return '?';
-			}
-		}, 1);
+        private static readonly IFunction FunctionCall = new NativeFunction((values, scope, output) =>
+        {
+            var function = values[0].AsFunction;
 
-		private static readonly IFunction functionCompare = new NativeFunction ((v) => v[0].CompareTo (v[1]), 2);
+            if (function == null)
+                return VoidValue.Instance;
 
-		private static readonly IFunction functionCosine = new NativeFunction ((v) => Math.Cos ((double)v[0].AsNumber), 1);
+            var arguments = new Value[values[1].Fields.Count];
+            var i = 0;
 
-		private static readonly IFunction functionCross = new NativeFunction ((values) =>
-		{
-			bool insert;
-			List<KeyValuePair<Value, Value>> pairs;
+            foreach (var pair in values[1].Fields)
+                arguments[i++] = pair.Value;
 
-			pairs = new List<KeyValuePair<Value, Value>> ();
+            return function.Execute(arguments, scope, output);
+        }, 2);
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-			{
-				insert = true;
+        private static readonly IFunction FunctionCast = new NativeFunction(values =>
+        {
+            switch (values[1].AsString)
+            {
+                case "b":
+                case "boolean":
+                    return values[0].AsBoolean;
 
-				for (int i = 1; i < values.Count; ++i)
-				{
-					if (!values[i].Fields.Contains (pair.Key))
-					{
-						insert = false;
+                case "n":
+                case "number":
+                    return values[0].AsNumber;
 
-						break;
-					}
-				}
+                case "s":
+                case "string":
+                    return values[0].AsString;
 
-				if (insert)
-					pairs.Add (pair);
-			}
+                default:
+                    return VoidValue.Instance;
+            }
+        }, 2);
 
-			return pairs;
-		}, 1, -1);
+        private static readonly IFunction FunctionCat = new NativeFunction(values =>
+        {
+            if (values[0].Type == ValueContent.Map)
+            {
+                var list = new List<Value>(values[0].Fields.Count * 2 + 1);
 
-		private static readonly IFunction functionDefault = new NativeFunction ((v) => v[0].AsBoolean ? v[0] : v[1], 2);
+                foreach (var value in values)
+                foreach (var field in value.Fields)
+                    list.Add(field.Value);
 
-		private static readonly IFunction functionDefined = new NativeFunction ((values) => values[0].Type != ValueContent.Void, 1);
+                return list;
+            }
 
-		private static readonly IFunction functionExcept = new NativeFunction ((values) =>
-		{
-			bool insert;
-			List<KeyValuePair<Value, Value>> pairs;
+            var builder = new StringBuilder();
 
-			pairs = new List<KeyValuePair<Value, Value>> ();
+            foreach (var value in values)
+                builder.Append(value.AsString);
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-			{
-				insert = true;
+            return builder.ToString();
+        }, 1, -1);
 
-				for (int i = 1; i < values.Count; ++i)
-				{
-					if (values[i].Fields.Contains (pair.Key))
-					{
-						insert = false;
+        private static readonly IFunction FunctionCeiling = new NativeFunction(v => Math.Ceiling(v[0].AsNumber), 1);
 
-						break;
-					}
-				}
+        private static readonly IFunction FunctionChar = new NativeFunction(values =>
+        {
+            try
+            {
+                return char.ConvertFromUtf32((int) values[0].AsNumber);
+            }
+            catch
+            {
+                return '?';
+            }
+        }, 1);
 
-				if (insert)
-					pairs.Add (pair);
-			}
+        private static readonly IFunction FunctionCompare = new NativeFunction(v => v[0].CompareTo(v[1]), 2);
 
-			return pairs;
-		}, 1, -1);
+        private static readonly IFunction FunctionCosine = new NativeFunction(v => Math.Cos((double) v[0].AsNumber), 1);
 
-		private static readonly IFunction functionFilter = new NativeFunction ((values, scope, output) =>
-		{
-			List<Value> arguments;
-			IFunction callback;
-			List<KeyValuePair<Value, Value>> result;
+        private static readonly IFunction FunctionCross = new NativeFunction(values =>
+        {
+            var pairs = new List<KeyValuePair<Value, Value>>();
 
-			callback = values[1].AsFunction;
+            foreach (var pair in values[0].Fields)
+            {
+                var insert = true;
 
-			if (callback == null)
-				return VoidValue.Instance;
+                for (var i = 1; i < values.Count; ++i)
+                    if (!values[i].Fields.Contains(pair.Key))
+                    {
+                        insert = false;
 
-			arguments = new List<Value> (values.Count - 1);
-			result = new List<KeyValuePair<Value, Value>> (values[0].Fields.Count);
+                        break;
+                    }
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-			{
-				arguments.Clear ();
-				arguments.Add (pair.Value);
+                if (insert)
+                    pairs.Add(pair);
+            }
 
-				for (int i = 2; i < values.Count; ++i)
-					arguments.Add (values[i]);
+            return pairs;
+        }, 1, -1);
 
-				if (callback.Execute (arguments, scope, output).AsBoolean)
-					result.Add (new KeyValuePair<Value, Value> (pair.Key, pair.Value));
-			}
+        private static readonly IFunction FunctionDefault = new NativeFunction(v => v[0].AsBoolean ? v[0] : v[1], 2);
 
-			return result;
-		});
+        private static readonly IFunction FunctionDefined =
+            new NativeFunction(values => values[0].Type != ValueContent.Void, 1);
 
-		private static readonly IFunction functionFind = new NativeFunction ((values) =>
-		{
-			int index;
-			int offset;
-			Value search;
-			Value source;
+        private static readonly IFunction FunctionExcept = new NativeFunction(values =>
+        {
+            var pairs = new List<KeyValuePair<Value, Value>>();
 
-			offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
-			search = values[1];
-			source = values[0];
+            foreach (var pair in values[0].Fields)
+            {
+                var insert = true;
 
-			if (source.Type == ValueContent.Map)
-			{
-				index = 0;
+                for (var i = 1; i < values.Count; ++i)
+                    if (values[i].Fields.Contains(pair.Key))
+                    {
+                        insert = false;
 
-				foreach (KeyValuePair<Value, Value> pair in source.Fields)
-				{
-					if (++index > offset && pair.Value.Equals (search))
-						return index - 1;
-				}
+                        break;
+                    }
 
-				return -1;
-			}
-			else
-				return source.AsString.IndexOf (search.AsString, offset, StringComparison.Ordinal);
-		}, 2, 3);
+                if (insert)
+                    pairs.Add(pair);
+            }
 
-		private static readonly IFunction functionFlip = new NativeFunction ((values) =>
-		{
-			KeyValuePair<Value, Value>[] flip;
-			int i;
+            return pairs;
+        }, 1, -1);
 
-			flip = new KeyValuePair<Value, Value>[values[0].Fields.Count];
-			i = 0;
+        private static readonly IFunction FunctionFilter = new NativeFunction((values, scope, output) =>
+        {
+            var callback = values[1].AsFunction;
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-				flip[i++] = new KeyValuePair<Value, Value> (pair.Value, pair.Key);
+            if (callback == null)
+                return VoidValue.Instance;
 
-			return flip;
-		}, 1);
+            var arguments = new List<Value>(values.Count - 1);
+            var result = new List<KeyValuePair<Value, Value>>(values[0].Fields.Count);
 
-		private static readonly IFunction functionFloor = new NativeFunction ((v) => Math.Floor (v[0].AsNumber), 1);
+            foreach (var pair in values[0].Fields)
+            {
+                arguments.Clear();
+                arguments.Add(pair.Value);
 
-		private static readonly IFunction functionFormat = new NativeFunction ((values) =>
-		{
-			CultureInfo culture;
-			string format;
-			int index;
-			object target;
+                for (var i = 2; i < values.Count; ++i)
+                    arguments.Add(values[i]);
 
-			culture = values.Count > 2 ? CultureInfo.GetCultureInfo (values[2].AsString) : CultureInfo.CurrentCulture;
-			format = values[1].AsString;
-			index = format.IndexOf (':');
+                if (callback.Execute(arguments, scope, output).AsBoolean)
+                    result.Add(new KeyValuePair<Value, Value>(pair.Key, pair.Value));
+            }
 
-			switch (index >= 0 ? format.Substring (0, index) : "a")
-			{
-				case "a":
-					switch (values[0].Type)
-					{
-						case ValueContent.Boolean:
-							target = values[0].AsBoolean;
+            return result;
+        });
 
-							break;
+        private static readonly IFunction FunctionFind = new NativeFunction(values =>
+        {
+            var offset = values.Count > 2 ? (int) values[2].AsNumber : 0;
+            var search = values[1];
+            var source = values[0];
 
-						case ValueContent.Number:
-							target = values[0].AsNumber;
+            if (source.Type == ValueContent.Map)
+            {
+                var index = 0;
 
-							break;
+                foreach (var pair in source.Fields)
+                    if (++index > offset && pair.Value.Equals(search))
+                        return index - 1;
 
-						case ValueContent.String:
-							target = values[0].AsString;
+                return -1;
+            }
 
-							break;
+            return source.AsString.IndexOf(search.AsString, offset, StringComparison.Ordinal);
+        }, 2, 3);
 
-						default:
-							target = null;
+        private static readonly IFunction FunctionFlip = new NativeFunction(values =>
+        {
+            var flip = new KeyValuePair<Value, Value>[values[0].Fields.Count];
+            var i = 0;
 
-							break;
-					}
+            foreach (var pair in values[0].Fields)
+                flip[i++] = new KeyValuePair<Value, Value>(pair.Value, pair.Key);
 
-					break;
+            return flip;
+        }, 1);
 
-				case "b":
-					target = values[0].AsBoolean;
+        private static readonly IFunction FunctionFloor = new NativeFunction(v => Math.Floor(v[0].AsNumber), 1);
 
-					break;
+        private static readonly IFunction FunctionFormat = new NativeFunction(values =>
+        {
+            object target;
 
-				case "d":
-				case "du":
-					target = epoch.AddSeconds ((double)values[0].AsNumber);
+            var culture = values.Count > 2 ? CultureInfo.GetCultureInfo(values[2].AsString) : CultureInfo.CurrentCulture;
+            var format = values[1].AsString;
+            var index = format.IndexOf(':');
 
-					break;
+            switch (index >= 0 ? format.Substring(0, index) : "a")
+            {
+                case "a":
+                    switch (values[0].Type)
+                    {
+                        case ValueContent.Boolean:
+                            target = values[0].AsBoolean;
 
-				case "dl":
-					target = epoch.AddSeconds ((double)values[0].AsNumber).ToLocalTime ();
+                            break;
 
-					break;
+                        case ValueContent.Number:
+                            target = values[0].AsNumber;
 
-				case "i":
-					target = (long)values[0].AsNumber;
+                            break;
 
-					break;
+                        case ValueContent.String:
+                            target = values[0].AsString;
 
-				case "n":
-					target = values[0].AsNumber;
+                            break;
 
-					break;
+                        default:
+                            target = null;
 
-				case "s":
-					target = values[0].AsString;
+                            break;
+                    }
 
-					break;
+                    break;
 
-				default:
-					return VoidValue.Instance;
-			}
+                case "b":
+                    target = values[0].AsBoolean;
 
-			return string.Format (culture, "{0:" + format.Substring (index + 1) + "}", target);
-		}, 2, 3);
+                    break;
 
-		private static readonly IFunction functionHas = new NativeFunction ((values) =>
-		{
-			Value source;
+                case "d":
+                case "du":
+                    target = Epoch.AddSeconds((double) values[0].AsNumber);
 
-			source = values[0];
+                    break;
 
-			for (int i = 1; i < values.Count; ++i)
-				if (!source.Fields.Contains (values[i]))
-					return false;
+                case "dl":
+                    target = Epoch.AddSeconds((double) values[0].AsNumber).ToLocalTime();
 
-			return true;
-		}, 1, -1);
+                    break;
 
-		private static readonly IFunction functionJoin = new NativeFunction ((values) =>
-		{
-			StringBuilder builder;
-			bool first;
-			string split;
+                case "i":
+                    target = (long) values[0].AsNumber;
 
-			if (values.Count > 1)
-				split = values[1].AsString;
-			else
-				split = string.Empty;
+                    break;
 
-			builder = new StringBuilder ();
-			first = true;
+                case "n":
+                    target = values[0].AsNumber;
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-			{
-				if (first)
-					first = false;
-				else
-					builder.Append (split);
+                    break;
 
-				builder.Append (pair.Value.AsString);
-			}
+                case "s":
+                    target = values[0].AsString;
 
-			return builder.ToString ();
-		}, 1, 2);
+                    break;
 
-		private static readonly IFunction functionLength = new NativeFunction ((values) =>
-		{
-			if (values[0].Type == ValueContent.Map)
-				return values[0].Fields.Count;
+                default:
+                    return VoidValue.Instance;
+            }
 
-			return values[0].AsString.Length;
-		}, 1);
+            return string.Format(culture, "{0:" + format.Substring(index + 1) + "}", target);
+        }, 2, 3);
 
-		private static readonly IFunction functionLowerCase = new NativeFunction ((v) => v[0].AsString.ToLowerInvariant (), 1);
+        private static readonly IFunction FunctionHas = new NativeFunction(values =>
+        {
+            var source = values[0];
 
-		private static readonly IFunction functionMap = new NativeFunction ((values, scope, output) =>
-		{
-			List<Value> arguments;
-			IFunction callback;
-			KeyValuePair<Value, Value>[] result;
-			int i;
+            for (var i = 1; i < values.Count; ++i)
+                if (!source.Fields.Contains(values[i]))
+                    return false;
 
-			callback = values[1].AsFunction;
+            return true;
+        }, 1, -1);
 
-			if (callback == null)
-				return VoidValue.Instance;
+        private static readonly IFunction FunctionJoin = new NativeFunction(values =>
+        {
+            var split = values.Count > 1 ? values[1].AsString : string.Empty;
+            var builder = new StringBuilder();
+            var first = true;
 
-			arguments = new List<Value> (values.Count - 1);
-			i = 0;
-			result = new KeyValuePair<Value, Value>[values[0].Fields.Count];
+            foreach (var pair in values[0].Fields)
+            {
+                if (first)
+                    first = false;
+                else
+                    builder.Append(split);
 
-			foreach (KeyValuePair<Value, Value> pair in values[0].Fields)
-			{
-				arguments.Clear ();
-				arguments.Add (pair.Value);
+                builder.Append(pair.Value.AsString);
+            }
 
-				for (int j = 2; j < values.Count; ++j)
-					arguments.Add (values[j]);
+            return builder.ToString();
+        }, 1, 2);
 
-				result[i++] = new KeyValuePair<Value, Value> (pair.Key, callback.Execute (arguments, scope, output));
-			}
+        private static readonly IFunction FunctionLength = new NativeFunction(values =>
+        {
+            if (values[0].Type == ValueContent.Map)
+                return values[0].Fields.Count;
 
-			return result;
-		}, 2, -1);
+            return values[0].AsString.Length;
+        }, 1);
 
-		private static readonly IFunction functionMatch = new NativeFunction ((values) =>
-		{
-			List<Value> groups;
-			Match match;
+        private static readonly IFunction FunctionLowerCase =
+            new NativeFunction(v => v[0].AsString.ToLowerInvariant(), 1);
 
-			match = Regex.Match (values[0].AsString, values[1].AsString);
+        private static readonly IFunction FunctionMap = new NativeFunction((values, scope, output) =>
+        {
+            var callback = values[1].AsFunction;
 
-			if (!match.Success)
-				return VoidValue.Instance;
+            if (callback == null)
+                return VoidValue.Instance;
 
-			groups = new List<Value> (match.Groups.Count);
+            var arguments = new List<Value>(values.Count - 1);
+            var i = 0;
+            var result = new KeyValuePair<Value, Value>[values[0].Fields.Count];
 
-			foreach (Group group in match.Groups)
-				groups.Add (group.Value);
+            foreach (var pair in values[0].Fields)
+            {
+                arguments.Clear();
+                arguments.Add(pair.Value);
 
-			return groups;
-		}, 2, 3);
+                for (var j = 2; j < values.Count; ++j)
+                    arguments.Add(values[j]);
 
-		private static readonly IFunction functionMaximum = new NativeFunction ((values) =>
-		{
-			decimal max;
+                result[i++] = new KeyValuePair<Value, Value>(pair.Key, callback.Execute(arguments, scope, output));
+            }
 
-			max = values[0].AsNumber;
+            return result;
+        }, 2, -1);
 
-			for (int i = 1; i < values.Count; ++i)
-				max = Math.Max (max, values[i].AsNumber);
+        private static readonly IFunction FunctionMatch = new NativeFunction(values =>
+        {
+            var match = Regex.Match(values[0].AsString, values[1].AsString);
 
-			return max;
-		}, 1, -1);
+            if (!match.Success)
+                return VoidValue.Instance;
 
-		private static readonly IFunction functionMinimum = new NativeFunction ((values) =>
-		{
-			decimal min;
+            var groups = new List<Value>(match.Groups.Count);
 
-			min = values[0].AsNumber;
+            foreach (Group group in match.Groups)
+                groups.Add(group.Value);
 
-			for (int i = 1; i < values.Count; ++i)
-				min = Math.Min (min, values[i].AsNumber);
+            return groups;
+        }, 2, 3);
 
-			return min;
-		}, 1, -1);
+        private static readonly IFunction FunctionMaximum = new NativeFunction(values =>
+        {
+            var max = values[0].AsNumber;
 
-		private static readonly IFunction functionOrd = new NativeFunction ((values) =>
-		{
-			string str;
+            for (var i = 1; i < values.Count; ++i)
+                max = Math.Max(max, values[i].AsNumber);
 
-			str = values[0].AsString;
+            return max;
+        }, 1, -1);
 
-			return str.Length > 0 ? char.ConvertToUtf32 (str, 0) : 0;
-		}, 1);
+        private static readonly IFunction FunctionMinimum = new NativeFunction(values =>
+        {
+            var min = values[0].AsNumber;
 
-		private static readonly IFunction functionPower = new NativeFunction ((v) => Math.Pow ((double)v[0].AsNumber, (double)v[1].AsNumber), 2);
+            for (var i = 1; i < values.Count; ++i)
+                min = Math.Min(min, values[i].AsNumber);
 
-		private static readonly IFunction functionRandom = new NativeFunction ((values) =>
-		{
-			lock (BuiltinFunctions.random)
-			{
-				switch (values.Count)
-				{
-					case 0:
-						return BuiltinFunctions.random.Next ();
-	
-					case 1:
-						return BuiltinFunctions.random.Next ((int)values[0].AsNumber);
-	
-					default:
-						return BuiltinFunctions.random.Next ((int)values[0].AsNumber, (int)values[1].AsNumber);
-				}
-			}
-		}, 0, 2);
+            return min;
+        }, 1, -1);
 
-		private static readonly IFunction functionRange = new NativeFunction ((values) =>
-		{
-			int sign;
-			int start;
-			int step;
-			int stop;
+        private static readonly IFunction FunctionOrd = new NativeFunction(values =>
+        {
+            var str = values[0].AsString;
 
-			start = values.Count > 1 ? (int)values[0].AsNumber : 0;
-			step = values.Count > 2 ? (int)values[2].AsNumber : 1;
-			stop = values.Count > 1 ? (int)values[1].AsNumber : (int)values[0].AsNumber;
+            return str.Length > 0 ? char.ConvertToUtf32(str, 0) : 0;
+        }, 1);
 
-			if (step == 0)
-				return MapValue.Empty;
+        private static readonly IFunction FunctionPower =
+            new NativeFunction(v => Math.Pow((double) v[0].AsNumber, (double) v[1].AsNumber), 2);
 
-			if (step < 0)
-			{
-				if (start < stop)
-					return MapValue.Empty;
+        private static readonly IFunction FunctionRandom = new NativeFunction(values =>
+        {
+            lock (Random)
+            {
+                switch (values.Count)
+                {
+                    case 0:
+                        return Random.Next();
 
-				sign = 1;
-			}
-			else
-			{
-				if (start > stop)
-					return MapValue.Empty;
+                    case 1:
+                        return Random.Next((int) values[0].AsNumber);
 
-				sign = -1;
-			}
+                    default:
+                        return Random.Next((int) values[0].AsNumber, (int) values[1].AsNumber);
+                }
+            }
+        }, 0, 2);
 
-			return new MapValue ((i) => start + step * i, (stop - start + step + sign) / step);
-		}, 1, 3);
+        private static readonly IFunction FunctionRange = new NativeFunction(values =>
+        {
+            var start = values.Count > 1 ? (int) values[0].AsNumber : 0;
+            var step = values.Count > 2 ? (int) values[2].AsNumber : 1;
+            var stop = values.Count > 1 ? (int) values[1].AsNumber : (int) values[0].AsNumber;
 
-		private static readonly IFunction functionRound = new NativeFunction ((values) =>
-		{
-			if (values.Count > 1)
-				return Math.Round (values[0].AsNumber, (int)values[1].AsNumber);
+            if (step == 0)
+                return MapValue.Empty;
 
-			return Math.Round (values[0].AsNumber);
-		}, 1, 2);
+            int sign;
 
-		private static readonly IFunction functionSine = new NativeFunction ((v) => Math.Sin ((double)v[0].AsNumber), 1);
+            if (step < 0)
+            {
+                if (start < stop)
+                    return MapValue.Empty;
 
-		private static readonly IFunction functionSlice = new NativeFunction ((values) =>
-		{
-			int count;
-			IEnumerator<KeyValuePair<Value, Value>> enumerator;
-			int length;
-			int offset;
-			Value source;
-			Value[] target;
-			int i;
+                sign = 1;
+            }
+            else
+            {
+                if (start > stop)
+                    return MapValue.Empty;
 
-			source = values[0];
-			length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
-			offset = Math.Max (Math.Min ((int)values[1].AsNumber, length), 0);
-			count = values.Count > 2 ? Math.Max (Math.Min ((int)values[2].AsNumber, length - offset), 0) : length - offset;
+                sign = -1;
+            }
 
-			if (source.Type == ValueContent.Map)
-			{
-				enumerator = source.Fields.GetEnumerator ();
+            return new MapValue(i => start + step * i, (stop - start + step + sign) / step);
+        }, 1, 3);
 
-				while (offset-- > 0 && enumerator.MoveNext ())
-					;
+        private static readonly IFunction FunctionRound = new NativeFunction(values =>
+        {
+            if (values.Count > 1)
+                return Math.Round(values[0].AsNumber, (int) values[1].AsNumber);
 
-				target = new Value[count];
-				i = 0;
+            return Math.Round(values[0].AsNumber);
+        }, 1, 2);
 
-				while (count-- > 0 && enumerator.MoveNext ())
-					target[i++] = enumerator.Current.Value;
+        private static readonly IFunction FunctionSine = new NativeFunction(v => Math.Sin((double) v[0].AsNumber), 1);
 
-				return target;
-			}
+        private static readonly IFunction FunctionSlice = new NativeFunction(values =>
+        {
+            var source = values[0];
+            var length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
+            var offset = Math.Max(Math.Min((int) values[1].AsNumber, length), 0);
+            var count = values.Count > 2
+                ? Math.Max(Math.Min((int) values[2].AsNumber, length - offset), 0)
+                : length - offset;
 
-			return source.AsString.Substring (offset, count);
-		}, 2, 3);
+            if (source.Type == ValueContent.Map)
+            {
+                Value[] target;
+                using (var enumerator = source.Fields.GetEnumerator())
+                {
 
-		private static readonly IFunction functionSort = new NativeFunction ((values, scope, output) =>
-		{
-			IFunction callback;
-			List<KeyValuePair<Value, Value>> sorted;
+                    while (offset-- > 0 && enumerator.MoveNext())
+                    {
+                    }
 
-			callback = values.Count > 1 ? values[1].AsFunction : null;
-			sorted = new List<KeyValuePair<Value, Value>> (values[0].Fields);
+                    target = new Value[count];
+                    var i = 0;
 
-			if (callback != null)
-				sorted.Sort ((a, b) => (int)callback.Execute (new Value[] {a.Value, b.Value}, scope, output).AsNumber);
-			else
-				sorted.Sort ((a, b) => a.Value.CompareTo (b.Value));
+                    while (count-- > 0 && enumerator.MoveNext())
+                        target[i++] = enumerator.Current.Value;
+                }
 
-			return sorted;
-		}, 1, 2);
+                return target;
+            }
 
-		private static readonly IFunction functionSplit = new NativeFunction ((v) => (v[0].AsString.Split ( new [] {v[1].AsString}, StringSplitOptions.None).Select( (s) => new StringValue (s)).ToArray ()), 2);
+            return source.AsString.Substring(offset, count);
+        }, 2, 3);
 
-		private static readonly IFunction functionToken = new NativeFunction ((values) =>
-		{
-			string search;
-			string source;
-			int start;
-			int stop;
+        private static readonly IFunction FunctionSort = new NativeFunction((values, scope, output) =>
+        {
+            var callback = values.Count > 1 ? values[1].AsFunction : null;
+            var sorted = new List<KeyValuePair<Value, Value>>(values[0].Fields);
 
-			search = values[1].AsString;
-			source = values[0].AsString;
-			start = 0;
+            if (callback != null)
+                sorted.Sort((a, b) => (int) callback.Execute(new[] {a.Value, b.Value}, scope, output).AsNumber);
+            else
+                sorted.Sort((a, b) => a.Value.CompareTo(b.Value));
 
-			stop = source.IndexOf (search, StringComparison.Ordinal);
+            return sorted;
+        }, 1, 2);
 
-			for (int i = Math.Max ((int)values[2].AsNumber, 0); i > 0; --i)
-			{
-				if (stop == -1)
-				{
-					start = -1;
+        private static readonly IFunction FunctionSplit = new NativeFunction(
+            v => v[0].AsString.Split(new[] {v[1].AsString}, StringSplitOptions.None).Select(s => new StringValue(s))
+                .ToArray(), 2);
 
-					break;
-				}
+        private static readonly IFunction FunctionToken = new NativeFunction(values =>
+        {
+            var search = values[1].AsString;
+            var source = values[0].AsString;
+            var start = 0;
+            var stop = source.IndexOf(search, StringComparison.Ordinal);
 
-				start = stop + search.Length;
-				stop = source.IndexOf (search, start, StringComparison.Ordinal);
-			}
+            for (var i = Math.Max((int) values[2].AsNumber, 0); i > 0; --i)
+            {
+                if (stop == -1)
+                {
+                    start = -1;
 
-			if (values.Count < 4)
-			{
-				if (start < 0)
-					return string.Empty;
-				else if (stop < 0)
-					return source.Substring (start);
-				else
-					return source.Substring (start, stop - start);
-			}
-			else
-			{
-				if (start < 0)
-					return source + search + values[3].AsString;
-				else if (stop < 0)
-					return source.Substring (0, start) + values[3].AsString;
-				else
-					return source.Substring (0, start) + values[3].AsString + source.Substring (stop);
-			}
+                    break;
+                }
+
+                start = stop + search.Length;
+                stop = source.IndexOf(search, start, StringComparison.Ordinal);
+            }
+
+            if (values.Count < 4)
+            {
+                if (start < 0)
+                    return string.Empty;
+                if (stop < 0)
+                    return source.Substring(start);
+                return source.Substring(start, stop - start);
+            }
+
+            if (start < 0)
+                return source + search + values[3].AsString;
+            if (stop < 0)
+                return source.Substring(0, start) + values[3].AsString;
+            return source.Substring(0, start) + values[3].AsString + source.Substring(stop);
         }, 3, 4);
 
-		private static readonly IFunction functionType = new NativeFunction ((values) => values[0].Type.ToString ().ToLowerInvariant (), 1);
+        private static readonly IFunction FunctionType =
+            new NativeFunction(values => values[0].Type.ToString().ToLowerInvariant(), 1);
 
-		private static readonly IFunction functionUnion = new NativeFunction ((values) =>
-		{
-			Dictionary<Value, Value> result;
+        private static readonly IFunction FunctionUnion = new NativeFunction(values =>
+        {
+            var result = new Dictionary<Value, Value>();
 
-			result = new Dictionary<Value, Value> ();
+            foreach (var value in values)
+            foreach (var pair in value.Fields)
+                result[pair.Key] = pair.Value;
 
-			foreach (Value value in values)
-			{
-				foreach (KeyValuePair<Value, Value> pair in value.Fields)
-					result[pair.Key] = pair.Value;
-			}
+            return result;
+        }, 0, -1);
 
-			return result;
-		}, 0, -1);
+        private static readonly IFunction FunctionUpperCase =
+            new NativeFunction(v => v[0].AsString.ToUpperInvariant(), 1);
 
-		private static readonly IFunction functionUpperCase = new NativeFunction ((v) => v[0].AsString.ToUpperInvariant (), 1);
+        private static readonly IFunction FunctionWhen = new NativeFunction(values =>
+        {
+            if (values[0].AsBoolean)
+                return values[1];
 
-		private static readonly IFunction functionWhen = new NativeFunction ((values) =>
-		{
-			if (values[0].AsBoolean)
-				return values[1];
+            return values.Count > 2 ? values[2] : VoidValue.Instance;
+        }, 2, 3);
 
-			return values.Count > 2 ? values[2] : VoidValue.Instance;
-		}, 2, 3);
+        private static readonly IFunction FunctionXor = new NativeFunction(values =>
+        {
+            var count = 0;
 
-		private static readonly IFunction functionXor = new NativeFunction ((values) =>
-		{
-			int count;
+            foreach (var value in values)
+                if (value.AsBoolean)
+                    ++count;
 
-			count = 0;
+            return count == 1;
+        });
 
-			foreach (Value value in values)
-			{
-				if (value.AsBoolean)
-					++count;
-			}
+        private static readonly IFunction FunctionZip = new NativeFunction(values =>
+        {
+            var map1 = values[0].Fields;
+            var map2 = values[1].Fields;
 
-			return count == 1;
-		});
+            using (var enumerator1 = map1.GetEnumerator())
+            {
+                using (var enumerator2 = map2.GetEnumerator())
+                {
+                    var result = new List<KeyValuePair<Value, Value>>(Math.Min(map1.Count, map2.Count));
 
-		private static readonly IFunction functionZip = new NativeFunction ((values) =>
-		{
-			IEnumerator<KeyValuePair<Value, Value>> enumerator1;
-			IEnumerator<KeyValuePair<Value, Value>> enumerator2;
-			IMap map1;
-			IMap map2;
-			List<KeyValuePair<Value, Value>> result;
+                    while (enumerator1.MoveNext() && enumerator2.MoveNext())
+                        result.Add(new KeyValuePair<Value, Value>(enumerator1.Current.Value,
+                            enumerator2.Current.Value));
 
-			map1 = values[0].Fields;
-			map2 = values[1].Fields;
+                    return result;
+                }
+            }
+        }, 2);
 
-			enumerator1 = map1.GetEnumerator ();
-			enumerator2 = map2.GetEnumerator ();
-			result = new List<KeyValuePair<Value, Value>> (Math.Min (map1.Count, map2.Count));
+        private static readonly Dictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
+        {
+            {"abs", FunctionAbsolute},
+            {"add", BuiltinOperators.OperatorAdd},
+            {"and", BuiltinOperators.OperatorAnd},
+            {"call", FunctionCall},
+            {"cast", FunctionCast},
+            {"cat", FunctionCat},
+            {"ceil", FunctionCeiling},
+            {"char", FunctionChar},
+            {"cmp", FunctionCompare},
+            {"cos", FunctionCosine},
+            {"cross", FunctionCross},
+            {"default", FunctionDefault},
+            {"defined", FunctionDefined},
+            {"div", BuiltinOperators.OperatorDiv},
+            {"eq", BuiltinOperators.OperatorEqual},
+            {"except", FunctionExcept},
+            {"filter", FunctionFilter},
+            {"find", FunctionFind},
+            {"flip", FunctionFlip},
+            {"floor", FunctionFloor},
+            {"format", FunctionFormat},
+            {"ge", BuiltinOperators.OperatorGreaterEqual},
+            {"gt", BuiltinOperators.OperatorGreaterThan},
+            {"has", FunctionHas},
+            {"join", FunctionJoin},
+            {"lcase", FunctionLowerCase},
+            {"le", BuiltinOperators.OperatorLowerEqual},
+            {"len", FunctionLength},
+            {"lt", BuiltinOperators.OperatorLowerThan},
+            {"map", FunctionMap},
+            {"match", FunctionMatch},
+            {"max", FunctionMaximum},
+            {"min", FunctionMinimum},
+            {"mod", BuiltinOperators.OperatorMod},
+            {"mul", BuiltinOperators.OperatorMul},
+            {"ne", BuiltinOperators.OperatorNotEqual},
+            {"not", BuiltinOperators.OperatorNot},
+            {"or", BuiltinOperators.OperatorOr},
+            {"ord", FunctionOrd},
+            {"pow", FunctionPower},
+            {"rand", FunctionRandom},
+            {"range", FunctionRange},
+            {"round", FunctionRound},
+            {"sin", FunctionSine},
+            {"slice", FunctionSlice},
+            {"sort", FunctionSort},
+            {"split", FunctionSplit},
+            {"sub", BuiltinOperators.OperatorSub},
+            {"token", FunctionToken},
+            {"type", FunctionType},
+            {"ucase", FunctionUpperCase},
+            {"union", FunctionUnion},
+            {"when", FunctionWhen},
+            {"xor", FunctionXor},
+            {"zip", FunctionZip}
+        };
 
-			while (enumerator1.MoveNext () && enumerator2.MoveNext ())
-				result.Add (new KeyValuePair<Value, Value> (enumerator1.Current.Value, enumerator2.Current.Value));
+        private static readonly Random Random = new Random();
 
-			return result;
-		}, 2);
-
-		private static readonly Dictionary<string, IFunction> instances = new Dictionary<string, IFunction>
-		{
-			{"abs",		BuiltinFunctions.functionAbsolute},
-			{"add",		BuiltinOperators.operatorAdd},
-			{"and",		BuiltinOperators.operatorAnd},
-			{"call",	BuiltinFunctions.functionCall},
-			{"cast",	BuiltinFunctions.functionCast},
-			{"cat",		BuiltinFunctions.functionCat},
-			{"ceil",	BuiltinFunctions.functionCeiling},
-			{"char",	BuiltinFunctions.functionChar},
-			{"cmp",		BuiltinFunctions.functionCompare},
-			{"cos",		BuiltinFunctions.functionCosine},
-			{"cross",	BuiltinFunctions.functionCross},
-			{"default",	BuiltinFunctions.functionDefault},
-			{"defined",	BuiltinFunctions.functionDefined},
-			{"div",		BuiltinOperators.operatorDiv},
-			{"eq",		BuiltinOperators.operatorEqual},
-			{"except",	BuiltinFunctions.functionExcept},
-			{"filter",	BuiltinFunctions.functionFilter},
-			{"find",	BuiltinFunctions.functionFind},
-			{"flip",	BuiltinFunctions.functionFlip},
-			{"floor",	BuiltinFunctions.functionFloor},
-			{"format",	BuiltinFunctions.functionFormat},
-			{"ge",		BuiltinOperators.operatorGreaterEqual},
-			{"gt",		BuiltinOperators.operatorGreaterThan},
-			{"has",		BuiltinFunctions.functionHas},
-			{"join",	BuiltinFunctions.functionJoin},
-			{"lcase",	BuiltinFunctions.functionLowerCase},
-			{"le",		BuiltinOperators.operatorLowerEqual},
-			{"len",		BuiltinFunctions.functionLength},
-			{"lt",		BuiltinOperators.operatorLowerThan},
-			{"map",		BuiltinFunctions.functionMap},
-			{"match",	BuiltinFunctions.functionMatch},
-			{"max",		BuiltinFunctions.functionMaximum},
-			{"min",		BuiltinFunctions.functionMinimum},
-			{"mod",		BuiltinOperators.operatorMod},
-			{"mul",		BuiltinOperators.operatorMul},
-			{"ne",		BuiltinOperators.operatorNotEqual},
-			{"not",		BuiltinOperators.operatorNot},
-			{"or",		BuiltinOperators.operatorOr},
-			{"ord",		BuiltinFunctions.functionOrd},
-			{"pow",		BuiltinFunctions.functionPower},
-			{"rand",	BuiltinFunctions.functionRandom},
-			{"range",	BuiltinFunctions.functionRange},
-			{"round",	BuiltinFunctions.functionRound},
-			{"sin",		BuiltinFunctions.functionSine},
-			{"slice",	BuiltinFunctions.functionSlice},
-			{"sort",	BuiltinFunctions.functionSort},
-			{"split",	BuiltinFunctions.functionSplit},
-			{"sub",		BuiltinOperators.operatorSub},
-			{"token",	BuiltinFunctions.functionToken},
-			{"type",	BuiltinFunctions.functionType},
-			{"ucase",	BuiltinFunctions.functionUpperCase},
-			{"union",	BuiltinFunctions.functionUnion},
-			{"when",	BuiltinFunctions.functionWhen},
-			{"xor",		BuiltinFunctions.functionXor},
-			{"zip",		BuiltinFunctions.functionZip}
-		};
-
-		private static readonly Random random = new Random ();
-
-		#endregion
-
-		#region Methods
-
-		public static bool TryGet (string name, out IFunction function)
-		{
-			return BuiltinFunctions.instances.TryGetValue (name, out function);
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

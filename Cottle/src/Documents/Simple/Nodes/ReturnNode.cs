@@ -1,42 +1,41 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class ReturnNode : INode
-	{
-		#region Attributes
+    internal class ReturnNode : INode
+    {
+        #region Attributes
 
-		private readonly IEvaluator expression;
+        private readonly IEvaluator _expression;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ReturnNode (IEvaluator expression)
-		{
-			this.expression = expression;
-		}
+        public ReturnNode(IEvaluator expression)
+        {
+            _expression = expression;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			result = this.expression.Evaluate (store, output);
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            result = _expression.Evaluate(store, output);
 
-			return true;
-		}
+            return true;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			output.Write (setting.BlockBegin);
-			output.Write ("return ");
-			output.Write (this.expression);
-			output.Write (setting.BlockEnd);
-		}
+        public void Source(ISetting setting, TextWriter output)
+        {
+            output.Write(setting.BlockBegin);
+            output.Write("return ");
+            output.Write(_expression);
+            output.Write(setting.BlockEnd);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

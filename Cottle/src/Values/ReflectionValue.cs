@@ -5,183 +5,167 @@ using System.Reflection;
 
 namespace Cottle.Values
 {
-	public sealed class ReflectionValue : ResolveValue
-	{
-		#region Attributes / Instance
+    public sealed class ReflectionValue : ResolveValue
+    {
+        #region Methods
 
-		private readonly BindingFlags binding;
+        protected override Value Resolve()
+        {
+            List<MemberReader> reader;
 
-		private readonly object source;
+            var type = _source.GetType();
 
-		#endregion
+            // Use converter for known primitive types
+            if (Converters.TryGetValue(type, out var converter))
+                return converter(_source);
 
-		#region Attributes / Static
+            // Return undefined value for other primitive types
+            if (type.IsPrimitive)
+                return VoidValue.Instance;
 
-		private static readonly Dictionary<Type, ValueConverter> converters = new Dictionary<Type, ValueConverter>
-		{
-			{typeof (bool),		(s) => (bool)s},
-			{typeof (byte),		(s) => (byte)s},
-			{typeof (char),		(s) => (char)s},
-			{typeof (double),	(s) => (double)s},
-			{typeof (decimal),	(s) => (decimal)s},
-			{typeof (float),	(s) => (float)s},
-			{typeof (int),		(s) => (int)s},
-			{typeof (long),		(s) => (long)s},
-			{typeof (sbyte),	(s) => (sbyte)s},
-			{typeof (short),	(s) => (short)s},
-			{typeof (string),	(s) => (string)s},
-			{typeof (uint),		(s) => (uint)s},
-			{typeof (ulong),	(s) => (long)(ulong)s},
-			{typeof (ushort),	(s) => (ushort)s}
-		};
+            // Convert elements to array if source object is enumerable
+            if (_source is IEnumerable enumerable)
+            {
+                var elements = new List<Value>();
 
-		private static readonly Dictionary<Type, List<MemberReader>> readers = new Dictionary<Type, List<MemberReader>> ();
+                foreach (var element in enumerable)
+                    elements.Add(new ReflectionValue(element));
 
-		#endregion
+                return elements;
+            }
 
-		#region Constructors
+            // Otherwise, browse object fields and properties
+            var fields = new Dictionary<Value, Value>();
 
-		public ReflectionValue (object source, BindingFlags binding)
-		{
-			if (source == null)
-				throw new ArgumentNullException ("source");
+            lock (Readers)
+            {
+                if (!Readers.TryGetValue(type, out reader))
+                {
+                    reader = new List<MemberReader>();
 
-			this.binding = binding;
-			this.source = source;
-		}
+                    foreach (var field in type.GetFields(_binding))
+                        reader.Add(new MemberReader(field, _binding));
 
-		public ReflectionValue (object source) :
-			this (source, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-		{
-		}
+                    foreach (var property in type.GetProperties(_binding))
+                        reader.Add(new MemberReader(property, _binding));
 
-		#endregion
+                    Readers[type] = reader;
+                }
+            }
 
-		#region Methods
+            foreach (var extractor in reader)
+                fields.Add(extractor.Name, extractor.Extract(_source));
 
-		protected override Value Resolve ()
-		{
-			ValueConverter converter;
-			List<Value> elements;
-			Dictionary<Value, Value> fields;
-			List<MemberReader> reader;
-			Type type;
+            return fields;
+        }
 
-			type = this.source.GetType ();
+        #endregion
 
-			// Use converter for known primitive types
-			if (ReflectionValue.converters.TryGetValue (type, out converter))
-				return converter (this.source);
+        #region Attributes / Instance
 
-			// Return undefined value for other primitive types
-			if (type.IsPrimitive)
-				return VoidValue.Instance;
+        private readonly BindingFlags _binding;
 
-			// Convert elements to array if source object is enumerable
-			if (this.source is IEnumerable)
-			{
-				elements = new List<Value> ();
+        private readonly object _source;
 
-				foreach (object element in (IEnumerable)this.source)
-					elements.Add (new ReflectionValue (element));
+        #endregion
 
-				return elements;
-			}
+        #region Attributes / Static
 
-			// Otherwise, browse object fields and properties
-			fields = new Dictionary<Value, Value> ();
+        private static readonly Dictionary<Type, ValueConverter> Converters = new Dictionary<Type, ValueConverter>
+        {
+            {typeof(bool), s => (bool) s},
+            {typeof(byte), s => (byte) s},
+            {typeof(char), s => (char) s},
+            {typeof(double), s => (double) s},
+            {typeof(decimal), s => (decimal) s},
+            {typeof(float), s => (float) s},
+            {typeof(int), s => (int) s},
+            {typeof(long), s => (long) s},
+            {typeof(sbyte), s => (sbyte) s},
+            {typeof(short), s => (short) s},
+            {typeof(string), s => (string) s},
+            {typeof(uint), s => (uint) s},
+            {typeof(ulong), s => (long) (ulong) s},
+            {typeof(ushort), s => (ushort) s}
+        };
 
-			lock (ReflectionValue.readers)
-			{
-				if (!ReflectionValue.readers.TryGetValue (type, out reader))
-				{
-					reader = new List<MemberReader> ();
+        private static readonly Dictionary<Type, List<MemberReader>> Readers =
+            new Dictionary<Type, List<MemberReader>>();
 
-					foreach (FieldInfo field in type.GetFields (this.binding))
-						reader.Add (new MemberReader (field, this.binding));
+        #endregion
 
-					foreach (PropertyInfo property in type.GetProperties (this.binding))
-						reader.Add (new MemberReader (property, this.binding));
+        #region Constructors
 
-					ReflectionValue.readers[type] = reader;
-				}
-			}
+        public ReflectionValue(object source, BindingFlags binding)
+        {
+            _binding = binding;
+            _source = source ?? throw new ArgumentNullException(nameof(source));
+        }
 
-			foreach (MemberReader extractor in reader)
-				fields.Add (extractor.Name, extractor.Extract (this.source));
+        public ReflectionValue(object source) :
+            this(source, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        {
+        }
 
-			return fields;
-		}
+        #endregion
 
-		#endregion
+        #region Types
 
-		#region Types
+        private struct MemberReader
+        {
+            #region Properties
 
-		private struct MemberReader
-		{
-			#region Properties
+            public string Name { get; }
 
-			public string Name
-			{
-				get
-				{
-					return this.name;
-				}
-			}
+            #endregion
 
-			#endregion
+            #region Attributes
 
-			#region Attributes
+            private readonly BindingFlags _binding;
 
-			private readonly BindingFlags binding;
+            private readonly Func<object, object> _extractor;
 
-			private readonly Func<object, object> extractor;
+            #endregion
 
-			private readonly string name;
+            #region Constructors
 
-			#endregion
+            public MemberReader(FieldInfo field, BindingFlags binding)
+            {
+                _binding = binding;
+                _extractor = field.GetValue;
 
-			#region Constructors
+                Name = field.Name;
+            }
 
-			public MemberReader (FieldInfo field, BindingFlags binding)
-			{
-				this.binding = binding;
-				this.extractor = field.GetValue;
-				this.name = field.Name;
-			}
+            public MemberReader(PropertyInfo property, BindingFlags binding)
+            {
+                var method = property.GetGetMethod(true);
 
-			public MemberReader (PropertyInfo property, BindingFlags binding)
-			{
-				MethodInfo method;
+                _binding = binding;
+                _extractor = s => method.Invoke(s, null);
 
-				method = property.GetGetMethod (true);
+                Name = property.Name;
+            }
 
-				this.binding = binding;
-				this.extractor = (s) => method.Invoke (s, null);
-				this.name = property.Name;
-			}
+            #endregion
 
-			#endregion
+            #region Methods
 
-			#region Methods
+            public Value Extract(object source)
+            {
+                var value = _extractor(source);
 
-			public Value Extract (object source)
-			{
-				object value;
+                if (value != null)
+                    return new ReflectionValue(value, _binding);
 
-				value = this.extractor (source);
+                return VoidValue.Instance;
+            }
 
-				if (value != null)
-					return new ReflectionValue (value, this.binding);
+            #endregion
+        }
 
-				return VoidValue.Instance;
-			}
+        private delegate Value ValueConverter(object source);
 
-			#endregion
-		}
-
-		private delegate Value ValueConverter (object source);
-
-		#endregion
-	}
+        #endregion
+    }
 }

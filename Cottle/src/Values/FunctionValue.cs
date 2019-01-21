@@ -2,98 +2,56 @@
 
 namespace Cottle.Values
 {
-	public sealed class FunctionValue : Value
-	{
-		#region Properties
+    public sealed class FunctionValue : Value
+    {
+        #region Constructors
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return false;
-			}
-		}
+        public FunctionValue(IFunction function)
+        {
+            AsFunction = function;
+        }
 
-		public override IFunction AsFunction
-		{
-			get
-			{
-				return this.function;
-			}
-		}
+        #endregion
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return 0;
-			}
-		}
+        #region Properties
 
-		public override string AsString
-		{
-			get
-			{
-				return string.Empty;
-			}
-		}
+        public override bool AsBoolean => false;
 
-		public override IMap Fields
-		{
-			get
-			{
-				return EmptyMap.Instance;
-			}
-		}
+        public override IFunction AsFunction { get; }
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.Function;
-			}
-		}
+        public override decimal AsNumber => 0;
 
-		#endregion
+        public override string AsString => string.Empty;
 
-		#region Attributes
+        public override IMap Fields => EmptyMap.Instance;
 
-		private readonly IFunction function;
+        public override ValueContent Type => ValueContent.Function;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Methods
 
-		public FunctionValue (IFunction function)
-		{
-			this.function = function;
-		}
+        public override int CompareTo(Value other)
+        {
+            if (other == null)
+                return 1;
 
-		#endregion
+            if (Type != other.Type)
+                return ((int) Type).CompareTo((int) other.Type);
 
-		#region Methods
+            return AsFunction.CompareTo(other.AsFunction);
+        }
 
-		public override int CompareTo (Value other)
-		{
-			if (other == null)
-				return 1;
+        public override int GetHashCode()
+        {
+            return AsFunction.GetHashCode();
+        }
 
-			if (this.Type != other.Type)
-				return ((int)this.Type).CompareTo ((int)other.Type);
+        public override string ToString()
+        {
+            return "<" + AsFunction + "()>";
+        }
 
-			return this.function.CompareTo (other.AsFunction);
-		}
-
-		public override int GetHashCode ()
-		{
-			return this.function.GetHashCode ();
-		}
-
-		public override string ToString ()
-		{
-			return "<" + this.function + "()>";
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

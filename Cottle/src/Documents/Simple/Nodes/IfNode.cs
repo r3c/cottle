@@ -5,100 +5,96 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class IfNode : INode
-	{
-		#region Attributes
+    internal class IfNode : INode
+    {
+        #region Constructors
 
-		private readonly KeyValuePair<IEvaluator, INode>[] branches;
+        public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
+        {
+            _branches = branches.ToArray();
+            _fallback = fallback;
+        }
 
-		private readonly INode fallback;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly KeyValuePair<IEvaluator, INode>[] _branches;
 
-		public IfNode (IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
-		{
-			this.branches = branches.ToArray ();
-			this.fallback = fallback;
-		}
+        private readonly INode _fallback;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			bool halt;
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            bool halt;
 
-			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
-			{
-				if (branch.Key.Evaluate (store, output).AsBoolean)
-				{
-					store.Enter ();
+            foreach (var branch in _branches)
+                if (branch.Key.Evaluate(store, output).AsBoolean)
+                {
+                    store.Enter();
 
-					halt = branch.Value.Render (store, output, out result);
+                    halt = branch.Value.Render(store, output, out result);
 
-					store.Leave ();
+                    store.Leave();
 
-					return halt;
-				}
-			}
+                    return halt;
+                }
 
-			if (this.fallback != null)
-			{
-				store.Enter ();
+            if (_fallback != null)
+            {
+                store.Enter();
 
-				halt = this.fallback.Render (store, output, out result);
+                halt = _fallback.Render(store, output, out result);
 
-				store.Leave ();
+                store.Leave();
 
-				return halt;
-			}
+                return halt;
+            }
 
-			result = VoidValue.Instance;
+            result = VoidValue.Instance;
 
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			bool first;
-			
-			first = true;
+        public void Source(ISetting setting, TextWriter output)
+        {
+            var first = true;
 
-			foreach (KeyValuePair<IEvaluator, INode> branch in this.branches)
-			{
-				if (first)
-				{
-					output.Write (setting.BlockBegin);
-					output.Write ("if ");
+            foreach (var branch in _branches)
+            {
+                if (first)
+                {
+                    output.Write(setting.BlockBegin);
+                    output.Write("if ");
 
-					first = false;
-				}
-				else
-				{
-					output.Write (setting.BlockContinue);
-					output.Write ("elif ");
-				}
+                    first = false;
+                }
+                else
+                {
+                    output.Write(setting.BlockContinue);
+                    output.Write("elif ");
+                }
 
-				output.Write (branch.Key);
-				output.Write (":");
+                output.Write(branch.Key);
+                output.Write(":");
 
-				branch.Value.Source (setting, output);
-			}
+                branch.Value.Source(setting, output);
+            }
 
-			if (this.fallback != null)
-			{
-				output.Write (setting.BlockContinue);
-				output.Write ("else:");
+            if (_fallback != null)
+            {
+                output.Write(setting.BlockContinue);
+                output.Write("else:");
 
-				this.fallback.Source (setting, output);
-			}
+                _fallback.Source(setting, output);
+            }
 
-			output.Write (setting.BlockEnd);
-		}
+            output.Write(setting.BlockEnd);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

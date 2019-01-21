@@ -1,26 +1,23 @@
-﻿using System;
-using System.Linq;
-
-namespace Cottle.Parsers.Default
+﻿namespace Cottle.Parsers.Default
 {
-	struct Lexem
-	{
-		#region Attributes
+    internal struct Lexem
+    {
+        #region Attributes
 
-		public readonly string Content;
+        public readonly string Content;
 
-		public readonly LexemType Type;
+        public readonly LexemType Type;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public Lexem (LexemType type, string content)
-		{
-			this.Content = content;
-			this.Type = type;
-		}
+        public Lexem(LexemType type, string content)
+        {
+            Content = content;
+            Type = type;
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

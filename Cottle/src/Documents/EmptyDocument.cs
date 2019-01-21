@@ -1,39 +1,30 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cottle.Values;
 
 namespace Cottle.Documents
 {
-	/// <summary>
-	/// Empty document always renders an empty result and returns a void value.
-	/// </summary>
-	public sealed class EmptyDocument : AbstractDocument
-	{
-		#region Properties
+    /// <summary>
+    ///     Empty document always renders an empty result and returns a void value.
+    /// </summary>
+    public sealed class EmptyDocument : AbstractDocument
+    {
+        #region Attributes
 
-		public static EmptyDocument Instance
-		{
-			get
-			{
-				return EmptyDocument.instance;
-			}
-		}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Attributes
+        public static EmptyDocument Instance { get; } = new EmptyDocument();
 
-		private static readonly EmptyDocument instance = new EmptyDocument ();
+        #endregion
 
-		#endregion
+        #region Methods
 
-		#region Methods
+        public override Value Render(IStore store, TextWriter writer)
+        {
+            return VoidValue.Instance;
+        }
 
-		public override Value Render (IStore store, TextWriter writer)
-		{
-			return VoidValue.Instance;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

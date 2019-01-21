@@ -1,84 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using Cottle.Builtins;
+﻿using Cottle.Builtins;
 using Cottle.Values;
 
 namespace Cottle.Stores
 {
-	public sealed class BuiltinStore : AbstractStore
-	{
-		#region Attributes / Instance
+    public sealed class BuiltinStore : AbstractStore
+    {
+        #region Attributes / Instance
 
-		private readonly FallbackStore store;
+        private readonly FallbackStore _store;
 
-		#endregion
+        #endregion
 
-		#region Attributes / Static
+        #region Constructors
 
-		private static volatile IStore constant = null;
+        public BuiltinStore()
+        {
+            _store = new FallbackStore(GetConstant(), new SimpleStore());
+        }
 
-		private static readonly object mutex = new object ();
-		
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Methods / Private
 
-		public BuiltinStore ()
-		{
-			this.store = new FallbackStore (BuiltinStore.GetConstant (), new SimpleStore ());
-		}
+        private static IStore GetConstant()
+        {
+            if (_constant == null)
+                lock (Mutex)
+                {
+                    if (_constant == null)
+                    {
+                        IStore store = new SimpleStore();
 
-		#endregion
+                        foreach (var instance in BuiltinFunctions.Instances)
+                            store[instance.Key] = new FunctionValue(instance.Value);
 
-		#region Methods / Public
+                        _constant = store;
+                    }
+                }
 
-		public override void Enter ()
-		{
-			this.store.Enter ();
-		}
+            return _constant;
+        }
 
-		public override bool Leave ()
-		{
-			return this.store.Leave ();
-		}
+        #endregion
 
-		public override void Set (Value symbol, Value value, StoreMode mode)
-		{
-			this.store.Set (symbol, value, mode);
-		}
+        #region Attributes / Static
 
-		public override bool TryGet (Value symbol, out Value value)
-		{
-			return this.store.TryGet (symbol, out value);
-		}
+        private static volatile IStore _constant;
 
-		#endregion
+        private static readonly object Mutex = new object();
 
-		#region Methods / Private
+        #endregion
 
-		private static IStore GetConstant ()
-		{
-			IStore store;
+        #region Methods / Public
 
-			if (BuiltinStore.constant == null)
-			{
-				lock (BuiltinStore.mutex)
-				{
-					if (BuiltinStore.constant == null)
-					{
-						store = new SimpleStore ();
+        public override void Enter()
+        {
+            _store.Enter();
+        }
 
-						foreach (KeyValuePair<string, IFunction> instance in BuiltinFunctions.Instances)
-							store[instance.Key] = new FunctionValue (instance.Value);
+        public override bool Leave()
+        {
+            return _store.Leave();
+        }
 
-						BuiltinStore.constant = store;
-					}
-				}
-			}
+        public override void Set(Value symbol, Value value, StoreMode mode)
+        {
+            _store.Set(symbol, value, mode);
+        }
 
-			return BuiltinStore.constant;
-		}
+        public override bool TryGet(Value symbol, out Value value)
+        {
+            return _store.TryGet(symbol, out value);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,16 +1,15 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Simple
 {
-	interface IEvaluator
-	{
-		#region Methods
+    internal interface IEvaluator
+    {
+        #region Methods
 
-		Value Evaluate (IStore store, TextWriter output);
+        Value Evaluate(IStore store, TextWriter output);
 
-		string ToString ();
+        string ToString();
 
-		#endregion
-	}
+        #endregion
+    }
 }

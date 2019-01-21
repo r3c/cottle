@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Cottle.Documents.Dynamic
 {
-	struct Storage
-	{
-		public readonly Value[] Constants;
+    internal struct Storage
+    {
+        public readonly Value[] Constants;
 
-		public Storage (IEnumerable<Value> values)
-		{
-			this.Constants = values.ToArray ();
-		}
-	}
+        public Storage(IEnumerable<Value> values)
+        {
+            Constants = values.ToArray();
+        }
+    }
 }

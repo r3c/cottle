@@ -1,43 +1,40 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class SymbolEvaluator : IEvaluator
-	{
-		#region Attributes
+    internal class SymbolEvaluator : IEvaluator
+    {
+        #region Attributes
 
-		private readonly Value symbol;
+        private readonly Value _symbol;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public SymbolEvaluator (Value symbol)
-		{
-			this.symbol = symbol;
-		}
+        public SymbolEvaluator(Value symbol)
+        {
+            _symbol = symbol;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public Value Evaluate (IStore store, TextWriter output)
-		{
-			Value value;
+        public Value Evaluate(IStore store, TextWriter output)
+        {
+            if (store.TryGet(_symbol, out var value))
+                return value;
 
-			if (store.TryGet (this.symbol, out value))
-				return value;
+            return VoidValue.Instance;
+        }
 
-			return VoidValue.Instance;
-		}
+        public override string ToString()
+        {
+            return _symbol.AsString;
+        }
 
-		public override string ToString ()
-		{
-			return this.symbol.AsString;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

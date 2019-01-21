@@ -1,32 +1,30 @@
-﻿using System;
-
-namespace Cottle
+﻿namespace Cottle
 {
-	class Expression
-	{
-		#region Attributes / Instance
+    internal class Expression
+    {
+        #region Attributes / Static
 
-		public Expression[] Arguments;
+        public static readonly Expression Empty = new Expression
+        {
+            Type = ExpressionType.Void
+        };
 
-		public ExpressionElement[] Elements;
+        #endregion
 
-		public Expression Source;
+        #region Attributes / Instance
 
-		public Expression Subscript;
+        public Expression[] Arguments;
 
-		public ExpressionType Type;
+        public ExpressionElement[] Elements;
 
-		public Value Value;
+        public Expression Source;
 
-		#endregion
+        public Expression Subscript;
 
-		#region Attributes / Static
+        public ExpressionType Type;
 
-		public static readonly Expression Empty = new Expression
-		{
-			Type = ExpressionType.Void
-		};
+        public Value Value;
 
-		#endregion
-	}
+        #endregion
+    }
 }

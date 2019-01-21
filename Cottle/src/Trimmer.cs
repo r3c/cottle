@@ -1,5 +1,4 @@
-﻿
-namespace Cottle
+﻿namespace Cottle
 {
-	public delegate string Trimmer (string text);
+    public delegate string Trimmer(string text);
 }

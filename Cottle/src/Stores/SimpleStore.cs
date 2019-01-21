@@ -1,101 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Cottle.Stores
 {
-	public sealed class SimpleStore : AbstractStore
-	{
-		#region Attributes
+    public sealed class SimpleStore : AbstractStore
+    {
+        #region Constructors
 
-		private readonly Stack<HashSet<Value>> levels;
+        public SimpleStore()
+        {
+            _levels = new Stack<HashSet<Value>>();
+            _stacks = new Dictionary<Value, Stack<Value>>();
+        }
 
-		private readonly Dictionary<Value, Stack<Value>> stacks;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly Stack<HashSet<Value>> _levels;
 
-		public SimpleStore ()
-		{
-			this.levels = new Stack<HashSet<Value>> ();
-			this.stacks = new Dictionary<Value, Stack<Value>> ();
-		}
+        private readonly Dictionary<Value, Stack<Value>> _stacks;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public override void Enter ()
-		{
-			this.levels.Push (new HashSet<Value> ());
-		}
+        public override void Enter()
+        {
+            _levels.Push(new HashSet<Value>());
+        }
 
-		public override bool Leave ()
-		{
-			Stack<Value> stack;
+        public override bool Leave()
+        {
+            if (_levels.Count < 1)
+                return false;
 
-			if (this.levels.Count < 1)
-				return false;
+            foreach (var name in _levels.Pop())
+                if (_stacks.TryGetValue(name, out var stack))
+                {
+                    if (stack.Count < 2)
+                        _stacks.Remove(name);
+                    else
+                        stack.Pop();
+                }
 
-			foreach (Value name in this.levels.Pop ())
-			{
-				if (this.stacks.TryGetValue (name, out stack))
-				{
-					if (stack.Count < 2)
-						this.stacks.Remove (name);
-					else
-						stack.Pop ();						
-				}
-			}
+            return true;
+        }
 
-			return true;
-		}
+        public override void Set(Value symbol, Value value, StoreMode mode)
+        {
+            if (!_stacks.TryGetValue(symbol, out var stack))
+            {
+                stack = new Stack<Value>();
 
-		public override void Set (Value symbol, Value value, StoreMode mode)
-		{
-			Stack<Value> stack;
+                _stacks[symbol] = stack;
+            }
 
-			if (!this.stacks.TryGetValue (symbol, out stack))
-			{
-				stack = new Stack<Value> ();
+            switch (mode)
+            {
+                case StoreMode.Global:
+                    if (stack.Count > 0)
+                        stack.Pop();
 
-				this.stacks[symbol] = stack;
-			}
+                    break;
 
-			switch (mode)
-			{
-				case StoreMode.Global:
-					if (stack.Count > 0)
-						stack.Pop ();
+                case StoreMode.Local:
+                    if (_levels.Count > 0 && !_levels.Peek().Add(symbol))
+                        stack.Pop();
 
-					break;
+                    break;
+            }
 
-				case StoreMode.Local:
-					if (this.levels.Count > 0 && !this.levels.Peek ().Add (symbol))
-						stack.Pop ();
+            stack.Push(value);
+        }
 
-					break;
-			}
+        public override bool TryGet(Value symbol, out Value value)
+        {
+            if (_stacks.TryGetValue(symbol, out var stack) && stack.Count > 0)
+            {
+                value = stack.Peek();
 
-			stack.Push (value);
-		}
+                return true;
+            }
 
-		public override bool TryGet (Value symbol, out Value value)
-		{
-			Stack<Value> stack;
+            value = null;
 
-			if (this.stacks.TryGetValue (symbol, out stack) && stack.Count > 0)
-			{
-				value = stack.Peek ();
+            return false;
+        }
 
-				return true;
-			}
-
-			value = null;
-
-			return false;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

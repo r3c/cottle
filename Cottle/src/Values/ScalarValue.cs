@@ -1,68 +1,55 @@
 ﻿using System;
-
 using Cottle.Maps;
 
 namespace Cottle.Values
 {
-	public abstract class ScalarValue<T> : Value where
-		T : IComparable<T>
-	{
-		#region Properties
+    public abstract class ScalarValue<T> : Value where
+        T : IComparable<T>
+    {
+        #region Constructors
 
-		public override IFunction AsFunction
-		{
-			get
-			{
-				return null;
-			}
-		}
+        protected ScalarValue(T value, Converter<Value, T> converter)
+        {
+            Converter = converter;
+            Value = value;
+        }
 
-		public override IMap Fields
-		{
-			get
-			{
-				return EmptyMap.Instance;
-			}
-		}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Attributes
+        public override IFunction AsFunction => null;
 
-		protected readonly Converter<Value, T> converter;
+        public override IMap Fields => EmptyMap.Instance;
 
-		protected readonly T value;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        protected readonly Converter<Value, T> Converter;
 
-		protected ScalarValue (T value, Converter<Value, T> converter)
-		{
-			this.converter = converter;
-			this.value = value;
-		}
+        protected readonly T Value;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public override int CompareTo (Value other)
-		{
-			if (other == null)
-				return 1;
+        public override int CompareTo(Value other)
+        {
+            if (other == null)
+                return 1;
 
-			if (this.Type != other.Type)
-				return ((int)this.Type).CompareTo ((int)other.Type);
+            if (Type != other.Type)
+                return ((int) Type).CompareTo((int) other.Type);
 
-			return this.converter (this).CompareTo (this.converter (other));
-		}
+            return Converter(this).CompareTo(Converter(other));
+        }
 
-		public override int GetHashCode ()
-		{
-			return this.value.GetHashCode ();
-		}
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

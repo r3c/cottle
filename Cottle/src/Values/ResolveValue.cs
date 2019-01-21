@@ -2,109 +2,71 @@
 
 namespace Cottle.Values
 {
-	public abstract class ResolveValue : Value
-	{
-		#region Properties
+    public abstract class ResolveValue : Value
+    {
+        #region Methods / Abstract
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return this.Acquire ().AsBoolean;
-			}
-		}
+        protected abstract Value Resolve();
 
-		public override IFunction AsFunction
-		{
-			get
-			{
-				return this.Acquire ().AsFunction;
-			}
-		}
+        #endregion
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return this.Acquire ().AsNumber;
-			}
-		}
+        #region Methods / Private
 
-		public override string AsString
-		{
-			get
-			{
-				return this.Acquire ().AsString;
-			}
-		}
+        private Value Acquire()
+        {
+            if (_value == null)
+                lock (_mutex)
+                {
+                    if (_value == null)
+                        Interlocked.Exchange(ref _value, Resolve());
+                }
 
-		public override IMap Fields
-		{
-			get
-			{
-				return this.Acquire ().Fields;
-			}
-		}
+            return _value;
+        }
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return this.Acquire ().Type;
-			}
-		}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Attributes
+        public override bool AsBoolean => Acquire().AsBoolean;
 
-		private readonly object mutex = new object ();
+        public override IFunction AsFunction => Acquire().AsFunction;
 
-		private Value value = null;
+        public override decimal AsNumber => Acquire().AsNumber;
 
-		#endregion
+        public override string AsString => Acquire().AsString;
 
-		#region Methods / Abstract
+        public override IMap Fields => Acquire().Fields;
 
-		protected abstract Value Resolve ();
+        public override ValueContent Type => Acquire().Type;
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Attributes
 
-		public override int CompareTo (Value other)
-		{
-			return this.Acquire ().CompareTo (other);
-		}
+        private readonly object _mutex = new object();
 
-		public override int GetHashCode ()
-		{
-			return this.Acquire ().GetHashCode ();
-		}
+        private Value _value;
 
-		public override string ToString ()
-		{
-			return this.Acquire ().ToString ();
-		}
+        #endregion
 
-		#endregion
+        #region Methods / Public
 
-		#region Methods / Private
+        public override int CompareTo(Value other)
+        {
+            return Acquire().CompareTo(other);
+        }
 
-		private Value Acquire ()
-		{
-			if (this.value == null)
-			{
-				lock (this.mutex)
-				{
-					if (this.value == null)
-						Interlocked.Exchange (ref this.value, this.Resolve ());
-				}
-			}
+        public override int GetHashCode()
+        {
+            return Acquire().GetHashCode();
+        }
 
-			return this.value;
-		}
+        public override string ToString()
+        {
+            return Acquire().ToString();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

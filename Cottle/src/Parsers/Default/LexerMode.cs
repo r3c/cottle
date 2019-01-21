@@ -1,9 +1,8 @@
-﻿
-namespace Cottle.Parsers.Default
+﻿namespace Cottle.Parsers.Default
 {
-	enum LexerMode
-	{
-		Block,
-		Raw
-	}
+    internal enum LexerMode
+    {
+        Block,
+        Raw
+    }
 }

@@ -4,49 +4,47 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class EchoNode : INode
-	{
-		#region Attributes
+    internal class EchoNode : INode
+    {
+        #region Attributes
 
-		private readonly IEvaluator expression;
+        private readonly IEvaluator _expression;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public EchoNode (IEvaluator expression)
-		{
-			this.expression = expression;
-		}
+        public EchoNode(IEvaluator expression)
+        {
+            _expression = expression;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			output.Write (this.expression.Evaluate (store, output).AsString);
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            output.Write(_expression.Evaluate(store, output).AsString);
 
-			result = VoidValue.Instance;
+            result = VoidValue.Instance;
 
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			string source;
+        public void Source(ISetting setting, TextWriter output)
+        {
+            var source = _expression.ToString();
 
-			source = this.expression.ToString ();
+            output.Write(setting.BlockBegin);
 
-			output.Write (setting.BlockBegin);
+            if (source.StartsWith("echo", StringComparison.Ordinal))
+                output.Write("echo ");
 
-			if (source.StartsWith ("echo", StringComparison.Ordinal))
-				output.Write ("echo ");
+            output.Write(source);
+            output.Write(setting.BlockEnd);
+        }
 
-			output.Write (source);
-			output.Write (setting.BlockEnd);
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

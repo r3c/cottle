@@ -1,9 +1,8 @@
-﻿
-namespace Cottle
+﻿namespace Cottle
 {
-	public enum StoreMode
-	{
-		Global,
-		Local
-	}
+    public enum StoreMode
+    {
+        Global,
+        Local
+    }
 }

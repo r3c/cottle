@@ -1,14 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle
 {
-	interface IParser
-	{
-		#region Methods
+    internal interface IParser
+    {
+        #region Methods
 
-		Command Parse (TextReader reader);
+        Command Parse(TextReader reader);
 
-		#endregion
-	}
+        #endregion
+    }
 }

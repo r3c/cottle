@@ -1,41 +1,35 @@
-﻿
-namespace Cottle.Parsers.Default
+﻿namespace Cottle.Parsers.Default
 {
-	struct LexemCursor
-	{
-		#region Attributes
+    internal struct LexemCursor
+    {
+        #region Attributes
 
-		public readonly char Character;
+        public readonly char Character;
 
-		public LexemState State;
+        public LexemState State;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public LexemCursor (char character, LexemState state)
-		{
-			this.Character = character;
-			this.State = state;
-		}
+        public LexemCursor(char character, LexemState state)
+        {
+            Character = character;
+            State = state;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public void Cancel ()
-		{
-			this.State = null;
-		}
+        public LexemCursor Move(char character)
+        {
+            if (State == null)
+                return new LexemCursor(Character, null);
 
-		public LexemCursor Move (char character)
-		{
-			if (this.State == null)
-				return new LexemCursor (this.Character, null);
+            return new LexemCursor(Character, State.Follow(character));
+        }
 
-			return new LexemCursor (this.Character, this.State.Follow (character));
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

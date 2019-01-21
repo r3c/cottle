@@ -3,26 +3,26 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class VoidEvaluator : IEvaluator
-	{
-		#region Attributes
+    internal class VoidEvaluator : IEvaluator
+    {
+        #region Attributes
 
-		public static readonly VoidEvaluator Instance = new VoidEvaluator ();
+        public static readonly VoidEvaluator Instance = new VoidEvaluator();
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public Value Evaluate (IStore store, TextWriter output)
-		{
-			return VoidValue.Instance;
-		}
+        public Value Evaluate(IStore store, TextWriter output)
+        {
+            return VoidValue.Instance;
+        }
 
-		public override string ToString ()
-		{
-			return VoidValue.Instance.ToString ();
-		}
+        public override string ToString()
+        {
+            return VoidValue.Instance.ToString();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

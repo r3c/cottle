@@ -2,737 +2,735 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Values;
 
 namespace Cottle.Documents.Dynamic
 {
-	class Compiler
-	{
-		#region Attributes
+    internal class Compiler
+    {
+        #region Constructors
 
-		private readonly List<Value> constants;
+        public Compiler(ILGenerator generator, Trimmer trimmer)
+        {
+            _constants = new List<Value>();
+            _generator = generator;
+            _indices = new Dictionary<Value, int>();
+            _locals = new Dictionary<Type, Queue<LocalBuilder>>();
+            _trimmer = trimmer;
+        }
 
-		private readonly ILGenerator generator;
+        #endregion
 
-		private readonly Dictionary<Value, int> indices;
+        #region Attributes
 
-		private readonly Dictionary<Type, Queue<LocalBuilder>> locals;
+        private readonly List<Value> _constants;
 
-		private readonly Trimmer trimmer;
+        private readonly ILGenerator _generator;
 
-		#endregion
+        private readonly Dictionary<Value, int> _indices;
 
-		#region Constructors
+        private readonly Dictionary<Type, Queue<LocalBuilder>> _locals;
 
-		public Compiler (ILGenerator generator, Trimmer trimmer)
-		{
-			this.constants = new List<Value> ();
-			this.generator = generator;
-			this.indices = new Dictionary<Value, int> ();
-			this.locals = new Dictionary<Type, Queue<LocalBuilder>> ();
-			this.trimmer = trimmer;
-		}
+        private readonly Trimmer _trimmer;
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Methods / Public
 
-		public Storage Compile (IEnumerable<string> arguments, Command command)
-		{
-			Label assign;
-			Label copy;
-			Label exit;
-			int index;
+        public Storage Compile(IEnumerable<string> arguments, Command command)
+        {
+            // Create global scope for program execution
+            EmitStoreEnter();
 
-			// Create global scope for program execution
-			this.EmitStoreEnter ();
+            // Assign provided values to arguments
+            var index = 0;
 
-			// Assign provided values to arguments
-			index = 0;
+            foreach (var argument in arguments)
+            {
+                var assign = _generator.DefineLabel();
+                var copy = _generator.DefineLabel();
 
-			foreach (string argument in arguments)
-			{
-				assign = this.generator.DefineLabel ();
-				copy = this.generator.DefineLabel ();
+                EmitLoadStore();
+                EmitLoadValue(argument);
 
-				this.EmitLoadStore ();
-				this.EmitLoadValue (argument);
+                // Check if a value is available for current argument 
+                EmitLoadArguments();
 
-				// Check if a value is available for current argument 
-				this.EmitLoadArguments ();
+                _generator.Emit(OpCodes.Callvirt,
+                    Resolver.Property<Func<IList<Value>, int>>(a => a.Count).GetGetMethod());
+                _generator.Emit(OpCodes.Ldc_I4, index);
+                _generator.Emit(OpCodes.Bgt_S, copy);
 
-				this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IList<Value>, int>> ((a) => a.Count).GetGetMethod ());
-				this.generator.Emit (OpCodes.Ldc_I4, index);
-				this.generator.Emit (OpCodes.Bgt_S, copy);
+                // Push void value for current argument
+                EmitLoadVoid();
 
-				// Push void value for current argument
-				this.EmitLoadVoid ();
+                _generator.Emit(OpCodes.Br, assign);
 
-				this.generator.Emit (OpCodes.Br, assign);
+                // Fetch argument value from arguments array
+                _generator.MarkLabel(copy);
 
-				// Fetch argument value from arguments array
-				this.generator.MarkLabel (copy);
+                EmitLoadArguments();
 
-				this.EmitLoadArguments ();
+                _generator.Emit(OpCodes.Ldc_I4, index);
+                _generator.Emit(OpCodes.Callvirt, Resolver.Method<Func<IList<Value>, int, Value>>((a, i) => a[i]));
 
-				this.generator.Emit (OpCodes.Ldc_I4, index);
-				this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IList<Value>, int, Value>> ((a, i) => a[i]));
+                // Assign argument value
+                _generator.MarkLabel(assign);
 
-				// Assign argument value
-				this.generator.MarkLabel (assign);
+                EmitStoreSetCall(StoreMode.Local);
 
-				this.EmitStoreSetCall (StoreMode.Local);
+                ++index;
+            }
 
-				++index;
-			}
+            // Compile program body
+            var exit = _generator.DefineLabel();
 
-			// Compile program body
-			exit = this.generator.DefineLabel ();
+            CompileCommand(command, exit, 0);
+            EmitLoadVoid();
 
-			this.CompileCommand (command, exit, 0);
-			this.EmitLoadVoid ();
+            _generator.MarkLabel(exit);
 
-			this.generator.MarkLabel (exit);
+            // Leave global scope and return
+            EmitStoreLeave();
 
-			// Leave global scope and return
-			this.EmitStoreLeave ();
+            _generator.Emit(OpCodes.Ret);
 
-			this.generator.Emit (OpCodes.Ret);
+            return new Storage(_constants);
+        }
 
-			return new Storage (this.constants);
-		}
+        #endregion
 
-		#endregion
+        #region Methods / Private
 
-		#region Methods / Private
+        private void CompileCommand(Command command, Label exit, int depth)
+        {
+            Label jump;
+            LocalBuilder operand;
+            Label skip;
 
-		private void CompileCommand (Command command, Label exit, int depth)
-		{
-			LocalBuilder buffer;
-			LocalBuilder counter;
-			Label empty;
-			LocalBuilder enumerator;
-			LocalBuilder fields;
-			Label jump;
-			LocalBuilder operand;
-			LocalBuilder pair;
-			Label skip;
+            // Compile command
+            switch (command.Type)
+            {
+                case CommandType.AssignFunction:
+                    EmitLoadStore();
+                    EmitLoadValue(command.Name);
 
-			// Compile command
-			switch (command.Type)
-			{
-				case CommandType.AssignFunction:
-					this.EmitLoadStore ();
-					this.EmitLoadValue (command.Name);
+                    EmitLoadValue(new FunctionValue(new Function(command.Arguments, command.Body, _trimmer)));
+                    EmitStoreSetCall(command.Mode);
 
-					this.EmitLoadValue (new FunctionValue (new Function (command.Arguments, command.Body, this.trimmer)));
-					this.EmitStoreSetCall (command.Mode);
+                    break;
 
-					break;
+                case CommandType.AssignRender:
+                    // Prepare new buffer to store sub-rendering
+                    var buffer = LocalReserve<TextWriter>();
 
-				case CommandType.AssignRender:
-					// Prepare new buffer to store sub-rendering
-					buffer = this.LocalReserve<TextWriter> ();
+                    _generator.Emit(OpCodes.Newobj, Resolver.Constructor<Func<StringWriter>>(() => new StringWriter()));
+                    _generator.Emit(OpCodes.Stloc, buffer);
 
-					this.generator.Emit (OpCodes.Newobj, Resolver.Constructor<Func<StringWriter>> (() => new StringWriter ()));
-					this.generator.Emit (OpCodes.Stloc, buffer);
+                    // Load function, empty arguments array, store and text writer onto stack
+                    EmitLoadValue(new FunctionValue(new Function(Enumerable.Empty<string>(), command.Body, _trimmer)));
 
-					// Load function, empty arguments array, store and text writer onto stack
-					this.EmitLoadValue (new FunctionValue (new Function (Enumerable.Empty<string> (), command.Body, this.trimmer)));
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
+                    _generator.Emit(OpCodes.Ldc_I4, 0);
+                    _generator.Emit(OpCodes.Newarr, typeof(Value));
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IFunction>> ((v) => v.AsFunction).GetGetMethod ());
-					this.generator.Emit (OpCodes.Ldc_I4, 0);
-					this.generator.Emit (OpCodes.Newarr, typeof (Value));
+                    EmitLoadStore();
 
-					this.EmitLoadStore ();
+                    _generator.Emit(OpCodes.Ldloc, buffer);
 
-					this.generator.Emit (OpCodes.Ldloc, buffer);
+                    EmitCallFunctionExecute();
 
-					this.EmitCallFunctionExecute ();
+                    _generator.Emit(OpCodes.Pop);
 
-					this.generator.Emit (OpCodes.Pop);
+                    // Convert buffer into string and set to store
+                    EmitLoadStore();
+                    EmitLoadValue(command.Name);
 
-					// Convert buffer into string and set to store
-					this.EmitLoadStore ();
-					this.EmitLoadValue (command.Name);
+                    _generator.Emit(OpCodes.Ldloc, buffer);
+                    _generator.Emit(OpCodes.Callvirt, Resolver.Method<Func<StringWriter, string>>(w => w.ToString()));
 
-					this.generator.Emit (OpCodes.Ldloc, buffer);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<StringWriter, string>> ((w) => w.ToString ()));
+                    LocalRelease<Value>(buffer);
 
-					this.LocalRelease<Value> (buffer);
+                    _generator.Emit(OpCodes.Newobj, Resolver.Constructor<Func<string, Value>>(s => new StringValue(s)));
 
-					this.generator.Emit (OpCodes.Newobj, Resolver.Constructor<Func<string, Value>> ((s) => new StringValue (s)));
+                    EmitStoreSetCall(command.Mode);
 
-					this.EmitStoreSetCall (command.Mode);
+                    break;
 
-					break;
+                case CommandType.AssignValue:
+                    CompileExpression(command.Operand);
 
-				case CommandType.AssignValue:
-					this.CompileExpression (command.Operand);
+                    operand = LocalReserve<Value>();
 
-					operand = this.LocalReserve<Value> ();
+                    _generator.Emit(OpCodes.Stloc, operand);
 
-					this.generator.Emit (OpCodes.Stloc, operand);
+                    EmitLoadStore();
+                    EmitLoadValue(command.Name);
 
-					this.EmitLoadStore ();
-					this.EmitLoadValue (command.Name);
+                    _generator.Emit(OpCodes.Ldloc, operand);
 
-					this.generator.Emit (OpCodes.Ldloc, operand);
+                    LocalRelease<Value>(operand);
+                    EmitStoreSetCall(command.Mode);
 
-					this.LocalRelease<Value> (operand);
-					this.EmitStoreSetCall (command.Mode);
+                    break;
 
-					break;
+                case CommandType.Composite:
+                    CompileCommand(command.Body, exit, depth);
+                    CompileCommand(command.Next, exit, depth);
 
-				case CommandType.Composite:
-					this.CompileCommand (command.Body, exit, depth);
-					this.CompileCommand (command.Next, exit, depth);
+                    break;
 
-					break;
+                case CommandType.Dump:
+                    CompileExpression(command.Operand);
 
-				case CommandType.Dump:
-					this.CompileExpression (command.Operand);
+                    operand = LocalReserve<Value>();
 
-					operand = this.LocalReserve<Value> ();
+                    _generator.Emit(OpCodes.Stloc, operand);
 
-					this.generator.Emit (OpCodes.Stloc, operand);
+                    EmitLoadOutput();
 
-					this.EmitLoadOutput ();
+                    _generator.Emit(OpCodes.Ldloc, operand);
+                    _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v)));
 
-					this.generator.Emit (OpCodes.Ldloc, operand);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>> ((w, v) => w.Write (v)));
+                    LocalRelease<Value>(operand);
 
-					this.LocalRelease<Value> (operand);
+                    break;
 
-					break;
+                case CommandType.Echo:
+                    CompileExpression(command.Operand);
 
-				case CommandType.Echo:
-					this.CompileExpression (command.Operand);
+                    operand = LocalReserve<Value>();
 
-					operand = this.LocalReserve<Value> ();
+                    _generator.Emit(OpCodes.Stloc, operand);
 
-					this.generator.Emit (OpCodes.Stloc, operand);
+                    EmitLoadOutput();
 
-					this.EmitLoadOutput ();
+                    _generator.Emit(OpCodes.Ldloc, operand);
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Property<Func<Value, string>>(v => v.AsString).GetGetMethod());
 
-					this.generator.Emit (OpCodes.Ldloc, operand);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, string>> ((v) => v.AsString).GetGetMethod ());
+                    LocalRelease<Value>(operand);
 
-					this.LocalRelease<Value> (operand);
+                    EmitCallWriteString();
 
-					this.EmitCallWriteString ();
+                    break;
 
-					break;
+                case CommandType.For:
+                    var empty = _generator.DefineLabel();
+                    jump = _generator.DefineLabel();
+                    skip = _generator.DefineLabel();
 
-				case CommandType.For:
-					empty = this.generator.DefineLabel ();
-					jump = this.generator.DefineLabel ();
-					skip = this.generator.DefineLabel ();
+                    // Evaluate operand into fields map
+                    CompileExpression(command.Operand);
+                    EmitCallValueFields();
 
-					// Evaluate operand into fields map
-					this.CompileExpression (command.Operand);
-					this.EmitCallValueFields ();
+                    var fields = LocalReserve<IMap>();
 
-					fields = this.LocalReserve<IMap> ();
+                    _generator.Emit(OpCodes.Stloc, fields);
 
-					this.generator.Emit (OpCodes.Stloc, fields);
+                    // Get number of fields
+                    _generator.Emit(OpCodes.Ldloc, fields);
+                    _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<IMap, int>>(m => m.Count).GetGetMethod());
+                    _generator.Emit(OpCodes.Brfalse, empty);
 
-					// Get number of fields
-					this.generator.Emit (OpCodes.Ldloc, fields);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IMap, int>> ((m) => m.Count).GetGetMethod ());
-					this.generator.Emit (OpCodes.Brfalse, empty);
+                    // Evaluate command for "not empty" case
+                    _generator.Emit(OpCodes.Ldloc, fields);
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator()));
 
-					// Evaluate command for "not empty" case
-					this.generator.Emit (OpCodes.Ldloc, fields);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>> ((m) => m.GetEnumerator ()));
+                    LocalRelease<IMap>(fields);
 
-					this.LocalRelease<IMap> (fields);
+                    var enumerator = LocalReserve<IEnumerator<KeyValuePair<Value, Value>>>();
 
-					enumerator = this.LocalReserve<IEnumerator<KeyValuePair<Value, Value>>> ();
+                    _generator.Emit(OpCodes.Stloc, enumerator);
 
-					this.generator.Emit (OpCodes.Stloc, enumerator);
+                    // Fetch next enumerator element or end loop
+                    _generator.MarkLabel(jump);
+                    _generator.Emit(OpCodes.Ldloc, enumerator);
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext()));
+                    _generator.Emit(OpCodes.Brfalse, skip);
+                    _generator.Emit(OpCodes.Ldloc, enumerator);
 
-					// Fetch next enumerator element or end loop
-					this.generator.MarkLabel (jump);
-					this.generator.Emit (OpCodes.Ldloc, enumerator);
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>> ((e) => e.MoveNext ()));
-					this.generator.Emit (OpCodes.Brfalse, skip);
-					this.generator.Emit (OpCodes.Ldloc, enumerator);
+                    LocalRelease<IEnumerator<KeyValuePair<Value, Value>>>(enumerator);
 
-					this.LocalRelease<IEnumerator<KeyValuePair<Value, Value>>> (enumerator);
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver
+                            .Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e =>
+                                e.Current).GetGetMethod());
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>> ((e) => e.Current).GetGetMethod ());
+                    var pair = LocalReserve<KeyValuePair<Value, Value>>();
 
-					pair = this.LocalReserve<KeyValuePair<Value, Value>> ();
+                    _generator.Emit(OpCodes.Stloc, pair);
 
-					this.generator.Emit (OpCodes.Stloc, pair);
+                    // Enter loop scope
+                    EmitStoreEnter();
 
-					// Enter loop scope
-					this.EmitStoreEnter ();
+                    // Set current element key if required
+                    if (!string.IsNullOrEmpty(command.Key))
+                    {
+                        EmitLoadStore();
+                        EmitLoadValue(command.Key);
 
-					// Set current element key if required
-					if (!string.IsNullOrEmpty (command.Key))
-					{
-						this.EmitLoadStore ();
-						this.EmitLoadValue (command.Key);
+                        _generator.Emit(OpCodes.Ldloca, pair);
+                        _generator.Emit(OpCodes.Call,
+                            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetGetMethod());
 
-						this.generator.Emit (OpCodes.Ldloca, pair);
-						this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Key).GetGetMethod ());
+                        EmitStoreSetCall(StoreMode.Local);
+                    }
 
-						this.EmitStoreSetCall (StoreMode.Local);
-					}
+                    // Set current element value
+                    EmitLoadStore();
+                    EmitLoadValue(command.Name);
 
-					// Set current element value
-					this.EmitLoadStore ();
-					this.EmitLoadValue (command.Name);
+                    _generator.Emit(OpCodes.Ldloca, pair);
+                    _generator.Emit(OpCodes.Call,
+                        Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod());
 
-					this.generator.Emit (OpCodes.Ldloca, pair);
-					this.generator.Emit (OpCodes.Call, Resolver.Property<Func<KeyValuePair<Value, Value>, Value>> ((p) => p.Value).GetGetMethod ());
+                    LocalRelease<KeyValuePair<Value, Value>>(pair);
+                    EmitStoreSetCall(StoreMode.Local);
 
-					this.LocalRelease<KeyValuePair<Value, Value>> (pair);
-					this.EmitStoreSetCall (StoreMode.Local);
+                    // Evaluate body and restart cycle
+                    CompileCommand(command.Body, exit, depth + 1);
+                    EmitStoreLeave();
 
-					// Evaluate body and restart cycle
-					this.CompileCommand (command.Body, exit, depth + 1);
-					this.EmitStoreLeave ();
+                    _generator.Emit(OpCodes.Br, jump);
 
-					this.generator.Emit (OpCodes.Br, jump);
+                    // Evaluate command for "empty" case
+                    _generator.MarkLabel(empty);
 
-					// Evaluate command for "empty" case
-					this.generator.MarkLabel (empty);
+                    if (command.Next != null)
+                    {
+                        EmitStoreEnter();
+                        CompileCommand(command.Next, exit, depth + 1);
+                        EmitStoreLeave();
+                    }
 
-					if (command.Next != null)
-					{
-						this.EmitStoreEnter ();
-						this.CompileCommand (command.Next, exit, depth + 1);
-						this.EmitStoreLeave ();
-					}
+                    // Mark end of statement
+                    _generator.MarkLabel(skip);
 
-					// Mark end of statement
-					this.generator.MarkLabel (skip);
+                    break;
 
-					break;
+                case CommandType.If:
+                    skip = _generator.DefineLabel();
 
-				case CommandType.If:
-					skip = this.generator.DefineLabel ();
+                    // Emit conditional branches
+                    for (; command != null && command.Type == CommandType.If; command = command.Next)
+                    {
+                        jump = _generator.DefineLabel();
 
-					// Emit conditional branches
-					for (; command != null && command.Type == CommandType.If; command = command.Next)
-					{
-						jump = this.generator.DefineLabel ();
+                        // Evaluate branch condition, jump to next if false
+                        CompileExpression(command.Operand);
+                        EmitCallValueAsBoolean();
 
-						// Evaluate branch condition, jump to next if false
-						this.CompileExpression (command.Operand);
-						this.EmitCallValueAsBoolean ();
+                        _generator.Emit(OpCodes.Brfalse, jump);
 
-						this.generator.Emit (OpCodes.Brfalse, jump);
+                        // Execute branch command and jump sibling statements
+                        EmitStoreEnter();
+                        CompileCommand(command.Body, exit, depth + 1);
+                        EmitStoreLeave();
 
-						// Execute branch command and jump sibling statements
-						this.EmitStoreEnter ();
-						this.CompileCommand (command.Body, exit, depth + 1);
-						this.EmitStoreLeave ();
+                        _generator.Emit(OpCodes.Br, skip);
+                        _generator.MarkLabel(jump);
+                    }
 
-						this.generator.Emit (OpCodes.Br, skip);
-						this.generator.MarkLabel (jump);
-					}
+                    // Emit fallback branch if any
+                    if (command != null)
+                    {
+                        EmitStoreEnter();
+                        CompileCommand(command, exit, depth + 1);
+                        EmitStoreLeave();
+                    }
 
-					// Emit fallback branch if any
-					if (command != null)
-					{
-						this.EmitStoreEnter ();
-						this.CompileCommand (command, exit, depth + 1);
-						this.EmitStoreLeave ();
-					}
+                    // Mark end of statement
+                    _generator.MarkLabel(skip);
 
-					// Mark end of statement
-					this.generator.MarkLabel (skip);
+                    break;
 
-					break;
+                case CommandType.Literal:
+                    EmitLoadOutput();
 
-				case CommandType.Literal:
-					this.EmitLoadOutput ();
+                    _generator.Emit(OpCodes.Ldstr, _trimmer(command.Text));
 
-					this.generator.Emit (OpCodes.Ldstr, this.trimmer (command.Text));
+                    EmitCallWriteString();
 
-					this.EmitCallWriteString ();
+                    break;
 
-					break;
+                case CommandType.Return:
+                    CompileExpression(command.Operand);
 
-				case CommandType.Return:
-					this.CompileExpression (command.Operand);
+                    // Leave all opened scopes if any
+                    if (depth > 0)
+                    {
+                        _generator.Emit(OpCodes.Ldc_I4, depth);
 
-					// Leave all opened scopes if any
-					if (depth > 0)
-					{
-						this.generator.Emit (OpCodes.Ldc_I4, depth);
+                        var counter = LocalReserve<int>();
 
-						counter = this.LocalReserve<int> ();
+                        _generator.Emit(OpCodes.Stloc, counter);
 
-						this.generator.Emit (OpCodes.Stloc, counter);
+                        jump = _generator.DefineLabel();
 
-						jump = this.generator.DefineLabel ();
+                        _generator.MarkLabel(jump);
 
-						this.generator.MarkLabel (jump);
+                        EmitStoreLeave();
 
-						this.EmitStoreLeave ();
+                        _generator.Emit(OpCodes.Ldloc, counter);
+                        _generator.Emit(OpCodes.Ldc_I4_1);
+                        _generator.Emit(OpCodes.Sub);
+                        _generator.Emit(OpCodes.Stloc, counter);
+                        _generator.Emit(OpCodes.Ldloc, counter);
+                        _generator.Emit(OpCodes.Brtrue, jump);
 
-						this.generator.Emit (OpCodes.Ldloc, counter);
-						this.generator.Emit (OpCodes.Ldc_I4_1);
-						this.generator.Emit (OpCodes.Sub);
-						this.generator.Emit (OpCodes.Stloc, counter);
-						this.generator.Emit (OpCodes.Ldloc, counter);
-						this.generator.Emit (OpCodes.Brtrue, jump);
+                        LocalRelease<int>(counter);
+                    }
 
-						this.LocalRelease<int> (counter);
-					}
+                    _generator.Emit(OpCodes.Br, exit);
 
-					this.generator.Emit (OpCodes.Br, exit);
+                    break;
 
-					break;
+                case CommandType.While:
+                    jump = _generator.DefineLabel();
+                    skip = _generator.DefineLabel();
 
-				case CommandType.While:
-					jump = this.generator.DefineLabel ();
-					skip = this.generator.DefineLabel ();
+                    // Branch to condition before first body execution
+                    _generator.Emit(OpCodes.Br, skip);
 
-					// Branch to condition before first body execution
-					this.generator.Emit (OpCodes.Br, skip);
+                    // Execute loop command
+                    _generator.MarkLabel(jump);
 
-					// Execute loop command
-					this.generator.MarkLabel (jump);
+                    EmitStoreEnter();
+                    CompileCommand(command.Body, exit, depth + 1);
+                    EmitStoreLeave();
 
-					this.EmitStoreEnter ();
-					this.CompileCommand (command.Body, exit, depth + 1);
-					this.EmitStoreLeave ();
+                    // Evaluate loop condition, restart cycle if true
+                    _generator.MarkLabel(skip);
 
-					// Evaluate loop condition, restart cycle if true
-					this.generator.MarkLabel (skip);
+                    CompileExpression(command.Operand);
+                    EmitCallValueAsBoolean();
 
-					this.CompileExpression (command.Operand);
-					this.EmitCallValueAsBoolean ();
+                    _generator.Emit(OpCodes.Brtrue, jump);
 
-					this.generator.Emit (OpCodes.Brtrue, jump);
+                    break;
+            }
+        }
 
-					break;
-			}
-		}
+        private void CompileExpression(Expression expression)
+        {
+            LocalBuilder arguments;
+            Label success;
+            LocalBuilder value;
 
-		private void CompileExpression (Expression expression)
-		{
-			LocalBuilder arguments;
-			ConstructorInfo constructor;
-			Label failure;
-			LocalBuilder fields;
-			LocalBuilder function;
-			LocalBuilder key;
-			Label success;
-			LocalBuilder value;
+            switch (expression.Type)
+            {
+                case ExpressionType.Access:
+                    success = _generator.DefineLabel();
 
-			switch (expression.Type)
-			{
-				case ExpressionType.Access:
-					success = this.generator.DefineLabel ();
+                    // Evaluate source expression and get fields
+                    CompileExpression(expression.Source);
+                    EmitCallValueFields();
 
-					// Evaluate source expression and get fields
-					this.CompileExpression (expression.Source);
-					this.EmitCallValueFields ();
+                    var fields = LocalReserve<IMap>();
 
-					fields = this.LocalReserve<IMap> ();
+                    _generator.Emit(OpCodes.Stloc, fields);
 
-					this.generator.Emit (OpCodes.Stloc, fields);
+                    // Evaluate subscript expression
+                    CompileExpression(expression.Subscript);
 
-					// Evaluate subscript expression
-					this.CompileExpression (expression.Subscript);
+                    value = LocalReserve<Value>();
 
-					value = this.LocalReserve<Value> ();
+                    _generator.Emit(OpCodes.Stloc, value);
 
-					this.generator.Emit (OpCodes.Stloc, value);
+                    // Use subscript to get value from fields
+                    var tryGetFromValue = typeof(IMap).GetMethod("TryGet") ?? throw new InvalidOperationException();
 
-					// Use subscript to get value from fields
-					this.generator.Emit (OpCodes.Ldloc, fields);
-					this.generator.Emit (OpCodes.Ldloc, value);
-					this.generator.Emit (OpCodes.Ldloca, value);
-					this.generator.Emit (OpCodes.Callvirt, typeof (IMap).GetMethod ("TryGet"));
-					this.generator.Emit (OpCodes.Brtrue, success);
+                    _generator.Emit(OpCodes.Ldloc, fields);
+                    _generator.Emit(OpCodes.Ldloc, value);
+                    _generator.Emit(OpCodes.Ldloca, value);
+                    _generator.Emit(OpCodes.Callvirt, tryGetFromValue);
+                    _generator.Emit(OpCodes.Brtrue, success);
 
-					// Emit void value on error
-					this.EmitLoadVoid ();
+                    // Emit void value on error
+                    EmitLoadVoid();
 
-					this.generator.Emit (OpCodes.Stloc, value);
+                    _generator.Emit(OpCodes.Stloc, value);
 
-					// Push value on stack
-					this.generator.MarkLabel (success);
-					this.generator.Emit (OpCodes.Ldloc, value);
+                    // Push value on stack
+                    _generator.MarkLabel(success);
+                    _generator.Emit(OpCodes.Ldloc, value);
 
-					this.LocalRelease<Value> (value);
+                    LocalRelease<Value>(value);
 
-					break;
+                    break;
 
-				case ExpressionType.Constant:
-					this.EmitLoadValue (expression.Value);
+                case ExpressionType.Constant:
+                    EmitLoadValue(expression.Value);
 
-					break;
+                    break;
 
-				case ExpressionType.Invoke:
-					failure = this.generator.DefineLabel ();
-					success = this.generator.DefineLabel ();
+                case ExpressionType.Invoke:
+                    var failure = _generator.DefineLabel();
+                    success = _generator.DefineLabel();
 
-					// Evaluate source expression as a function
-					this.CompileExpression (expression.Source);
+                    // Evaluate source expression as a function
+                    CompileExpression(expression.Source);
 
-					this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IFunction>> ((v) => v.AsFunction).GetGetMethod ());
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
 
-					function = this.LocalReserve<IFunction> ();
+                    var function = LocalReserve<IFunction>();
 
-					this.generator.Emit (OpCodes.Stloc, function);
-					this.generator.Emit (OpCodes.Ldloc, function);
-					this.generator.Emit (OpCodes.Brfalse, failure);
+                    _generator.Emit(OpCodes.Stloc, function);
+                    _generator.Emit(OpCodes.Ldloc, function);
+                    _generator.Emit(OpCodes.Brfalse, failure);
 
-					// Create array to store evaluated values
-					this.generator.Emit (OpCodes.Ldc_I4, expression.Arguments.Length);
-					this.generator.Emit (OpCodes.Newarr, typeof (Value));
+                    // Create array to store evaluated values
+                    _generator.Emit(OpCodes.Ldc_I4, expression.Arguments.Length);
+                    _generator.Emit(OpCodes.Newarr, typeof(Value));
 
-					arguments = this.LocalReserve<Value[]> ();
+                    arguments = LocalReserve<Value[]>();
 
-					this.generator.Emit (OpCodes.Stloc, arguments);
+                    _generator.Emit(OpCodes.Stloc, arguments);
 
-					// Evaluate arguments and store into array
-					for (int i = 0; i < expression.Arguments.Length; ++i)
-					{
-						this.CompileExpression (expression.Arguments[i]);
+                    // Evaluate arguments and store into array
+                    for (var i = 0; i < expression.Arguments.Length; ++i)
+                    {
+                        CompileExpression(expression.Arguments[i]);
 
-						value = this.LocalReserve<Value> ();
+                        value = LocalReserve<Value>();
 
-						this.generator.Emit (OpCodes.Stloc, value);
-						this.generator.Emit (OpCodes.Ldloc, arguments);
-						this.generator.Emit (OpCodes.Ldc_I4, i);
-						this.generator.Emit (OpCodes.Ldloc, value);
-						this.generator.Emit (OpCodes.Stelem_Ref);
+                        _generator.Emit(OpCodes.Stloc, value);
+                        _generator.Emit(OpCodes.Ldloc, arguments);
+                        _generator.Emit(OpCodes.Ldc_I4, i);
+                        _generator.Emit(OpCodes.Ldloc, value);
+                        _generator.Emit(OpCodes.Stelem_Ref);
 
-						this.LocalRelease<Value> (value);
-					}
+                        LocalRelease<Value>(value);
+                    }
 
-					// Invoke function delegate within exception block
-					this.generator.Emit (OpCodes.Ldloc, function);
-					this.generator.Emit (OpCodes.Ldloc, arguments);
+                    // Invoke function delegate within exception block
+                    _generator.Emit(OpCodes.Ldloc, function);
+                    _generator.Emit(OpCodes.Ldloc, arguments);
 
-					this.LocalRelease<Value[]> (arguments);
-					this.LocalRelease<IFunction> (function);
-					this.EmitLoadStore ();
-					this.EmitLoadOutput ();
+                    LocalRelease<Value[]>(arguments);
+                    LocalRelease<IFunction>(function);
+                    EmitLoadStore();
+                    EmitLoadOutput();
 
-					value = this.LocalReserve<Value> ();
+                    value = LocalReserve<Value>();
 
-					this.EmitCallFunctionExecute ();
+                    EmitCallFunctionExecute();
 
-					this.generator.Emit (OpCodes.Stloc, value);
-					this.generator.Emit (OpCodes.Br_S, success);
+                    _generator.Emit(OpCodes.Stloc, value);
+                    _generator.Emit(OpCodes.Br_S, success);
 
-					// Emit void value on error
-					this.generator.MarkLabel (failure);
+                    // Emit void value on error
+                    _generator.MarkLabel(failure);
 
-					this.EmitLoadVoid ();
+                    EmitLoadVoid();
 
-					this.generator.Emit (OpCodes.Stloc, value);
+                    _generator.Emit(OpCodes.Stloc, value);
 
-					// Value is already available on stack
-					this.generator.MarkLabel (success);
-					this.generator.Emit (OpCodes.Ldloc, value);
+                    // Value is already available on stack
+                    _generator.MarkLabel(success);
+                    _generator.Emit(OpCodes.Ldloc, value);
 
-					this.LocalRelease<Value> (value);
+                    LocalRelease<Value>(value);
 
-					break;
+                    break;
 
-				case ExpressionType.Map:
-					// Create array to store evaluated pairs
-					this.generator.Emit (OpCodes.Ldc_I4, expression.Elements.Length);
-					this.generator.Emit (OpCodes.Newarr, typeof (KeyValuePair<Value, Value>));
+                case ExpressionType.Map:
+                    // Create array to store evaluated pairs
+                    _generator.Emit(OpCodes.Ldc_I4, expression.Elements.Length);
+                    _generator.Emit(OpCodes.Newarr, typeof(KeyValuePair<Value, Value>));
 
-					arguments = this.LocalReserve<KeyValuePair<Value, Value>[]> ();
+                    arguments = LocalReserve<KeyValuePair<Value, Value>[]>();
 
-					this.generator.Emit (OpCodes.Stloc, arguments);
+                    _generator.Emit(OpCodes.Stloc, arguments);
 
-					// Evaluate elements and store into array 
-					constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>> ((k, v) => new KeyValuePair<Value, Value> (k, v));
+                    // Evaluate elements and store into array 
+                    var constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
+                        new KeyValuePair<Value, Value>(k, v));
 
-					for (int i = 0; i < expression.Elements.Length; ++i)
-					{
-						this.CompileExpression (expression.Elements[i].Key);
+                    for (var i = 0; i < expression.Elements.Length; ++i)
+                    {
+                        CompileExpression(expression.Elements[i].Key);
 
-						key = this.LocalReserve<Value> ();
+                        var key = LocalReserve<Value>();
 
-						this.generator.Emit (OpCodes.Stloc, key);
+                        _generator.Emit(OpCodes.Stloc, key);
 
-						this.CompileExpression (expression.Elements[i].Value);
+                        CompileExpression(expression.Elements[i].Value);
 
-						value = this.LocalReserve<Value> ();
+                        value = LocalReserve<Value>();
 
-						this.generator.Emit (OpCodes.Stloc, value);
-						this.generator.Emit (OpCodes.Ldloc, arguments);
-						this.generator.Emit (OpCodes.Ldc_I4, i);
-						this.generator.Emit (OpCodes.Ldelema, typeof (KeyValuePair<Value, Value>));
-						this.generator.Emit (OpCodes.Ldloc, key);
-						this.generator.Emit (OpCodes.Ldloc, value);
-						this.generator.Emit (OpCodes.Newobj, constructor);
-						this.generator.Emit (OpCodes.Stobj, typeof (KeyValuePair<Value, Value>));
+                        _generator.Emit(OpCodes.Stloc, value);
+                        _generator.Emit(OpCodes.Ldloc, arguments);
+                        _generator.Emit(OpCodes.Ldc_I4, i);
+                        _generator.Emit(OpCodes.Ldelema, typeof(KeyValuePair<Value, Value>));
+                        _generator.Emit(OpCodes.Ldloc, key);
+                        _generator.Emit(OpCodes.Ldloc, value);
+                        _generator.Emit(OpCodes.Newobj, constructor);
+                        _generator.Emit(OpCodes.Stobj, typeof(KeyValuePair<Value, Value>));
 
-						this.LocalRelease<Value> (key);
-						this.LocalRelease<Value> (value);
-					}
+                        LocalRelease<Value>(key);
+                        LocalRelease<Value>(value);
+                    }
 
-					// Create value from array
-					constructor = Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>> ((f) => new MapValue (f));
+                    // Create value from array
+                    constructor =
+                        Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f =>
+                            new MapValue(f));
 
-					this.generator.Emit (OpCodes.Ldloc, arguments);
-					this.generator.Emit (OpCodes.Newobj, constructor);
+                    _generator.Emit(OpCodes.Ldloc, arguments);
+                    _generator.Emit(OpCodes.Newobj, constructor);
 
-					this.LocalRelease<KeyValuePair<Value, Value>[]> (arguments);
+                    LocalRelease<KeyValuePair<Value, Value>[]>(arguments);
 
-					break;
+                    break;
 
-				case ExpressionType.Symbol:
-					success = this.generator.DefineLabel ();
+                case ExpressionType.Symbol:
+                    success = _generator.DefineLabel();
 
-					// Get variable from scope
-					this.EmitLoadStore ();
-					this.EmitLoadValue (expression.Value);
+                    // Get variable from scope
+                    EmitLoadStore();
+                    EmitLoadValue(expression.Value);
 
-					value = this.LocalReserve<Value> ();
+                    value = LocalReserve<Value>();
 
-					this.generator.Emit (OpCodes.Ldloca, value);
-					this.generator.Emit (OpCodes.Callvirt, typeof (IStore).GetMethod ("TryGet"));
-					this.generator.Emit (OpCodes.Brtrue, success);
+                    var tryGetFromStore = typeof(IStore).GetMethod("TryGet") ?? throw new InvalidOperationException();
 
-					// Emit void value on error
-					this.EmitLoadVoid ();
+                    _generator.Emit(OpCodes.Ldloca, value);
+                    _generator.Emit(OpCodes.Callvirt, tryGetFromStore);
+                    _generator.Emit(OpCodes.Brtrue, success);
 
-					this.generator.Emit (OpCodes.Stloc, value);
+                    // Emit void value on error
+                    EmitLoadVoid();
 
-					// Push value on stack
-					this.generator.MarkLabel (success);
-					this.generator.Emit (OpCodes.Ldloc, value);
+                    _generator.Emit(OpCodes.Stloc, value);
 
-					this.LocalRelease<Value> (value);
+                    // Push value on stack
+                    _generator.MarkLabel(success);
+                    _generator.Emit(OpCodes.Ldloc, value);
 
-					break;
+                    LocalRelease<Value>(value);
 
-				case ExpressionType.Void:
-					this.EmitLoadVoid ();
+                    break;
 
-					break;
-			}
-		}
+                case ExpressionType.Void:
+                    EmitLoadVoid();
 
-		private void EmitCallFunctionExecute ()
-		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>> ((f, a, s, o) => f.Execute (a, s, o)));
-		}
+                    break;
+            }
+        }
 
-		private void EmitCallValueAsBoolean ()
-		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, bool>> ((v) => v.AsBoolean).GetGetMethod ());
-		}
+        private void EmitCallFunctionExecute()
+        {
+            _generator.Emit(OpCodes.Callvirt,
+                Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>>((f, a, s, o) =>
+                    f.Execute(a, s, o)));
+        }
 
-		private void EmitCallValueFields ()
-		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>> ((v) => v.Fields).GetGetMethod ());
-		}
+        private void EmitCallValueAsBoolean()
+        {
+            _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod());
+        }
 
-		private void EmitCallWriteString ()
-		{
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>> ((w, v) => w.Write (v)));
-		}
+        private void EmitCallValueFields()
+        {
+            _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod());
+        }
 
-		private void EmitLoadArguments ()
-		{
-			this.generator.Emit (OpCodes.Ldarg_1);
-		}
+        private void EmitCallWriteString()
+        {
+            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>>((w, v) => w.Write(v)));
+        }
 
-		private void EmitLoadContext ()
-		{
-			this.generator.Emit (OpCodes.Ldarga, 0);
-		}
+        private void EmitLoadArguments()
+        {
+            _generator.Emit(OpCodes.Ldarg_1);
+        }
 
-		private void EmitLoadOutput ()
-		{
-			this.generator.Emit (OpCodes.Ldarg_3);
-		}
+        private void EmitLoadContext()
+        {
+            _generator.Emit(OpCodes.Ldarga, 0);
+        }
 
-		private void EmitLoadStore ()
-		{
-			this.generator.Emit (OpCodes.Ldarg_2);
-		}
+        private void EmitLoadOutput()
+        {
+            _generator.Emit(OpCodes.Ldarg_3);
+        }
 
-		private void EmitLoadValue (Value constant)
-		{
-			int index;
+        private void EmitLoadStore()
+        {
+            _generator.Emit(OpCodes.Ldarg_2);
+        }
 
-			if (!this.indices.TryGetValue (constant, out index))
-			{
-				index = this.constants.Count;
+        private void EmitLoadValue(Value constant)
+        {
+            if (!_indices.TryGetValue(constant, out var index))
+            {
+                index = _constants.Count;
 
-				this.indices[constant] = index;
-				this.constants.Add (constant);
-			}
+                _indices[constant] = index;
+                _constants.Add(constant);
+            }
 
-			this.EmitLoadContext ();
+            EmitLoadContext();
 
-			this.generator.Emit (OpCodes.Ldfld, Resolver.Field<Func<Storage, Value[]>> ((c) => c.Constants));
-			this.generator.Emit (OpCodes.Ldc_I4, index);
-			this.generator.Emit (OpCodes.Ldelem_Ref);
-		}
+            _generator.Emit(OpCodes.Ldfld, Resolver.Field<Func<Storage, Value[]>>(c => c.Constants));
+            _generator.Emit(OpCodes.Ldc_I4, index);
+            _generator.Emit(OpCodes.Ldelem_Ref);
+        }
 
-		private void EmitLoadVoid ()
-		{
-			this.generator.Emit (OpCodes.Call, Resolver.Property<Func<Value>> (() => VoidValue.Instance).GetGetMethod ());
-		}
+        private void EmitLoadVoid()
+        {
+            _generator.Emit(OpCodes.Call, Resolver.Property<Func<Value>>(() => VoidValue.Instance).GetGetMethod());
+        }
 
-		private void EmitStoreEnter ()
-		{
-			this.EmitLoadStore ();
+        private void EmitStoreEnter()
+        {
+            EmitLoadStore();
 
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore>> ((s) => s.Enter ()));
-		}
+            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<IStore>>(s => s.Enter()));
+        }
 
-		private void EmitStoreLeave ()
-		{
-			this.EmitLoadStore ();
+        private void EmitStoreLeave()
+        {
+            EmitLoadStore();
 
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore>> ((s) => s.Leave ()));
-			this.generator.Emit (OpCodes.Pop);
-		}
+            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<IStore>>(s => s.Leave()));
+            _generator.Emit(OpCodes.Pop);
+        }
 
-		private void EmitStoreSetCall (StoreMode mode)
-		{
-			this.generator.Emit (OpCodes.Ldc_I4, (int)mode);
-			this.generator.Emit (OpCodes.Callvirt, Resolver.Method<Action<IStore, Value, Value, StoreMode>> ((s, n, v, m) => s.Set (n, v, m)));
-		}
+        private void EmitStoreSetCall(StoreMode mode)
+        {
+            _generator.Emit(OpCodes.Ldc_I4, (int) mode);
+            _generator.Emit(OpCodes.Callvirt,
+                Resolver.Method<Action<IStore, Value, Value, StoreMode>>((s, n, v, m) => s.Set(n, v, m)));
+        }
 
-		private void LocalRelease<T> (LocalBuilder local)
-		{
-			Queue<LocalBuilder> queue;
+        private void LocalRelease<T>(LocalBuilder local)
+        {
+            if (!_locals.TryGetValue(typeof(T), out var queue))
+            {
+                queue = new Queue<LocalBuilder>();
 
-			if (!this.locals.TryGetValue (typeof (T), out queue))
-			{
-				queue = new Queue<LocalBuilder> ();
+                _locals[typeof(T)] = queue;
+            }
 
-				this.locals[typeof (T)] = queue;
-			}
+            queue.Enqueue(local);
+        }
 
-			queue.Enqueue (local);
-		}
+        private LocalBuilder LocalReserve<T>()
+        {
+            if (_locals.TryGetValue(typeof(T), out var queue) && queue.Count > 0)
+                return queue.Dequeue();
 
-		private LocalBuilder LocalReserve<T> ()
-		{
-			Queue<LocalBuilder> queue;
+            return _generator.DeclareLocal(typeof(T));
+        }
 
-			if (this.locals.TryGetValue (typeof (T), out queue) && queue.Count > 0)
-				return queue.Dequeue ();
-
-			return this.generator.DeclareLocal (typeof (T));
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,66 +6,60 @@ using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class MapEvaluator : IEvaluator
-	{
-		#region Attributes
+    internal class MapEvaluator : IEvaluator
+    {
+        #region Attributes
 
-		private KeyValuePair<IEvaluator, IEvaluator>[] elements;
+        private readonly KeyValuePair<IEvaluator, IEvaluator>[] _elements;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public MapEvaluator (IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
-		{
-			this.elements = elements.ToArray ();
-		}
+        public MapEvaluator(IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
+        {
+            _elements = elements.ToArray();
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public Value Evaluate (IStore store, TextWriter writer)
-		{
-			return new MapValue (this.elements.Select ( (element) =>
-			{
-				Value key;
-				Value value;
+        public Value Evaluate(IStore store, TextWriter writer)
+        {
+            return new MapValue(_elements.Select(element =>
+            {
+                var key = element.Key.Evaluate(store, writer);
+                var value = element.Value.Evaluate(store, writer);
 
-				key = element.Key.Evaluate (store, writer);
-				value = element.Value.Evaluate (store, writer);
+                return new KeyValuePair<Value, Value>(key, value);
+            }));
+        }
 
-				return new KeyValuePair<Value, Value> (key, value);
-			}));
-		}
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            var comma = false;
 
-		public override string ToString ()
-		{
-			StringBuilder builder;
-			bool comma;
+            builder.Append('[');
 
-			builder = new StringBuilder ();
-			builder.Append ('[');
+            foreach (var element in _elements)
+            {
+                if (comma)
+                    builder.Append(", ");
+                else
+                    comma = true;
 
-			comma = false;
+                builder.Append(element.Key);
+                builder.Append(": ");
+                builder.Append(element.Value);
+            }
 
-			foreach (KeyValuePair<IEvaluator, IEvaluator> element in this.elements)
-			{
-				if (comma)
-					builder.Append (", ");
-				else
-					comma = true;
+            builder.Append(']');
 
-				builder.Append (element.Key);
-				builder.Append (": ");
-				builder.Append (element.Value);
-			}
+            return builder.ToString();
+        }
 
-			builder.Append (']');
-
-			return builder.ToString ();
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

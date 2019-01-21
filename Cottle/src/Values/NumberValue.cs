@@ -2,90 +2,66 @@
 
 namespace Cottle.Values
 {
-	public sealed class NumberValue : ScalarValue<decimal>
-	{
-		#region Properties
+    public sealed class NumberValue : ScalarValue<decimal>
+    {
+        #region Methods
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return this.value != 0;
-			}
-		}
+        public override string ToString()
+        {
+            return Value.ToString(CultureInfo.InvariantCulture);
+        }
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+        #endregion
 
-		public override string AsString
-		{
-			get
-			{
-				return this.value.ToString (CultureInfo.InvariantCulture);
-			}
-		}
+        #region Properties
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.Number;
-			}
-		}
+        public override bool AsBoolean => Value != 0;
 
-		#endregion
+        public override decimal AsNumber => Value;
 
-		#region Constructors / Public
+        public override string AsString => Value.ToString(CultureInfo.InvariantCulture);
 
-		public NumberValue (byte value) :
-			this ((decimal)value)
-		{
-		}
+        public override ValueContent Type => ValueContent.Number;
 
-		public NumberValue (decimal value) :
-			base (value, (source) => source.AsNumber)
-		{
-		}
+        #endregion
 
-		public NumberValue (double value) :
-			this ((decimal)value)
-		{
-		}
+        #region Constructors / Public
 
-		public NumberValue (float value) :
-			this ((decimal)value)
-		{
-		}
+        public NumberValue(byte value) :
+            this((decimal) value)
+        {
+        }
 
-		public NumberValue (int value) :
-			this ((decimal)value)
-		{
-		}
+        public NumberValue(decimal value) :
+            base(value, source => source.AsNumber)
+        {
+        }
 
-		public NumberValue (long value) :
-			this ((decimal)value)
-		{
-		}
+        public NumberValue(double value) :
+            this((decimal) value)
+        {
+        }
 
-		public NumberValue (short value) :
-			this ((decimal)value)
-		{
-		}
+        public NumberValue(float value) :
+            this((decimal) value)
+        {
+        }
 
-		#endregion
+        public NumberValue(int value) :
+            this((decimal) value)
+        {
+        }
 
-		#region Methods
+        public NumberValue(long value) :
+            this((decimal) value)
+        {
+        }
 
-		public override string ToString ()
-		{
-			return this.value.ToString (CultureInfo.InvariantCulture);
-		}
+        public NumberValue(short value) :
+            this((decimal) value)
+        {
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

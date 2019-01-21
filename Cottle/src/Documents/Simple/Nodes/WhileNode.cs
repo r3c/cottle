@@ -1,64 +1,63 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class WhileNode : INode
-	{
-		#region Attributes
+    internal class WhileNode : INode
+    {
+        #region Constructors
 
-		private readonly INode body;
+        public WhileNode(IEvaluator condition, INode body)
+        {
+            _body = body;
+            _condition = condition;
+        }
 
-		private readonly IEvaluator condition;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly INode _body;
 
-		public WhileNode (IEvaluator condition, INode body)
-		{
-			this.body = body;
-			this.condition = condition;
-		}
+        private readonly IEvaluator _condition;
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			while (this.condition.Evaluate (store, output).AsBoolean)
-			{
-				store.Enter ();
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            while (_condition.Evaluate(store, output).AsBoolean)
+            {
+                store.Enter();
 
-				if (this.body.Render (store, output, out result))
-				{
-					store.Leave ();
+                if (_body.Render(store, output, out result))
+                {
+                    store.Leave();
 
-					return true;
-				}
+                    return true;
+                }
 
-				store.Leave ();
-			}
+                store.Leave();
+            }
 
-			result = VoidValue.Instance;
+            result = VoidValue.Instance;
 
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			output.Write (setting.BlockBegin);
-			output.Write ("while ");
-			output.Write (this.condition);
-			output.Write (":");
+        public void Source(ISetting setting, TextWriter output)
+        {
+            output.Write(setting.BlockBegin);
+            output.Write("while ");
+            output.Write(_condition);
+            output.Write(":");
 
-			this.body.Source (setting, output);
+            _body.Source(setting, output);
 
-			output.Write (setting.BlockEnd);
-		}
+            output.Write(setting.BlockEnd);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,49 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class CompositeNode : INode
-	{
-		#region Attributes
+    internal class CompositeNode : INode
+    {
+        #region Attributes
 
-		private readonly INode[] nodes;
+        private readonly INode[] _nodes;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public CompositeNode (IEnumerable<INode> nodes)
-		{
-			this.nodes = nodes.ToArray ();
-		}
+        public CompositeNode(IEnumerable<INode> nodes)
+        {
+            _nodes = nodes.ToArray();
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			foreach (INode node in this.nodes)
-			{
-				if (node.Render (store, output, out result))
-					return true;
-			}
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            foreach (var node in _nodes)
+                if (node.Render(store, output, out result))
+                    return true;
 
-			result = VoidValue.Instance;
+            result = VoidValue.Instance;
 
-			return false;
-		}
+            return false;
+        }
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			foreach (INode node in this.nodes)
-				node.Source (setting, output);
-		}
+        public void Source(ISetting setting, TextWriter output)
+        {
+            foreach (var node in _nodes)
+                node.Source(setting, output);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,37 +1,36 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
-	class ConstantEvaluator : IEvaluator
-	{
-		#region Attributes
+    internal class ConstantEvaluator : IEvaluator
+    {
+        #region Attributes
 
-		private readonly Value value;
+        private readonly Value _value;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public ConstantEvaluator (Value value)
-		{
-			this.value = value;
-		}
+        public ConstantEvaluator(Value value)
+        {
+            _value = value;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		public Value Evaluate (IStore store, TextWriter output)
-		{
-			return this.value;
-		}
+        public Value Evaluate(IStore store, TextWriter output)
+        {
+            return _value;
+        }
 
-		public override string ToString ()
-		{
-			return this.value.ToString ();
-		}
+        public override string ToString()
+        {
+            return _value.ToString();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

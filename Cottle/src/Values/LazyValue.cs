@@ -2,30 +2,30 @@
 
 namespace Cottle.Values
 {
-	public sealed class LazyValue : ResolveValue
-	{
-		#region Attributes
+    public sealed class LazyValue : ResolveValue
+    {
+        #region Attributes
 
-		private readonly Func<Value> resolver;
+        private readonly Func<Value> _resolver;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public LazyValue (Func<Value> resolver)
-		{
-			this.resolver = resolver;
-		}
+        public LazyValue(Func<Value> resolver)
+        {
+            _resolver = resolver;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		protected override Value Resolve ()
-		{
-			return this.resolver ();
-		}
+        protected override Value Resolve()
+        {
+            return _resolver();
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,52 +1,49 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
-	class LiteralNode : INode
-	{
-		#region Attributes
+    internal class LiteralNode : INode
+    {
+        #region Attributes
 
-		private readonly string text;
-		
-		#endregion
+        private readonly string _text;
 
-		#region Constructors
+        #endregion
 
-		public LiteralNode (string text)
-		{
-			this.text = text;
-		}
+        #region Constructors
 
-		#endregion
+        public LiteralNode(string text)
+        {
+            _text = text;
+        }
 
-		#region Methods
+        #endregion
 
-		public bool Render (IStore store, TextWriter output, out Value result)
-		{
-			output.Write (this.text);
+        #region Methods
 
-			result = VoidValue.Instance;
+        public bool Render(IStore store, TextWriter output, out Value result)
+        {
+            output.Write(_text);
 
-			return false;
-		}
+            result = VoidValue.Instance;
 
-		public void Source (ISetting setting, TextWriter output)
-		{
-			StringBuilder builder;
+            return false;
+        }
 
-			builder = new StringBuilder ()
-				.Append (this.text)
-				.Replace ("\\", "\\\\")
-				.Replace (setting.BlockBegin, "\\" + setting.BlockBegin)
-				.Replace (setting.BlockContinue, "\\" + setting.BlockContinue)
-				.Replace (setting.BlockEnd, "\\" + setting.BlockEnd);
+        public void Source(ISetting setting, TextWriter output)
+        {
+            var builder = new StringBuilder()
+                .Append(_text)
+                .Replace("\\", "\\\\")
+                .Replace(setting.BlockBegin, "\\" + setting.BlockBegin)
+                .Replace(setting.BlockContinue, "\\" + setting.BlockContinue)
+                .Replace(setting.BlockEnd, "\\" + setting.BlockEnd);
 
-			output.Write (builder);
-		}
+            output.Write(builder);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -1,113 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
-	class FunctionAssignNode : AssignNode, IFunction
-	{
-		#region Attributes
+    internal class FunctionAssignNode : AssignNode, IFunction
+    {
+        #region Constructors
 
-		private readonly string[] arguments;
+        public FunctionAssignNode(string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
+            base(name, mode)
+        {
+            _arguments = arguments.ToArray();
+            _body = body;
+        }
 
-		private readonly INode body;
+        #endregion
 
-		#endregion
+        #region Attributes
 
-		#region Constructors
+        private readonly string[] _arguments;
 
-		public FunctionAssignNode (string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
-			base (name, mode)
-		{
-			this.arguments = arguments.ToArray ();
-			this.body = body;
-		}
+        private readonly INode _body;
 
-		#endregion
+        #endregion
 
-		#region Methods / Public
+        #region Methods / Public
 
-		public int CompareTo (IFunction other)
-		{
-			return object.ReferenceEquals (this, other) ? 0 : 1;
-		}
+        public int CompareTo(IFunction other)
+        {
+            return ReferenceEquals(this, other) ? 0 : 1;
+        }
 
-		public bool Equals (IFunction other)
-		{
-			return this.CompareTo (other) == 0;
-		}
+        public bool Equals(IFunction other)
+        {
+            return CompareTo(other) == 0;
+        }
 
-		public override bool Equals (object obj)
-		{
-			IFunction other = obj as IFunction;
+        public override bool Equals(object obj)
+        {
+            return obj is IFunction other && Equals(other);
+        }
 
-			return other != null && this.Equals (other);
-		}
+        public Value Execute(IList<Value> arguments, IStore store, TextWriter output)
+        {
+            store.Enter();
 
-		public Value Execute (IList<Value> arguments, IStore store, TextWriter output)
-		{
-			Value result;
+            for (var i = 0; i < _arguments.Length; ++i)
+                store.Set(_arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
 
-			store.Enter ();
+            _body.Render(store, output, out var result);
 
-			for (int i = 0; i < this.arguments.Length; ++i)
-				store.Set (this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
+            store.Leave();
 
-			this.body.Render (store, output, out result);
+            return result;
+        }
 
-			store.Leave ();
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return
+                    (_body.GetHashCode() & (int) 0xFFFFFF00) |
+                    (base.GetHashCode() & 0x000000FF);
+            }
+        }
 
-			return result;
-		}
+        #endregion
 
-		public override int GetHashCode ()
-		{
-			unchecked
-			{
-				return
-					(this.body.GetHashCode () &	(int)0xFFFFFF00) |
-					(base.GetHashCode () &	(int)0x000000FF);
-			}
-		}
+        #region Methods / Protected
 
-		#endregion
+        protected override Value Evaluate(IStore store, TextWriter output)
+        {
+            return new FunctionValue(this);
+        }
 
-		#region Methods / Protected
+        protected override void SourceSymbol(string name, TextWriter output)
+        {
+            var comma = false;
 
-		protected override Value Evaluate (IStore store, TextWriter output)
-		{
-			return new FunctionValue (this);
-		}
+            output.Write(name);
+            output.Write('(');
 
-		protected override void SourceSymbol (string name, TextWriter output)
-		{
-			bool comma = false;
+            foreach (var argument in _arguments)
+            {
+                if (comma)
+                    output.Write(", ");
+                else
+                    comma = true;
 
-			output.Write (name);
-			output.Write ('(');
+                output.Write(argument);
+            }
 
-			foreach (string argument in this.arguments)
-			{
-				if (comma)
-					output.Write (", ");
-				else
-					comma = true;
+            output.Write(' ');
+        }
 
-				output.Write (argument);
-			}
+        protected override void SourceValue(ISetting setting, TextWriter output)
+        {
+            output.Write(':');
 
-			output.Write (' ');
-		}
+            _body.Source(setting, output);
+        }
 
-		protected override void SourceValue (ISetting setting, TextWriter output)
-		{
-			output.Write (':');
-
-			this.body.Source (setting, output);
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

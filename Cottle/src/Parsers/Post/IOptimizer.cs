@@ -1,15 +1,13 @@
-﻿using System;
-
-namespace Cottle.Parsers.Post
+﻿namespace Cottle.Parsers.Post
 {
-	interface IOptimizer
-	{
-		#region Methods
+    internal interface IOptimizer
+    {
+        #region Methods
 
-		Command Optimize (Command command);
+        Command Optimize(Command command);
 
-		Expression Optimize (Expression expression);
+        Expression Optimize(Expression expression);
 
-		#endregion
-	}
+        #endregion
+    }
 }

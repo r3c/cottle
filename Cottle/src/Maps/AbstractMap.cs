@@ -1,92 +1,81 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace Cottle.Maps
 {
-	abstract class AbstractMap : IMap
-	{
-		public abstract int Count
-		{
-			get;
-		}
-		
-		#region Methods / Abstract
-		
-		public abstract bool Contains (Value key);
+    internal abstract class AbstractMap : IMap
+    {
+        public abstract int Count { get; }
 
-		public abstract IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ();
-		
-		public abstract bool TryGet (Value key, out Value value);
+        #region Methods / Abstract
 
-		#endregion
-		
-		#region Methods / Public
+        public abstract bool Contains(Value key);
 
-		public int CompareTo (IMap other)
-		{
-			int compare;
-			IEnumerator<KeyValuePair<Value, Value>> lhs;
-			IEnumerator<KeyValuePair<Value, Value>> rhs;
+        public abstract IEnumerator<KeyValuePair<Value, Value>> GetEnumerator();
 
-			if (other == null)
-				return 1;
+        public abstract bool TryGet(Value key, out Value value);
 
-			if (this.Count < other.Count)
-				return -1;
-			else if (this.Count > other.Count)
-				return 1;
+        #endregion
 
-			lhs = this.GetEnumerator ();
-			rhs = other.GetEnumerator ();
+        #region Methods / Public
 
-			while (lhs.MoveNext () && rhs.MoveNext ())
-			{
-				compare = lhs.Current.Key.CompareTo (rhs.Current.Key);
+        public int CompareTo(IMap other)
+        {
+            if (other == null)
+                return 1;
 
-				if (compare != 0)
-					return compare;
+            if (Count < other.Count)
+                return -1;
+            if (Count > other.Count)
+                return 1;
 
-				compare = lhs.Current.Value.CompareTo (rhs.Current.Value);
+            using (var lhs = GetEnumerator())
+            {
+                using (var rhs = other.GetEnumerator())
+                {
+                    while (lhs.MoveNext() && rhs.MoveNext())
+                    {
+                        var compare = lhs.Current.Key.CompareTo(rhs.Current.Key);
 
-				if (compare != 0)
-					return compare;
-			}
+                        if (compare != 0)
+                            return compare;
 
-			return 0;
-		}
-		
-		public bool Equals (IMap other)
-		{
-			return this.CompareTo (other) == 0;
-		}
-		
-		public override bool Equals (object obj)
-		{
-			IMap other;
+                        compare = lhs.Current.Value.CompareTo(rhs.Current.Value);
 
-			other = obj as IMap;
+                        if (compare != 0)
+                            return compare;
+                    }
+                }
+            }
 
-			return other != null && this.Equals (other);
-		}
+            return 0;
+        }
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return this.GetEnumerator ();
-		}
+        public bool Equals(IMap other)
+        {
+            return CompareTo(other) == 0;
+        }
 
-		public override int GetHashCode ()
-		{
-			int hash;
+        public override bool Equals(object obj)
+        {
+            return obj is IMap other && Equals(other);
+        }
 
-			hash = 0;
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-			foreach (KeyValuePair<Value, Value> item in this)
-				hash = (hash << 1) ^ item.Key.GetHashCode () ^ item.Value.GetHashCode ();
+        public override int GetHashCode()
+        {
+            var hash = 0;
 
-			return hash;
-		}
+            foreach (var item in this)
+                hash = (hash << 1) ^ item.Key.GetHashCode() ^ item.Value.GetHashCode();
 
-		#endregion
-	}
+            return hash;
+        }
+
+        #endregion
+    }
 }

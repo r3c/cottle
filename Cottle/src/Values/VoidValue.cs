@@ -2,101 +2,53 @@
 
 namespace Cottle.Values
 {
-	public sealed class VoidValue : Value
-	{
-		#region Properties
+    public sealed class VoidValue : Value
+    {
+        #region Properties / Static
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return false;
-			}
-		}
+        public static VoidValue Instance { get; } = new VoidValue();
 
-		public override IFunction AsFunction
-		{
-			get
-			{
-				return null;
-			}
-		}
+        #endregion
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return 0;
-			}
-		}
+        #region Properties / Instance
 
-		public override string AsString
-		{
-			get
-			{
-				return string.Empty;
-			}
-		}
+        public override bool AsBoolean => false;
 
-		public override IMap Fields
-		{
-			get
-			{
-				return EmptyMap.Instance;
-			}
-		}
+        public override IFunction AsFunction => null;
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.Void;
-			}
-		}
+        public override decimal AsNumber => 0;
 
-		#endregion
+        public override string AsString => string.Empty;
 
-		#region Properties / Static
+        public override IMap Fields => EmptyMap.Instance;
 
-		public static VoidValue Instance
-		{
-			get
-			{
-				return VoidValue.instance;
-			}
-		}
+        public override ValueContent Type => ValueContent.Void;
 
-		#endregion
+        #endregion
 
-		#region Attributes
+        #region Methods
 
-		private static readonly VoidValue instance = new VoidValue ();
+        public override int CompareTo(Value other)
+        {
+            if (other == null)
+                return 1;
 
-		#endregion
+            if (Type != other.Type)
+                return ((int) Type).CompareTo((int) other.Type);
 
-		#region Methods
+            return 0;
+        }
 
-		public override int CompareTo (Value other)
-		{
-			if (other == null)
-				return 1;
+        public override int GetHashCode()
+        {
+            return 0;
+        }
 
-			if (this.Type != other.Type)
-				return ((int)this.Type).CompareTo ((int)other.Type);
+        public override string ToString()
+        {
+            return "<void>";
+        }
 
-			return 0;
-		}
-
-		public override int GetHashCode ()
-		{
-			return 0;
-		}
-
-		public override string ToString ()
-		{
-			return "<void>";
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

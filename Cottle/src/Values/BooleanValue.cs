@@ -1,68 +1,43 @@
-﻿
-namespace Cottle.Values
+﻿namespace Cottle.Values
 {
-	public sealed class BooleanValue : ScalarValue<bool>
-	{
-		#region Constants
+    public sealed class BooleanValue : ScalarValue<bool>
+    {
+        #region Constructors
 
-		public static readonly BooleanValue False = new BooleanValue (false);
+        public BooleanValue(bool value) :
+            base(value, source => source.AsBoolean)
+        {
+        }
 
-		public static readonly BooleanValue True = new BooleanValue (true);
+        #endregion
 
-		#endregion
+        #region Methods
 
-		#region Properties
+        public override string ToString()
+        {
+            return Value ? "<true>" : "<false>";
+        }
 
-		public override bool AsBoolean
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+        #endregion
 
-		public override decimal AsNumber
-		{
-			get
-			{
-				return this.value ? 1 : 0;
-			}
-		}
+        #region Constants
 
-		public override string AsString
-		{
-			get
-			{
-				return this.value ? "true" : string.Empty;
-			}
-		}
+        public static readonly BooleanValue False = new BooleanValue(false);
 
-		public override ValueContent Type
-		{
-			get
-			{
-				return ValueContent.Boolean;
-			}
-		}
+        public static readonly BooleanValue True = new BooleanValue(true);
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Properties
 
-		public BooleanValue (bool value) :
-			base (value, (source) => source.AsBoolean)
-		{
-		}
+        public override bool AsBoolean => Value;
 
-		#endregion
+        public override decimal AsNumber => Value ? 1 : 0;
 
-		#region Methods
+        public override string AsString => Value ? "true" : string.Empty;
 
-		public override string ToString ()
-		{
-			return this.value ? "<true>" : "<false>";
-		}
+        public override ValueContent Type => ValueContent.Boolean;
 
-		#endregion
-	}
+        #endregion
+    }
 }

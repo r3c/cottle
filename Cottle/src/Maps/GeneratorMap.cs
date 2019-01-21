@@ -5,154 +5,130 @@ using Cottle.Values;
 
 namespace Cottle.Maps
 {
-	class GeneratorMap : AbstractMap
-	{
-		#region Properties
+    internal class GeneratorMap : AbstractMap
+    {
+        #region Constructors
 
-		public override int Count
-		{
-			get
-			{
-				return this.count;
-			}
-		}
+        public GeneratorMap(Func<int, Value> generator, int count)
+        {
+            _count = count;
+            _generator = generator;
+        }
 
-		#endregion
+        #endregion
 
-		#region Attributes
+        #region Properties
 
-		private readonly int count;
+        public override int Count => _count;
 
-		private readonly Func<int, Value> generator;
+        #endregion
 
-		#endregion
+        #region Types
 
-		#region Constructors
+        private class GeneratorEnumerator : IEnumerator<KeyValuePair<Value, Value>>
+        {
+            #region Constructors
 
-		public GeneratorMap (Func<int, Value> generator, int count)
-		{
-			this.count = count;
-			this.generator = generator;
-		}
+            public GeneratorEnumerator(Func<int, Value> generator, int count)
+            {
+                _count = count;
+                Current = new KeyValuePair<Value, Value>(VoidValue.Instance, VoidValue.Instance);
+                _generator = generator;
+                _index = 0;
+            }
 
-		#endregion
+            #endregion
 
-		#region Methods
+            public KeyValuePair<Value, Value> Current { get; private set; }
 
-		public override bool Contains (Value key)
-		{
-			int index;
+            object IEnumerator.Current => Current;
 
-			if (key.Type != ValueContent.Number)
-				return false;
+            #region Attributes
 
-			index = (int)key.AsNumber;
+            private readonly int _count;
 
-			return index >= 0 && index < this.count;
-		}
+            private readonly Func<int, Value> _generator;
 
-		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-		{
-			return new GeneratorEnumerator (this.generator, this.count);
-		}
+            private int _index;
 
-		public override bool TryGet (Value key, out Value value)
-		{
-			int index;
+            #endregion
 
-			if (key.Type != ValueContent.Number)
-			{
-				value = default (Value);
+            #region Methods
 
-				return false;
-			}
+            public void Dispose()
+            {
+            }
 
-			index = (int)key.AsNumber;
+            public bool MoveNext()
+            {
+                if (_index >= _count)
+                    return false;
 
-			if (index < 0 || index >= this.count)
-			{
-				value = default (Value);
+                Current = new KeyValuePair<Value, Value>(_index, _generator(_index));
 
-				return false;
-			}
+                ++_index;
 
-			value = this.generator (index);
+                return true;
+            }
 
-			return true;
-		}
+            public void Reset()
+            {
+                _index = 0;
+            }
 
-		#endregion
+            #endregion
+        }
 
-		#region Types
+        #endregion
 
-		private class GeneratorEnumerator : IEnumerator<KeyValuePair<Value, Value>>
-		{
-			public KeyValuePair<Value, Value> Current
-			{
-				get 
-				{
-					return this.current;
-				}
-			}
+        #region Attributes
 
-			object IEnumerator.Current
-			{
-				get
-				{
-					return this.current;
-				}
-			}
+        private readonly int _count;
 
-			#region Attributes
+        private readonly Func<int, Value> _generator;
 
-			private readonly int count;
+        #endregion
 
-			private KeyValuePair<Value, Value> current;
+        #region Methods
 
-			private readonly Func<int, Value> generator;
+        public override bool Contains(Value key)
+        {
+            if (key.Type != ValueContent.Number)
+                return false;
 
-			private int index;
+            var index = (int) key.AsNumber;
 
-			#endregion
+            return index >= 0 && index < _count;
+        }
 
-			#region Constructors
+        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
+        {
+            return new GeneratorEnumerator(_generator, _count);
+        }
 
-			public GeneratorEnumerator (Func<int, Value> generator, int count)
-			{
-				this.count = count;
-				this.current = new KeyValuePair<Value, Value> (VoidValue.Instance, VoidValue.Instance);
-				this.generator = generator;
-				this.index = 0;
-			}
+        public override bool TryGet(Value key, out Value value)
+        {
+            if (key.Type != ValueContent.Number)
+            {
+                value = default(Value);
 
-			#endregion
+                return false;
+            }
 
-			#region Methods
+            var index = (int) key.AsNumber;
 
-			public void Dispose ()
-			{
-			}
+            if (index < 0 || index >= _count)
+            {
+                value = default(Value);
 
-			public bool MoveNext ()
-			{
-				if (this.index >= this.count)
-					return false;
+                return false;
+            }
 
-				this.current = new KeyValuePair<Value, Value> (this.index, this.generator (this.index));
+            value = _generator(index);
 
-				++this.index;
+            return true;
+        }
 
-				return true;
-			}
-
-			public void Reset ()
-			{
-				this.index = 0;
-			}
-
-			#endregion
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

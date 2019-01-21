@@ -1,77 +1,30 @@
-﻿using System;
-
-namespace Cottle.Settings
+﻿namespace Cottle.Settings
 {
-	public sealed class DefaultSetting : ISetting
-	{
-		#region Properties / Instance
+    public sealed class DefaultSetting : ISetting
+    {
+        #region Properties / Static
 
-		public string BlockBegin
-		{
-			get
-			{
-				return "{";
-			}
-		}
+        public static DefaultSetting Instance { get; } = new DefaultSetting();
 
-		public string BlockContinue
-		{
-			get
-			{
-				return "|";
-			}
-		}
+        #endregion
 
-		public string BlockEnd
-		{
-			get
-			{
-				return "}";
-			}
-		}
+        #region Properties / Instance
 
-		public char Escape
-		{
-			get
-			{
-				return '\\';
-			}
-		}
+        public string BlockBegin => "{";
 
-		public bool Optimize
-		{
-			get
-			{
-				return true;
-			}
-		}
+        public string BlockContinue => "|";
 
-		public Trimmer Trimmer
-		{
-			get
-			{
-				return (t) => t;
-			}
-		}
+        public string BlockEnd => "}";
 
-		#endregion
-		
-		#region Properties / Static
-		
-		public static DefaultSetting Instance
-		{
-			get
-			{
-				return DefaultSetting.instance;
-			}
-		}
-		
-		#endregion
+        public char Escape => '\\';
 
-		#region Attributes
+        public bool Optimize => true;
 
-		private static readonly DefaultSetting instance = new DefaultSetting ();
+        public Trimmer Trimmer
+        {
+            get { return t => t; }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

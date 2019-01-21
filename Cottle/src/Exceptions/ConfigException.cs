@@ -3,45 +3,25 @@ using System.Globalization;
 
 namespace Cottle.Exceptions
 {
-	public class ConfigException : Exception
-	{
-		#region Properties
+    public class ConfigException : Exception
+    {
+        #region Constructors
 
-		public string Name
-		{
-			get
-			{
-				return this.name;
-			}
-		}
+        public ConfigException(string name, string value, string message) :
+            base(string.Format(CultureInfo.InvariantCulture, "{2} (option '{0}', value '{1}')", name, value, message))
+        {
+            Name = name;
+            Value = value;
+        }
 
-		public string Value
-		{
-			get
-			{
-				return this.value;
-			}
-		}
+        #endregion
 
-		#endregion
+        #region Properties
 
-		#region Attributes
+        public string Name { get; }
 
-		private readonly string name;
+        public string Value { get; }
 
-		private readonly string value;
-
-		#endregion
-
-		#region Constructors
-
-		public ConfigException (string name, string value, string message) :
-			base (string.Format (CultureInfo.InvariantCulture, "{2} (option '{0}', value '{1}')", name, value, message))
-		{
-			this.name = name;
-			this.value = value;
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

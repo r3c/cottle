@@ -1,54 +1,51 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
-	class RenderAssignNode : AssignNode
-	{
-		#region Attributes
+    internal class RenderAssignNode : AssignNode
+    {
+        #region Attributes
 
-		private readonly INode body;
+        private readonly INode _body;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Constructors
 
-		public RenderAssignNode (string name, INode body, StoreMode mode) :
-			base (name, mode)
-		{
-			this.body = body;
-		}
+        public RenderAssignNode(string name, INode body, StoreMode mode) :
+            base(name, mode)
+        {
+            _body = body;
+        }
 
-		#endregion
+        #endregion
 
-		#region Methods
+        #region Methods
 
-		protected override Value Evaluate (IStore store, TextWriter output)
-		{
-			Value result;
+        protected override Value Evaluate(IStore store, TextWriter output)
+        {
+            using (var buffer = new StringWriter())
+            {
+                store.Enter();
 
-			using (var buffer = new StringWriter ())
-			{
-				store.Enter ();
+                _body.Render(store, buffer, out _);
 
-				this.body.Render (store, buffer, out result);
+                store.Leave();
 
-				store.Leave ();
+                return buffer.ToString();
+            }
+        }
 
-				return buffer.ToString ();
-			}
-		}
+        protected override void SourceSymbol(string name, TextWriter output)
+        {
+            output.Write(name);
+        }
 
-		protected override void SourceSymbol (string name, TextWriter output)
-		{
-			output.Write (name);
-		}
+        protected override void SourceValue(ISetting setting, TextWriter output)
+        {
+            _body.Source(setting, output);
+        }
 
-		protected override void SourceValue (ISetting setting, TextWriter output)
-		{
-			this.body.Source (setting, output);
-		}
-
-		#endregion
-	}
+        #endregion
+    }
 }

@@ -2,58 +2,52 @@
 
 namespace Cottle.Maps
 {
-	class MixMap : AbstractMap
-	{
-		#region Properties
+    internal class MixMap : AbstractMap
+    {
+        #region Constructors
 
-		public override int Count
-		{
-			get
-			{
-				return this.array.Count;
-			}
-		}
+        public MixMap(IEnumerable<KeyValuePair<Value, Value>> pairs)
+        {
+            _array = new List<KeyValuePair<Value, Value>>(pairs);
+            _hash = new Dictionary<Value, Value>();
 
-		#endregion
+            foreach (var pair in _array)
+                _hash[pair.Key] = pair.Value;
+        }
 
-		#region Attributes
+        #endregion
 
-		private readonly List<KeyValuePair<Value, Value>> array;
+        #region Properties
 
-		private readonly Dictionary<Value, Value> hash;
+        public override int Count => _array.Count;
 
-		#endregion
+        #endregion
 
-		#region Constructors
+        #region Attributes
 
-		public MixMap (IEnumerable<KeyValuePair<Value, Value>> pairs)
-		{
-			this.array = new List<KeyValuePair<Value, Value>> (pairs);
-			this.hash = new Dictionary<Value, Value> ();
+        private readonly List<KeyValuePair<Value, Value>> _array;
 
-			foreach (KeyValuePair<Value, Value> pair in this.array)
-				this.hash[pair.Key] = pair.Value;
-		}
+        private readonly Dictionary<Value, Value> _hash;
 
-		#endregion
+        #endregion
 
-		#region Methods
-		
-		public override bool Contains (Value key)
-		{
-			return this.hash.ContainsKey (key);
-		}
+        #region Methods
 
-		public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator ()
-		{
-			return this.array.GetEnumerator ();
-		}
+        public override bool Contains(Value key)
+        {
+            return _hash.ContainsKey(key);
+        }
 
-		public override bool TryGet (Value key, out Value value)
-		{
-			return this.hash.TryGetValue (key, out value);
-		}
+        public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
+        {
+            return _array.GetEnumerator();
+        }
 
-		#endregion
-	}
+        public override bool TryGet(Value key, out Value value)
+        {
+            return _hash.TryGetValue(key, out value);
+        }
+
+        #endregion
+    }
 }
