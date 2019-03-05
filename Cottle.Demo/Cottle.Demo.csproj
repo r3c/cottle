@@ -3,6 +3,7 @@
   <PropertyGroup>
     <StartupObject />
     <TargetFrameworks>netcoreapp2.0;net472</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>Cottle.Demo</AssemblyName>
     <PackageId>Cottle.Demo</PackageId>
     <OutputType>WinExe</OutputType>

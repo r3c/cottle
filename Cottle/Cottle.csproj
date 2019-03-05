@@ -6,6 +6,7 @@
     <Version>1.4.2.0</Version>
     <Authors>Remi Caput</Authors>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <AssemblyName>Cottle</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageIconUrl>https://raw.github.com/r3c/cottle/master/icon.png</PackageIconUrl>

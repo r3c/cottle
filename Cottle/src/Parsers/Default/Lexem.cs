@@ -1,6 +1,6 @@
 ﻿namespace Cottle.Parsers.Default
 {
-    internal struct Lexem
+    internal readonly struct Lexem
     {
         #region Attributes
 
