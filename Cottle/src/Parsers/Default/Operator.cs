@@ -1,9 +1,15 @@
 ﻿namespace Cottle.Parsers.Default
 {
-    internal struct Operator
-    {
-        public IFunction Function;
+	internal readonly struct Operator
+	{
+		public readonly IFunction Function;
 
-        public int Precedence;
-    }
+		public readonly int Precedence;
+
+		public Operator(IFunction function, int precedence)
+		{
+			Function = function;
+			Precedence = precedence;
+		}
+	}
 }

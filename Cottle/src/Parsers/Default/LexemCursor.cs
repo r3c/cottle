@@ -1,12 +1,12 @@
 ﻿namespace Cottle.Parsers.Default
 {
-    internal struct LexemCursor
+    internal readonly struct LexemCursor
     {
         #region Attributes
 
         public readonly char Character;
 
-        public LexemState State;
+        public readonly LexemState State;
 
         #endregion
 

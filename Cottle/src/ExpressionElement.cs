@@ -1,13 +1,15 @@
 ﻿namespace Cottle
 {
-    internal struct ExpressionElement
-    {
-        #region Attributes
+	internal readonly struct ExpressionElement
+	{
+		public readonly Expression Key;
 
-        public Expression Key;
+		public readonly Expression Value;
 
-        public Expression Value;
-
-        #endregion
-    }
+		public ExpressionElement(Expression key, Expression value)
+		{
+			Key = key;
+			Value = value;
+		}
+	}
 }
