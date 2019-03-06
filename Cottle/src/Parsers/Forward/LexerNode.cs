@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cottle.Parsers.Default
+namespace Cottle.Parsers.Forward
 {
 	class LexerNode
 	{

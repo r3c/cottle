@@ -1,4 +1,4 @@
-﻿namespace Cottle.Parsers.Default
+﻿namespace Cottle.Parsers.Forward
 {
     internal readonly struct Lexem
     {

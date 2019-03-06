@@ -4,17 +4,17 @@ using System.Globalization;
 using System.IO;
 using Cottle.Builtins;
 using Cottle.Exceptions;
-using Cottle.Parsers.Default;
+using Cottle.Parsers.Forward;
 using Cottle.Values;
 
 namespace Cottle.Parsers
 {
-    internal class DefaultParser : IParser
+    internal class ForwardParser : IParser
     {
         #region Attributes / Static
 
-        private static readonly Dictionary<string, Func<DefaultParser, Command>> Keywords =
-            new Dictionary<string, Func<DefaultParser, Command>>
+        private static readonly Dictionary<string, Func<ForwardParser, Command>> Keywords =
+            new Dictionary<string, Func<ForwardParser, Command>>
             {
                 {"_", p => p.ParseKeywordComment()},
                 {"declare", p => p.ParseKeywordDeclare()},
@@ -38,7 +38,7 @@ namespace Cottle.Parsers
 
         #region Constructors
 
-        public DefaultParser(string blockBegin, string blockContinue, string blockEnd, char escape)
+        public ForwardParser(string blockBegin, string blockContinue, string blockEnd, char escape)
         {
             _lexer = new Lexer(blockBegin, blockContinue, blockEnd, escape);
         }

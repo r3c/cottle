@@ -1,9 +1,9 @@
 using System;
 using System.Text;
-using Cottle.Parsers.Default;
+using Cottle.Parsers.Forward;
 using NUnit.Framework;
 
-namespace Cottle.Test.Parsers.Default
+namespace Cottle.Test.Parsers.Forward
 {
 	class LexerGraphTester
 	{

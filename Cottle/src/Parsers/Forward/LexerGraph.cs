@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cottle.Parsers.Default
+namespace Cottle.Parsers.Forward
 {
 	class LexerGraph
 	{

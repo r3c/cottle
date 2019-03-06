@@ -8,7 +8,7 @@ namespace Cottle
     {
         public static IParser BuildParser(ISetting setting)
         {
-            IParser parser = new DefaultParser(setting.BlockBegin, setting.BlockContinue, setting.BlockEnd, setting.Escape);
+            IParser parser = new ForwardParser(setting.BlockBegin, setting.BlockContinue, setting.BlockEnd, setting.Escape);
 
             if (setting.Optimize)
                 parser = new PostParser(parser, new IOptimizer[]

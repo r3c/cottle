@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Cottle.Exceptions;
 
-namespace Cottle.Parsers.Default
+namespace Cottle.Parsers.Forward
 {
     internal class Lexer
     {
