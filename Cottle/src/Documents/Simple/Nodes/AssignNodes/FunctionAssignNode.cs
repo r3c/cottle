@@ -62,7 +62,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             unchecked
             {
                 return
-                    (_body.GetHashCode() & (int) 0xFFFFFF00) |
+                    (_body.GetHashCode() & (int)0xFFFFFF00) |
                     (base.GetHashCode() & 0x000000FF);
             }
         }

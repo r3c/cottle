@@ -76,8 +76,8 @@ namespace Cottle.Builtins
                 var list = new List<Value>(values[0].Fields.Count * 2 + 1);
 
                 foreach (var value in values)
-                foreach (var field in value.Fields)
-                    list.Add(field.Value);
+                    foreach (var field in value.Fields)
+                        list.Add(field.Value);
 
                 return list;
             }
@@ -96,7 +96,7 @@ namespace Cottle.Builtins
         {
             try
             {
-                return char.ConvertFromUtf32((int) values[0].AsNumber);
+                return char.ConvertFromUtf32((int)values[0].AsNumber);
             }
             catch
             {
@@ -106,7 +106,7 @@ namespace Cottle.Builtins
 
         private static readonly IFunction FunctionCompare = new NativeFunction(v => v[0].CompareTo(v[1]), 2);
 
-        private static readonly IFunction FunctionCosine = new NativeFunction(v => Math.Cos((double) v[0].AsNumber), 1);
+        private static readonly IFunction FunctionCosine = new NativeFunction(v => Math.Cos((double)v[0].AsNumber), 1);
 
         private static readonly IFunction FunctionCross = new NativeFunction(values =>
         {
@@ -186,7 +186,7 @@ namespace Cottle.Builtins
 
         private static readonly IFunction FunctionFind = new NativeFunction(values =>
         {
-            var offset = values.Count > 2 ? (int) values[2].AsNumber : 0;
+            var offset = values.Count > 2 ? (int)values[2].AsNumber : 0;
             var search = values[1];
             var source = values[0];
 
@@ -260,17 +260,17 @@ namespace Cottle.Builtins
 
                 case "d":
                 case "du":
-                    target = Epoch.AddSeconds((double) values[0].AsNumber);
+                    target = Epoch.AddSeconds((double)values[0].AsNumber);
 
                     break;
 
                 case "dl":
-                    target = Epoch.AddSeconds((double) values[0].AsNumber).ToLocalTime();
+                    target = Epoch.AddSeconds((double)values[0].AsNumber).ToLocalTime();
 
                     break;
 
                 case "i":
-                    target = (long) values[0].AsNumber;
+                    target = (long)values[0].AsNumber;
 
                     break;
 
@@ -400,7 +400,7 @@ namespace Cottle.Builtins
         }, 1);
 
         private static readonly IFunction FunctionPower =
-            new NativeFunction(v => Math.Pow((double) v[0].AsNumber, (double) v[1].AsNumber), 2);
+            new NativeFunction(v => Math.Pow((double)v[0].AsNumber, (double)v[1].AsNumber), 2);
 
         private static readonly IFunction FunctionRandom = new NativeFunction(values =>
         {
@@ -412,19 +412,19 @@ namespace Cottle.Builtins
                         return Random.Next();
 
                     case 1:
-                        return Random.Next((int) values[0].AsNumber);
+                        return Random.Next((int)values[0].AsNumber);
 
                     default:
-                        return Random.Next((int) values[0].AsNumber, (int) values[1].AsNumber);
+                        return Random.Next((int)values[0].AsNumber, (int)values[1].AsNumber);
                 }
             }
         }, 0, 2);
 
         private static readonly IFunction FunctionRange = new NativeFunction(values =>
         {
-            var start = values.Count > 1 ? (int) values[0].AsNumber : 0;
-            var step = values.Count > 2 ? (int) values[2].AsNumber : 1;
-            var stop = values.Count > 1 ? (int) values[1].AsNumber : (int) values[0].AsNumber;
+            var start = values.Count > 1 ? (int)values[0].AsNumber : 0;
+            var step = values.Count > 2 ? (int)values[2].AsNumber : 1;
+            var stop = values.Count > 1 ? (int)values[1].AsNumber : (int)values[0].AsNumber;
 
             if (step == 0)
                 return MapValue.Empty;
@@ -452,20 +452,20 @@ namespace Cottle.Builtins
         private static readonly IFunction FunctionRound = new NativeFunction(values =>
         {
             if (values.Count > 1)
-                return Math.Round(values[0].AsNumber, (int) values[1].AsNumber);
+                return Math.Round(values[0].AsNumber, (int)values[1].AsNumber);
 
             return Math.Round(values[0].AsNumber);
         }, 1, 2);
 
-        private static readonly IFunction FunctionSine = new NativeFunction(v => Math.Sin((double) v[0].AsNumber), 1);
+        private static readonly IFunction FunctionSine = new NativeFunction(v => Math.Sin((double)v[0].AsNumber), 1);
 
         private static readonly IFunction FunctionSlice = new NativeFunction(values =>
         {
             var source = values[0];
             var length = source.Type == ValueContent.Map ? source.Fields.Count : source.AsString.Length;
-            var offset = Math.Max(Math.Min((int) values[1].AsNumber, length), 0);
+            var offset = Math.Max(Math.Min((int)values[1].AsNumber, length), 0);
             var count = values.Count > 2
-                ? Math.Max(Math.Min((int) values[2].AsNumber, length - offset), 0)
+                ? Math.Max(Math.Min((int)values[2].AsNumber, length - offset), 0)
                 : length - offset;
 
             if (source.Type == ValueContent.Map)
@@ -497,7 +497,7 @@ namespace Cottle.Builtins
             var sorted = new List<KeyValuePair<Value, Value>>(values[0].Fields);
 
             if (callback != null)
-                sorted.Sort((a, b) => (int) callback.Execute(new[] {a.Value, b.Value}, scope, output).AsNumber);
+                sorted.Sort((a, b) => (int)callback.Execute(new[] { a.Value, b.Value }, scope, output).AsNumber);
             else
                 sorted.Sort((a, b) => a.Value.CompareTo(b.Value));
 
@@ -505,7 +505,7 @@ namespace Cottle.Builtins
         }, 1, 2);
 
         private static readonly IFunction FunctionSplit = new NativeFunction(
-            v => v[0].AsString.Split(new[] {v[1].AsString}, StringSplitOptions.None).Select(s => new StringValue(s))
+            v => v[0].AsString.Split(new[] { v[1].AsString }, StringSplitOptions.None).Select(s => new StringValue(s))
                 .ToArray(), 2);
 
         private static readonly IFunction FunctionToken = new NativeFunction(values =>
@@ -515,7 +515,7 @@ namespace Cottle.Builtins
             var start = 0;
             var stop = source.IndexOf(search, StringComparison.Ordinal);
 
-            for (var i = Math.Max((int) values[2].AsNumber, 0); i > 0; --i)
+            for (var i = Math.Max((int)values[2].AsNumber, 0); i > 0; --i)
             {
                 if (stop == -1)
                 {
@@ -552,8 +552,8 @@ namespace Cottle.Builtins
             var result = new Dictionary<Value, Value>();
 
             foreach (var value in values)
-            foreach (var pair in value.Fields)
-                result[pair.Key] = pair.Value;
+                foreach (var pair in value.Fields)
+                    result[pair.Key] = pair.Value;
 
             return result;
         }, 0, -1);

@@ -6,13 +6,13 @@ namespace Cottle.Demo
 {
 	public partial class SettingForm : Form
 	{
-		#region Attributes
+#region Attributes
 
 		private readonly ApplyCallback apply;
 
-		#endregion
+#endregion
 
-		#region Constructors
+#region Constructors
 
 		public SettingForm (ApplyCallback apply, Parameters parameters)
 		{
@@ -29,9 +29,9 @@ namespace Cottle.Demo
 			this.textBoxBlockEnd.Text = parameters.BlockEnd;
 		}
 
-		#endregion
+#endregion
 
-		#region Methods
+#region Methods
 
 		private void buttonAccept_Click (object sender, EventArgs e)
 		{
@@ -55,9 +55,9 @@ namespace Cottle.Demo
 			this.Close ();
 		}
 
-		#endregion
+#endregion
 
-		#region Types
+#region Types
 
 		public delegate void ApplyCallback (Parameters config);
 
@@ -69,7 +69,7 @@ namespace Cottle.Demo
 			public int TrimmerIndex;
 		}
 
-		#endregion
+#endregion
 	}
 }
 #endif

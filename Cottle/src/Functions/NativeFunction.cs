@@ -114,7 +114,7 @@ namespace Cottle.Functions
             unchecked
             {
                 return
-                    (_callback.GetHashCode() & (int) 0xFFFFFF00) |
+                    (_callback.GetHashCode() & (int)0xFFFFFF00) |
                     (_max.GetHashCode() & 0x000000F0) |
                     (_min.GetHashCode() & 0x0000000F);
             }

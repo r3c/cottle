@@ -9,10 +9,10 @@ namespace Cottle.Test.Values
         public static void ReadMember()
         {
             ReadMember(true, new BooleanValue(true));
-            ReadMember((byte) 4, new NumberValue((byte) 4));
-            ReadMember((sbyte) -5, new NumberValue((sbyte) -5));
-            ReadMember((short) -9, new NumberValue((short) -9));
-            ReadMember((ushort) 8, new NumberValue(8));
+            ReadMember((byte)4, new NumberValue((byte)4));
+            ReadMember((sbyte)-5, new NumberValue((sbyte)-5));
+            ReadMember((short)-9, new NumberValue((short)-9));
+            ReadMember((ushort)8, new NumberValue(8));
             ReadMember(42, new NumberValue(42));
             ReadMember(42u, new NumberValue(42u));
             ReadMember(17L, new NumberValue(17L));

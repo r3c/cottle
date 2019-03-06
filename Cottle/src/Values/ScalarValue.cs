@@ -40,7 +40,7 @@ namespace Cottle.Values
                 return 1;
 
             if (Type != other.Type)
-                return ((int) Type).CompareTo((int) other.Type);
+                return ((int)Type).CompareTo((int)other.Type);
 
             return Converter(this).CompareTo(Converter(other));
         }

@@ -248,7 +248,7 @@ namespace Cottle.Test
         [TestCase("{\"xxxy\"}", 'x', "xy")]
         public void EscapeCommand(string input, char escape, string expected)
         {
-            var setting = new CustomSetting {Escape = escape};
+            var setting = new CustomSetting { Escape = escape };
 
             AssertRender(input, expected, setting, s => { }, d => { });
         }
@@ -260,7 +260,7 @@ namespace Cottle.Test
         [TestCase("--", '-', "-")]
         public void EscapeText(string input, char escape, string expected)
         {
-            var setting = new CustomSetting {Escape = escape};
+            var setting = new CustomSetting { Escape = escape };
 
             AssertRender(input, expected, setting, s => { }, d => { });
         }
@@ -283,9 +283,9 @@ namespace Cottle.Test
         {
             void Populate(IStore scope)
             {
-                scope["aaa"] = new[] {5, (Value) 7};
-                scope["bbb"] = new Dictionary<Value, Value> {{"x", "$X$"}, {"y", "$Y$"}};
-                scope["ccc"] = new Dictionary<Value, Value> {{"A", new Dictionary<Value, Value> {{"i", 50}}}, {1, 42}};
+                scope["aaa"] = new[] { 5, (Value)7 };
+                scope["bbb"] = new Dictionary<Value, Value> { { "x", "$X$" }, { "y", "$Y$" } };
+                scope["ccc"] = new Dictionary<Value, Value> { { "A", new Dictionary<Value, Value> { { "i", 50 } } }, { 1, 42 } };
             }
 
             AssertReturn("{return " + access + "}", expected, DefaultSetting.Instance, Populate, d => { });
@@ -319,9 +319,9 @@ namespace Cottle.Test
                 }, 1);
             }
 
-            AssertRender("{f('" + symbol + "')}", ((Value) expected).AsString + ((Value) expected).AsString,
+            AssertRender("{f('" + symbol + "')}", ((Value)expected).AsString + ((Value)expected).AsString,
                 DefaultSetting.Instance, Populate, d => { });
-            AssertReturn("{return f('" + symbol + "')}", ((Value) expected).ToString(), DefaultSetting.Instance,
+            AssertReturn("{return f('" + symbol + "')}", ((Value)expected).ToString(), DefaultSetting.Instance,
                 Populate, d => { });
         }
 
@@ -348,7 +348,7 @@ namespace Cottle.Test
         [TestCase("x", "missing", "x")]
         public void ExpressionSymbol(string set, string get, string value)
         {
-            var expected = (set == get ? (Value) value : VoidValue.Instance).ToString();
+            var expected = (set == get ? (Value)value : VoidValue.Instance).ToString();
 
             void Populate(IStore scope)
             {
@@ -361,7 +361,7 @@ namespace Cottle.Test
         [Test]
         public void OptimizeConstantMap()
         {
-            var setting = new CustomSetting {Optimize = false};
+            var setting = new CustomSetting { Optimize = false };
 
             AssertRender("{['X', 'Y', 'Z'][0]}", "X", setting, s => { }, d => { });
 
@@ -373,7 +373,7 @@ namespace Cottle.Test
         [Test]
         public void OptimizeReturn()
         {
-            var setting = new CustomSetting {Optimize = false};
+            var setting = new CustomSetting { Optimize = false };
 
             AssertRender("X{return 1}Y", "X", setting, s => { }, d => { });
 
@@ -458,7 +458,7 @@ namespace Cottle.Test
         [Test]
         public void TestAmbiguous()
         {
-            var setting = new CustomSetting {BlockBegin = "<|", BlockContinue = "<>", BlockEnd = "|>"};
+            var setting = new CustomSetting { BlockBegin = "<|", BlockContinue = "<>", BlockEnd = "|>" };
 
             AssertRender("<|1 || 0|>", "true", setting, s => { }, d => { });
         }
@@ -524,7 +524,7 @@ namespace Cottle.Test
         [TestCase("df98gd76dfg5df4g321gh0", "[^0-9]", "", "9876543210")]
         public void TextTrim(string value, string pattern, string replacement, string expected)
         {
-            var setting = new CustomSetting {Trimmer = s => Regex.Replace(s, pattern, replacement)};
+            var setting = new CustomSetting { Trimmer = s => Regex.Replace(s, pattern, replacement) };
 
             AssertRender(value, expected, setting, s => { }, d => { });
         }

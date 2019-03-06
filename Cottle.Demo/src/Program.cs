@@ -15,7 +15,7 @@ namespace Cottle.Demo
 			Application.EnableVisualStyles ();
 			Application.SetCompatibleTextRenderingDefault (false);
 			Application.Run (new DemoForm ());
-			#else
+#else
             throw new Exception("application was compiled with unsupported framework");
 #endif
         }

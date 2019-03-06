@@ -9,13 +9,13 @@ namespace Cottle.Demo
 {
 	public partial class NodeForm : Form
 	{
-		#region Attributes
+#region Attributes
 
 		private NodeAssignDelegate assign;
 
-		#endregion
+#endregion
 
-		#region Constructors
+#region Constructors
 
 		public NodeForm (NodeData data, NodeAssignDelegate assign)
 		{
@@ -62,9 +62,9 @@ namespace Cottle.Demo
 			this.ApplyType ();
 		}
 
-		#endregion
+#endregion
 
-		#region Methods / Listeners
+#region Methods / Listeners
 
 		private void buttonAccept_Click (object sender, EventArgs e)
 		{
@@ -126,9 +126,9 @@ namespace Cottle.Demo
 			this.ApplyType ();
 		}
 
-		#endregion
+#endregion
 
-		#region Methods / Private
+#region Methods / Private
 
 		private ValueContent ApplyType ()
 		{
@@ -152,13 +152,13 @@ namespace Cottle.Demo
 			return type;
 		}
 
-		#endregion
+#endregion
 
-		#region Types
+#region Types
 
 		public delegate void NodeAssignDelegate (string key, Value value);
 
-		#endregion
+#endregion
 	}
 }
 #endif

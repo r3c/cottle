@@ -706,7 +706,7 @@ namespace Cottle.Documents.Dynamic
 
         private void EmitStoreSetCall(StoreMode mode)
         {
-            _generator.Emit(OpCodes.Ldc_I4, (int) mode);
+            _generator.Emit(OpCodes.Ldc_I4, (int)mode);
             _generator.Emit(OpCodes.Callvirt,
                 Resolver.Method<Action<IStore, Value, Value, StoreMode>>((s, n, v, m) => s.Set(n, v, m)));
         }

@@ -23,7 +23,7 @@ namespace Cottle.Documents.Dynamic
             if (expression == null || expression.Member.MemberType != MemberTypes.Field)
                 throw new ArgumentException("can't get field information from expression", nameof(lambda));
 
-            return (FieldInfo) expression.Member;
+            return (FieldInfo)expression.Member;
         }
 
         public static MethodInfo Method<T>(Expression<T> lambda)
@@ -43,7 +43,7 @@ namespace Cottle.Documents.Dynamic
             if (expression == null || expression.Member.MemberType != MemberTypes.Property)
                 throw new ArgumentException("can't get property information from expression", nameof(lambda));
 
-            return (PropertyInfo) expression.Member;
+            return (PropertyInfo)expression.Member;
         }
     }
 }

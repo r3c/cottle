@@ -96,7 +96,7 @@ namespace Cottle.Maps
             if (key.Type != ValueContent.Number)
                 return false;
 
-            var index = (int) key.AsNumber;
+            var index = (int)key.AsNumber;
 
             return index >= 0 && index < _count;
         }
@@ -115,7 +115,7 @@ namespace Cottle.Maps
                 return false;
             }
 
-            var index = (int) key.AsNumber;
+            var index = (int)key.AsNumber;
 
             if (index < 0 || index >= _count)
             {

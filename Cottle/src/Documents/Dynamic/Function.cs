@@ -14,11 +14,11 @@ namespace Cottle.Documents.Dynamic
         public Function(IEnumerable<string> arguments, Command command, Trimmer trimmer)
         {
             var method = new DynamicMethod(string.Empty, typeof(Value),
-                new[] {typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter)}, GetType());
+                new[] { typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter) }, GetType());
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
 
             _storage = compiler.Compile(arguments, command);
-            _renderer = (Renderer) method.CreateDelegate(typeof(Renderer));
+            _renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
         }
 
         #endregion
@@ -28,9 +28,9 @@ namespace Cottle.Documents.Dynamic
         public static void Save(Command command, Trimmer trimmer, string assemblyName, string fileName)
         {
 #if NETSTANDARD2_0
-			var assembly =
- AssemblyBuilder.DefineDynamicAssembly (new AssemblyName (assemblyName), AssemblyBuilderAccess.Run);
-			var module = assembly.DefineDynamicModule (fileName);
+            var assembly =
+ AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
+            var module = assembly.DefineDynamicModule(fileName);
 #else
             var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(assemblyName),
                 AssemblyBuilderAccess.RunAndSave);
@@ -39,13 +39,13 @@ namespace Cottle.Documents.Dynamic
 
             var program = module.DefineType("Program", TypeAttributes.Public);
             var method = program.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(Value),
-                new[] {typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter)});
+                new[] { typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter) });
 
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
             compiler.Compile(Enumerable.Empty<string>(), command);
 
 #if NETSTANDARD2_0
-			program.CreateTypeInfo ();
+            program.CreateTypeInfo();
 #else
             program.CreateType();
             assembly.Save(fileName);

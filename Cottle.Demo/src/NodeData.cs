@@ -14,7 +14,7 @@
 
         #region Properties
 
-        public int ImageIndex => (int) Value.Type;
+        public int ImageIndex => (int)Value.Type;
 
         public string Key { get; }
 

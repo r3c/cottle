@@ -40,7 +40,7 @@ namespace Cottle.Documents.Simple.Nodes
             unchecked
             {
                 return
-                    (_mode.GetHashCode() & (int) 0xFFFF0000) |
+                    (_mode.GetHashCode() & (int)0xFFFF0000) |
                     (_name.GetHashCode() & 0x0000FFFF);
             }
         }

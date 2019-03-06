@@ -28,7 +28,7 @@ namespace Cottle.Values
         #region Constructors / Public
 
         public NumberValue(byte value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 
@@ -38,27 +38,27 @@ namespace Cottle.Values
         }
 
         public NumberValue(double value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 
         public NumberValue(float value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 
         public NumberValue(int value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 
         public NumberValue(long value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 
         public NumberValue(short value) :
-            this((decimal) value)
+            this((decimal)value)
         {
         }
 

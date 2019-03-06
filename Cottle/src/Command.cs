@@ -4,7 +4,7 @@
     {
         #region Attributes / Static
 
-        public static readonly Command NoOp = new Command {Type = CommandType.None};
+        public static readonly Command NoOp = new Command { Type = CommandType.None };
 
         #endregion
 

@@ -43,7 +43,7 @@ namespace Cottle.Demo
 
         private static bool Load(BinaryReader reader, out Value value)
         {
-            var type = (ValueContent) reader.ReadInt32();
+            var type = (ValueContent)reader.ReadInt32();
 
             switch (type)
             {
@@ -98,7 +98,7 @@ namespace Cottle.Demo
 
         private static void Save(BinaryWriter writer, Value value)
         {
-            writer.Write((int) value.Type);
+            writer.Write((int)value.Type);
 
             switch (value.Type)
             {

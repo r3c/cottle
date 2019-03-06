@@ -17,13 +17,13 @@ namespace Cottle.Demo
 {
 	public partial class DemoForm : Form
 	{
-		#region Constants
+#region Constants
 
 		private const string AUTOLOAD = "autoload.ctv";
 
-		#endregion
+#endregion
 
-		#region Attributes / Instance
+#region Attributes / Instance
 
 		private SettingForm.Parameters parameters = new SettingForm.Parameters
 		{
@@ -33,9 +33,9 @@ namespace Cottle.Demo
 			TrimmerIndex = TrimmerCollection.DefaultIndex
 		};
 
-		#endregion
+#endregion
 
-		#region Constructors
+#region Constructors
 
 		public DemoForm ()
 		{
@@ -47,9 +47,9 @@ namespace Cottle.Demo
 				this.StateLoad (DemoForm.AUTOLOAD, false);
 		}
 
-		#endregion
+#endregion
 
-		#region Methods / Listeners
+#region Methods / Listeners
 
 		private void buttonClean_Click (object sender, EventArgs e)
 		{
@@ -277,9 +277,9 @@ namespace Cottle.Demo
 			this.contextMenuStripTree.Tag = node;
 		}
 
-		#endregion
+#endregion
 
-		#region Methods / Private
+#region Methods / Private
 
 		private void DisplayError (ParseException exception)
 		{
@@ -521,7 +521,7 @@ namespace Cottle.Demo
 			return collection;
 		}
 
-		#endregion
+#endregion
 	}
 }
 #endif
