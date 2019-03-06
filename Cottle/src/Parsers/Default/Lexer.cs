@@ -11,19 +11,22 @@ namespace Cottle.Parsers.Default
 
         public Lexer(string blockBegin, string blockContinue, string blockEnd, char escape)
         {
-            _cursors = new List<LexemCursor>();
-            _escape = escape;
-            _pending = new Queue<char>();
-            _root = new LexemState();
+            var graph = new LexerGraph();
 
-            if (!_root.Store(LexemType.BlockBegin, blockBegin))
+            if (!graph.Register(blockBegin, LexemType.BlockBegin))
                 throw new ConfigException("blockBegin", blockBegin, "block delimiter used twice");
 
-            if (!_root.Store(LexemType.BlockContinue, blockContinue))
+            if (!graph.Register(blockContinue, LexemType.BlockContinue))
                 throw new ConfigException("blockContinue", blockContinue, "block delimiter used twice");
 
-            if (!_root.Store(LexemType.BlockEnd, blockEnd))
+            if (!graph.Register(blockEnd, LexemType.BlockEnd))
                 throw new ConfigException("blockEnd", blockEnd, "block delimiter used twice");
+
+            graph.BuildFallbacks();
+
+            _escape = escape;
+            _pending = null;
+            _root = graph.Root;
         }
 
         #endregion
@@ -43,19 +46,19 @@ namespace Cottle.Parsers.Default
         // A buffer containing more than 85000 bytes will be allocated on LOH
         private const int MaxBufferSize = 84000 / sizeof(char);
 
-        private readonly List<LexemCursor> _cursors;
-
         private bool _eof;
 
         private readonly char _escape;
 
         private char _last;
 
-        private readonly Queue<char> _pending;
+        private char? _next;
+
+        private Lexem? _pending;
 
         private TextReader _reader;
 
-        private readonly LexemState _root;
+        private readonly LexerNode _root;
 
         #endregion
 
@@ -84,10 +87,12 @@ namespace Cottle.Parsers.Default
         {
             Column = 1;
             Current = new Lexem();
+            Line = 1;
+
             _eof = false;
             _last = '\0';
-            Line = 1;
-            _pending.Clear();
+            _next = null;
+            _pending = null;
             _reader = reader;
 
             return Read();
@@ -104,7 +109,6 @@ namespace Cottle.Parsers.Default
                 if (_eof)
                     return new Lexem(LexemType.EndOfFile, "<EOF>");
 
-                StringBuilder buffer;
                 switch (_last)
                 {
                     case '\n':
@@ -130,7 +134,7 @@ namespace Cottle.Parsers.Default
                         if (Read() && _last == '&')
                             return NextChar(LexemType.DoubleAmpersand);
 
-                        _pending.Enqueue(_last);
+                        _next = _last;
                         _last = '&';
 
                         return new Lexem(LexemType.None, _last.ToString());
@@ -169,18 +173,18 @@ namespace Cottle.Parsers.Default
                     case '7':
                     case '8':
                     case '9':
-                        buffer = new StringBuilder();
+                        var numberBuffer = new StringBuilder();
                         var dot = false;
 
                         do
                         {
                             dot |= _last == '.';
 
-                            buffer.Append(_last);
+                            numberBuffer.Append(_last);
                         } while (Read() && (_last >= '0' && _last <= '9' ||
                                             _last == '.' && !dot));
 
-                        return new Lexem(LexemType.Number, buffer.ToString());
+                        return new Lexem(LexemType.Number, numberBuffer.ToString());
 
                     case ':':
                         return NextChar(LexemType.Colon);
@@ -253,23 +257,23 @@ namespace Cottle.Parsers.Default
                     case 'x':
                     case 'y':
                     case 'z':
-                        buffer = new StringBuilder();
+                        var symbolBuffer = new StringBuilder();
 
                         do
                         {
-                            buffer.Append(_last);
+                            symbolBuffer.Append(_last);
                         } while (Read() && (_last >= '0' && _last <= '9' ||
                                             _last >= 'A' && _last <= 'Z' ||
                                             _last >= 'a' && _last <= 'z' ||
                                             _last == '_'));
 
-                        return new Lexem(LexemType.Symbol, buffer.ToString());
+                        return new Lexem(LexemType.Symbol, symbolBuffer.ToString());
 
                     case '|':
                         if (Read() && _last == '|')
                             return NextChar(LexemType.DoublePipe);
 
-                        _pending.Enqueue(_last);
+                        _next = _last;
                         _last = '|';
 
                         return new Lexem(LexemType.None, _last.ToString());
@@ -282,19 +286,19 @@ namespace Cottle.Parsers.Default
 
                     case '\'':
                     case '"':
-                        buffer = new StringBuilder();
+                        var stringBuffer = new StringBuilder();
                         var end = _last;
 
                         while (Read() && _last != end)
                             if (_last != _escape || Read())
-                                buffer.Append(_last);
+                                stringBuffer.Append(_last);
 
                         if (_eof)
                             throw new ParseException(Column, Line, "<eof>", "end of string");
 
                         Read();
 
-                        return new Lexem(LexemType.String, buffer.ToString());
+                        return new Lexem(LexemType.String, stringBuffer.ToString());
 
                     default:
                         return new Lexem(LexemType.None, _last.ToString());
@@ -313,95 +317,58 @@ namespace Cottle.Parsers.Default
 
         private Lexem NextRaw()
         {
+            if (_pending.HasValue)
+            {
+                var lexem = _pending.Value;
+
+                _pending = null;
+
+                return lexem;
+            }
+
             var buffer = new StringBuilder();
+            var node = _root;
 
-            for (; !_eof; Read())
-                // Escape sequence found, cancel all pending cursors
-                if (_last == _escape && Read())
+            while (!_eof)
+            {
+                var current = _last;
+
+                Read();
+
+                // Escape sequence found, flush pending match and append escaped character
+                if (current == _escape && !_eof)
                 {
-                    foreach (var cursor in _cursors)
-                        buffer.Append(cursor.Character);
+                    buffer.Append(node.FallbackDrop).Append(_last);
+                    node = _root;
 
-                    _cursors.Clear();
-
-                    buffer.Append(_last);
+                    Read();
                 }
 
                 // Not an escape sequence, move all cursors
                 else
                 {
-                    _cursors.Add(new LexemCursor(_last, _root));
+                    node = node.MoveTo(current, buffer);
 
-                    for (var candidate = 0; candidate < _cursors.Count; ++candidate)
+                    if (node.Type != LexemType.None)
                     {
-                        var next = _cursors[candidate].Move(_last);
+                        var lexem = new Lexem(node.Type, string.Empty);
 
-                        _cursors[candidate] = next;
-
-                        // No lexem matched for this cursor, continue loop
-                        if (next.State == null || next.State.Type == LexemType.None)
-                            continue;
-
-                        // Lexem matched, flush characters located before it
-                        for (var i = 0; i < candidate; ++i)
-                            buffer.Append(_cursors[i].Character);
-
-                        // Concatenate matched characters to build matched lexem string
-                        var token = new StringBuilder();
-
-                        while (candidate < _cursors.Count)
-                            token.Append(_cursors[candidate++].Character);
-
-                        // Return lexem if no text was located before or enqueue otherwise
-                        Lexem lexem;
                         if (buffer.Length < 1)
-                        {
-                            lexem = new Lexem(next.State.Type, token.ToString());
-                        }
-                        else
-                        {
-                            for (var i = 0; i < token.Length; ++i)
-                                _pending.Enqueue(token[i]);
+                            return lexem;
 
-                            lexem = new Lexem(LexemType.Text, buffer.ToString());
-                        }
-
-                        Read();
-
-                        _cursors.Clear();
-
-                        return lexem;
-                    }
-
-                    // Remove dead cursors and shift next ones
-                    var first = 0;
-
-                    while (first < _cursors.Count && _cursors[first].State == null)
-                        buffer.Append(_cursors[first++].Character);
-
-                    if (first > 0)
-                    {
-                        var copy = 0;
-
-                        while (first < _cursors.Count)
-                            _cursors[copy++] = _cursors[first++];
-
-                        _cursors.RemoveRange(copy, _cursors.Count - copy);
-                    }
-
-                    // Stop appending to buffer if we're about to reach LOH size and no cursor is pending
-                    if (buffer.Length > MaxBufferSize && _cursors.Count < 1)
-                    {
-                        Read();
+                        _pending = lexem;
 
                         return new Lexem(LexemType.Text, buffer.ToString());
                     }
+
+                    // Stop appending to buffer if we're about to reach LOH
+                    // size and we are not in the middle of a match candidate
+                    if (buffer.Length > MaxBufferSize && node.FallbackNode == null)
+                        return new Lexem(LexemType.Text, buffer.ToString());
                 }
+            }
 
-            foreach (var cursor in _cursors)
-                buffer.Append(cursor.Character);
-
-            _cursors.Clear();
+            buffer.Append(node.FallbackDrop);
 
             if (buffer.Length > 0)
                 return new Lexem(LexemType.Text, buffer.ToString());
@@ -414,9 +381,10 @@ namespace Cottle.Parsers.Default
             if (_eof)
                 return false;
 
-            if (_pending.Count > 0)
+            if (_next.HasValue)
             {
-                _last = _pending.Dequeue();
+                _last = _next.Value;
+                _next = null;
 
                 return true;
             }
@@ -430,7 +398,7 @@ namespace Cottle.Parsers.Default
                 return false;
             }
 
-            _last = (char) value;
+            _last = (char)value;
 
             if (_last == '\n')
             {

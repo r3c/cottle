@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Les informations générales relatives à un assembly dépendent de 
@@ -6,8 +7,8 @@ using System.Runtime.InteropServices;
 // associées à un assembly.
 [assembly: AssemblyTitle("Cottle")]
 [assembly:
-    AssemblyDescription(
-        "Fast, lightweight &amp; extensible open-source template engine for any text-based target format (e.g. HTML, JavaScript, CSS, plain text...). Its mini-language supports text substitution, functions &amp; variables, flow control and more.")]
+	AssemblyDescription(
+		"Fast, lightweight &amp; extensible open-source template engine for any text-based target format (e.g. HTML, JavaScript, CSS, plain text...). Its mini-language supports text substitution, functions &amp; variables, flow control and more.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Remi Caput")]
 [assembly: AssemblyProduct("Cottle")]
@@ -35,3 +36,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.4.2.0")]
 [assembly: AssemblyFileVersion("1.4.2.0")]
+
+[assembly: InternalsVisibleTo("Cottle.Test")]

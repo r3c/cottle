@@ -456,11 +456,13 @@ namespace Cottle.Test
         }
 
         [Test]
-        public void TestAmbiguous()
+        [TestCase("<|", "|>", "1 || 0", "true")]
+        [TestCase("<&", "&>", "1 && 0", "")]
+        public void TestAmbiguous(string blockBegin, string blockEnd, string expression, string expected)
         {
-            var setting = new CustomSetting { BlockBegin = "<|", BlockContinue = "<>", BlockEnd = "|>" };
+            var setting = new CustomSetting { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
 
-            AssertRender("<|1 || 0|>", "true", setting, s => { }, d => { });
+            AssertRender(blockBegin + expression + blockEnd, expected, setting, s => { }, d => { });
         }
 
         [Test]
