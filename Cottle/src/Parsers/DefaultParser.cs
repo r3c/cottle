@@ -50,7 +50,7 @@ namespace Cottle.Parsers
         public Command Parse(TextReader reader)
         {
             _lexer.Reset(reader);
-            _lexer.Next(LexerMode.Raw);
+            _lexer.NextRaw();
 
             var command = ParseCommand();
 
@@ -88,15 +88,15 @@ namespace Cottle.Parsers
             {
                 arguments = new List<string>();
 
-                for (_lexer.Next(LexerMode.Block); _lexer.Current.Type != LexemType.ParenthesisEnd;)
+                for (_lexer.NextBlock(); _lexer.Current.Type != LexemType.ParenthesisEnd;)
                 {
                     arguments.Add(ParseSymbol());
 
                     if (_lexer.Current.Type == LexemType.Comma)
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
                 }
 
-                _lexer.Next(LexerMode.Block);
+                _lexer.NextBlock();
             }
             else
             {
@@ -106,7 +106,7 @@ namespace Cottle.Parsers
             // Early exit if no body, render nor value is defined
             if (_lexer.Current.Type != LexemType.Symbol)
             {
-                _lexer.Next(LexerMode.Raw);
+                _lexer.NextRaw();
 
                 // Arguments were defined, build function assignment
                 if (arguments != null)
@@ -135,7 +135,7 @@ namespace Cottle.Parsers
                 // FIXME: should raise event
                 if (_lexer.Current.Content == "as")
                 {
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     mode = StoreMode.Local;
                 }
@@ -186,7 +186,7 @@ namespace Cottle.Parsers
             if (_lexer.Current.Type != LexemType.Colon)
                 Raise("body separator (':')");
 
-            _lexer.Next(LexerMode.Raw);
+            _lexer.NextRaw();
 
             return ParseCommand();
         }
@@ -208,11 +208,11 @@ namespace Cottle.Parsers
                 switch (_lexer.Current.Type)
                 {
                     case LexemType.BlockBegin:
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         if (_lexer.Current.Type == LexemType.Symbol &&
                             Keywords.TryGetValue(_lexer.Current.Content, out var parse))
-                            _lexer.Next(LexerMode.Block);
+                            _lexer.NextBlock();
                         else
                             parse = p => p.ParseKeywordOperand(CommandType.Echo);
 
@@ -221,7 +221,7 @@ namespace Cottle.Parsers
                         if (_lexer.Current.Type != LexemType.BlockEnd)
                             throw Raise("end of block");
 
-                        _lexer.Next(LexerMode.Raw);
+                        _lexer.NextRaw();
 
                         break;
 
@@ -232,7 +232,7 @@ namespace Cottle.Parsers
                             Type = CommandType.Literal
                         };
 
-                        _lexer.Next(LexerMode.Raw);
+                        _lexer.NextRaw();
 
                         break;
 
@@ -285,7 +285,7 @@ namespace Cottle.Parsers
             if (_lexer.Current.Type != type || _lexer.Current.Content != value)
                 throw Raise(expected);
 
-            _lexer.Next(LexerMode.Block);
+            _lexer.NextBlock();
         }
 
         private Expression ParseExpression()
@@ -378,7 +378,7 @@ namespace Cottle.Parsers
                         return operands.Pop();
                 }
 
-                _lexer.Next(LexerMode.Block);
+                _lexer.NextBlock();
 
                 while (operators.Count > 0 && operators.Peek().Precedence >= current.Precedence)
                 {
@@ -396,7 +396,7 @@ namespace Cottle.Parsers
         {
             do
             {
-                _lexer.Next(LexerMode.Raw);
+                _lexer.NextRaw();
             } while (_lexer.Current.Type == LexemType.Text);
 
             return null;
@@ -416,7 +416,7 @@ namespace Cottle.Parsers
 
             if (_lexer.Current.Type == LexemType.Comma)
             {
-                _lexer.Next(LexerMode.Block);
+                _lexer.NextBlock();
 
                 value = ParseSymbol();
             }
@@ -433,7 +433,7 @@ namespace Cottle.Parsers
 
             if (_lexer.Current.Type == LexemType.BlockContinue)
             {
-                _lexer.Next(LexerMode.Block);
+                _lexer.NextBlock();
 
                 ParseExpected(LexemType.Symbol, "empty", "'empty' keyword");
 
@@ -469,12 +469,12 @@ namespace Cottle.Parsers
 
             while (current.Next == null && _lexer.Current.Type == LexemType.BlockContinue)
             {
-                _lexer.Next(LexerMode.Block);
+                _lexer.NextBlock();
 
                 switch (_lexer.Current.Type == LexemType.Symbol ? _lexer.Current.Content : string.Empty)
                 {
                     case "elif":
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         condition = ParseExpression();
 
@@ -490,7 +490,7 @@ namespace Cottle.Parsers
                         break;
 
                     case "else":
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         current.Next = ParseBody();
 
@@ -535,7 +535,7 @@ namespace Cottle.Parsers
         {
             var expression = ParseExpression();
 
-            _lexer.Next(LexerMode.Raw);
+            _lexer.NextRaw();
 
             return expression;
         }
@@ -547,7 +547,7 @@ namespace Cottle.Parsers
 
             var name = _lexer.Current.Content;
 
-            _lexer.Next(LexerMode.Block);
+            _lexer.NextBlock();
 
             return name;
         }
@@ -560,7 +560,7 @@ namespace Cottle.Parsers
             switch (_lexer.Current.Type)
             {
                 case LexemType.Bang:
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     return BuildOperator(BuiltinOperators.OperatorNot, ParseValue());
 
@@ -568,13 +568,13 @@ namespace Cottle.Parsers
                     var elements = new List<ExpressionElement>();
                     var index = 0;
 
-                    for (_lexer.Next(LexerMode.Block); _lexer.Current.Type != LexemType.BracketEnd;)
+                    for (_lexer.NextBlock(); _lexer.Current.Type != LexemType.BracketEnd;)
                     {
                         var key = ParseExpression();
 
                         if (_lexer.Current.Type == LexemType.Colon)
                         {
-                            _lexer.Next(LexerMode.Block);
+                            _lexer.NextBlock();
 
                             value = ParseExpression();
                         }
@@ -591,7 +591,7 @@ namespace Cottle.Parsers
                         elements.Add(new ExpressionElement(key, value));
 
                         if (_lexer.Current.Type == LexemType.Comma)
-                            _lexer.Next(LexerMode.Block);
+                            _lexer.NextBlock();
                     }
 
                     expression = new Expression
@@ -600,12 +600,12 @@ namespace Cottle.Parsers
                         Type = ExpressionType.Map
                     };
 
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     break;
 
                 case LexemType.Minus:
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     expression = new Expression
                     {
@@ -626,24 +626,24 @@ namespace Cottle.Parsers
                         Value = number
                     };
 
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     break;
 
                 case LexemType.ParenthesisBegin:
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     expression = ParseExpression();
 
                     if (_lexer.Current.Type != LexemType.ParenthesisEnd)
                         throw Raise("parenthesis end (')')");
 
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     return expression;
 
                 case LexemType.Plus:
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     return ParseValue();
 
@@ -654,7 +654,7 @@ namespace Cottle.Parsers
                         Value = _lexer.Current.Content
                     };
 
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     break;
 
@@ -665,7 +665,7 @@ namespace Cottle.Parsers
                         Value = _lexer.Current.Content
                     };
 
-                    _lexer.Next(LexerMode.Block);
+                    _lexer.NextBlock();
 
                     break;
 
@@ -677,14 +677,14 @@ namespace Cottle.Parsers
                 switch (_lexer.Current.Type)
                 {
                     case LexemType.BracketBegin:
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         value = ParseExpression();
 
                         if (_lexer.Current.Type != LexemType.BracketEnd)
                             throw Raise("array index end (']')");
 
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         expression = new Expression
                         {
@@ -696,7 +696,7 @@ namespace Cottle.Parsers
                         break;
 
                     case LexemType.Dot:
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         if (_lexer.Current.Type != LexemType.Symbol)
                             throw Raise("field name");
@@ -712,22 +712,22 @@ namespace Cottle.Parsers
                             Type = ExpressionType.Access
                         };
 
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         break;
 
                     case LexemType.ParenthesisBegin:
                         var arguments = new List<Expression>();
 
-                        for (_lexer.Next(LexerMode.Block); _lexer.Current.Type != LexemType.ParenthesisEnd;)
+                        for (_lexer.NextBlock(); _lexer.Current.Type != LexemType.ParenthesisEnd;)
                         {
                             arguments.Add(ParseExpression());
 
                             if (_lexer.Current.Type == LexemType.Comma)
-                                _lexer.Next(LexerMode.Block);
+                                _lexer.NextBlock();
                         }
 
-                        _lexer.Next(LexerMode.Block);
+                        _lexer.NextBlock();
 
                         expression = new Expression
                         {

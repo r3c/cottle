@@ -64,23 +64,14 @@ namespace Cottle.Parsers.Default
 
         #region Methods / Public
 
-        public void Next(LexerMode mode)
+        public void NextBlock()
         {
-            switch (mode)
-            {
-                case LexerMode.Block:
-                    Current = NextBlock();
+            Current = ReadBlock();
+        }
 
-                    break;
-
-                case LexerMode.Raw:
-                    Current = NextRaw();
-
-                    break;
-
-                default:
-                    throw new ParseException(Column, Line, "<?>", "block or raw text");
-            }
+        public void NextRaw()
+        {
+            Current = ReadRaw();
         }
 
         public bool Reset(TextReader reader)
@@ -102,13 +93,10 @@ namespace Cottle.Parsers.Default
 
         #region Methods / Private
 
-        private Lexem NextBlock()
+        private Lexem ReadBlock()
         {
-            while (true)
+            while (!_eof)
             {
-                if (_eof)
-                    return new Lexem(LexemType.EndOfFile, "<EOF>");
-
                 switch (_last)
                 {
                     case '\n':
@@ -123,16 +111,16 @@ namespace Cottle.Parsers.Default
 
                     case '!':
                         if (Read() && _last == '=')
-                            return NextChar(LexemType.NotEqual);
+                            return ReadChar(LexemType.NotEqual);
 
                         return new Lexem(LexemType.Bang, string.Empty);
 
                     case '%':
-                        return NextChar(LexemType.Percent);
+                        return ReadChar(LexemType.Percent);
 
                     case '&':
                         if (Read() && _last == '&')
-                            return NextChar(LexemType.DoubleAmpersand);
+                            return ReadChar(LexemType.DoubleAmpersand);
 
                         _next = _last;
                         _last = '&';
@@ -140,28 +128,28 @@ namespace Cottle.Parsers.Default
                         return new Lexem(LexemType.None, _last.ToString());
 
                     case '(':
-                        return NextChar(LexemType.ParenthesisBegin);
+                        return ReadChar(LexemType.ParenthesisBegin);
 
                     case ')':
-                        return NextChar(LexemType.ParenthesisEnd);
+                        return ReadChar(LexemType.ParenthesisEnd);
 
                     case '*':
-                        return NextChar(LexemType.Star);
+                        return ReadChar(LexemType.Star);
 
                     case '+':
-                        return NextChar(LexemType.Plus);
+                        return ReadChar(LexemType.Plus);
 
                     case ',':
-                        return NextChar(LexemType.Comma);
+                        return ReadChar(LexemType.Comma);
 
                     case '-':
-                        return NextChar(LexemType.Minus);
+                        return ReadChar(LexemType.Minus);
 
                     case '.':
-                        return NextChar(LexemType.Dot);
+                        return ReadChar(LexemType.Dot);
 
                     case '/':
-                        return NextChar(LexemType.Slash);
+                        return ReadChar(LexemType.Slash);
 
                     case '0':
                     case '1':
@@ -187,20 +175,20 @@ namespace Cottle.Parsers.Default
                         return new Lexem(LexemType.Number, numberBuffer.ToString());
 
                     case ':':
-                        return NextChar(LexemType.Colon);
+                        return ReadChar(LexemType.Colon);
 
                     case '<':
                         if (Read() && _last == '=')
-                            return NextChar(LexemType.LowerEqual);
+                            return ReadChar(LexemType.LowerEqual);
 
                         return new Lexem(LexemType.LowerThan, string.Empty);
 
                     case '=':
-                        return NextChar(LexemType.Equal);
+                        return ReadChar(LexemType.Equal);
 
                     case '>':
                         if (Read() && _last == '=')
-                            return NextChar(LexemType.GreaterEqual);
+                            return ReadChar(LexemType.GreaterEqual);
 
                         return new Lexem(LexemType.GreaterThan, string.Empty);
 
@@ -271,7 +259,7 @@ namespace Cottle.Parsers.Default
 
                     case '|':
                         if (Read() && _last == '|')
-                            return NextChar(LexemType.DoublePipe);
+                            return ReadChar(LexemType.DoublePipe);
 
                         _next = _last;
                         _last = '|';
@@ -279,10 +267,10 @@ namespace Cottle.Parsers.Default
                         return new Lexem(LexemType.None, _last.ToString());
 
                     case '[':
-                        return NextChar(LexemType.BracketBegin);
+                        return ReadChar(LexemType.BracketBegin);
 
                     case ']':
-                        return NextChar(LexemType.BracketEnd);
+                        return ReadChar(LexemType.BracketEnd);
 
                     case '\'':
                     case '"':
@@ -294,7 +282,7 @@ namespace Cottle.Parsers.Default
                                 stringBuffer.Append(_last);
 
                         if (_eof)
-                            throw new ParseException(Column, Line, "<eof>", "end of string");
+                            throw new ParseException(Column, Line, "<EOF>", "end of string");
 
                         Read();
 
@@ -304,9 +292,11 @@ namespace Cottle.Parsers.Default
                         return new Lexem(LexemType.None, _last.ToString());
                 }
             }
+
+            return new Lexem(LexemType.EndOfFile, "<EOF>");
         }
 
-        private Lexem NextChar(LexemType type)
+        private Lexem ReadChar(LexemType type)
         {
             var lexem = new Lexem(type, _last.ToString());
 
@@ -315,7 +305,7 @@ namespace Cottle.Parsers.Default
             return lexem;
         }
 
-        private Lexem NextRaw()
+        private Lexem ReadRaw()
         {
             if (_pending.HasValue)
             {
