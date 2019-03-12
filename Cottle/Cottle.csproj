@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Lightweight &amp; extensible template library for .NET 4.7.2 and above.</Description>
+    <AssemblyName>Cottle</AssemblyName>
     <AssemblyTitle>Cottle: Compact Object to Text Transform Language</AssemblyTitle>
+    <Description>Lightweight &amp; extensible template engine library for .NET 4.7.2 and above.</Description>
     <Version>1.4.3.0</Version>
     <Authors>Remi Caput</Authors>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>Cottle</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <PackageIconUrl>https://raw.github.com/r3c/cottle/master/icon.png</PackageIconUrl>
     <PackageId>Cottle</PackageId>
     <PackageLicenseUrl>https://raw.github.com/r3c/cottle/master/LICENSE.md</PackageLicenseUrl>
@@ -25,4 +24,10 @@
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- From: https://stackoverflow.com/questions/42810705/visual-studio-2017-new-csproj-internalsvisibleto -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(MSBuildProjectName).Test</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>
