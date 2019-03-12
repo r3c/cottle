@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Lightweight &amp; extensible template library for .NET 4.7.2 and above.</Description>
     <AssemblyTitle>Cottle: Compact Object to Text Transform Language</AssemblyTitle>
-    <Version>1.4.2.0</Version>
+    <Version>1.4.3.0</Version>
     <Authors>Remi Caput</Authors>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <LangVersion>latest</LangVersion>
