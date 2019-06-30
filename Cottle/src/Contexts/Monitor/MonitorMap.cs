@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Cottle.Stores.Monitor.SymbolUsages;
+using Cottle.Contexts.Monitor.SymbolUsages;
 using Cottle.Values;
 
-namespace Cottle.Stores.Monitor
+namespace Cottle.Contexts.Monitor
 {
-    class MonitorMap : IMap
+    internal class MonitorMap : IMap
     {
         public int Count => this.map.Count;
 
@@ -25,7 +25,7 @@ namespace Cottle.Stores.Monitor
 
         public IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
         {
-            foreach (KeyValuePair<Value, Value> pair in this.map)
+            foreach (var pair in this.map)
             {
                 var child = this.usage.Declare(pair.Key, pair.Value);
                 var value = new MonitorValue(pair.Value, child);

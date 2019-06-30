@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Cottle.Stores.Monitor.SymbolUsages
+namespace Cottle.Contexts.Monitor.SymbolUsages
 {
-    class MutableSymbolUsage : ISymbolUsage
+    internal class MutableSymbolUsage : ISymbolUsage
     {
         public IReadOnlyDictionary<Value, IReadOnlyList<ISymbolUsage>> Fields =>
             this.fields.ToDictionary(p => p.Key, p => p.Value as IReadOnlyList<ISymbolUsage>);

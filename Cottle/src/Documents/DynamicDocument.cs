@@ -2,6 +2,7 @@
 using System.Linq;
 using Cottle.Documents.Dynamic;
 using Cottle.Settings;
+using Cottle.Stores;
 
 namespace Cottle.Documents
 {
@@ -15,7 +16,7 @@ namespace Cottle.Documents
     {
         #region Attributes
 
-        private readonly Function _main;
+        private readonly Function main;
 
         #endregion
 
@@ -25,7 +26,7 @@ namespace Cottle.Documents
         {
             var parser = ParserFactory.BuildParser(setting);
 
-            _main = new Function(Enumerable.Empty<string>(), parser.Parse(reader), setting.Trimmer);
+            this.main = new Function(Enumerable.Empty<string>(), parser.Parse(reader), setting.Trimmer);
         }
 
         public DynamicDocument(TextReader reader) :
@@ -47,9 +48,9 @@ namespace Cottle.Documents
 
         #region Methods
 
-        public override Value Render(IStore store, TextWriter writer)
+        public override Value Render(IContext context, TextWriter writer)
         {
-            return _main.Execute(null, store, writer);
+            return this.main.Execute(null, new ContextStore(context), writer);
         }
 
         public static void Save(TextReader reader, ISetting setting, string assemblyName, string fileName)

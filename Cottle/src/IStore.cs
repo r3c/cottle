@@ -1,14 +1,8 @@
 ﻿namespace Cottle
 {
-    public interface IStore
+    public interface IStore : IContext
     {
-        #region Properties
-
-        Value this[Value symbol] { get; set; }
-
-        #endregion
-
-        #region Methods
+        new Value this[Value symbol] { get; set; }
 
         void Enter();
 
@@ -17,7 +11,5 @@
         void Set(Value symbol, Value value, StoreMode mode);
 
         bool TryGet(Value symbol, out Value value);
-
-        #endregion
     }
 }

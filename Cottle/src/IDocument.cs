@@ -4,12 +4,8 @@ namespace Cottle
 {
     public interface IDocument
     {
-        #region Methods
+        Value Render(IContext context, TextWriter writer);
 
-        Value Render(IStore store, TextWriter writer);
-
-        string Render(IStore store);
-
-        #endregion
+        string Render(IContext context);
     }
 }

@@ -8,7 +8,7 @@ namespace Cottle
         #region Properties
 
         /// <summary>
-        ///     Get number of elements in this map.
+        /// Get number of elements in this map.
         /// </summary>
         int Count { get; }
 
@@ -17,14 +17,14 @@ namespace Cottle
         #region Methods
 
         /// <summary>
-        ///     Check whether this map contains a pair with given key or not.
+        /// Check whether this map contains a pair with given key or not.
         /// </summary>
         /// <param name="key">Requested key</param>
         /// <returns>True if key was found, false otherwise</returns>
         bool Contains(Value key);
 
         /// <summary>
-        ///     Retrieve value from pair associated to given key.
+        /// Retrieve value from pair associated to given key.
         /// </summary>
         /// <param name="key">Requested key</param>
         /// <param name="value">Output value if found</param>

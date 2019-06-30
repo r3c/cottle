@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Cottle.Contexts.Monitor;
+using Cottle.Contexts.Monitor.SymbolUsages;
 using Cottle.Stores.Monitor;
-using Cottle.Stores.Monitor.SymbolUsages;
 using Cottle.Values;
 
 namespace Cottle.Stores
@@ -10,7 +12,10 @@ namespace Cottle.Stores
         /// <summary>
         /// Symbol usage statistics on underlying Cottle store instance.
         /// </summary>
-        public IReadOnlyDictionary<Value, IReadOnlyList<ISymbolUsage>> Symbols => this.usage.Fields;
+        public IReadOnlyDictionary<Value, IReadOnlyList<Monitor.ISymbolUsage>> Symbols =>
+            this.usage.Fields.ToDictionary(f => f.Key,
+                f => f.Value.Select(v => new CompatibilitySymbolUsage(v)).ToArray() as
+                    IReadOnlyList<Monitor.ISymbolUsage>);
 
         public Value this[Value symbol]
         {

@@ -1,8 +1,8 @@
-﻿using Cottle.Stores.Monitor.SymbolUsages;
+﻿using Cottle.Contexts.Monitor.SymbolUsages;
 
-namespace Cottle.Stores.Monitor
+namespace Cottle.Contexts.Monitor
 {
-    class MonitorValue : Value
+    internal class MonitorValue : Value
     {
         public override bool AsBoolean => this.value.AsBoolean;
         public override IFunction AsFunction => this.value.AsFunction;
