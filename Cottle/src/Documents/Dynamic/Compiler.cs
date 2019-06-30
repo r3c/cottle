@@ -628,7 +628,7 @@ namespace Cottle.Documents.Dynamic
         private void EmitCallFunctionExecute()
         {
             _generator.Emit(OpCodes.Callvirt,
-                Resolver.Method<Func<IFunction, IList<Value>, IStore, TextWriter, Value>>((f, a, s, o) =>
+                Resolver.Method<Func<IFunction, IReadOnlyList<Value>, IStore, TextWriter, Value>>((f, a, s, o) =>
                     f.Execute(a, s, o)));
         }
 

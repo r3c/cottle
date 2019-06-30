@@ -7,50 +7,40 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
     internal class FunctionAssignNode : AssignNode, IFunction
     {
-        #region Constructors
-
         public FunctionAssignNode(string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
             base(name, mode)
         {
-            _arguments = arguments.ToArray();
-            _body = body;
+            this.arguments = arguments.ToArray();
+            this.body = body;
         }
 
-        #endregion
+        private readonly string[] arguments;
 
-        #region Attributes
-
-        private readonly string[] _arguments;
-
-        private readonly INode _body;
-
-        #endregion
-
-        #region Methods / Public
+        private readonly INode body;
 
         public int CompareTo(IFunction other)
         {
-            return ReferenceEquals(this, other) ? 0 : 1;
+            return object.ReferenceEquals(this, other) ? 0 : 1;
         }
 
         public bool Equals(IFunction other)
         {
-            return CompareTo(other) == 0;
+            return this.CompareTo(other) == 0;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is IFunction other && Equals(other);
+            return obj is IFunction other && this.Equals(other);
         }
 
-        public Value Execute(IList<Value> arguments, IStore store, TextWriter output)
+        public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
         {
             store.Enter();
 
-            for (var i = 0; i < _arguments.Length; ++i)
-                store.Set(_arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
+            for (var i = 0; i < this.arguments.Length; ++i)
+                store.Set(this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
 
-            _body.Render(store, output, out var result);
+            this.body.Render(store, output, out var result);
 
             store.Leave();
 
@@ -62,14 +52,10 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             unchecked
             {
                 return
-                    (_body.GetHashCode() & (int)0xFFFFFF00) |
+                    (this.body.GetHashCode() & (int)0xFFFFFF00) |
                     (base.GetHashCode() & 0x000000FF);
             }
         }
-
-        #endregion
-
-        #region Methods / Protected
 
         protected override Value Evaluate(IStore store, TextWriter output)
         {
@@ -83,7 +69,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             output.Write(name);
             output.Write('(');
 
-            foreach (var argument in _arguments)
+            foreach (var argument in this.arguments)
             {
                 if (comma)
                     output.Write(", ");
@@ -100,9 +86,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
         {
             output.Write(':');
 
-            _body.Source(setting, output);
+            this.body.Source(setting, output);
         }
-
-        #endregion
     }
 }

@@ -14,11 +14,11 @@ namespace Cottle.Documents.Dynamic
         public Function(IEnumerable<string> arguments, Command command, Trimmer trimmer)
         {
             var method = new DynamicMethod(string.Empty, typeof(Value),
-                new[] { typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter) }, GetType());
+                new[] { typeof(Storage), typeof(IReadOnlyList<Value>), typeof(IStore), typeof(TextWriter) }, this.GetType());
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
 
-            _storage = compiler.Compile(arguments, command);
-            _renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
+            this.storage = compiler.Compile(arguments, command);
+            this.renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
         }
 
         #endregion
@@ -56,9 +56,9 @@ namespace Cottle.Documents.Dynamic
 
         #region Attributes
 
-        private readonly Renderer _renderer;
+        private readonly Renderer renderer;
 
-        private readonly Storage _storage;
+        private readonly Storage storage;
 
         #endregion
 
@@ -66,27 +66,27 @@ namespace Cottle.Documents.Dynamic
 
         public int CompareTo(IFunction other)
         {
-            return ReferenceEquals(this, other) ? 0 : 1;
+            return object.ReferenceEquals(this, other) ? 0 : 1;
         }
 
         public bool Equals(IFunction other)
         {
-            return CompareTo(other) == 0;
+            return this.CompareTo(other) == 0;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is IFunction other && Equals(other);
+            return obj is IFunction other && this.Equals(other);
         }
 
-        public Value Execute(IList<Value> arguments, IStore store, TextWriter output)
+        public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
         {
-            return _renderer(_storage, arguments, store, output);
+            return this.renderer(this.storage, arguments, store, output);
         }
 
         public override int GetHashCode()
         {
-            return _renderer.GetHashCode();
+            return this.renderer.GetHashCode();
         }
 
         public override string ToString()
