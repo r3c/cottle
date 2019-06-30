@@ -72,24 +72,18 @@ namespace Cottle.Demo
 
 		private void buttonEvaluate_Click (object sender, EventArgs e)
 		{
-			SimpleDocument document;
-			ISetting setting;
-			IStore store;
-
-			setting = this.SettingCreate ();
-
 			try
 			{
-				document = new SimpleDocument (this.textBoxInput.Text, setting);
-				store = new BuiltinStore ();
+				var document = new SimpleDocument (this.textBoxInput.Text, this.SettingCreate ());
+				var symbols = new Dictionary<Value, Value>();
 
 				foreach (TreeNode root in this.treeViewValue.Nodes)
 				{
-					foreach (KeyValuePair<Value, Value> pair in this.ValuesBuild (root.Nodes))
-						store.Set (pair.Key, pair.Value, StoreMode.Global);
+					foreach (var pair in this.ValuesBuild (root.Nodes))
+						symbols[pair.Key] = pair.Value;
 				}
 
-				this.DisplayText (document.Render (store));
+				this.DisplayText(document.Render(Context.CreateBuiltin(symbols)));
 			}
 			catch (ParseException exception)
 			{

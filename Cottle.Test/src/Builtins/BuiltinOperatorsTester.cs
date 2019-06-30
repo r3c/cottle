@@ -1,5 +1,5 @@
-﻿using Cottle.Documents;
-using Cottle.Stores;
+﻿using Cottle.Contexts;
+using Cottle.Documents;
 using NUnit.Framework;
 
 namespace Cottle.Test.Builtins
@@ -9,10 +9,9 @@ namespace Cottle.Test.Builtins
     {
         private static void AssertResult(string expression, bool expected)
         {
-            IDocument document = new SimpleDocument("{" + (expected ? "" : "!") + "(" + expression + ")}");
-            IStore store = new BuiltinStore();
+            var document = new SimpleDocument("{" + (expected ? "" : "!") + "(" + expression + ")}");
 
-            Assert.AreEqual("true", document.Render(store));
+            Assert.AreEqual("true", document.Render(BuiltinContext.Instance));
         }
 
         [Test]

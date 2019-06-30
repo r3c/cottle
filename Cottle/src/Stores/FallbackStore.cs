@@ -1,5 +1,8 @@
-﻿namespace Cottle.Stores
+﻿using System;
+
+namespace Cottle.Stores
 {
+    [Obsolete("Use any `Context.Create*` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class FallbackStore : AbstractStore
     {
         #region Constructors

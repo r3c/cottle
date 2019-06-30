@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cottle.Contexts;
+using Cottle.Contexts.Monitor;
 
 namespace Cottle
 {
@@ -27,6 +28,18 @@ namespace Cottle
         public static IContext CreateCustom(IReadOnlyDictionary<Value, Value> symbols)
         {
             return new DictionaryContext(symbols);
+        }
+
+        /// <summary>
+        /// Create a new context with monitoring capabilities.
+        /// </summary>
+        /// <param name="context">Context to be monitored</param>
+        /// <returns>Cottle context</returns>
+        public static (IContext, ISymbolUsage) CreateMonitor(IContext context)
+        {
+            var monitor = new MonitorContext(context);
+
+            return (monitor, monitor.Usage);
         }
 
         /// <summary>

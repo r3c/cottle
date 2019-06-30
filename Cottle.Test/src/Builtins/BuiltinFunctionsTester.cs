@@ -1,5 +1,5 @@
-﻿using Cottle.Documents;
-using Cottle.Stores;
+﻿using Cottle.Contexts;
+using Cottle.Documents;
 using NUnit.Framework;
 
 namespace Cottle.Test.Builtins
@@ -9,18 +9,16 @@ namespace Cottle.Test.Builtins
     {
         private static void AssertEqual(string expression, string expected)
         {
-            IDocument document = new SimpleDocument("{eq(" + expression + ", " + expected + ")}");
-            IStore store = new BuiltinStore();
+            var document = new SimpleDocument("{eq(" + expression + ", " + expected + ")}");
 
-            Assert.AreEqual("true", document.Render(store), "'{0}' doesn't evaluate to '{1}'", expression, expected);
+            Assert.AreEqual("true", document.Render(BuiltinContext.Instance), "'{0}' doesn't evaluate to '{1}'", expression, expected);
         }
 
         private static void AssertPrint(string expression, string expected)
         {
-            IDocument document = new SimpleDocument("{echo " + expression + "}");
-            IStore store = new BuiltinStore();
+            var document = new SimpleDocument("{echo " + expression + "}");
 
-            Assert.AreEqual(expected, document.Render(store), "'{0}' doesn't render to '{1}'", expression, expected);
+            Assert.AreEqual(expected, document.Render(BuiltinContext.Instance), "'{0}' doesn't render to '{1}'", expression, expected);
         }
 
         [Test]

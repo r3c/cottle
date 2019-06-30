@@ -1,16 +1,15 @@
-using System.Collections.Generic;
 using Cottle.Contexts.Monitor;
 using Cottle.Contexts.Monitor.SymbolUsages;
 using Cottle.Values;
 
 namespace Cottle.Contexts
 {
-    internal class MonitorContext : IContext
+    internal sealed class MonitorContext : IContext
     {
         /// <summary>
         /// Symbol usage statistics on underlying Cottle store instance.
         /// </summary>
-        public IReadOnlyDictionary<Value, IReadOnlyList<ISymbolUsage>> Symbols => this.usage.Fields;
+        public ISymbolUsage Usage => this.usage;
 
         public Value this[Value symbol]
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cottle.Contexts.Monitor;
 using Cottle.Contexts.Monitor.SymbolUsages;
@@ -7,6 +8,7 @@ using Cottle.Values;
 
 namespace Cottle.Stores
 {
+    [Obsolete("Use `Context.CreateMonitor` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class MonitorStore : IStore
     {
         /// <summary>

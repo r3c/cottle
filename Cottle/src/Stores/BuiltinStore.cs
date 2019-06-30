@@ -1,7 +1,9 @@
-﻿using Cottle.Contexts;
+﻿using System;
+using Cottle.Contexts;
 
 namespace Cottle.Stores
 {
+    [Obsolete("Use `Context.CreateBuiltin` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class BuiltinStore : AbstractStore
     {
         private static readonly IStore Constant = new ContextStore(BuiltinContext.Instance);
