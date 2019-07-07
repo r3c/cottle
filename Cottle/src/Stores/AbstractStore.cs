@@ -1,5 +1,4 @@
-﻿using System;
-using Cottle.Values;
+﻿using Cottle.Values;
 
 namespace Cottle.Stores
 {

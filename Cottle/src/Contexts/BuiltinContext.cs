@@ -13,13 +13,14 @@ namespace Cottle.Contexts
         public static readonly BuiltinContext Instance = new BuiltinContext();
 
         private static readonly IReadOnlyDictionary<Value, Value> Builtins =
-            BuiltinFunctions.Instances.ToDictionary(instance => (Value) instance.Key,
+            BuiltinFunctions.Instances.ToDictionary(instance => (Value)instance.Key,
                 instance => new FunctionValue(instance.Value) as Value);
-
-        public Value this[Value symbol] => Builtins.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
 
         private BuiltinContext()
         {
         }
+
+        public Value this[Value symbol] =>
+            BuiltinContext.Builtins.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
     }
 }

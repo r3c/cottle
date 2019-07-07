@@ -4,30 +4,30 @@ namespace Cottle.Contexts.Monitor
 {
     internal class MonitorValue : Value
     {
-        public override bool AsBoolean => this.value.AsBoolean;
-        public override IFunction AsFunction => this.value.AsFunction;
-        public override decimal AsNumber => this.value.AsNumber;
-        public override string AsString => this.value.AsString;
-        public override IMap Fields => this.fields;
-        public override ValueContent Type => this.value.Type;
-
-        private readonly IMap fields;
-        private readonly Value value;
+        private readonly Value _value;
 
         public MonitorValue(Value value, MutableSymbolUsage usage)
         {
-            this.fields = new MonitorMap(value.Fields, usage);
-            this.value = value;
+            Fields = new MonitorMap(value.Fields, usage);
+            _value = value;
         }
+
+        public override bool AsBoolean => _value.AsBoolean;
+        public override IFunction AsFunction => _value.AsFunction;
+        public override decimal AsNumber => _value.AsNumber;
+        public override string AsString => _value.AsString;
+        public override IMap Fields { get; }
+
+        public override ValueContent Type => _value.Type;
 
         public override int CompareTo(Value other)
         {
-            return this.value.CompareTo(other);
+            return _value.CompareTo(other);
         }
 
         public override int GetHashCode()
         {
-            return this.value.GetHashCode();
+            return _value.GetHashCode();
         }
     }
 }

@@ -27,9 +27,9 @@ namespace Cottle
 
         public static bool operator ==(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
-                return ReferenceEquals(rhs, null);
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(lhs, null))
+                return object.ReferenceEquals(rhs, null);
+            if (object.ReferenceEquals(rhs, null))
                 return false;
 
             return lhs.CompareTo(rhs) == 0;
@@ -37,9 +37,9 @@ namespace Cottle
 
         public static bool operator !=(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
-                return !ReferenceEquals(rhs, null);
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(lhs, null))
+                return !object.ReferenceEquals(rhs, null);
+            if (object.ReferenceEquals(rhs, null))
                 return true;
 
             return lhs.CompareTo(rhs) != 0;
@@ -47,9 +47,9 @@ namespace Cottle
 
         public static bool operator <(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
-                return !ReferenceEquals(rhs, null);
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(lhs, null))
+                return !object.ReferenceEquals(rhs, null);
+            if (object.ReferenceEquals(rhs, null))
                 return false;
 
             return lhs.CompareTo(rhs) < 0;
@@ -57,9 +57,9 @@ namespace Cottle
 
         public static bool operator <=(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
-                return !ReferenceEquals(rhs, null);
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(lhs, null))
+                return !object.ReferenceEquals(rhs, null);
+            if (object.ReferenceEquals(rhs, null))
                 return false;
 
             return lhs.CompareTo(rhs) <= 0;
@@ -67,9 +67,9 @@ namespace Cottle
 
         public static bool operator >(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
+            if (object.ReferenceEquals(lhs, null))
                 return false;
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(rhs, null))
                 return true;
 
             return lhs.CompareTo(rhs) > 0;
@@ -77,9 +77,9 @@ namespace Cottle
 
         public static bool operator >=(Value lhs, Value rhs)
         {
-            if (ReferenceEquals(lhs, null))
+            if (object.ReferenceEquals(lhs, null))
                 return false;
-            if (ReferenceEquals(rhs, null))
+            if (object.ReferenceEquals(rhs, null))
                 return true;
 
             return lhs.CompareTo(rhs) >= 0;

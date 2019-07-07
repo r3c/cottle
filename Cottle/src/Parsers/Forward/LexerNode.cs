@@ -3,47 +3,47 @@ using System.Text;
 
 namespace Cottle.Parsers.Forward
 {
-	class LexerNode
-	{
-		public Dictionary<char, LexerNode> Children;
+    internal class LexerNode
+    {
+        public Dictionary<char, LexerNode> Children;
 
-		public string FallbackDrop;
+        public string FallbackDrop;
 
-		public LexerNode FallbackNode;
+        public LexerNode FallbackNode;
 
-		public LexemType Type;
+        public LexemType Type;
 
-		public LexerNode FollowBy(char character)
-		{
-			if (Children == null)
-				Children = new Dictionary<char, LexerNode>();
+        public LexerNode FollowBy(char character)
+        {
+            if (Children == null)
+                Children = new Dictionary<char, LexerNode>();
 
-			if (Children.TryGetValue(character, out var child))
-				return child;
+            if (Children.TryGetValue(character, out var child))
+                return child;
 
-			child = new LexerNode();
+            child = new LexerNode();
 
-			Children[character] = child;
+            Children[character] = child;
 
-			return child;
-		}
+            return child;
+        }
 
-		public LexerNode MoveTo(char character, StringBuilder output)
-		{
-			for (var current = this; true; current = current.FallbackNode)
-			{
-				if (current.Children != null && current.Children.TryGetValue(character, out var next))
-					return next;
+        public LexerNode MoveTo(char character, StringBuilder output)
+        {
+            for (var current = this;; current = current.FallbackNode)
+            {
+                if (current.Children != null && current.Children.TryGetValue(character, out var next))
+                    return next;
 
-				if (current.FallbackNode == null)
-				{
-					output.Append(character);
+                if (current.FallbackNode == null)
+                {
+                    output.Append(character);
 
-					return current;
-				}
+                    return current;
+                }
 
-				output.Append(current.FallbackDrop);
-			}
-		}
-	}
+                output.Append(current.FallbackDrop);
+            }
+        }
+    }
 }

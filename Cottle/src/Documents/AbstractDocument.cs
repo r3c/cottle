@@ -17,7 +17,7 @@ namespace Cottle.Documents
         {
             var writer = new StringWriter(CultureInfo.InvariantCulture);
 
-            this.Render(context, writer);
+            Render(context, writer);
 
             return writer.ToString();
         }

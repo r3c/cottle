@@ -14,11 +14,12 @@ namespace Cottle.Documents.Dynamic
         public Function(IEnumerable<string> arguments, Command command, Trimmer trimmer)
         {
             var method = new DynamicMethod(string.Empty, typeof(Value),
-                new[] { typeof(Storage), typeof(IReadOnlyList<Value>), typeof(IStore), typeof(TextWriter) }, this.GetType());
+                new[] { typeof(Storage), typeof(IReadOnlyList<Value>), typeof(IStore), typeof(TextWriter) },
+                GetType());
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
 
-            this.storage = compiler.Compile(arguments, command);
-            this.renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
+            storage = compiler.Compile(arguments, command);
+            renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
         }
 
         #endregion
@@ -29,7 +30,7 @@ namespace Cottle.Documents.Dynamic
         {
 #if NETSTANDARD2_0
             var assembly =
- AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
+                AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(assemblyName), AssemblyBuilderAccess.Run);
             var module = assembly.DefineDynamicModule(fileName);
 #else
             var assembly = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName(assemblyName),
@@ -71,22 +72,22 @@ namespace Cottle.Documents.Dynamic
 
         public bool Equals(IFunction other)
         {
-            return this.CompareTo(other) == 0;
+            return CompareTo(other) == 0;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is IFunction other && this.Equals(other);
+            return obj is IFunction other && Equals(other);
         }
 
         public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
         {
-            return this.renderer(this.storage, arguments, store, output);
+            return renderer(storage, arguments, store, output);
         }
 
         public override int GetHashCode()
         {
-            return this.renderer.GetHashCode();
+            return renderer.GetHashCode();
         }
 
         public override string ToString()

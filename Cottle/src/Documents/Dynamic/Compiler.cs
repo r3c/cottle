@@ -22,20 +22,6 @@ namespace Cottle.Documents.Dynamic
 
         #endregion
 
-        #region Attributes
-
-        private readonly List<Value> _constants;
-
-        private readonly ILGenerator _generator;
-
-        private readonly Dictionary<Value, int> _indices;
-
-        private readonly Dictionary<Type, Queue<LocalBuilder>> _locals;
-
-        private readonly Trimmer _trimmer;
-
-        #endregion
-
         #region Methods / Public
 
         public Storage Compile(IEnumerable<string> arguments, Command command)
@@ -98,6 +84,20 @@ namespace Cottle.Documents.Dynamic
 
             return new Storage(_constants);
         }
+
+        #endregion
+
+        #region Attributes
+
+        private readonly List<Value> _constants;
+
+        private readonly ILGenerator _generator;
+
+        private readonly Dictionary<Value, int> _indices;
+
+        private readonly Dictionary<Type, Queue<LocalBuilder>> _locals;
+
+        private readonly Trimmer _trimmer;
 
         #endregion
 
@@ -192,7 +192,8 @@ namespace Cottle.Documents.Dynamic
                     EmitLoadOutput();
 
                     _generator.Emit(OpCodes.Ldloc, operand);
-                    _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v)));
+                    _generator.Emit(OpCodes.Callvirt,
+                        Resolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v)));
 
                     LocalRelease<Value>(operand);
 

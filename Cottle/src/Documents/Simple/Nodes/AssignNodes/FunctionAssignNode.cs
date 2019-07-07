@@ -7,16 +7,16 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
     internal class FunctionAssignNode : AssignNode, IFunction
     {
+        private readonly string[] arguments;
+
+        private readonly INode body;
+
         public FunctionAssignNode(string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
             base(name, mode)
         {
             this.arguments = arguments.ToArray();
             this.body = body;
         }
-
-        private readonly string[] arguments;
-
-        private readonly INode body;
 
         public int CompareTo(IFunction other)
         {
@@ -25,12 +25,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 
         public bool Equals(IFunction other)
         {
-            return this.CompareTo(other) == 0;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is IFunction other && this.Equals(other);
+            return CompareTo(other) == 0;
         }
 
         public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
@@ -40,11 +35,16 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             for (var i = 0; i < this.arguments.Length; ++i)
                 store.Set(this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
 
-            this.body.Render(store, output, out var result);
+            body.Render(store, output, out var result);
 
             store.Leave();
 
             return result;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is IFunction other && Equals(other);
         }
 
         public override int GetHashCode()
@@ -52,7 +52,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             unchecked
             {
                 return
-                    (this.body.GetHashCode() & (int)0xFFFFFF00) |
+                    (body.GetHashCode() & (int)0xFFFFFF00) |
                     (base.GetHashCode() & 0x000000FF);
             }
         }
@@ -69,7 +69,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             output.Write(name);
             output.Write('(');
 
-            foreach (var argument in this.arguments)
+            foreach (var argument in arguments)
             {
                 if (comma)
                     output.Write(", ");
@@ -86,7 +86,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
         {
             output.Write(':');
 
-            this.body.Source(setting, output);
+            body.Source(setting, output);
         }
     }
 }

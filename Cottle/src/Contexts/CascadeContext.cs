@@ -5,16 +5,6 @@ namespace Cottle.Contexts
     /// </summary>
     internal class CascadeContext : IContext
     {
-        public Value this[Value symbol]
-        {
-            get
-            {
-                var first = _primary[symbol];
-
-                return first.Type != ValueContent.Void ? first : _fallback[symbol];
-            }
-        }
-
         private readonly IContext _fallback;
 
         private readonly IContext _primary;
@@ -23,6 +13,16 @@ namespace Cottle.Contexts
         {
             _fallback = fallback;
             _primary = primary;
+        }
+
+        public Value this[Value symbol]
+        {
+            get
+            {
+                var first = _primary[symbol];
+
+                return first.Type != ValueContent.Void ? first : _fallback[symbol];
+            }
         }
     }
 }

@@ -6,25 +6,25 @@ namespace Cottle.Contexts.Monitor.SymbolUsages
     internal class MutableSymbolUsage : ISymbolUsage
     {
         public IReadOnlyDictionary<Value, IReadOnlyList<ISymbolUsage>> Fields =>
-            this.fields.ToDictionary(p => p.Key, p => p.Value as IReadOnlyList<ISymbolUsage>);
+            _fields.ToDictionary(p => p.Key, p => p.Value as IReadOnlyList<ISymbolUsage>);
 
         public Value Value { get; }
 
-        private readonly Dictionary<Value, List<MutableSymbolUsage>> fields;
+        private readonly Dictionary<Value, List<MutableSymbolUsage>> _fields;
 
         public MutableSymbolUsage(Value value)
         {
-            this.fields = new Dictionary<Value, List<MutableSymbolUsage>>();
-            this.Value = value;
+            _fields = new Dictionary<Value, List<MutableSymbolUsage>>();
+            Value = value;
         }
 
         public MutableSymbolUsage Declare(Value symbol, Value value)
         {
-            if (!this.fields.TryGetValue(symbol, out List<MutableSymbolUsage> usages))
+            if (!_fields.TryGetValue(symbol, out var usages))
             {
                 usages = new List<MutableSymbolUsage>();
 
-                this.fields[symbol] = usages;
+                _fields[symbol] = usages;
             }
 
             var usage = new MutableSymbolUsage(value);

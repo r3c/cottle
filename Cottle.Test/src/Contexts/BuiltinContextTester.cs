@@ -12,7 +12,7 @@ namespace Cottle.Test.Contexts
         public void GetExistingBuiltin()
         {
             var function = BuiltinContext.Instance["add"].AsFunction;
-            var result = function.Execute(new Value[] {1, 2}, new SimpleStore(), new StringWriter());
+            var result = function.Execute(new Value[] { 1, 2 }, new SimpleStore(), new StringWriter());
 
             Assert.That(result, Is.EqualTo(new NumberValue(3)));
         }

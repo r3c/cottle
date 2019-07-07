@@ -16,7 +16,7 @@ namespace Cottle.Demo
             {
                 var key = reader.ReadString();
 
-                if (!Load(reader, out var value))
+                if (!ValueAccessor.Load(reader, out var value))
                     return false;
 
                 values[key] = value;
@@ -33,7 +33,7 @@ namespace Cottle.Demo
             {
                 writer.Write(pair.Key);
 
-                Save(writer, pair.Value);
+                ValueAccessor.Save(writer, pair.Value);
             }
         }
 
@@ -58,7 +58,8 @@ namespace Cottle.Demo
 
                     while (count-- > 0)
                     {
-                        if (!Load(reader, out var arrayKey) || !Load(reader, out var arrayValue))
+                        if (!ValueAccessor.Load(reader, out var arrayKey) ||
+                            !ValueAccessor.Load(reader, out var arrayValue))
                         {
                             value = null;
 
@@ -112,8 +113,8 @@ namespace Cottle.Demo
 
                     foreach (var pair in value.Fields)
                     {
-                        Save(writer, pair.Key);
-                        Save(writer, pair.Value);
+                        ValueAccessor.Save(writer, pair.Key);
+                        ValueAccessor.Save(writer, pair.Value);
                     }
 
                     break;

@@ -15,7 +15,7 @@ namespace Cottle.Test.Contexts
                 {
                     "parent", new Dictionary<Value, Value>
                     {
-                        {"child", "value"}
+                        { "child", "value" }
                     }
                 }
             });
@@ -48,7 +48,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void DirectAccessExistingScalar()
         {
-            var context = new MonitorContext(Context.CreateCustom(new Dictionary<Value, Value> {{"a", 17}}));
+            var context = new MonitorContext(Context.CreateCustom(new Dictionary<Value, Value> { { "a", 17 } }));
 
             Assert.That(context["a"], Is.EqualTo(new NumberValue(17)));
 
@@ -108,7 +108,7 @@ namespace Cottle.Test.Contexts
         {
             var backend = new DictionaryContext(new Dictionary<Value, Value>
             {
-                {"range", new MapValue(i => i * 2, 5)}
+                { "range", new MapValue(i => i * 2, 5) }
             });
 
             var monitor = new MonitorContext(backend);

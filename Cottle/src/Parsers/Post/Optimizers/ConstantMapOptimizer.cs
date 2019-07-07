@@ -25,7 +25,8 @@ namespace Cottle.Parsers.Post.Optimizers
 
         public override Expression Optimize(Expression expression)
         {
-            if (expression.Type != ExpressionType.Map || !Array.TrueForAll(expression.Elements, Constants))
+            if (expression.Type != ExpressionType.Map ||
+                !Array.TrueForAll(expression.Elements, ConstantMapOptimizer.Constants))
                 return expression;
 
             var pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];

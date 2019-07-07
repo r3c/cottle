@@ -25,7 +25,7 @@ namespace Cottle.Test
         private void AssertRender(string source, string expected, ISetting setting, Action<IStore> populate,
             Action<IDocument> listen)
         {
-            foreach (var constructor in Constructors)
+            foreach (var constructor in DocumentTester.Constructors)
             {
                 var document = constructor(source, setting);
 
@@ -48,7 +48,7 @@ namespace Cottle.Test
         private void AssertReturn(string source, string expected, ISetting setting, Action<IStore> populate,
             Action<IDocument> listen)
         {
-            foreach (var constructor in Constructors)
+            foreach (var constructor in DocumentTester.Constructors)
             {
                 var document = constructor(source, setting);
 
@@ -285,7 +285,8 @@ namespace Cottle.Test
             {
                 scope["aaa"] = new[] { 5, (Value)7 };
                 scope["bbb"] = new Dictionary<Value, Value> { { "x", "$X$" }, { "y", "$Y$" } };
-                scope["ccc"] = new Dictionary<Value, Value> { { "A", new Dictionary<Value, Value> { { "i", 50 } } }, { 1, 42 } };
+                scope["ccc"] = new Dictionary<Value, Value>
+                    { { "A", new Dictionary<Value, Value> { { "i", 50 } } }, { 1, 42 } };
             }
 
             AssertReturn("{return " + access + "}", expected, DefaultSetting.Instance, Populate, d => { });
@@ -321,7 +322,7 @@ namespace Cottle.Test
 
             AssertRender("{f('" + symbol + "')}", ((Value)expected).AsString + ((Value)expected).AsString,
                 DefaultSetting.Instance, Populate, d => { });
-            AssertReturn("{return f('" + symbol + "')}", ((Value)expected).ToString(), DefaultSetting.Instance,
+            AssertReturn("{return f('" + symbol + "')}", expected, DefaultSetting.Instance,
                 Populate, d => { });
         }
 

@@ -16,16 +16,16 @@ namespace Cottle.Parsers
         private static readonly Dictionary<string, Func<ForwardParser, Command>> Keywords =
             new Dictionary<string, Func<ForwardParser, Command>>
             {
-                {"_", p => p.ParseKeywordComment()},
-                {"declare", p => p.ParseKeywordDeclare()},
-                {"define", p => p.ParseKeywordSet()},
-                {"dump", p => p.ParseKeywordOperand(CommandType.Dump)},
-                {"echo", p => p.ParseKeywordOperand(CommandType.Echo)},
-                {"for", p => p.ParseKeywordFor()},
-                {"if", p => p.ParseKeywordIf()},
-                {"return", p => p.ParseKeywordOperand(CommandType.Return)},
-                {"set", p => p.ParseKeywordSet()},
-                {"while", p => p.ParseKeywordWhile()}
+                { "_", p => p.ParseKeywordComment() },
+                { "declare", p => p.ParseKeywordDeclare() },
+                { "define", p => p.ParseKeywordSet() },
+                { "dump", p => p.ParseKeywordOperand(CommandType.Dump) },
+                { "echo", p => p.ParseKeywordOperand(CommandType.Echo) },
+                { "for", p => p.ParseKeywordFor() },
+                { "if", p => p.ParseKeywordIf() },
+                { "return", p => p.ParseKeywordOperand(CommandType.Return) },
+                { "set", p => p.ParseKeywordSet() },
+                { "while", p => p.ParseKeywordWhile() }
             };
 
         #endregion
@@ -140,7 +140,7 @@ namespace Cottle.Parsers
                     mode = StoreMode.Local;
                 }
                 else
-                // </TODO>
+                    // </TODO>
                 {
                     ParseExpected(LexemType.Symbol, "to", "'to' keyword");
                 }
@@ -211,7 +211,7 @@ namespace Cottle.Parsers
                         _lexer.NextBlock();
 
                         if (_lexer.Current.Type == LexemType.Symbol &&
-                            Keywords.TryGetValue(_lexer.Current.Content, out var parse))
+                            ForwardParser.Keywords.TryGetValue(_lexer.Current.Content, out var parse))
                             _lexer.NextBlock();
                         else
                             parse = p => p.ParseKeywordOperand(CommandType.Echo);

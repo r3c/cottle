@@ -13,7 +13,7 @@ namespace Cottle.Builtins
     {
         #region Properties
 
-        public static IEnumerable<KeyValuePair<string, IFunction>> Instances => InstanceDictionary;
+        public static IEnumerable<KeyValuePair<string, IFunction>> Instances => BuiltinFunctions.InstanceDictionary;
 
         #endregion
 
@@ -21,7 +21,7 @@ namespace Cottle.Builtins
 
         public static bool TryGet(string name, out IFunction function)
         {
-            return InstanceDictionary.TryGetValue(name, out function);
+            return BuiltinFunctions.InstanceDictionary.TryGetValue(name, out function);
         }
 
         #endregion
@@ -76,8 +76,8 @@ namespace Cottle.Builtins
                 var list = new List<Value>(values[0].Fields.Count * 2 + 1);
 
                 foreach (var value in values)
-                    foreach (var field in value.Fields)
-                        list.Add(field.Value);
+                foreach (var field in value.Fields)
+                    list.Add(field.Value);
 
                 return list;
             }
@@ -221,7 +221,9 @@ namespace Cottle.Builtins
         {
             object target;
 
-            var culture = values.Count > 2 ? CultureInfo.GetCultureInfo(values[2].AsString) : CultureInfo.CurrentCulture;
+            var culture = values.Count > 2
+                ? CultureInfo.GetCultureInfo(values[2].AsString)
+                : CultureInfo.CurrentCulture;
             var format = values[1].AsString;
             var index = format.IndexOf(':');
 
@@ -260,12 +262,12 @@ namespace Cottle.Builtins
 
                 case "d":
                 case "du":
-                    target = Epoch.AddSeconds((double)values[0].AsNumber);
+                    target = BuiltinFunctions.Epoch.AddSeconds((double)values[0].AsNumber);
 
                     break;
 
                 case "dl":
-                    target = Epoch.AddSeconds((double)values[0].AsNumber).ToLocalTime();
+                    target = BuiltinFunctions.Epoch.AddSeconds((double)values[0].AsNumber).ToLocalTime();
 
                     break;
 
@@ -404,18 +406,18 @@ namespace Cottle.Builtins
 
         private static readonly IFunction FunctionRandom = new NativeFunction(values =>
         {
-            lock (Random)
+            lock (BuiltinFunctions.Random)
             {
                 switch (values.Count)
                 {
                     case 0:
-                        return Random.Next();
+                        return BuiltinFunctions.Random.Next();
 
                     case 1:
-                        return Random.Next((int)values[0].AsNumber);
+                        return BuiltinFunctions.Random.Next((int)values[0].AsNumber);
 
                     default:
-                        return Random.Next((int)values[0].AsNumber, (int)values[1].AsNumber);
+                        return BuiltinFunctions.Random.Next((int)values[0].AsNumber, (int)values[1].AsNumber);
                 }
             }
         }, 0, 2);
@@ -473,7 +475,6 @@ namespace Cottle.Builtins
                 Value[] target;
                 using (var enumerator = source.Fields.GetEnumerator())
                 {
-
                     while (offset-- > 0 && enumerator.MoveNext())
                     {
                     }
@@ -552,8 +553,8 @@ namespace Cottle.Builtins
             var result = new Dictionary<Value, Value>();
 
             foreach (var value in values)
-                foreach (var pair in value.Fields)
-                    result[pair.Key] = pair.Value;
+            foreach (var pair in value.Fields)
+                result[pair.Key] = pair.Value;
 
             return result;
         }, 0, -1);
@@ -602,61 +603,61 @@ namespace Cottle.Builtins
 
         private static readonly Dictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
         {
-            {"abs", FunctionAbsolute},
-            {"add", BuiltinOperators.OperatorAdd},
-            {"and", BuiltinOperators.OperatorAnd},
-            {"call", FunctionCall},
-            {"cast", FunctionCast},
-            {"cat", FunctionCat},
-            {"ceil", FunctionCeiling},
-            {"char", FunctionChar},
-            {"cmp", FunctionCompare},
-            {"cos", FunctionCosine},
-            {"cross", FunctionCross},
-            {"default", FunctionDefault},
-            {"defined", FunctionDefined},
-            {"div", BuiltinOperators.OperatorDiv},
-            {"eq", BuiltinOperators.OperatorEqual},
-            {"except", FunctionExcept},
-            {"filter", FunctionFilter},
-            {"find", FunctionFind},
-            {"flip", FunctionFlip},
-            {"floor", FunctionFloor},
-            {"format", FunctionFormat},
-            {"ge", BuiltinOperators.OperatorGreaterEqual},
-            {"gt", BuiltinOperators.OperatorGreaterThan},
-            {"has", FunctionHas},
-            {"join", FunctionJoin},
-            {"lcase", FunctionLowerCase},
-            {"le", BuiltinOperators.OperatorLowerEqual},
-            {"len", FunctionLength},
-            {"lt", BuiltinOperators.OperatorLowerThan},
-            {"map", FunctionMap},
-            {"match", FunctionMatch},
-            {"max", FunctionMaximum},
-            {"min", FunctionMinimum},
-            {"mod", BuiltinOperators.OperatorMod},
-            {"mul", BuiltinOperators.OperatorMul},
-            {"ne", BuiltinOperators.OperatorNotEqual},
-            {"not", BuiltinOperators.OperatorNot},
-            {"or", BuiltinOperators.OperatorOr},
-            {"ord", FunctionOrd},
-            {"pow", FunctionPower},
-            {"rand", FunctionRandom},
-            {"range", FunctionRange},
-            {"round", FunctionRound},
-            {"sin", FunctionSine},
-            {"slice", FunctionSlice},
-            {"sort", FunctionSort},
-            {"split", FunctionSplit},
-            {"sub", BuiltinOperators.OperatorSub},
-            {"token", FunctionToken},
-            {"type", FunctionType},
-            {"ucase", FunctionUpperCase},
-            {"union", FunctionUnion},
-            {"when", FunctionWhen},
-            {"xor", FunctionXor},
-            {"zip", FunctionZip}
+            { "abs", BuiltinFunctions.FunctionAbsolute },
+            { "add", BuiltinOperators.OperatorAdd },
+            { "and", BuiltinOperators.OperatorAnd },
+            { "call", BuiltinFunctions.FunctionCall },
+            { "cast", BuiltinFunctions.FunctionCast },
+            { "cat", BuiltinFunctions.FunctionCat },
+            { "ceil", BuiltinFunctions.FunctionCeiling },
+            { "char", BuiltinFunctions.FunctionChar },
+            { "cmp", BuiltinFunctions.FunctionCompare },
+            { "cos", BuiltinFunctions.FunctionCosine },
+            { "cross", BuiltinFunctions.FunctionCross },
+            { "default", BuiltinFunctions.FunctionDefault },
+            { "defined", BuiltinFunctions.FunctionDefined },
+            { "div", BuiltinOperators.OperatorDiv },
+            { "eq", BuiltinOperators.OperatorEqual },
+            { "except", BuiltinFunctions.FunctionExcept },
+            { "filter", BuiltinFunctions.FunctionFilter },
+            { "find", BuiltinFunctions.FunctionFind },
+            { "flip", BuiltinFunctions.FunctionFlip },
+            { "floor", BuiltinFunctions.FunctionFloor },
+            { "format", BuiltinFunctions.FunctionFormat },
+            { "ge", BuiltinOperators.OperatorGreaterEqual },
+            { "gt", BuiltinOperators.OperatorGreaterThan },
+            { "has", BuiltinFunctions.FunctionHas },
+            { "join", BuiltinFunctions.FunctionJoin },
+            { "lcase", BuiltinFunctions.FunctionLowerCase },
+            { "le", BuiltinOperators.OperatorLowerEqual },
+            { "len", BuiltinFunctions.FunctionLength },
+            { "lt", BuiltinOperators.OperatorLowerThan },
+            { "map", BuiltinFunctions.FunctionMap },
+            { "match", BuiltinFunctions.FunctionMatch },
+            { "max", BuiltinFunctions.FunctionMaximum },
+            { "min", BuiltinFunctions.FunctionMinimum },
+            { "mod", BuiltinOperators.OperatorMod },
+            { "mul", BuiltinOperators.OperatorMul },
+            { "ne", BuiltinOperators.OperatorNotEqual },
+            { "not", BuiltinOperators.OperatorNot },
+            { "or", BuiltinOperators.OperatorOr },
+            { "ord", BuiltinFunctions.FunctionOrd },
+            { "pow", BuiltinFunctions.FunctionPower },
+            { "rand", BuiltinFunctions.FunctionRandom },
+            { "range", BuiltinFunctions.FunctionRange },
+            { "round", BuiltinFunctions.FunctionRound },
+            { "sin", BuiltinFunctions.FunctionSine },
+            { "slice", BuiltinFunctions.FunctionSlice },
+            { "sort", BuiltinFunctions.FunctionSort },
+            { "split", BuiltinFunctions.FunctionSplit },
+            { "sub", BuiltinOperators.OperatorSub },
+            { "token", BuiltinFunctions.FunctionToken },
+            { "type", BuiltinFunctions.FunctionType },
+            { "ucase", BuiltinFunctions.FunctionUpperCase },
+            { "union", BuiltinFunctions.FunctionUnion },
+            { "when", BuiltinFunctions.FunctionWhen },
+            { "xor", BuiltinFunctions.FunctionXor },
+            { "zip", BuiltinFunctions.FunctionZip }
         };
 
         private static readonly Random Random = new Random();

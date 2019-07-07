@@ -64,7 +64,8 @@ namespace Cottle.Parsers
 
             if (expression.Elements != null)
                 for (var i = 0; i < expression.Elements.Length; ++i)
-                    expression.Elements[i] = new ExpressionElement(Optimize(expression.Elements[i].Key), Optimize(expression.Elements[i].Value));
+                    expression.Elements[i] = new ExpressionElement(Optimize(expression.Elements[i].Key),
+                        Optimize(expression.Elements[i].Value));
 
             if (expression.Source != null)
                 expression.Source = Optimize(expression.Source);

@@ -51,7 +51,7 @@ namespace Cottle.Maps
         {
             if (key.Type != ValueContent.Number)
             {
-                value = default(Value);
+                value = default;
 
                 return false;
             }
@@ -60,7 +60,7 @@ namespace Cottle.Maps
 
             if (index < 0 || index >= _array.Count)
             {
-                value = default(Value);
+                value = default;
 
                 return false;
             }

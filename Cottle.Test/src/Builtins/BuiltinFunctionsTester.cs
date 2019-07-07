@@ -11,14 +11,16 @@ namespace Cottle.Test.Builtins
         {
             var document = new SimpleDocument("{eq(" + expression + ", " + expected + ")}");
 
-            Assert.AreEqual("true", document.Render(BuiltinContext.Instance), "'{0}' doesn't evaluate to '{1}'", expression, expected);
+            Assert.AreEqual("true", document.Render(BuiltinContext.Instance), "'{0}' doesn't evaluate to '{1}'",
+                expression, expected);
         }
 
         private static void AssertPrint(string expression, string expected)
         {
             var document = new SimpleDocument("{echo " + expression + "}");
 
-            Assert.AreEqual(expected, document.Render(BuiltinContext.Instance), "'{0}' doesn't render to '{1}'", expression, expected);
+            Assert.AreEqual(expected, document.Render(BuiltinContext.Instance), "'{0}' doesn't render to '{1}'",
+                expression, expected);
         }
 
         [Test]
@@ -38,7 +40,7 @@ namespace Cottle.Test.Builtins
         [TestCase("cast('ABC', 'number')", "0")]
         public void FunctionCast(string expression, string expected)
         {
-            AssertEqual(expression, expected);
+            BuiltinFunctionsTester.AssertEqual(expression, expected);
         }
 
         [Test]
@@ -53,7 +55,7 @@ namespace Cottle.Test.Builtins
         [TestCase("defined([1])", "true")]
         public void FunctionDefined(string expression, string expected)
         {
-            AssertPrint(expression, expected);
+            BuiltinFunctionsTester.AssertPrint(expression, expected);
         }
 
         [Test]
@@ -63,7 +65,7 @@ namespace Cottle.Test.Builtins
         [TestCase("format(1, 'b:n2')", "True")]
         public void FunctionFormat(string expression, string expected)
         {
-            AssertPrint(expression, expected);
+            BuiltinFunctionsTester.AssertPrint(expression, expected);
         }
 
         [Test]
@@ -84,7 +86,7 @@ namespace Cottle.Test.Builtins
         [TestCase("slice(range(1000000000), 0, 5)", "[0, 1, 2, 3, 4]")]
         public void FunctionRange(string expression, string expected)
         {
-            AssertEqual(expression, expected);
+            BuiltinFunctionsTester.AssertEqual(expression, expected);
         }
 
         [Test]
@@ -102,7 +104,7 @@ namespace Cottle.Test.Builtins
         [TestCase("slice([1, 2, 3], -2)", "[1, 2, 3]")]
         public void FunctionSlice(string expression, string expected)
         {
-            AssertEqual(expression, expected);
+            BuiltinFunctionsTester.AssertEqual(expression, expected);
         }
 
         [Test]
@@ -119,7 +121,7 @@ namespace Cottle.Test.Builtins
         [TestCase("token('A---B---C---', '---', 4, 'D')", "A---B---C------D")]
         public void FunctionToken(string expression, string expected)
         {
-            AssertPrint(expression, expected);
+            BuiltinFunctionsTester.AssertPrint(expression, expected);
         }
 
         [Test]
@@ -130,7 +132,7 @@ namespace Cottle.Test.Builtins
         [TestCase("type(undefined)", "void")]
         public void FunctionType(string template, string expected)
         {
-            AssertPrint(template, expected);
+            BuiltinFunctionsTester.AssertPrint(template, expected);
         }
     }
 }

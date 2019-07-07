@@ -11,11 +11,21 @@ namespace Cottle.Stores
     [Obsolete("Use `Context.CreateMonitor` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class MonitorStore : IStore
     {
+        private readonly IStore store;
+
+        private readonly MutableSymbolUsage usage;
+
+        public MonitorStore(IStore store)
+        {
+            this.store = store;
+            usage = new MutableSymbolUsage(VoidValue.Instance);
+        }
+
         /// <summary>
         /// Symbol usage statistics on underlying Cottle store instance.
         /// </summary>
         public IReadOnlyDictionary<Value, IReadOnlyList<Monitor.ISymbolUsage>> Symbols =>
-            this.usage.Fields.ToDictionary(f => f.Key,
+            usage.Fields.ToDictionary(f => f.Key,
                 f => f.Value.Select(v => new CompatibilitySymbolUsage(v)).ToArray() as
                     IReadOnlyList<Monitor.ISymbolUsage>);
 
@@ -25,46 +35,36 @@ namespace Cottle.Stores
             {
                 // Output value is always defined by this implementation, see
                 // method `TryGet` for details.
-                this.TryGet(symbol, out var value);
+                TryGet(symbol, out var value);
 
                 return value;
             }
-            set => this.Set(symbol, value, StoreMode.Global);
-        }
-
-        private readonly IStore store;
-
-        private readonly MutableSymbolUsage usage;
-
-        public MonitorStore(IStore store)
-        {
-            this.store = store;
-            this.usage = new MutableSymbolUsage(VoidValue.Instance);
+            set => Set(symbol, value, StoreMode.Global);
         }
 
         public void Enter()
         {
-            this.store.Enter();
+            store.Enter();
         }
 
         public bool Leave()
         {
-            return this.store.Leave();
+            return store.Leave();
         }
 
         public void Set(Value symbol, Value value, StoreMode mode)
         {
-            this.store.Set(symbol, value, mode);
+            store.Set(symbol, value, mode);
         }
 
         public bool TryGet(Value symbol, out Value value)
         {
-            var result = this.store.TryGet(symbol, out Value original);
+            var result = store.TryGet(symbol, out var original);
 
             if (!result)
                 original = VoidValue.Instance;
 
-            var child = this.usage.Declare(symbol, original);
+            var child = usage.Declare(symbol, original);
 
             value = new MonitorValue(original, child);
 

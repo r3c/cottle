@@ -7,6 +7,19 @@ namespace Cottle.Functions
 {
     public sealed class NativeFunction : IFunction
     {
+        #region Constructors / Private
+
+        private NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int min, int max,
+            bool pure)
+        {
+            _callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            _max = max;
+            _min = min;
+            Pure = pure;
+        }
+
+        #endregion
+
         #region Properties
 
         public bool Pure { get; }
@@ -15,11 +28,11 @@ namespace Cottle.Functions
 
         #region Attributes
 
-        private readonly Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback;
+        private readonly Func<IReadOnlyList<Value>, IStore, TextWriter, Value> _callback;
 
-        private readonly int max;
+        private readonly int _max;
 
-        private readonly int min;
+        private readonly int _min;
 
         #endregion
 
@@ -72,18 +85,6 @@ namespace Cottle.Functions
 
         #endregion
 
-        #region Constructors / Private
-
-        private NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int min, int max, bool pure)
-        {
-            this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
-            this.max = max;
-            this.min = min;
-            this.Pure = pure;
-        }
-
-        #endregion
-
         #region Methods
 
         public int CompareTo(IFunction other)
@@ -93,20 +94,20 @@ namespace Cottle.Functions
 
         public bool Equals(IFunction other)
         {
-            return this.CompareTo(other) == 0;
+            return CompareTo(other) == 0;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is IFunction other && this.Equals(other);
+            return obj is IFunction other && Equals(other);
         }
 
         public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
         {
-            if (this.min > arguments.Count || this.max >= 0 && this.max < arguments.Count)
+            if (_min > arguments.Count || _max >= 0 && _max < arguments.Count)
                 return VoidValue.Instance;
 
-            return this.callback(arguments, store, output);
+            return _callback(arguments, store, output);
         }
 
         public override int GetHashCode()
@@ -114,9 +115,9 @@ namespace Cottle.Functions
             unchecked
             {
                 return
-                    (this.callback.GetHashCode() & (int)0xFFFFFF00) |
-                    (this.max.GetHashCode() & 0x000000F0) |
-                    (this.min.GetHashCode() & 0x0000000F);
+                    (_callback.GetHashCode() & (int)0xFFFFFF00) |
+                    (_max.GetHashCode() & 0x000000F0) |
+                    (_min.GetHashCode() & 0x0000000F);
             }
         }
 

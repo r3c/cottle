@@ -5,13 +5,13 @@ namespace Cottle.Contexts
 {
     internal class DictionaryContext : IContext
     {
-        public Value this[Value symbol] => this.symbols.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
-
-        private readonly IReadOnlyDictionary<Value, Value> symbols;
+        private readonly IReadOnlyDictionary<Value, Value> _symbols;
 
         public DictionaryContext(IReadOnlyDictionary<Value, Value> symbols)
         {
-            this.symbols = symbols;
+            _symbols = symbols;
         }
+
+        public Value this[Value symbol] => _symbols.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
     }
 }

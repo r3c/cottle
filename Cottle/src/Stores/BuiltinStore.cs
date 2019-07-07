@@ -12,27 +12,27 @@ namespace Cottle.Stores
 
         public BuiltinStore()
         {
-            this.store = new FallbackStore(BuiltinStore.Constant, new SimpleStore());
+            store = new FallbackStore(BuiltinStore.Constant, new SimpleStore());
         }
 
         public override void Enter()
         {
-            this.store.Enter();
+            store.Enter();
         }
 
         public override bool Leave()
         {
-            return this.store.Leave();
+            return store.Leave();
         }
 
         public override void Set(Value symbol, Value value, StoreMode mode)
         {
-            this.store.Set(symbol, value, mode);
+            store.Set(symbol, value, mode);
         }
 
         public override bool TryGet(Value symbol, out Value value)
         {
-            return this.store.TryGet(symbol, out value);
+            return store.TryGet(symbol, out value);
         }
     }
 }

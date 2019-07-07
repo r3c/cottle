@@ -6,10 +6,10 @@ namespace Cottle.Contexts
     {
         public static readonly EmptyContext Instance = new EmptyContext();
 
-        public Value this[Value symbol] => VoidValue.Instance;
-
         private EmptyContext()
         {
         }
+
+        public Value this[Value symbol] => VoidValue.Instance;
     }
 }

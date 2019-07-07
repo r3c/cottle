@@ -11,9 +11,8 @@ using Cottle.Stores;
 namespace Cottle.Documents
 {
     /// <summary>
-    /// Simple document renders templates using an interpreter. If offers
-    /// better garbage collection and easier debugging but average rendering
-    /// performance.
+    /// Simple document renders templates using an interpreter. If offers better garbage collection and easier debugging
+    /// but average rendering performance.
     /// </summary>
     public sealed class SimpleDocument : AbstractDocument
     {
@@ -26,7 +25,7 @@ namespace Cottle.Documents
             var parser = ParserFactory.BuildParser(setting);
             var root = parser.Parse(reader);
 
-            this.renderer = this.CompileCommand(root, setting.Trimmer);
+            renderer = CompileCommand(root, setting.Trimmer);
             this.setting = setting;
         }
 
@@ -47,21 +46,21 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            this.renderer.Render(new ContextStore(context), writer, out var result);
+            renderer.Render(new ContextStore(context), writer, out var result);
 
             return result;
         }
 
         public void Source(TextWriter writer)
         {
-            this.renderer.Source(this.setting, writer);
+            renderer.Source(setting, writer);
         }
 
         public string Source()
         {
             var writer = new StringWriter(CultureInfo.InvariantCulture);
 
-            this.Source(writer);
+            Source(writer);
 
             return writer.ToString();
         }
@@ -71,50 +70,54 @@ namespace Cottle.Documents
             switch (command.Type)
             {
                 case CommandType.AssignFunction:
-                    return new FunctionAssignNode(command.Name, command.Arguments, this.CompileCommand(command.Body, trimmer), command.Mode);
+                    return new FunctionAssignNode(command.Name, command.Arguments,
+                        CompileCommand(command.Body, trimmer), command.Mode);
 
                 case CommandType.AssignRender:
-                    return new RenderAssignNode(command.Name, this.CompileCommand(command.Body, trimmer), command.Mode);
+                    return new RenderAssignNode(command.Name, CompileCommand(command.Body, trimmer), command.Mode);
 
                 case CommandType.AssignValue:
-                    return new ValueAssignNode(command.Name, this.CompileExpression(command.Operand), command.Mode);
+                    return new ValueAssignNode(command.Name, CompileExpression(command.Operand), command.Mode);
 
                 case CommandType.Composite:
                     var nodes = new List<INode>();
 
                     for (; command.Type == CommandType.Composite; command = command.Next)
-                        nodes.Add(this.CompileCommand(command.Body, trimmer));
+                        nodes.Add(CompileCommand(command.Body, trimmer));
 
-                    nodes.Add(this.CompileCommand(command, trimmer));
+                    nodes.Add(CompileCommand(command, trimmer));
 
                     return new CompositeNode(nodes);
 
                 case CommandType.Dump:
-                    return new DumpNode(this.CompileExpression(command.Operand));
+                    return new DumpNode(CompileExpression(command.Operand));
 
                 case CommandType.Echo:
-                    return new EchoNode(this.CompileExpression(command.Operand));
+                    return new EchoNode(CompileExpression(command.Operand));
 
                 case CommandType.For:
-                    return new ForNode(this.CompileExpression(command.Operand), command.Key, command.Name, this.CompileCommand(command.Body, trimmer),
-                        command.Next != null ? this.CompileCommand(command.Next, trimmer) : null);
+                    return new ForNode(CompileExpression(command.Operand), command.Key, command.Name,
+                        CompileCommand(command.Body, trimmer),
+                        command.Next != null ? CompileCommand(command.Next, trimmer) : null);
 
                 case CommandType.If:
                     var branches = new List<KeyValuePair<IEvaluator, INode>>();
 
                     for (; command != null && command.Type == CommandType.If; command = command.Next)
-                        branches.Add(new KeyValuePair<IEvaluator, INode>(this.CompileExpression(command.Operand), this.CompileCommand(command.Body, trimmer)));
+                        branches.Add(new KeyValuePair<IEvaluator, INode>(CompileExpression(command.Operand),
+                            CompileCommand(command.Body, trimmer)));
 
-                    return new IfNode(branches, command != null ? this.CompileCommand(command, trimmer) : null);
+                    return new IfNode(branches, command != null ? CompileCommand(command, trimmer) : null);
 
                 case CommandType.Literal:
                     return new LiteralNode(trimmer(command.Text));
 
                 case CommandType.Return:
-                    return new ReturnNode(this.CompileExpression(command.Operand));
+                    return new ReturnNode(CompileExpression(command.Operand));
 
                 case CommandType.While:
-                    return new WhileNode(this.CompileExpression(command.Operand), this.CompileCommand(command.Body, trimmer));
+                    return new WhileNode(CompileExpression(command.Operand),
+                        CompileCommand(command.Body, trimmer));
 
                 default:
                     return new LiteralNode(string.Empty);
@@ -126,7 +129,8 @@ namespace Cottle.Documents
             switch (expression.Type)
             {
                 case ExpressionType.Access:
-                    return new AccessEvaluator(this.CompileExpression(expression.Source), this.CompileExpression(expression.Subscript));
+                    return new AccessEvaluator(CompileExpression(expression.Source),
+                        CompileExpression(expression.Subscript));
 
                 case ExpressionType.Constant:
                     return new ConstantEvaluator(expression.Value);
@@ -135,17 +139,17 @@ namespace Cottle.Documents
                     var arguments = new IEvaluator[expression.Arguments.Length];
 
                     for (var i = 0; i < arguments.Length; ++i)
-                        arguments[i] = this.CompileExpression(expression.Arguments[i]);
+                        arguments[i] = CompileExpression(expression.Arguments[i]);
 
-                    return new InvokeEvaluator(this.CompileExpression(expression.Source), arguments);
+                    return new InvokeEvaluator(CompileExpression(expression.Source), arguments);
 
                 case ExpressionType.Map:
                     var elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
 
                     for (var i = 0; i < elements.Length; ++i)
                     {
-                        var key = this.CompileExpression(expression.Elements[i].Key);
-                        var value = this.CompileExpression(expression.Elements[i].Value);
+                        var key = CompileExpression(expression.Elements[i].Key);
+                        var value = CompileExpression(expression.Elements[i].Value);
 
                         elements[i] = new KeyValuePair<IEvaluator, IEvaluator>(key, value);
                     }

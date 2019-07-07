@@ -1,6 +1,6 @@
 ﻿namespace Cottle.Stores.Monitor
 {
-    public interface ISymbolUsage : Cottle.Contexts.Monitor.ISymbolUsage
+    public interface ISymbolUsage : Contexts.Monitor.ISymbolUsage
     {
     }
 }

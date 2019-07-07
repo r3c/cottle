@@ -10,7 +10,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public void Find()
         {
-            var context = new DictionaryContext(new Dictionary<Value, Value> {{"a", "value"}});
+            var context = new DictionaryContext(new Dictionary<Value, Value> { { "a", "value" } });
 
             Assert.That(context["a"], Is.EqualTo(new StringValue("value")));
         }

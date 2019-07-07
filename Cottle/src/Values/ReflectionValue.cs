@@ -16,7 +16,7 @@ namespace Cottle.Values
             var type = _source.GetType();
 
             // Use converter for known primitive types
-            if (Converters.TryGetValue(type, out var converter))
+            if (ReflectionValue.Converters.TryGetValue(type, out var converter))
                 return converter(_source);
 
             // Return undefined value for other primitive types
@@ -37,9 +37,9 @@ namespace Cottle.Values
             // Otherwise, browse object fields and properties
             var fields = new Dictionary<Value, Value>();
 
-            lock (Readers)
+            lock (ReflectionValue.Readers)
             {
-                if (!Readers.TryGetValue(type, out reader))
+                if (!ReflectionValue.Readers.TryGetValue(type, out reader))
                 {
                     reader = new List<MemberReader>();
 
@@ -49,7 +49,7 @@ namespace Cottle.Values
                     foreach (var property in type.GetProperties(_binding))
                         reader.Add(new MemberReader(property, _binding));
 
-                    Readers[type] = reader;
+                    ReflectionValue.Readers[type] = reader;
                 }
             }
 
@@ -73,20 +73,20 @@ namespace Cottle.Values
 
         private static readonly Dictionary<Type, ValueConverter> Converters = new Dictionary<Type, ValueConverter>
         {
-            {typeof(bool), s => (bool) s},
-            {typeof(byte), s => (byte) s},
-            {typeof(char), s => (char) s},
-            {typeof(double), s => (double) s},
-            {typeof(decimal), s => (decimal) s},
-            {typeof(float), s => (float) s},
-            {typeof(int), s => (int) s},
-            {typeof(long), s => (long) s},
-            {typeof(sbyte), s => (sbyte) s},
-            {typeof(short), s => (short) s},
-            {typeof(string), s => (string) s},
-            {typeof(uint), s => (uint) s},
-            {typeof(ulong), s => (long) (ulong) s},
-            {typeof(ushort), s => (ushort) s}
+            { typeof(bool), s => (bool)s },
+            { typeof(byte), s => (byte)s },
+            { typeof(char), s => (char)s },
+            { typeof(double), s => (double)s },
+            { typeof(decimal), s => (decimal)s },
+            { typeof(float), s => (float)s },
+            { typeof(int), s => (int)s },
+            { typeof(long), s => (long)s },
+            { typeof(sbyte), s => (sbyte)s },
+            { typeof(short), s => (short)s },
+            { typeof(string), s => (string)s },
+            { typeof(uint), s => (uint)s },
+            { typeof(ulong), s => (long)(ulong)s },
+            { typeof(ushort), s => (ushort)s }
         };
 
         private static readonly Dictionary<Type, List<MemberReader>> Readers =

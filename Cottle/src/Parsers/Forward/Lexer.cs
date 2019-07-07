@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using Cottle.Exceptions;
 
@@ -96,7 +95,6 @@ namespace Cottle.Parsers.Forward
         private Lexem ReadBlock()
         {
             while (!_eof)
-            {
                 switch (_last)
                 {
                     case '\n':
@@ -291,7 +289,6 @@ namespace Cottle.Parsers.Forward
                     default:
                         return new Lexem(LexemType.None, _last.ToString());
                 }
-            }
 
             return new Lexem(LexemType.EndOfFile, "<EOF>");
         }
@@ -353,7 +350,7 @@ namespace Cottle.Parsers.Forward
 
                     // Stop appending to buffer if we're about to reach LOH
                     // size and we are not in the middle of a match candidate
-                    if (buffer.Length > MaxBufferSize && node.FallbackNode == null)
+                    if (buffer.Length > Lexer.MaxBufferSize && node.FallbackNode == null)
                         return new Lexem(LexemType.Text, buffer.ToString());
                 }
             }

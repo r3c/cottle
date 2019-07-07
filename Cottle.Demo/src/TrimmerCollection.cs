@@ -30,7 +30,7 @@ namespace Cottle.Demo
         {
             get
             {
-                foreach (var pair in Trimmers)
+                foreach (var pair in TrimmerCollection.Trimmers)
                     yield return pair.Key;
             }
         }
@@ -41,10 +41,10 @@ namespace Cottle.Demo
 
         public static Trimmer GetTrimmer(int index)
         {
-            if (index >= 0 && index < Trimmers.Length)
-                return Trimmers[index].Value;
+            if (index >= 0 && index < TrimmerCollection.Trimmers.Length)
+                return TrimmerCollection.Trimmers[index].Value;
 
-            return Trimmers[DefaultIndex].Value;
+            return TrimmerCollection.Trimmers[TrimmerCollection.DefaultIndex].Value;
         }
 
         #endregion

@@ -26,7 +26,7 @@ namespace Cottle.Documents
         {
             var parser = ParserFactory.BuildParser(setting);
 
-            this.main = new Function(Enumerable.Empty<string>(), parser.Parse(reader), setting.Trimmer);
+            main = new Function(Enumerable.Empty<string>(), parser.Parse(reader), setting.Trimmer);
         }
 
         public DynamicDocument(TextReader reader) :
@@ -50,7 +50,7 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            return this.main.Execute(null, new ContextStore(context), writer);
+            return main.Execute(null, new ContextStore(context), writer);
         }
 
         public static void Save(TextReader reader, ISetting setting, string assemblyName, string fileName)

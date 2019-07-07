@@ -7,7 +7,7 @@ namespace Cottle.Builtins
         #region Attributes / Private
 
         public static readonly Trimmer CollapseBlankCharacters =
-            text => CollapseBlankCharactersRegex.Replace(text, " ");
+            text => BuiltinTrimmers.CollapseBlankCharactersRegex.Replace(text, " ");
 
         private static readonly Regex CollapseBlankCharactersRegex = new Regex("\\s{2,}", RegexOptions.Multiline);
 
