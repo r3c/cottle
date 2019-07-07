@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,78 +17,66 @@ namespace Cottle.Test
     [TestFixture]
     public class DocumentTester
     {
-        public static readonly Func<string, ISetting, IDocument>[] Constructors =
+        private static readonly Func<string, ISetting, IDocument>[] Constructors =
         {
             (source, setting) => new DynamicDocument(source, setting),
             (source, setting) => new SimpleDocument(source, setting)
         };
 
-        private void AssertRender(string source, string expected, ISetting setting, Action<IStore> populate,
-            Action<IDocument> listen)
+        private static void AssertRender(string source, string expected, ISetting setting, IContext context)
         {
             foreach (var constructor in DocumentTester.Constructors)
             {
                 var document = constructor(source, setting);
+                var output = document.Render(context);
 
-                listen(document);
-
-                IStore store = new SimpleStore();
-
-                populate(store);
-
-                Assert.AreEqual(expected, document.Render(store), "Invalid rendered output for document type '{0}'",
+                Assert.That(output, Is.EqualTo(expected),
+                    "Invalid rendered output for document type '{0}'",
                     document.GetType());
             }
         }
 
-        private void AssertRender(string source, string expected)
+        private static void AssertRender(string source, string expected)
         {
-            AssertRender(source, expected, DefaultSetting.Instance, s => { }, d => { });
+            DocumentTester.AssertRender(source, expected, DefaultSetting.Instance, Context.Empty);
         }
 
-        private void AssertReturn(string source, string expected, ISetting setting, Action<IStore> populate,
-            Action<IDocument> listen)
+        private static void AssertReturn(string source, string expected, ISetting setting, IContext context)
         {
             foreach (var constructor in DocumentTester.Constructors)
             {
                 var document = constructor(source, setting);
+                var value = document.Render(context, new StringWriter());
 
-                listen(document);
-
-                IStore store = new SimpleStore();
-
-                populate(store);
-
-                var value = document.Render(store, new StringWriter());
-
-                Assert.AreEqual(expected, value.ToString(), "Invalid return value for document type '{0}'",
+                Assert.That(value.ToString(), Is.EqualTo(expected), "Invalid return value for document type '{0}'",
                     document.GetType());
             }
         }
 
-        private void AssertReturn(string source, string expected)
+        private static void AssertReturn(string source, string expected)
         {
-            AssertReturn(source, expected, DefaultSetting.Instance, s => { }, d => { });
+            DocumentTester.AssertReturn(source, expected, DefaultSetting.Instance, Context.Empty);
         }
 
-        private Action<IStore> PopulateScope(params string[] names)
+        private static IContext CreateContextWithBuiltins(params string[] names)
         {
-            return s =>
-            {
-                foreach (var name in names)
-                {
-                    if (!BuiltinFunctions.TryGet(name, out var function))
-                        continue;
+            var variables = new Dictionary<Value, Value>();
 
-                    s[name] = new FunctionValue(function);
-                }
-            };
+            foreach (var name in names)
+            {
+                if (!BuiltinFunctions.TryGet(name, out var function))
+                    continue;
+
+                variables[name] = new FunctionValue(function);
+            }
+
+            return Context.CreateCustom(variables);
         }
 
         [Test]
         public void CommandDeclare()
         {
-            AssertRender("{declare var}", string.Empty);
+            DocumentTester.AssertRender("{declare var}", string.Empty);
         }
 
         [Test]
@@ -97,7 +86,7 @@ namespace Cottle.Test
         [TestCase("text", "something", "something")]
         public void CommandDeclareRender(string name, string body, string expected)
         {
-            AssertRender("{declare " + name + " as:" + body + "}{echo " + name + "}", expected);
+            DocumentTester.AssertRender("{declare " + name + " as:" + body + "}{echo " + name + "}", expected);
         }
 
         [Test]
@@ -106,7 +95,7 @@ namespace Cottle.Test
         [TestCase("some_symbol_name", "[]", "[]")]
         public void CommandDeclareValueScope(string name, string value, string expected)
         {
-            AssertReturn(
+            DocumentTester.AssertReturn(
                 "{declare f() as:{declare " + name + " as 'unused'}}{declare " + name + " as " + value +
                 "}{f()}{return " + name + "}", expected);
         }
@@ -117,7 +106,7 @@ namespace Cottle.Test
         [TestCase("some_symbol_name", "[]", "[]")]
         public void CommandDeclareValueSimple(string name, string value, string expected)
         {
-            AssertReturn("{declare " + name + " as " + value + "}{return " + name + "}", expected);
+            DocumentTester.AssertReturn("{declare " + name + " as " + value + "}{return " + name + "}", expected);
         }
 
         [Test]
@@ -125,7 +114,7 @@ namespace Cottle.Test
         [TestCase("\"Hello, World!\"", "Hello, World!")]
         public void CommandEcho(string value, string expected)
         {
-            AssertRender("{echo " + value + "}", expected);
+            DocumentTester.AssertRender("{echo " + value + "}", expected);
         }
 
         [Test]
@@ -134,7 +123,7 @@ namespace Cottle.Test
         [TestCase("i", "j", "[1, 5, 9]", "{i}{j}", "011529")]
         public void CommandForKeyValue(string name1, string name2, string source, string body, string expected)
         {
-            AssertRender("{for " + name1 + ", " + name2 + " in " + source + ":" + body + "|empty:EMPTY}", expected);
+            DocumentTester.AssertRender("{for " + name1 + ", " + name2 + " in " + source + ":" + body + "|empty:EMPTY}", expected);
         }
 
         [Test]
@@ -144,7 +133,7 @@ namespace Cottle.Test
         [TestCase("name", "[5: 'A', 9: 'B', 2: 'C']", "{name}", "ABC")]
         public void CommandForValue(string name, string source, string body, string expected)
         {
-            AssertRender("{for " + name + " in " + source + ":" + body + "|empty:EMPTY}", expected);
+            DocumentTester.AssertRender("{for " + name + " in " + source + ":" + body + "|empty:EMPTY}", expected);
         }
 
         [Test]
@@ -161,7 +150,7 @@ namespace Cottle.Test
         [TestCase("0 + 0", "a|elif 0 + 0:b|else:c", "c")]
         public void CommandIf(string condition, string body, string expected)
         {
-            AssertRender("{if " + condition + ":" + body + "}", expected);
+            DocumentTester.AssertRender("{if " + condition + ":" + body + "}", expected);
         }
 
         [Test]
@@ -170,7 +159,7 @@ namespace Cottle.Test
         [TestCase("[]", "[]")]
         public void CommandReturnDirect(string value, string expected)
         {
-            AssertReturn("{return " + value + "}", expected);
+            DocumentTester.AssertReturn("{return " + value + "}", expected);
         }
 
         [Test]
@@ -180,13 +169,13 @@ namespace Cottle.Test
         [TestCase("1", "1", "\"AA\"")]
         public void CommandReturnNested(string a, string b, string expected)
         {
-            AssertReturn("{if " + a + ":{if " + b + ":{return 'AA'}|else:{return 'AB'}}|else:{return 'B'}}", expected);
+            DocumentTester.AssertReturn("{if " + a + ":{if " + b + ":{return 'AA'}|else:{return 'AB'}}|else:{return 'B'}}", expected);
         }
 
         [Test]
         public void CommandSet()
         {
-            AssertRender("{set var}", string.Empty);
+            DocumentTester.AssertRender("{set var}", string.Empty);
         }
 
         [Test]
@@ -194,7 +183,7 @@ namespace Cottle.Test
         [TestCase("{set a to 1}{set b to 2}", "{a}{b}", "{a}{b}", "3412")]
         public void CommandSetFunctionArguments(string pre, string body, string post, string expected)
         {
-            AssertRender(pre + "{set f(a, b) to:" + body + "}{f(3, 4)}" + post, expected);
+            DocumentTester.AssertRender(pre + "{set f(a, b) to:" + body + "}{f(3, 4)}" + post, expected);
         }
 
         [Test]
@@ -202,7 +191,7 @@ namespace Cottle.Test
         [TestCase("test", "{'Some String'}", "Some String")]
         public void CommandSetFunctionRender(string name, string body, string expected)
         {
-            AssertRender("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
+            DocumentTester.AssertRender("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
         }
 
         [Test]
@@ -211,7 +200,7 @@ namespace Cottle.Test
         [TestCase("x", "{if 1:{return 'X'}|else:{return 'Y'}}", "\"X\"")]
         public void CommandSetFunctionReturn(string name, string body, string expected)
         {
-            AssertReturn("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
+            DocumentTester.AssertReturn("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
         }
 
         [Test]
@@ -220,7 +209,7 @@ namespace Cottle.Test
         [TestCase("some_symbol_name", "[]", "[]")]
         public void CommandSetValueScope(string name, string value, string expected)
         {
-            AssertReturn(
+            DocumentTester.AssertReturn(
                 "{declare f() as:{set " + name + " to " + value + "}}{set " + name + " to 'default'}{f()}{return " +
                 name + "}", expected);
         }
@@ -231,7 +220,7 @@ namespace Cottle.Test
         [TestCase("some_symbol_name", "[]", "[]")]
         public void CommandSetValueSimple(string name, string value, string expected)
         {
-            AssertReturn("{set " + name + " to " + value + "}{return " + name + "}", expected);
+            DocumentTester.AssertReturn("{set " + name + " to " + value + "}{return " + name + "}", expected);
         }
 
         [Test]
@@ -239,8 +228,8 @@ namespace Cottle.Test
         [TestCase("{set a to 8}", "lt(0, a)", "{set a to add(a, -1)}X", "XXXXXXXX")]
         public void CommandWhile(string init, string condition, string body, string expected)
         {
-            AssertRender(init + "{while " + condition + ":" + body + "}", expected, DefaultSetting.Instance,
-                PopulateScope("add", "lt"), d => { });
+            DocumentTester.AssertRender(init + "{while " + condition + ":" + body + "}", expected, DefaultSetting.Instance,
+                DocumentTester.CreateContextWithBuiltins("add", "lt"));
         }
 
         [Test]
@@ -250,7 +239,7 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { Escape = escape };
 
-            AssertRender(input, expected, setting, s => { }, d => { });
+            DocumentTester.AssertRender(input, expected, setting, Context.Empty);
         }
 
         [Test]
@@ -262,7 +251,7 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { Escape = escape };
 
-            AssertRender(input, expected, setting, s => { }, d => { });
+            DocumentTester.AssertRender(input, expected, setting, Context.Empty);
         }
 
         [Test]
@@ -281,15 +270,17 @@ namespace Cottle.Test
         [TestCase("ddd", "<void>")]
         public void ExpressionAccess(string access, string expected)
         {
-            void Populate(IStore scope)
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                scope["aaa"] = new[] { 5, (Value)7 };
-                scope["bbb"] = new Dictionary<Value, Value> { { "x", "$X$" }, { "y", "$Y$" } };
-                scope["ccc"] = new Dictionary<Value, Value>
-                    { { "A", new Dictionary<Value, Value> { { "i", 50 } } }, { 1, 42 } };
-            }
+                { "aaa", new[] { 5, (Value)7 } },
+                { "bbb", new Dictionary<Value, Value> { { "x", "$X$" }, { "y", "$Y$" } } },
+                {
+                    "ccc", new Dictionary<Value, Value>
+                        { { "A", new Dictionary<Value, Value> { { "i", 50 } } }, { 1, 42 } }
+                }
+            });
 
-            AssertReturn("{return " + access + "}", expected, DefaultSetting.Instance, Populate, d => { });
+            DocumentTester.AssertReturn("{return " + access + "}", expected, DefaultSetting.Instance, context);
         }
 
         [Test]
@@ -299,31 +290,34 @@ namespace Cottle.Test
         [TestCase("\"ABC\"", "\"ABC\"")]
         public void ExpressionConstant(string constant, string expected)
         {
-            AssertReturn("{return " + constant + "}", expected);
+            DocumentTester.AssertReturn("{return " + constant + "}", expected);
         }
 
         [Test]
-        [TestCase("abc", "42")]
-        [TestCase("xyz", "17")]
-        public void ExpressionInvoke(string symbol, string expected)
+        [TestCase("abc", 42)]
+        [TestCase("xyz", 17)]
+        public void ExpressionInvoke(string symbol, int expected)
         {
-            void Populate(IStore scope)
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                scope[symbol] = expected;
-                scope["f"] = new NativeFunction((a, s, o) =>
+                { symbol, expected },
                 {
-                    var value = s[a[0]].AsString;
+                    "f", new NativeFunction((a, s, o) =>
+                    {
+                        var value = s[a[0]];
 
-                    o.Write(value);
+                        o.Write(value.AsString);
 
-                    return value;
-                }, 1);
-            }
+                        return value;
+                    }, 1)
+                }
+            });
 
-            AssertRender("{f('" + symbol + "')}", ((Value)expected).AsString + ((Value)expected).AsString,
-                DefaultSetting.Instance, Populate, d => { });
-            AssertReturn("{return f('" + symbol + "')}", expected, DefaultSetting.Instance,
-                Populate, d => { });
+            DocumentTester.AssertRender("{f('" + symbol + "')}",
+                ((Value)expected).AsString + ((Value)expected).AsString,
+                DefaultSetting.Instance, context);
+            DocumentTester.AssertReturn("{return f('" + symbol + "')}", expected.ToString(CultureInfo.InvariantCulture),
+                DefaultSetting.Instance, context);
         }
 
         [Test]
@@ -340,23 +334,21 @@ namespace Cottle.Test
         [TestCase("['a': ['b': ['c': 42]]]['a']['b']['c']", "42")]
         public void ExpressionMap(string expression, string expected)
         {
-            AssertReturn("{return " + expression + "}", expected);
+            DocumentTester.AssertReturn("{return " + expression + "}", expected);
         }
 
         [Test]
-        [TestCase("aaa", "aaa", "I sense a soul")]
-        [TestCase("_", "_", "in search of answers")]
-        [TestCase("x", "missing", "x")]
-        public void ExpressionSymbol(string set, string get, string value)
+        [TestCase("aaa", "aaa", "I sense a soul", "\"I sense a soul\"")]
+        [TestCase("_", "_", "in search of answers", "\"in search of answers\"")]
+        [TestCase("x", "missing", "x", "<void>")]
+        public void ExpressionSymbol(string set, string get, string value, string expected)
         {
-            var expected = (set == get ? (Value)value : VoidValue.Instance).ToString();
-
-            void Populate(IStore scope)
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                scope[set] = value;
-            }
+                { set, value }
+            });
 
-            AssertReturn("{return " + get + "}", expected, DefaultSetting.Instance, Populate, d => { });
+            DocumentTester.AssertReturn("{return " + get + "}", expected, DefaultSetting.Instance, context);
         }
 
         [Test]
@@ -364,11 +356,11 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { Optimize = false };
 
-            AssertRender("{['X', 'Y', 'Z'][0]}", "X", setting, s => { }, d => { });
+            DocumentTester.AssertRender("{['X', 'Y', 'Z'][0]}", "X", setting, Context.Empty);
 
             setting.Optimize = true;
 
-            AssertRender("{['X', 'Y', 'Z'][0]}", "X", setting, s => { }, d => { });
+            DocumentTester.AssertRender("{['X', 'Y', 'Z'][0]}", "X", setting, Context.Empty);
         }
 
         [Test]
@@ -376,11 +368,11 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { Optimize = false };
 
-            AssertRender("X{return 1}Y", "X", setting, s => { }, d => { });
+            DocumentTester.AssertRender("X{return 1}Y", "X", setting, Context.Empty);
 
             setting.Optimize = true;
 
-            AssertRender("X{return 1}Y", "X", setting, s => { }, d => { });
+            DocumentTester.AssertRender("X{return 1}Y", "X", setting, Context.Empty);
         }
 
         [Test]
@@ -389,7 +381,7 @@ namespace Cottle.Test
         [TestCase("8", "40320")]
         public void SampleFactorial(string value, string expected)
         {
-            AssertReturn
+            DocumentTester.AssertReturn
             (
                 "{set factorial(n) to:" +
                 "{if gt(n, 1):" +
@@ -401,8 +393,7 @@ namespace Cottle.Test
                 "{return factorial(" + value + ")}",
                 expected,
                 DefaultSetting.Instance,
-                PopulateScope("gt", "mul", "sub"),
-                d => { }
+                DocumentTester.CreateContextWithBuiltins("gt", "mul", "sub")
             );
         }
 
@@ -411,7 +402,7 @@ namespace Cottle.Test
         [TestCase("3", "A -> C, A -> B, C -> B, A -> C, B -> A, B -> C, A -> C, ")]
         public void SampleHanoiTowers(string disks, string expected)
         {
-            AssertRender
+            DocumentTester.AssertRender
             (
                 "{set hanoi_rec(n, from, by, to) to:" +
                 "{set n to sub(n, 1)}" +
@@ -429,8 +420,7 @@ namespace Cottle.Test
                 "{hanoi(" + disks + ")}",
                 expected,
                 DefaultSetting.Instance,
-                PopulateScope("gt", "sub"),
-                d => { }
+                DocumentTester.CreateContextWithBuiltins("gt", "sub")
             );
         }
 
@@ -440,7 +430,7 @@ namespace Cottle.Test
         [TestCase("16", "65536")]
         public void SamplePowerOfTwo(string value, string expected)
         {
-            AssertReturn
+            DocumentTester.AssertReturn
             (
                 "{set a to " + value + "}" +
                 "{set b to 1}" +
@@ -451,8 +441,7 @@ namespace Cottle.Test
                 "{return b}",
                 expected,
                 DefaultSetting.Instance,
-                PopulateScope("add", "gt"),
-                d => { }
+                DocumentTester.CreateContextWithBuiltins("add", "gt")
             );
         }
 
@@ -463,13 +452,13 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
 
-            AssertRender(blockBegin + expression + blockEnd, expected, setting, s => { }, d => { });
+            DocumentTester.AssertRender(blockBegin + expression + blockEnd, expected, setting, Context.Empty);
         }
 
         [Test]
         public void TextEmpty()
         {
-            AssertRender(string.Empty, string.Empty);
+            DocumentTester.AssertRender(string.Empty, string.Empty);
         }
 
         [Test]
@@ -478,7 +467,7 @@ namespace Cottle.Test
         [TestCase("a\\{b\\|c\\}d", "a{b|c}d")]
         public void TextEscape(string escaped, string expected)
         {
-            AssertRender(escaped, expected);
+            DocumentTester.AssertRender(escaped, expected);
         }
 
         [Test]
@@ -486,7 +475,7 @@ namespace Cottle.Test
         [TestCase("This is some literal text")]
         public void TextLiteral(string expected)
         {
-            AssertRender(expected, expected);
+            DocumentTester.AssertRender(expected, expected);
         }
 
         [Test]
@@ -518,7 +507,7 @@ namespace Cottle.Test
             var document = new SimpleDocument(input);
             var output = document.Render(store);
 
-            Assert.AreEqual(input, output);
+            Assert.That(output, Is.EqualTo(input));
         }
 
         [Test]
@@ -529,7 +518,7 @@ namespace Cottle.Test
         {
             var setting = new CustomSetting { Trimmer = s => Regex.Replace(s, pattern, replacement) };
 
-            AssertRender(value, expected, setting, s => { }, d => { });
+            DocumentTester.AssertRender(value, expected, setting, Context.Empty);
         }
     }
 }

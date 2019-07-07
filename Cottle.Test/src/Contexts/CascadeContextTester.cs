@@ -10,7 +10,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public void FindFromFallbackWithEmptyPrimary()
         {
-            var primary = Context.CreateEmpty();
+            var primary = Context.Empty;
             var fallback = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "fallback" } });
             var context = new CascadeContext(primary, fallback);
 
