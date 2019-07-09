@@ -15,9 +15,10 @@ namespace Cottle.Documents.Dynamic
                 new[] { typeof(Storage), typeof(IReadOnlyList<Value>), typeof(IStore), typeof(TextWriter) },
                 GetType());
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
+            var storage = compiler.Compile(arguments, command);
 
             _renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
-            _storage = compiler.Compile(arguments, command);
+            _storage = storage;
         }
 
         public static void Save(Command command, Trimmer trimmer, string assemblyName, string fileName)
