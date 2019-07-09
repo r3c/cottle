@@ -7,25 +7,15 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class IfNode : INode
     {
-        #region Constructors
-
         public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
         {
             _branches = branches.ToArray();
             _fallback = fallback;
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly KeyValuePair<IEvaluator, INode>[] _branches;
 
         private readonly INode _fallback;
-
-        #endregion
-
-        #region Methods
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {
@@ -94,7 +84,5 @@ namespace Cottle.Documents.Simple.Nodes
 
             output.Write(setting.BlockEnd);
         }
-
-        #endregion
     }
 }

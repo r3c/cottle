@@ -4,24 +4,14 @@ using System.Collections.Generic;
 namespace Cottle.Parsers.Post.Optimizers
 {
     /// <summary>
-    ///     Converts constant map expressions to constant expressions.
+    /// Converts constant map expressions to constant expressions.
     /// </summary>
     internal class ConstantMapOptimizer : AbstractOptimizer
     {
-        #region Attributes / Static
-
         public static readonly ConstantMapOptimizer Instance = new ConstantMapOptimizer();
-
-        #endregion
-
-        #region Attributes / Instance
 
         private static readonly Predicate<ExpressionElement> Constants = e =>
             e.Key.Type == ExpressionType.Constant && e.Value.Type == ExpressionType.Constant;
-
-        #endregion
-
-        #region Methods
 
         public override Expression Optimize(Expression expression)
         {
@@ -41,7 +31,5 @@ namespace Cottle.Parsers.Post.Optimizers
                 Value = pairs
             };
         }
-
-        #endregion
     }
 }

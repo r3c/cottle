@@ -9,8 +9,6 @@ namespace Cottle.Documents.Dynamic
 {
     internal class Compiler
     {
-        #region Constructors
-
         public Compiler(ILGenerator generator, Trimmer trimmer)
         {
             _constants = new List<Value>();
@@ -19,10 +17,6 @@ namespace Cottle.Documents.Dynamic
             _locals = new Dictionary<Type, Queue<LocalBuilder>>();
             _trimmer = trimmer;
         }
-
-        #endregion
-
-        #region Methods / Public
 
         public Storage Compile(IEnumerable<string> arguments, Command command)
         {
@@ -85,10 +79,6 @@ namespace Cottle.Documents.Dynamic
             return new Storage(_constants);
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly List<Value> _constants;
 
         private readonly ILGenerator _generator;
@@ -98,10 +88,6 @@ namespace Cottle.Documents.Dynamic
         private readonly Dictionary<Type, Queue<LocalBuilder>> _locals;
 
         private readonly Trimmer _trimmer;
-
-        #endregion
-
-        #region Methods / Private
 
         private void CompileCommand(Command command, Label exit, int depth)
         {
@@ -731,7 +717,5 @@ namespace Cottle.Documents.Dynamic
 
             return _generator.DeclareLocal(typeof(T));
         }
-
-        #endregion
     }
 }

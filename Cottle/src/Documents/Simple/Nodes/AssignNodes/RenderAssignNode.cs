@@ -4,23 +4,13 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
     internal class RenderAssignNode : AssignNode
     {
-        #region Attributes
-
         private readonly INode _body;
-
-        #endregion
-
-        #region Constructors
 
         public RenderAssignNode(string name, INode body, StoreMode mode) :
             base(name, mode)
         {
             _body = body;
         }
-
-        #endregion
-
-        #region Methods
 
         protected override Value Evaluate(IStore store, TextWriter output)
         {
@@ -45,7 +35,5 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
         {
             _body.Source(setting, output);
         }
-
-        #endregion
     }
 }

@@ -8,22 +8,12 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class MapEvaluator : IEvaluator
     {
-        #region Attributes
-
         private readonly KeyValuePair<IEvaluator, IEvaluator>[] _elements;
-
-        #endregion
-
-        #region Constructors
 
         public MapEvaluator(IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
         {
             _elements = elements.ToArray();
         }
-
-        #endregion
-
-        #region Methods
 
         public Value Evaluate(IStore store, TextWriter writer)
         {
@@ -59,7 +49,5 @@ namespace Cottle.Documents.Simple.Evaluators
 
             return builder.ToString();
         }
-
-        #endregion
     }
 }

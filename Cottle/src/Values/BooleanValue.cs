@@ -2,33 +2,9 @@
 {
     public sealed class BooleanValue : ScalarValue<bool>
     {
-        #region Constructors
-
-        public BooleanValue(bool value) :
-            base(value, source => source.AsBoolean)
-        {
-        }
-
-        #endregion
-
-        #region Methods
-
-        public override string ToString()
-        {
-            return Value ? "<true>" : "<false>";
-        }
-
-        #endregion
-
-        #region Constants
-
         public static readonly BooleanValue False = new BooleanValue(false);
 
         public static readonly BooleanValue True = new BooleanValue(true);
-
-        #endregion
-
-        #region Properties
 
         public override bool AsBoolean => Value;
 
@@ -38,6 +14,14 @@
 
         public override ValueContent Type => ValueContent.Boolean;
 
-        #endregion
+        public BooleanValue(bool value) :
+            base(value, source => source.AsBoolean)
+        {
+        }
+
+        public override string ToString()
+        {
+            return Value ? "<true>" : "<false>";
+        }
     }
 }

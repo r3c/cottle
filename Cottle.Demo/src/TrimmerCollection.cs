@@ -6,13 +6,7 @@ namespace Cottle.Demo
 {
     public static class TrimmerCollection
     {
-        #region Constants
-
         public const int DefaultIndex = 2;
-
-        #endregion
-
-        #region Attributes
 
         private static readonly KeyValuePair<string, Trimmer>[] Trimmers =
         {
@@ -21,10 +15,6 @@ namespace Cottle.Demo
             new KeyValuePair<string, Trimmer>("Do not modify text", DefaultSetting.Instance.Trimmer),
             new KeyValuePair<string, Trimmer>("Collapse blank characters", BuiltinTrimmers.CollapseBlankCharacters)
         };
-
-        #endregion
-
-        #region Properties
 
         public static IEnumerable<string> TrimmerNames
         {
@@ -35,10 +25,6 @@ namespace Cottle.Demo
             }
         }
 
-        #endregion
-
-        #region Methods
-
         public static Trimmer GetTrimmer(int index)
         {
             if (index >= 0 && index < TrimmerCollection.Trimmers.Length)
@@ -46,7 +32,5 @@ namespace Cottle.Demo
 
             return TrimmerCollection.Trimmers[TrimmerCollection.DefaultIndex].Value;
         }
-
-        #endregion
     }
 }

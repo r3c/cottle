@@ -6,33 +6,19 @@ namespace Cottle.Values
     public abstract class ScalarValue<T> : Value where
         T : IComparable<T>
     {
-        #region Constructors
+        public override IFunction AsFunction => null;
+
+        public override IMap Fields => EmptyMap.Instance;
+
+        protected readonly Converter<Value, T> Converter;
+
+        protected readonly T Value;
 
         protected ScalarValue(T value, Converter<Value, T> converter)
         {
             Converter = converter;
             Value = value;
         }
-
-        #endregion
-
-        #region Properties
-
-        public override IFunction AsFunction => null;
-
-        public override IMap Fields => EmptyMap.Instance;
-
-        #endregion
-
-        #region Attributes
-
-        protected readonly Converter<Value, T> Converter;
-
-        protected readonly T Value;
-
-        #endregion
-
-        #region Methods
 
         public override int CompareTo(Value other)
         {
@@ -49,7 +35,5 @@ namespace Cottle.Values
         {
             return Value.GetHashCode();
         }
-
-        #endregion
     }
 }

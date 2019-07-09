@@ -5,13 +5,7 @@ namespace Cottle.Documents
 {
     public abstract class AbstractDocument : IDocument
     {
-        #region Methods / Abstract
-
         public abstract Value Render(IContext context, TextWriter writer);
-
-        #endregion
-
-        #region Methods / Public
 
         public string Render(IContext context)
         {
@@ -21,7 +15,5 @@ namespace Cottle.Documents
 
             return writer.ToString();
         }
-
-        #endregion
     }
 }

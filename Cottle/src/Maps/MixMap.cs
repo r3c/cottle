@@ -4,7 +4,11 @@ namespace Cottle.Maps
 {
     internal class MixMap : AbstractMap
     {
-        #region Constructors
+        public override int Count => _array.Count;
+
+        private readonly List<KeyValuePair<Value, Value>> _array;
+
+        private readonly Dictionary<Value, Value> _hash;
 
         public MixMap(IEnumerable<KeyValuePair<Value, Value>> pairs)
         {
@@ -14,24 +18,6 @@ namespace Cottle.Maps
             foreach (var pair in _array)
                 _hash[pair.Key] = pair.Value;
         }
-
-        #endregion
-
-        #region Properties
-
-        public override int Count => _array.Count;
-
-        #endregion
-
-        #region Attributes
-
-        private readonly List<KeyValuePair<Value, Value>> _array;
-
-        private readonly Dictionary<Value, Value> _hash;
-
-        #endregion
-
-        #region Methods
 
         public override bool Contains(Value key)
         {
@@ -47,7 +33,5 @@ namespace Cottle.Maps
         {
             return _hash.TryGetValue(key, out value);
         }
-
-        #endregion
     }
 }

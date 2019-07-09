@@ -4,13 +4,7 @@ namespace Cottle.Values
 {
     public sealed class VoidValue : Value
     {
-        #region Properties / Static
-
         public static VoidValue Instance { get; } = new VoidValue();
-
-        #endregion
-
-        #region Properties / Instance
 
         public override bool AsBoolean => false;
 
@@ -23,10 +17,6 @@ namespace Cottle.Values
         public override IMap Fields => EmptyMap.Instance;
 
         public override ValueContent Type => ValueContent.Void;
-
-        #endregion
-
-        #region Methods
 
         public override int CompareTo(Value other)
         {
@@ -48,7 +38,5 @@ namespace Cottle.Values
         {
             return "<void>";
         }
-
-        #endregion
     }
 }

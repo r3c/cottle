@@ -5,7 +5,11 @@ namespace Cottle.Exceptions
 {
     public class ParseException : Exception
     {
-        #region Constructors
+        public int Column { get; }
+
+        public string Lexem { get; }
+
+        public int Line { get; }
 
         public ParseException(int column, int line, string lexem, string expected) :
             base(string.Format(CultureInfo.InvariantCulture,
@@ -15,17 +19,5 @@ namespace Cottle.Exceptions
             Lexem = lexem;
             Line = line;
         }
-
-        #endregion
-
-        #region Properties
-
-        public int Column { get; }
-
-        public string Lexem { get; }
-
-        public int Line { get; }
-
-        #endregion
     }
 }

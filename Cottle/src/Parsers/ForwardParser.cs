@@ -11,8 +11,6 @@ namespace Cottle.Parsers
 {
     internal class ForwardParser : IParser
     {
-        #region Attributes / Static
-
         private static readonly Dictionary<string, Func<ForwardParser, Command>> Keywords =
             new Dictionary<string, Func<ForwardParser, Command>>
             {
@@ -28,24 +26,12 @@ namespace Cottle.Parsers
                 { "while", p => p.ParseKeywordWhile() }
             };
 
-        #endregion
-
-        #region Attributes / Instance
-
         private readonly Lexer _lexer;
-
-        #endregion
-
-        #region Constructors
 
         public ForwardParser(string blockBegin, string blockContinue, string blockEnd, char escape)
         {
             _lexer = new Lexer(blockBegin, blockContinue, blockEnd, escape);
         }
-
-        #endregion
-
-        #region Methods / Public
 
         public Command Parse(TextReader reader)
         {
@@ -59,10 +45,6 @@ namespace Cottle.Parsers
 
             return command;
         }
-
-        #endregion
-
-        #region Methods / Private
 
         private Expression BuildOperator(IFunction function, params Expression[] arguments)
         {
@@ -747,7 +729,5 @@ namespace Cottle.Parsers
         {
             return new ParseException(_lexer.Column, _lexer.Line, _lexer.Current.Content, expected);
         }
-
-        #endregion
     }
 }

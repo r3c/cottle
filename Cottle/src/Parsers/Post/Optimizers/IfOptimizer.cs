@@ -1,17 +1,11 @@
 ﻿namespace Cottle.Parsers.Post.Optimizers
 {
     /// <summary>
-    ///     Simplify "if" command with constant condition.
+    /// Simplify "if" command with constant condition.
     /// </summary>
     internal class IfOptimizer : AbstractOptimizer
     {
-        #region Attributes
-
         public static readonly IfOptimizer Instance = new IfOptimizer();
-
-        #endregion
-
-        #region Methods
 
         public override Command Optimize(Command command)
         {
@@ -25,7 +19,5 @@
 
             return command ?? Command.NoOp;
         }
-
-        #endregion
     }
 }

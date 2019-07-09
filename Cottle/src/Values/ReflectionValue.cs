@@ -7,7 +7,30 @@ namespace Cottle.Values
 {
     public sealed class ReflectionValue : ResolveValue
     {
-        #region Methods
+        private static readonly Dictionary<Type, ValueConverter> Converters = new Dictionary<Type, ValueConverter>
+        {
+            { typeof(bool), s => (bool)s },
+            { typeof(byte), s => (byte)s },
+            { typeof(char), s => (char)s },
+            { typeof(double), s => (double)s },
+            { typeof(decimal), s => (decimal)s },
+            { typeof(float), s => (float)s },
+            { typeof(int), s => (int)s },
+            { typeof(long), s => (long)s },
+            { typeof(sbyte), s => (sbyte)s },
+            { typeof(short), s => (short)s },
+            { typeof(string), s => (string)s },
+            { typeof(uint), s => (uint)s },
+            { typeof(ulong), s => (long)(ulong)s },
+            { typeof(ushort), s => (ushort)s }
+        };
+
+        private static readonly Dictionary<Type, List<MemberReader>> Readers =
+            new Dictionary<Type, List<MemberReader>>();
+
+        private readonly BindingFlags _binding;
+
+        private readonly object _source;
 
         protected override Value Resolve()
         {
@@ -59,43 +82,6 @@ namespace Cottle.Values
             return fields;
         }
 
-        #endregion
-
-        #region Attributes / Instance
-
-        private readonly BindingFlags _binding;
-
-        private readonly object _source;
-
-        #endregion
-
-        #region Attributes / Static
-
-        private static readonly Dictionary<Type, ValueConverter> Converters = new Dictionary<Type, ValueConverter>
-        {
-            { typeof(bool), s => (bool)s },
-            { typeof(byte), s => (byte)s },
-            { typeof(char), s => (char)s },
-            { typeof(double), s => (double)s },
-            { typeof(decimal), s => (decimal)s },
-            { typeof(float), s => (float)s },
-            { typeof(int), s => (int)s },
-            { typeof(long), s => (long)s },
-            { typeof(sbyte), s => (sbyte)s },
-            { typeof(short), s => (short)s },
-            { typeof(string), s => (string)s },
-            { typeof(uint), s => (uint)s },
-            { typeof(ulong), s => (long)(ulong)s },
-            { typeof(ushort), s => (ushort)s }
-        };
-
-        private static readonly Dictionary<Type, List<MemberReader>> Readers =
-            new Dictionary<Type, List<MemberReader>>();
-
-        #endregion
-
-        #region Constructors
-
         public ReflectionValue(object source, BindingFlags binding)
         {
             _binding = binding;
@@ -107,27 +93,13 @@ namespace Cottle.Values
         {
         }
 
-        #endregion
-
-        #region Types
-
         private struct MemberReader
         {
-            #region Properties
-
             public string Name { get; }
-
-            #endregion
-
-            #region Attributes
 
             private readonly BindingFlags _binding;
 
             private readonly Func<object, object> _extractor;
-
-            #endregion
-
-            #region Constructors
 
             public MemberReader(FieldInfo field, BindingFlags binding)
             {
@@ -147,10 +119,6 @@ namespace Cottle.Values
                 Name = property.Name;
             }
 
-            #endregion
-
-            #region Methods
-
             public Value Extract(object source)
             {
                 var value = _extractor(source);
@@ -160,12 +128,8 @@ namespace Cottle.Values
 
                 return VoidValue.Instance;
             }
-
-            #endregion
         }
 
         private delegate Value ValueConverter(object source);
-
-        #endregion
     }
 }

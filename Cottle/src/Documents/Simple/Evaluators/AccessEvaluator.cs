@@ -6,25 +6,15 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class AccessEvaluator : IEvaluator
     {
-        #region Constructors
-
         public AccessEvaluator(IEvaluator source, IEvaluator subscript)
         {
             _source = source;
             _subscript = subscript;
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly IEvaluator _source;
 
         private readonly IEvaluator _subscript;
-
-        #endregion
-
-        #region Methods
 
         public Value Evaluate(IStore store, TextWriter output)
         {
@@ -46,7 +36,5 @@ namespace Cottle.Documents.Simple.Evaluators
                 .Append(']')
                 .ToString();
         }
-
-        #endregion
     }
 }

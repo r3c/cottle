@@ -5,35 +5,21 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal abstract class AssignNode : INode
     {
-        #region Constructors
-
         protected AssignNode(string name, StoreMode mode)
         {
             _mode = mode;
             _name = name;
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly StoreMode _mode;
 
         private readonly string _name;
-
-        #endregion
-
-        #region Methods / Abstract
 
         protected abstract Value Evaluate(IStore store, TextWriter output);
 
         protected abstract void SourceSymbol(string name, TextWriter output);
 
         protected abstract void SourceValue(ISetting setting, TextWriter output);
-
-        #endregion
-
-        #region Methods / Public
 
         public override int GetHashCode()
         {
@@ -92,7 +78,5 @@ namespace Cottle.Documents.Simple.Nodes
         {
             return _name;
         }
-
-        #endregion
     }
 }

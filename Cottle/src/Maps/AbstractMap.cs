@@ -7,17 +7,11 @@ namespace Cottle.Maps
     {
         public abstract int Count { get; }
 
-        #region Methods / Abstract
-
         public abstract bool Contains(Value key);
 
         public abstract IEnumerator<KeyValuePair<Value, Value>> GetEnumerator();
 
         public abstract bool TryGet(Value key, out Value value);
-
-        #endregion
-
-        #region Methods / Public
 
         public int CompareTo(IMap other)
         {
@@ -75,7 +69,5 @@ namespace Cottle.Maps
 
             return hash;
         }
-
-        #endregion
     }
 }

@@ -7,13 +7,7 @@ namespace Cottle.Values
 {
     public sealed class MapValue : Value
     {
-        #region Properties / Static
-
         public static MapValue Empty { get; } = new MapValue();
-
-        #endregion
-
-        #region Properties / Instance
 
         public override bool AsBoolean => Fields.Count > 0;
 
@@ -26,10 +20,6 @@ namespace Cottle.Values
         public override IMap Fields { get; }
 
         public override ValueContent Type => ValueContent.Map;
-
-        #endregion
-
-        #region Constructors
 
         public MapValue(Func<int, Value> generator, int count)
         {
@@ -55,10 +45,6 @@ namespace Cottle.Values
         {
             Fields = EmptyMap.Instance;
         }
-
-        #endregion
-
-        #region Methods
 
         public override int CompareTo(Value other)
         {
@@ -99,7 +85,5 @@ namespace Cottle.Values
 
             return builder.ToString();
         }
-
-        #endregion
     }
 }

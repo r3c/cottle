@@ -7,8 +7,6 @@ namespace Cottle.Functions
 {
     public sealed class NativeFunction : IFunction
     {
-        #region Constructors / Private
-
         private NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int min, int max,
             bool pure)
         {
@@ -18,25 +16,13 @@ namespace Cottle.Functions
             Pure = pure;
         }
 
-        #endregion
-
-        #region Properties
-
         public bool Pure { get; }
-
-        #endregion
-
-        #region Attributes
 
         private readonly Func<IReadOnlyList<Value>, IStore, TextWriter, Value> _callback;
 
         private readonly int _max;
 
         private readonly int _min;
-
-        #endregion
-
-        #region Constructors / Public
 
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int min, int max) :
             this(callback, min, max, false)
@@ -83,10 +69,6 @@ namespace Cottle.Functions
         {
         }
 
-        #endregion
-
-        #region Methods
-
         public int CompareTo(IFunction other)
         {
             return object.ReferenceEquals(this, other) ? 0 : 1;
@@ -125,7 +107,5 @@ namespace Cottle.Functions
         {
             return "native";
         }
-
-        #endregion
     }
 }

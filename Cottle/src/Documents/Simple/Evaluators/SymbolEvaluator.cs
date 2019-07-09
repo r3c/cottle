@@ -5,22 +5,12 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class SymbolEvaluator : IEvaluator
     {
-        #region Attributes
-
         private readonly Value _symbol;
-
-        #endregion
-
-        #region Constructors
 
         public SymbolEvaluator(Value symbol)
         {
             _symbol = symbol;
         }
-
-        #endregion
-
-        #region Methods
 
         public Value Evaluate(IStore store, TextWriter output)
         {
@@ -34,7 +24,5 @@ namespace Cottle.Documents.Simple.Evaluators
         {
             return _symbol.AsString;
         }
-
-        #endregion
     }
 }

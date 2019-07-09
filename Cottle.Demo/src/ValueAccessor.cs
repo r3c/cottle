@@ -6,8 +6,6 @@ namespace Cottle.Demo
 {
     public static class ValueAccessor
     {
-        #region Methods / Public
-
         public static bool Load(BinaryReader reader, IDictionary<string, Value> values)
         {
             int count;
@@ -36,10 +34,6 @@ namespace Cottle.Demo
                 ValueAccessor.Save(writer, pair.Value);
             }
         }
-
-        #endregion
-
-        #region Methods / Private
 
         private static bool Load(BinaryReader reader, out Value value)
         {
@@ -130,7 +124,5 @@ namespace Cottle.Demo
                     break;
             }
         }
-
-        #endregion
     }
 }

@@ -7,34 +7,20 @@ namespace Cottle.Parsers
 {
     internal class PostParser : IParser
     {
-        #region Constructors
-
         public PostParser(IParser parser, IEnumerable<IOptimizer> optimizers)
         {
             _optimizers = optimizers.ToArray();
             _parser = parser;
         }
 
-        #endregion
-
-        #region Methods / Public
-
         public Command Parse(TextReader reader)
         {
             return Optimize(_parser.Parse(reader));
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly IOptimizer[] _optimizers;
 
         private readonly IParser _parser;
-
-        #endregion
-
-        #region Methods / Private
 
         private Command Optimize(Command command)
         {
@@ -75,7 +61,5 @@ namespace Cottle.Parsers
 
             return expression;
         }
-
-        #endregion
     }
 }

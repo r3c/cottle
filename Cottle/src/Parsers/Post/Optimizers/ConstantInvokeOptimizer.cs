@@ -7,17 +7,11 @@ using Cottle.Stores;
 namespace Cottle.Parsers.Post.Optimizers
 {
     /// <summary>
-    ///     Evaluate constant invoke expressions using pure functions.
+    /// Evaluate constant invoke expressions using pure functions.
     /// </summary>
     internal class ConstantInvokeOptimizer : AbstractOptimizer
     {
-        #region Attributes / Static
-
         public static readonly ConstantInvokeOptimizer Instance = new ConstantInvokeOptimizer();
-
-        #endregion
-
-        #region Methods
 
         public override Expression Optimize(Expression expression)
         {
@@ -39,7 +33,5 @@ namespace Cottle.Parsers.Post.Optimizers
                     new StringWriter())
             };
         }
-
-        #endregion
     }
 }

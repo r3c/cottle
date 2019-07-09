@@ -14,13 +14,7 @@ namespace Cottle.Documents
     /// </summary>
     public sealed class DynamicDocument : AbstractDocument
     {
-        #region Attributes
-
         private readonly Function main;
-
-        #endregion
-
-        #region Constructors
 
         public DynamicDocument(TextReader reader, ISetting setting)
         {
@@ -44,10 +38,6 @@ namespace Cottle.Documents
         {
         }
 
-        #endregion
-
-        #region Methods
-
         public override Value Render(IContext context, TextWriter writer)
         {
             return main.Execute(null, new ContextStore(context), writer);
@@ -59,7 +49,5 @@ namespace Cottle.Documents
 
             Function.Save(parser.Parse(reader), setting.Trimmer, assemblyName, fileName);
         }
-
-        #endregion
     }
 }

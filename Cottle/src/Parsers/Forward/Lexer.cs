@@ -6,8 +6,6 @@ namespace Cottle.Parsers.Forward
 {
     internal class Lexer
     {
-        #region Constructors
-
         public Lexer(string blockBegin, string blockContinue, string blockEnd, char escape)
         {
             var graph = new LexerGraph();
@@ -28,19 +26,11 @@ namespace Cottle.Parsers.Forward
             _root = graph.Root;
         }
 
-        #endregion
-
-        #region Properties
-
         public int Column { get; private set; }
 
         public Lexem Current { get; private set; }
 
         public int Line { get; private set; }
-
-        #endregion
-
-        #region Attributes
 
         // A buffer containing more than 85000 bytes will be allocated on LOH
         private const int MaxBufferSize = 84000 / sizeof(char);
@@ -58,10 +48,6 @@ namespace Cottle.Parsers.Forward
         private TextReader _reader;
 
         private readonly LexerNode _root;
-
-        #endregion
-
-        #region Methods / Public
 
         public void NextBlock()
         {
@@ -87,10 +73,6 @@ namespace Cottle.Parsers.Forward
 
             return Read();
         }
-
-        #endregion
-
-        #region Methods / Private
 
         private Lexem ReadBlock()
         {
@@ -399,7 +381,5 @@ namespace Cottle.Parsers.Forward
 
             return true;
         }
-
-        #endregion
     }
 }

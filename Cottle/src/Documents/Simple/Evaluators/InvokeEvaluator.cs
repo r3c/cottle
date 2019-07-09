@@ -8,25 +8,15 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class InvokeEvaluator : IEvaluator
     {
-        #region Constructors
-
         public InvokeEvaluator(IEvaluator caller, IEnumerable<IEvaluator> arguments)
         {
             _arguments = arguments.ToArray();
             _caller = caller;
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly IEvaluator[] _arguments;
 
         private readonly IEvaluator _caller;
-
-        #endregion
-
-        #region Methods / Public
 
         public Value Evaluate(IStore store, TextWriter output)
         {
@@ -69,7 +59,5 @@ namespace Cottle.Documents.Simple.Evaluators
 
             return builder.ToString();
         }
-
-        #endregion
     }
 }

@@ -4,13 +4,7 @@ namespace Cottle.Maps
 {
     internal class ArrayMap : AbstractMap
     {
-        #region Attributes
-
         private readonly List<KeyValuePair<Value, Value>> _array;
-
-        #endregion
-
-        #region Constructors
 
         public ArrayMap(IEnumerable<Value> array)
         {
@@ -22,15 +16,7 @@ namespace Cottle.Maps
                 _array.Add(new KeyValuePair<Value, Value>(key++, value));
         }
 
-        #endregion
-
-        #region Properties
-
         public override int Count => _array.Count;
-
-        #endregion
-
-        #region Methods
 
         public override bool Contains(Value key)
         {
@@ -69,7 +55,5 @@ namespace Cottle.Maps
 
             return true;
         }
-
-        #endregion
     }
 }

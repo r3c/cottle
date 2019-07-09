@@ -2,12 +2,8 @@
 {
     internal interface IOptimizer
     {
-        #region Methods
-
         Command Optimize(Command command);
 
         Expression Optimize(Expression expression);
-
-        #endregion
     }
 }

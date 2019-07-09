@@ -5,29 +5,15 @@ namespace Cottle.Stores
     [Obsolete("Use any `Context.Create*` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class FallbackStore : AbstractStore
     {
-        #region Constructors
+        public IStore Constant { get; }
+
+        public IStore Mutable { get; }
 
         public FallbackStore(IStore constant, IStore mutable)
         {
             Constant = constant;
             Mutable = mutable;
         }
-
-        #endregion
-
-        #region Properties
-
-        public IStore Constant { get; }
-
-        public IStore Mutable { get; }
-
-        #endregion
-
-        #region Attributes
-
-        #endregion
-
-        #region Methods
 
         public override void Enter()
         {
@@ -48,7 +34,5 @@ namespace Cottle.Stores
         {
             return Mutable.TryGet(symbol, out value) || Constant.TryGet(symbol, out value);
         }
-
-        #endregion
     }
 }

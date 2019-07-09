@@ -7,28 +7,16 @@ namespace Cottle.Maps
 {
     internal class GeneratorMap : AbstractMap
     {
-        #region Constructors
-
         public GeneratorMap(Func<int, Value> generator, int count)
         {
             _count = count;
             _generator = generator;
         }
 
-        #endregion
-
-        #region Properties
-
         public override int Count => _count;
-
-        #endregion
-
-        #region Types
 
         private class GeneratorEnumerator : IEnumerator<KeyValuePair<Value, Value>>
         {
-            #region Constructors
-
             public GeneratorEnumerator(Func<int, Value> generator, int count)
             {
                 _count = count;
@@ -37,23 +25,15 @@ namespace Cottle.Maps
                 _index = 0;
             }
 
-            #endregion
-
             public KeyValuePair<Value, Value> Current { get; private set; }
 
             object IEnumerator.Current => Current;
-
-            #region Attributes
 
             private readonly int _count;
 
             private readonly Func<int, Value> _generator;
 
             private int _index;
-
-            #endregion
-
-            #region Methods
 
             public void Dispose()
             {
@@ -75,21 +55,11 @@ namespace Cottle.Maps
             {
                 _index = 0;
             }
-
-            #endregion
         }
-
-        #endregion
-
-        #region Attributes
 
         private readonly int _count;
 
         private readonly Func<int, Value> _generator;
-
-        #endregion
-
-        #region Methods
 
         public override bool Contains(Value key)
         {
@@ -128,7 +98,5 @@ namespace Cottle.Maps
 
             return true;
         }
-
-        #endregion
     }
 }

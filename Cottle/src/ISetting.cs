@@ -2,8 +2,6 @@
 {
     public interface ISetting
     {
-        #region Methods
-
         string BlockBegin { get; }
 
         string BlockContinue { get; }
@@ -15,7 +13,5 @@
         bool Optimize { get; }
 
         Trimmer Trimmer { get; }
-
-        #endregion
     }
 }

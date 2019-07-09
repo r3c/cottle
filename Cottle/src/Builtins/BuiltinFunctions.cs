@@ -11,22 +11,12 @@ namespace Cottle.Builtins
 {
     public static class BuiltinFunctions
     {
-        #region Properties
-
         public static IEnumerable<KeyValuePair<string, IFunction>> Instances => BuiltinFunctions.InstanceDictionary;
-
-        #endregion
-
-        #region Methods
 
         public static bool TryGet(string name, out IFunction function)
         {
             return BuiltinFunctions.InstanceDictionary.TryGetValue(name, out function);
         }
-
-        #endregion
-
-        #region Attributes
 
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -661,7 +651,5 @@ namespace Cottle.Builtins
         };
 
         private static readonly Random Random = new Random();
-
-        #endregion
     }
 }

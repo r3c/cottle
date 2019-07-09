@@ -9,8 +9,6 @@ namespace Cottle.Documents.Dynamic
 {
     internal class Function : IFunction
     {
-        #region Constructors
-
         public Function(IEnumerable<string> arguments, Command command, Trimmer trimmer)
         {
             var method = new DynamicMethod(string.Empty, typeof(Value),
@@ -18,13 +16,9 @@ namespace Cottle.Documents.Dynamic
                 GetType());
             var compiler = new Compiler(method.GetILGenerator(), trimmer);
 
-            storage = compiler.Compile(arguments, command);
-            renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
+            _renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
+            _storage = compiler.Compile(arguments, command);
         }
-
-        #endregion
-
-        #region Methods / Static
 
         public static void Save(Command command, Trimmer trimmer, string assemblyName, string fileName)
         {
@@ -53,17 +47,9 @@ namespace Cottle.Documents.Dynamic
 #endif
         }
 
-        #endregion
+        private readonly Renderer _renderer;
 
-        #region Attributes
-
-        private readonly Renderer renderer;
-
-        private readonly Storage storage;
-
-        #endregion
-
-        #region Methods / Public
+        private readonly Storage _storage;
 
         public int CompareTo(IFunction other)
         {
@@ -82,19 +68,17 @@ namespace Cottle.Documents.Dynamic
 
         public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
         {
-            return renderer(storage, arguments, store, output);
+            return _renderer(_storage, arguments, store, output);
         }
 
         public override int GetHashCode()
         {
-            return renderer.GetHashCode();
+            return _renderer.GetHashCode();
         }
 
         public override string ToString()
         {
             return "<dynamic>";
         }
-
-        #endregion
     }
 }

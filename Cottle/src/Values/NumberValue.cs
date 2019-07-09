@@ -4,16 +4,10 @@ namespace Cottle.Values
 {
     public sealed class NumberValue : ScalarValue<decimal>
     {
-        #region Methods
-
         public override string ToString()
         {
             return Value.ToString(CultureInfo.InvariantCulture);
         }
-
-        #endregion
-
-        #region Properties
 
         public override bool AsBoolean => Value != 0;
 
@@ -22,10 +16,6 @@ namespace Cottle.Values
         public override string AsString => Value.ToString(CultureInfo.InvariantCulture);
 
         public override ValueContent Type => ValueContent.Number;
-
-        #endregion
-
-        #region Constructors / Public
 
         public NumberValue(byte value) :
             this((decimal)value)
@@ -61,7 +51,5 @@ namespace Cottle.Values
             this((decimal)value)
         {
         }
-
-        #endregion
     }
 }

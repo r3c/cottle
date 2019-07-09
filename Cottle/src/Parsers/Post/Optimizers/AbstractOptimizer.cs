@@ -2,8 +2,6 @@
 {
     internal abstract class AbstractOptimizer : IOptimizer
     {
-        #region Methods
-
         public virtual Command Optimize(Command command)
         {
             return command;
@@ -13,7 +11,5 @@
         {
             return expression;
         }
-
-        #endregion
     }
 }

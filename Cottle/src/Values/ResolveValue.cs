@@ -4,30 +4,6 @@ namespace Cottle.Values
 {
     public abstract class ResolveValue : Value
     {
-        #region Methods / Abstract
-
-        protected abstract Value Resolve();
-
-        #endregion
-
-        #region Methods / Private
-
-        private Value Acquire()
-        {
-            if (_value == null)
-                lock (_mutex)
-                {
-                    if (_value == null)
-                        Interlocked.Exchange(ref _value, Resolve());
-                }
-
-            return _value;
-        }
-
-        #endregion
-
-        #region Properties
-
         public override bool AsBoolean => Acquire().AsBoolean;
 
         public override IFunction AsFunction => Acquire().AsFunction;
@@ -40,17 +16,25 @@ namespace Cottle.Values
 
         public override ValueContent Type => Acquire().Type;
 
-        #endregion
-
-        #region Attributes
-
         private readonly object _mutex = new object();
 
         private Value _value;
 
-        #endregion
+        protected abstract Value Resolve();
 
-        #region Methods / Public
+        private Value Acquire()
+        {
+            if (_value == null)
+            {
+                lock (_mutex)
+                {
+                    if (_value == null)
+                        Interlocked.Exchange(ref _value, Resolve());
+                }
+            }
+
+            return _value;
+        }
 
         public override int CompareTo(Value other)
         {
@@ -66,7 +50,5 @@ namespace Cottle.Values
         {
             return Acquire().ToString();
         }
-
-        #endregion
     }
 }

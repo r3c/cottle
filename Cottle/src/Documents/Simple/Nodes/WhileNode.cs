@@ -5,25 +5,15 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class WhileNode : INode
     {
-        #region Constructors
-
         public WhileNode(IEvaluator condition, INode body)
         {
             _body = body;
             _condition = condition;
         }
 
-        #endregion
-
-        #region Attributes
-
         private readonly INode _body;
 
         private readonly IEvaluator _condition;
-
-        #endregion
-
-        #region Methods
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {
@@ -57,7 +47,5 @@ namespace Cottle.Documents.Simple.Nodes
 
             output.Write(setting.BlockEnd);
         }
-
-        #endregion
     }
 }

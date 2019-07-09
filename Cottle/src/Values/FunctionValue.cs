@@ -4,17 +4,6 @@ namespace Cottle.Values
 {
     public sealed class FunctionValue : Value
     {
-        #region Constructors
-
-        public FunctionValue(IFunction function)
-        {
-            AsFunction = function;
-        }
-
-        #endregion
-
-        #region Properties
-
         public override bool AsBoolean => false;
 
         public override IFunction AsFunction { get; }
@@ -27,9 +16,10 @@ namespace Cottle.Values
 
         public override ValueContent Type => ValueContent.Function;
 
-        #endregion
-
-        #region Methods
+        public FunctionValue(IFunction function)
+        {
+            AsFunction = function;
+        }
 
         public override int CompareTo(Value other)
         {
@@ -51,7 +41,5 @@ namespace Cottle.Values
         {
             return "<" + AsFunction + "()>";
         }
-
-        #endregion
     }
 }

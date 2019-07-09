@@ -2,13 +2,7 @@
 {
     internal class Command
     {
-        #region Attributes / Static
-
         public static readonly Command NoOp = new Command { Type = CommandType.None };
-
-        #endregion
-
-        #region Attributes / Instance
 
         public string[] Arguments;
 
@@ -27,7 +21,5 @@
         public string Text;
 
         public CommandType Type;
-
-        #endregion
     }
 }

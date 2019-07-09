@@ -7,8 +7,6 @@ namespace Cottle
 {
     public abstract class Value : IComparable<Value>, IEquatable<Value>
     {
-        #region Properties
-
         public abstract bool AsBoolean { get; }
 
         public abstract IFunction AsFunction { get; }
@@ -20,10 +18,6 @@ namespace Cottle
         public abstract IMap Fields { get; }
 
         public abstract ValueContent Type { get; }
-
-        #endregion
-
-        #region Operators
 
         public static bool operator ==(Value lhs, Value rhs)
         {
@@ -194,10 +188,6 @@ namespace Cottle
             return VoidValue.Instance;
         }
 
-        #endregion
-
-        #region Methods
-
         public abstract int CompareTo(Value other);
 
         public virtual bool Equals(Value other)
@@ -213,7 +203,5 @@ namespace Cottle
         }
 
         public abstract override int GetHashCode();
-
-        #endregion
     }
 }

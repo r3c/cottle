@@ -16,17 +16,17 @@ namespace Cottle.Documents
     /// </summary>
     public sealed class SimpleDocument : AbstractDocument
     {
-        private readonly INode renderer;
+        private readonly INode _renderer;
 
-        private readonly ISetting setting;
+        private readonly ISetting _setting;
 
         public SimpleDocument(TextReader reader, ISetting setting)
         {
             var parser = ParserFactory.BuildParser(setting);
             var root = parser.Parse(reader);
 
-            renderer = CompileCommand(root, setting.Trimmer);
-            this.setting = setting;
+            _renderer = CompileCommand(root, setting.Trimmer);
+            _setting = setting;
         }
 
         public SimpleDocument(TextReader reader) :
@@ -46,14 +46,14 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            renderer.Render(new ContextStore(context), writer, out var result);
+            _renderer.Render(new ContextStore(context), writer, out var result);
 
             return result;
         }
 
         public void Source(TextWriter writer)
         {
-            renderer.Source(setting, writer);
+            _renderer.Source(_setting, writer);
         }
 
         public string Source()

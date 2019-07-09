@@ -5,8 +5,6 @@ namespace Cottle.Values
 {
     public sealed class StringValue : ScalarValue<string>
     {
-        #region Methods
-
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -26,10 +24,6 @@ namespace Cottle.Values
             return builder.ToString();
         }
 
-        #endregion
-
-        #region Properties
-
         public override bool AsBoolean => !string.IsNullOrEmpty(Value);
 
         public override decimal AsNumber =>
@@ -41,10 +35,6 @@ namespace Cottle.Values
 
         public override ValueContent Type => ValueContent.String;
 
-        #endregion
-
-        #region Constructors
-
         public StringValue(string value) :
             base(value, source => source.AsString)
         {
@@ -54,7 +44,5 @@ namespace Cottle.Values
             this(value.ToString())
         {
         }
-
-        #endregion
     }
 }

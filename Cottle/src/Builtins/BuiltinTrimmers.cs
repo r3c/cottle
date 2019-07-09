@@ -4,16 +4,10 @@ namespace Cottle.Builtins
 {
     public static class BuiltinTrimmers
     {
-        #region Attributes / Private
-
         public static readonly Trimmer CollapseBlankCharacters =
             text => BuiltinTrimmers.CollapseBlankCharactersRegex.Replace(text, " ");
 
         private static readonly Regex CollapseBlankCharactersRegex = new Regex("\\s{2,}", RegexOptions.Multiline);
-
-        #endregion
-
-        #region Attributes / Public
 
         public static readonly Trimmer FirstAndLastBlankLines = text =>
         {
@@ -74,7 +68,5 @@ namespace Cottle.Builtins
 
             return string.Empty;
         };
-
-        #endregion
     }
 }

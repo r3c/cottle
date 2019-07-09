@@ -2,16 +2,10 @@
 {
     internal class Expression
     {
-        #region Attributes / Static
-
         public static readonly Expression Empty = new Expression
         {
             Type = ExpressionType.Void
         };
-
-        #endregion
-
-        #region Attributes / Instance
 
         public Expression[] Arguments;
 
@@ -24,7 +18,5 @@
         public ExpressionType Type;
 
         public Value Value;
-
-        #endregion
     }
 }

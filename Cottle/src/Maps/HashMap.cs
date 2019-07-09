@@ -4,28 +4,14 @@ namespace Cottle.Maps
 {
     internal class HashMap : AbstractMap
     {
-        #region Attributes
-
         private readonly Dictionary<Value, Value> _hash;
-
-        #endregion
-
-        #region Constructors
 
         public HashMap(IDictionary<Value, Value> hash)
         {
             _hash = new Dictionary<Value, Value>(hash);
         }
 
-        #endregion
-
-        #region Properties
-
         public override int Count => _hash.Count;
-
-        #endregion
-
-        #region Methods
 
         public override bool Contains(Value key)
         {
@@ -41,7 +27,5 @@ namespace Cottle.Maps
         {
             return _hash.TryGetValue(key, out value);
         }
-
-        #endregion
     }
 }

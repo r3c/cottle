@@ -5,13 +5,7 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class VoidEvaluator : IEvaluator
     {
-        #region Attributes
-
         public static readonly VoidEvaluator Instance = new VoidEvaluator();
-
-        #endregion
-
-        #region Methods
 
         public Value Evaluate(IStore store, TextWriter output)
         {
@@ -22,7 +16,5 @@ namespace Cottle.Documents.Simple.Evaluators
         {
             return VoidValue.Instance.ToString();
         }
-
-        #endregion
     }
 }

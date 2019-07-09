@@ -5,8 +5,6 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class ForNode : INode
     {
-        #region Constructors
-
         public ForNode(IEvaluator from, string key, string value, INode body, INode empty)
         {
             _body = body;
@@ -15,10 +13,6 @@ namespace Cottle.Documents.Simple.Nodes
             _key = key;
             _value = value;
         }
-
-        #endregion
-
-        #region Attributes
 
         private readonly INode _body;
 
@@ -29,10 +23,6 @@ namespace Cottle.Documents.Simple.Nodes
         private readonly string _key;
 
         private readonly string _value;
-
-        #endregion
-
-        #region Methods
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {
@@ -106,7 +96,5 @@ namespace Cottle.Documents.Simple.Nodes
 
             output.Write(setting.BlockEnd);
         }
-
-        #endregion
     }
 }

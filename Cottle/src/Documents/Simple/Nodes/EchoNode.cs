@@ -6,22 +6,12 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class EchoNode : INode
     {
-        #region Attributes
-
         private readonly IEvaluator _expression;
-
-        #endregion
-
-        #region Constructors
 
         public EchoNode(IEvaluator expression)
         {
             _expression = expression;
         }
-
-        #endregion
-
-        #region Methods
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {
@@ -44,7 +34,5 @@ namespace Cottle.Documents.Simple.Nodes
             output.Write(source);
             output.Write(setting.BlockEnd);
         }
-
-        #endregion
     }
 }
