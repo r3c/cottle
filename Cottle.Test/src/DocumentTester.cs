@@ -204,6 +204,18 @@ namespace Cottle.Test
         }
 
         [Test]
+        [TestCase("{while parent:{parent.value}{set parent to parent.child}}")]
+        public void CommandSetValueInLoop(string source)
+        {
+            DocumentTester.AssertRender(source, "4253", DefaultSetting.Instance, Context.CreateCustom(
+                new Dictionary<Value, Value>
+                {
+                    ["parent"] = new Dictionary<Value, Value>
+                        { ["child"] = new Dictionary<Value, Value> { ["value"] = "53" }, ["value"] = "42" }
+                }));
+        }
+
+        [Test]
         [TestCase("var", "1", "1")]
         [TestCase("_", "'A'", "\"A\"")]
         [TestCase("some_symbol_name", "[]", "[]")]
