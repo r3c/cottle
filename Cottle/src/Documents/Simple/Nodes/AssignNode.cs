@@ -68,6 +68,7 @@ namespace Cottle.Documents.Simple.Nodes
 
             output.Write(' ');
             output.Write(link);
+            output.Write(' ');
 
             SourceValue(setting, output);
 
