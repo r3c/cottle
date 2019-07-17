@@ -1,3 +1,5 @@
+using Cottle.Values;
+
 namespace Cottle.Stores
 {
     internal class ContextStore : IStore
@@ -40,7 +42,7 @@ namespace Cottle.Stores
 
             value = _context[symbol];
 
-            return true;
+            return value != VoidValue.Instance;
         }
     }
 }
