@@ -10,11 +10,11 @@
     <LangVersion>latest</LangVersion>
     <PackageIconUrl>https://raw.github.com/r3c/cottle/master/icon.png</PackageIconUrl>
     <PackageId>Cottle</PackageId>
-    <PackageLicenseUrl>https://raw.github.com/r3c/cottle/master/LICENSE.md</PackageLicenseUrl>
-    <PackageProjectUrl>http://r3c.github.io/cottle/</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://r3c.github.io/cottle/</PackageProjectUrl>
     <PackageTags>Template;Templating;Engine;HTML;JavaScript;Email</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>git://github.com/r3c/cottle</RepositoryUrl>
+    <RepositoryUrl>https://github.com/r3c/cottle.git</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
