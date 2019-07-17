@@ -1,4 +1,4 @@
-﻿namespace Cottle.Parsers.Post
+﻿namespace Cottle.Parsers.Optimize
 {
     internal interface IOptimizer
     {

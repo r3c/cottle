@@ -1,6 +1,4 @@
 ﻿using Cottle.Parsers;
-using Cottle.Parsers.Post;
-using Cottle.Parsers.Post.Optimizers;
 
 namespace Cottle
 {
@@ -11,16 +9,7 @@ namespace Cottle
             IParser parser = new ForwardParser(setting.BlockBegin, setting.BlockContinue, setting.BlockEnd,
                 setting.Escape);
 
-            if (setting.Optimize)
-                parser = new PostParser(parser, new IOptimizer[]
-                {
-                    ConstantInvokeOptimizer.Instance,
-                    ConstantMapOptimizer.Instance,
-                    IfOptimizer.Instance,
-                    ReturnOptimizer.Instance
-                });
-
-            return parser;
+            return setting.Optimize ? new OptimizeParser(parser) : parser;
         }
     }
 }
