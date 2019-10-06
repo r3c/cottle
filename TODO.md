@@ -4,8 +4,10 @@ Cottle TODO list
 TODO
 ----
 
-- Add sample "include" function in documentation
-- Support new "extended syntax" (Cottle.Parsers.DefaultParser)
+- Sample `include` function available in documentation
+- New syntax with {{ }} default separators & multiple statements support
+- Value type replacement of `Value` class
+- Value type replacement of `ISetting` interface
 
 DONE
 ----
