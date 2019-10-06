@@ -15,7 +15,7 @@ namespace Cottle.Test.Builtins
         [TestCase("       x      y     z       ", " x y z ")]
         public void CollapseBlankCharacters(string value, string expected)
         {
-            Assert.AreEqual(expected, BuiltinTrimmers.CollapseBlankCharacters(value));
+            Assert.That(BuiltinTrimmers.CollapseBlankCharacters(value), Is.EqualTo(expected));
         }
 
         [Test]
@@ -26,7 +26,7 @@ namespace Cottle.Test.Builtins
         [TestCase("   \n \nx y z\n \n    ", " \nx y z\n ")]
         public void FirstAndLastBlankLines(string value, string expected)
         {
-            Assert.AreEqual(expected, BuiltinTrimmers.FirstAndLastBlankLines(value));
+            Assert.That(BuiltinTrimmers.FirstAndLastBlankLines(value), Is.EqualTo(expected));
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace Cottle.Test.Builtins
         [TestCase("       x      y     z       ", "x      y     z")]
         public void LeadAndTrailBlankCharacters(string value, string expected)
         {
-            Assert.AreEqual(expected, BuiltinTrimmers.LeadAndTrailBlankCharacters(value));
+            Assert.That(BuiltinTrimmers.LeadAndTrailBlankCharacters(value), Is.EqualTo(expected));
         }
     }
 }

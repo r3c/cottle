@@ -32,10 +32,12 @@ namespace Cottle.Test.Values
             container.Field = reference;
             container.Property = reference;
 
-            Assert.IsTrue(value.Fields.TryGet("Field", out var result), "reflection value must have a 'Field' key");
-            Assert.AreEqual(expected, result, "reflection value should be able to read field of type {0}", typeof(T));
-            Assert.IsTrue(value.Fields.TryGet("Property", out result), "reflection value must have a 'Property' key");
-            Assert.AreEqual(expected, result, "reflection value should be able to read property of type {0}",
+            Assert.That(value.Fields.TryGet("Field", out var result), Is.True, "reflection value must have a 'Field' key");
+            Assert.That(result, Is.EqualTo(expected), "reflection value should be able to read field of type {0}",
+                typeof(T));
+            Assert.That(value.Fields.TryGet("Property", out result), Is.True,
+                "reflection value must have a 'Property' key");
+            Assert.That(result, Is.EqualTo(expected), "reflection value should be able to read property of type {0}",
                 typeof(T));
         }
 

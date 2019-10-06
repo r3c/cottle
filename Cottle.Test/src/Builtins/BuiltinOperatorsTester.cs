@@ -11,7 +11,7 @@ namespace Cottle.Test.Builtins
         {
             var document = new SimpleDocument("{" + (expected ? "" : "!") + "(" + expression + ")}");
 
-            Assert.AreEqual("true", document.Render(BuiltinContext.Instance));
+            Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo("true"));
         }
 
         [Test]

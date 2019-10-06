@@ -11,7 +11,7 @@ namespace Cottle.Test.Builtins
         {
             var document = new SimpleDocument("{eq(" + expression + ", " + expected + ")}");
 
-            Assert.AreEqual("true", document.Render(BuiltinContext.Instance), "'{0}' doesn't evaluate to '{1}'",
+            Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo("true"), "'{0}' doesn't evaluate to '{1}'",
                 expression, expected);
         }
 
@@ -19,7 +19,7 @@ namespace Cottle.Test.Builtins
         {
             var document = new SimpleDocument("{echo " + expression + "}");
 
-            Assert.AreEqual(expected, document.Render(BuiltinContext.Instance), "'{0}' doesn't render to '{1}'",
+            Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo(expected), "'{0}' doesn't render to '{1}'",
                 expression, expected);
         }
 
