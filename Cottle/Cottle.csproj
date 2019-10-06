@@ -8,7 +8,7 @@
     <Authors>Remi Caput</Authors>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <PackageIconUrl>https://raw.github.com/r3c/cottle/master/icon.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageId>Cottle</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://r3c.github.io/cottle/</PackageProjectUrl>
@@ -16,6 +16,10 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/r3c/cottle.git</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../icon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Collections" Version="4.3.0" />
