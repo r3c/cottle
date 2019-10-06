@@ -14,28 +14,31 @@ namespace Cottle.Parsers.Optimize.Optimizers
             // Evaluate constant invoke expressions using pure functions
             new DelegateOptimizer(expression =>
             {
-                if (expression.Type != ExpressionType.Invoke ||
-                    !Array.TrueForAll(expression.Arguments, RecursiveOptimizer.IsExpressionConstant) ||
-                    !RecursiveOptimizer.IsExpressionConstant(expression.Source) ||
-                    expression.Source.Value.Type != ValueContent.Function)
+                if (!(expression.Type == ExpressionType.Invoke &&
+                      Array.TrueForAll(expression.Arguments, RecursiveOptimizer.IsConstant) &&
+                      RecursiveOptimizer.IsConstant(expression.Source) &&
+                      expression.Source.Value.Type == ValueContent.Function &&
+                      expression.Source.Value.AsFunction is NativeFunction function &&
+                      function.Pure))
                     return expression;
 
-                if (!(expression.Source.Value.AsFunction is NativeFunction function) || !function.Pure)
-                    return expression;
-
-                return new Expression
+                using (var writer = new StringWriter())
                 {
-                    Type = ExpressionType.Constant,
-                    Value = function.Execute(expression.Arguments.Select(a => a.Value).ToList(), new SimpleStore(),
-                        new StringWriter())
-                };
+                    var arguments = expression.Arguments.Select(a => a.Value).ToList();
+
+                    return new Expression
+                    {
+                        Type = ExpressionType.Constant,
+                        Value = function.Execute(arguments, new SimpleStore(), writer)
+                    };
+                }
             }),
 
             // Converts constant map expressions to constant expressions
             new DelegateOptimizer(expression =>
             {
-                if (expression.Type != ExpressionType.Map ||
-                    !Array.TrueForAll(expression.Elements, RecursiveOptimizer.IsElementConstant))
+                if (!(expression.Type == ExpressionType.Map &&
+                      Array.TrueForAll(expression.Elements, RecursiveOptimizer.IsConstant)))
                     return expression;
 
                 var pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];
@@ -79,10 +82,15 @@ namespace Cottle.Parsers.Optimize.Optimizers
             })
         });
 
-        private static readonly Predicate<ExpressionElement> IsElementConstant = e =>
-            RecursiveOptimizer.IsExpressionConstant(e.Key) && RecursiveOptimizer.IsExpressionConstant(e.Value);
+        private static bool IsConstant(Expression expression)
+        {
+            return expression.Type == ExpressionType.Constant;
+        }
 
-        private static readonly Predicate<Expression> IsExpressionConstant = e => e.Type == ExpressionType.Constant; 
+        private static bool IsConstant(ExpressionElement element)
+        {
+            return RecursiveOptimizer.IsConstant(element.Key) && RecursiveOptimizer.IsConstant(element.Value);
+        }
 
         private readonly IEnumerable<IOptimizer> _optimizers;
 
@@ -116,15 +124,20 @@ namespace Cottle.Parsers.Optimize.Optimizers
             if (expression.Arguments != null)
             {
                 for (var i = 0; i < expression.Arguments.Length; ++i)
-                    expression.Arguments[i] = Optimize(expression.Arguments[i]);
+                {
+                    var argument = expression.Arguments[i];
+
+                    expression.Arguments[i] = Optimize(argument);
+                }
             }
 
             if (expression.Elements != null)
             {
                 for (var i = 0; i < expression.Elements.Length; ++i)
                 {
-                    expression.Elements[i] = new ExpressionElement(Optimize(expression.Elements[i].Key),
-                        Optimize(expression.Elements[i].Value));
+                    var element = expression.Elements[i];
+
+                    expression.Elements[i] = new ExpressionElement(Optimize(element.Key), Optimize(element.Value));
                 }
             }
 
