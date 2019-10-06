@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cottle.Contexts;
 using Cottle.Values;
 using NUnit.Framework;
 
@@ -12,7 +11,7 @@ namespace Cottle.Test.Contexts
         {
             var primary = Context.Empty;
             var fallback = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "fallback" } });
-            var context = new CascadeContext(primary, fallback);
+            var context = Context.CreateCascade(primary, fallback);
 
             Assert.That(context["a"], Is.EqualTo(new StringValue("fallback")));
         }
@@ -22,7 +21,7 @@ namespace Cottle.Test.Contexts
         {
             var primary = Context.CreateCustom(new Dictionary<Value, Value> { { "a", VoidValue.Instance } });
             var fallback = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "fallback" } });
-            var context = new CascadeContext(primary, fallback);
+            var context = Context.CreateCascade(primary, fallback);
 
             Assert.That(context["a"], Is.EqualTo(new StringValue("fallback")));
         }
@@ -32,7 +31,7 @@ namespace Cottle.Test.Contexts
         {
             var primary = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "primary" } });
             var fallback = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "fallback" } });
-            var context = new CascadeContext(primary, fallback);
+            var context = Context.CreateCascade(primary, fallback);
 
             Assert.That(context["a"], Is.EqualTo(new StringValue("primary")));
         }
@@ -42,7 +41,7 @@ namespace Cottle.Test.Contexts
         {
             var primary = Context.CreateCustom(new Dictionary<Value, Value> { { "b", "primary" } });
             var fallback = Context.CreateCustom(new Dictionary<Value, Value> { { "b", "fallback" } });
-            var context = new CascadeContext(primary, fallback);
+            var context = Context.CreateCascade(primary, fallback);
 
             Assert.That(context["a"], Is.EqualTo(VoidValue.Instance));
         }

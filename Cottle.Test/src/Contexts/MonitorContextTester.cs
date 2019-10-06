@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cottle.Contexts;
 using Cottle.Contexts.Monitor;
 using Cottle.Documents;
 using Cottle.Values;
@@ -12,7 +11,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void GeneratorAccessDefined()
         {
-            var backend = new DictionaryContext(new Dictionary<Value, Value>
+            var backend = Context.CreateCustom(new Dictionary<Value, Value>
             {
                 ["range"] = new MapValue(i => i * 2, 5)
             });
@@ -63,7 +62,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void MemberAccessDefined()
         {
-            var backend = new DictionaryContext(new Dictionary<Value, Value>
+            var backend = Context.CreateCustom(new Dictionary<Value, Value>
             {
                 ["parent"] = new Dictionary<Value, Value>
                 {
@@ -85,7 +84,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void MemberAccessMissing()
         {
-            var usage = MonitorContextTester.MonitorAndRender("{parent.child}", EmptyContext.Instance, string.Empty);
+            var usage = MonitorContextTester.MonitorAndRender("{parent.child}", Context.Empty, string.Empty);
 
             Assert.That(usage.Value, Is.EqualTo(VoidValue.Instance));
 
@@ -104,7 +103,7 @@ namespace Cottle.Test.Contexts
         {
             const string template = "{parent.child}{parent.child}";
 
-            var usage = MonitorContextTester.MonitorAndRender(template, EmptyContext.Instance, string.Empty);
+            var usage = MonitorContextTester.MonitorAndRender(template, Context.Empty, string.Empty);
             var parent0 = MonitorContextTester.GetChildField(usage, "parent", 2, 0);
 
             Assert.That(parent0.Value, Is.EqualTo(VoidValue.Instance));
@@ -125,7 +124,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void MemberChildAccessDefined()
         {
-            var backend = new DictionaryContext(new Dictionary<Value, Value>
+            var backend = Context.CreateCustom(new Dictionary<Value, Value>
             {
                 ["parent"] = new Dictionary<Value, Value>
                 {
@@ -186,7 +185,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public static void ScalarAccessMissing()
         {
-            var usage = MonitorContextTester.MonitorAndRender("{scalar}", EmptyContext.Instance, string.Empty);
+            var usage = MonitorContextTester.MonitorAndRender("{scalar}", Context.Empty, string.Empty);
             var scalar = MonitorContextTester.GetChildField(usage, "scalar", 1, 0);
 
             Assert.That(scalar.Value, Is.EqualTo(VoidValue.Instance));
@@ -204,11 +203,11 @@ namespace Cottle.Test.Contexts
         private static ISymbolUsage MonitorAndRender(string template, IContext backend, string expected)
         {
             var document = new SimpleDocument(template);
-            var monitor = new MonitorContext(backend);
+            var (context, usage) = Context.CreateMonitor(backend);
 
-            Assert.That(document.Render(monitor), Is.EqualTo(expected));
+            Assert.That(document.Render(context), Is.EqualTo(expected));
 
-            return monitor.Usage;
+            return usage;
         }
     }
 }

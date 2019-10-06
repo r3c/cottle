@@ -1,5 +1,4 @@
 using System.IO;
-using Cottle.Contexts;
 using Cottle.Stores;
 using Cottle.Values;
 using NUnit.Framework;
@@ -11,16 +10,19 @@ namespace Cottle.Test.Contexts
         [Test]
         public void GetExistingBuiltin()
         {
-            var function = BuiltinContext.Instance["add"].AsFunction;
+            var context = Context.CreateBuiltin(Context.Empty);
+            var function = context["add"].AsFunction;
             var result = function.Execute(new Value[] { 1, 2 }, new SimpleStore(), new StringWriter());
 
-            Assert.That(result, Is.EqualTo(new NumberValue(3)));
+            Assert.That(result, Is.EqualTo((Value)3));
         }
 
         [Test]
         public void GetMissingBuiltin()
         {
-            Assert.That(BuiltinContext.Instance["dummy"], Is.EqualTo(VoidValue.Instance));
+            var context = Context.CreateBuiltin(Context.Empty);
+
+            Assert.That(context["dummy"], Is.EqualTo(VoidValue.Instance));
         }
     }
 }
