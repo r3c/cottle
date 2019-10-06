@@ -50,7 +50,17 @@ namespace Cottle
         }
 
         /// <summary>
-        /// Create a new context with given symbols.
+        /// Create a new context using given callback function as a symbol getter.
+        /// </summary>
+        /// <param name="callback">Symbol getter function</param>
+        /// <returns>Cottle context</returns>
+        public static IContext CreateCustom(Func<Value, Value> callback)
+        {
+            return new CallbackContext(callback);
+        }
+
+        /// <summary>
+        /// Create a new context filled with given dictionary of symbols.
         /// </summary>
         /// <param name="symbols">Symbols dictionary</param>
         /// <returns>Cottle context</returns>
