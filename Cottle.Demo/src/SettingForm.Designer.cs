@@ -1,5 +1,4 @@
-﻿#if NET472
-namespace Cottle.Demo
+﻿namespace Cottle.Demo
 {
 	partial class SettingForm
 	{
@@ -198,4 +197,3 @@ namespace Cottle.Demo
 		private System.Windows.Forms.Label labelBlockContinue;
 	}
 }
-#endif

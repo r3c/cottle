@@ -1,5 +1,4 @@
-﻿#if NET472
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
 
@@ -161,4 +160,3 @@ namespace Cottle.Demo
 #endregion
 	}
 }
-#endif

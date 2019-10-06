@@ -10,5 +10,4 @@ matrix:
 script:
   - dotnet restore Cottle.sln
   - dotnet build ./Cottle/Cottle.csproj -c Release -f netstandard2.0
-  - dotnet build ./Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0
   - dotnet test ./Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0
