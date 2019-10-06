@@ -6,6 +6,12 @@ namespace Cottle
     public interface IMap : IComparable<IMap>, IEnumerable<KeyValuePair<Value, Value>>, IEquatable<IMap>
     {
         /// <summary>
+        /// Get value associated to given key if it exists, or void value otherwise.
+        /// </summary>
+        /// <param name="key">Requested key</param>
+        Value this[Value key] { get; }
+
+        /// <summary>
         /// Get number of elements in this map.
         /// </summary>
         int Count { get; }

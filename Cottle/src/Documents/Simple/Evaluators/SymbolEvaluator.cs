@@ -14,10 +14,7 @@ namespace Cottle.Documents.Simple.Evaluators
 
         public Value Evaluate(IStore store, TextWriter output)
         {
-            if (store.TryGet(_symbol, out var value))
-                return value;
-
-            return VoidValue.Instance;
+            return store[_symbol];
         }
 
         public override string ToString()

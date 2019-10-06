@@ -6,13 +6,7 @@ namespace Cottle.Stores
     {
         public Value this[Value symbol]
         {
-            get
-            {
-                if (TryGet(symbol, out var value))
-                    return value;
-
-                return VoidValue.Instance;
-            }
+            get => TryGet(symbol, out var value) ? value : VoidValue.Instance;
             set => Set(symbol, value, StoreMode.Global);
         }
 

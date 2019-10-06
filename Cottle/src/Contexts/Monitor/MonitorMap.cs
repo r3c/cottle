@@ -16,6 +16,18 @@ namespace Cottle.Contexts.Monitor
             _usage = usage;
         }
 
+        public Value this[Value key]
+        {
+            get
+            {
+                // Output value is always defined by this implementation, see
+                // method `TryGet` for details.
+                TryGet(key, out var value);
+
+                return value;
+            }
+        }
+
         public int Count => _map.Count;
 
         public int CompareTo(IMap other)

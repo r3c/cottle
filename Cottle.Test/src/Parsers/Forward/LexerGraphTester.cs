@@ -24,10 +24,10 @@ namespace Cottle.Test.Parsers.Forward
             graph.Register("cd", LexemType.Dot);
             graph.BuildFallbacks();
 
-            Assert.That(Substitute(graph.Root, subject), Is.EqualTo(expected));
+            Assert.That(LexerGraphTester.Substitute(graph.Root, subject), Is.EqualTo(expected));
         }
 
-        private string Substitute(LexerNode root, string subject)
+        private static string Substitute(LexerNode root, string subject)
         {
             var current = root;
             var output = new StringBuilder();

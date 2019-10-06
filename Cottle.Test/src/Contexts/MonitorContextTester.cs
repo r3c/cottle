@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Cottle.Contexts;
+using Cottle.Contexts.Monitor;
+using Cottle.Documents;
 using Cottle.Values;
 using NUnit.Framework;
 
@@ -8,141 +10,147 @@ namespace Cottle.Test.Contexts
     public static class MonitorContextTester
     {
         [Test]
-        public static void DirectAccessExistingComplex()
+        public static void GeneratorAccessDefined()
         {
             var backend = new DictionaryContext(new Dictionary<Value, Value>
             {
+                ["range"] = new MapValue(i => i * 2, 5)
+            });
+
+            var usage = MonitorContextTester.MonitorAndRender("{for i in [0, 1, 2]:{range[i]}}", backend, "024");
+
+            for (var i = 0; i < 3; ++i)
+            {
+                var rangeUsage = MonitorContextTester.GetChildField(usage, "range", 3, i);
+
+                Assert.That(rangeUsage.Value.Type, Is.EqualTo(ValueContent.Map));
+                Assert.That(rangeUsage.Fields, Does.ContainKey((Value)i));
+                Assert.That(rangeUsage.Fields[i].Count, Is.EqualTo(1));
+                Assert.That(rangeUsage.Fields[i][0].Value.AsNumber, Is.EqualTo(i * 2));
+            }
+        }
+
+        [Test]
+        public static void MemberAccessDefined()
+        {
+            var backend = new DictionaryContext(new Dictionary<Value, Value>
+            {
+                ["parent"] = new Dictionary<Value, Value>
                 {
-                    "parent", new Dictionary<Value, Value>
+                    ["child"] = "value"
+                }
+            });
+
+            var usage = MonitorContextTester.MonitorAndRender("{parent.child}", backend, "value");
+            var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
+
+            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Map));
+
+            var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
+
+            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.String));
+            Assert.That(child.Value.AsString, Is.EqualTo("value"));
+            Assert.That(child.Fields.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public static void MemberAccessMissing()
+        {
+            var usage = MonitorContextTester.MonitorAndRender("{parent.child}", EmptyContext.Instance, string.Empty);
+            var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
+
+            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Void));
+
+            var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
+
+            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(child.Fields.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public static void MemberChildAccessDefined()
+        {
+            var backend = new DictionaryContext(new Dictionary<Value, Value>
+            {
+                ["parent"] = new Dictionary<Value, Value>
+                {
+                    ["child"] = new Dictionary<Value, Value>
                     {
-                        { "child", "value" }
+                        ["subchild"] = "value"
                     }
                 }
             });
 
-            var context = new MonitorContext(backend);
+            var usage = MonitorContextTester.MonitorAndRender("{parent.child.subchild}", backend, "value");
+            var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            // Trigger store access
-            Assert.IsTrue(context["parent"].Fields.TryGet("child", out var child));
-            Assert.AreEqual("value", child.AsString);
+            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Map));
 
-            // Assert usage
-            Assert.AreEqual(1, context.Usage.Fields.Count);
-            Assert.IsTrue(context.Usage.Fields.ContainsKey("parent"));
-            Assert.AreEqual(1, context.Usage.Fields["parent"].Count);
+            var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            var firstAccessToParent = context.Usage.Fields["parent"][0];
+            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.Map));
 
-            Assert.AreEqual(ValueContent.Map, firstAccessToParent.Value.Type);
-            Assert.AreEqual(1, firstAccessToParent.Fields.Count);
-            Assert.IsTrue(firstAccessToParent.Fields.ContainsKey("child"));
-            Assert.AreEqual(1, firstAccessToParent.Fields["child"].Count);
+            var subchild = MonitorContextTester.GetChildField(child, "subchild", 1, 0);
 
-            var firstAccessToChild = firstAccessToParent.Fields["child"][0];
-
-            Assert.AreEqual(ValueContent.String, firstAccessToChild.Value.Type);
-            Assert.AreEqual("value", firstAccessToChild.Value.AsString);
-            Assert.AreEqual(0, firstAccessToChild.Fields.Count);
+            Assert.That(subchild.Value.AsString, Is.EqualTo("value"));
+            Assert.That(subchild.Fields.Count, Is.EqualTo(0));
         }
 
         [Test]
-        public static void DirectAccessExistingScalar()
+        public static void MemberChildAccessMissing()
         {
-            var context = new MonitorContext(Context.CreateCustom(new Dictionary<Value, Value> { { "a", 17 } }));
+            var usage = MonitorContextTester.MonitorAndRender("{parent.child.subchild}", Context.Empty, string.Empty);
+            var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            Assert.That(context["a"], Is.EqualTo(new NumberValue(17)));
+            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Void));
 
-            Assert.That(context.Usage.Fields.Count, Is.EqualTo(1));
-            Assert.That(context.Usage.Fields["a"].Count, Is.EqualTo(1));
-            Assert.That(context.Usage.Fields["a"][0].Fields, Is.Empty);
-            Assert.That(context.Usage.Fields["a"][0].Value, Is.EqualTo(new NumberValue(17)));
+            var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
+
+            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.Void));
+
+            var subchild = MonitorContextTester.GetChildField(child, "subchild", 1, 0);
+
+            Assert.That(subchild.Value.Type, Is.EqualTo(ValueContent.Void));
         }
 
         [Test]
-        public static void DirectAccessMissingComplex()
+        public static void ScalarAccessDefined()
         {
-            var context = new MonitorContext(EmptyContext.Instance);
+            var backend = Context.CreateCustom(new Dictionary<Value, Value> { { "a", 17 } });
+            var usage = MonitorContextTester.MonitorAndRender("{a}", backend, "17");
 
-            // Trigger store access
-            Assert.IsFalse(context["parent"].Fields.TryGet("child", out _));
-
-            // Assert usage
-            Assert.AreEqual(1, context.Usage.Fields.Count);
-            Assert.IsTrue(context.Usage.Fields.ContainsKey("parent"));
-            Assert.AreEqual(1, context.Usage.Fields["parent"].Count);
-
-            var firstAccessToParent = context.Usage.Fields["parent"][0];
-
-            Assert.AreEqual(ValueContent.Void, firstAccessToParent.Value.Type);
-            Assert.AreEqual(1, firstAccessToParent.Fields.Count);
-            Assert.IsTrue(firstAccessToParent.Fields.ContainsKey("child"));
-            Assert.AreEqual(1, firstAccessToParent.Fields["child"].Count);
-
-            var firstAccessToChild = firstAccessToParent.Fields["child"][0];
-
-            Assert.AreEqual(ValueContent.Void, firstAccessToChild.Value.Type);
-            Assert.AreEqual(0, firstAccessToChild.Fields.Count);
+            Assert.That(usage.Fields.Count, Is.EqualTo(1));
+            Assert.That(usage.Fields["a"].Count, Is.EqualTo(1));
+            Assert.That(usage.Fields["a"][0].Fields, Is.Empty);
+            Assert.That(usage.Fields["a"][0].Value, Is.EqualTo(new NumberValue(17)));
         }
 
         [Test]
-        public static void DirectAccessMissingScalar()
+        public static void ScalarAccessMissing()
         {
-            var context = new MonitorContext(EmptyContext.Instance);
+            var usage = MonitorContextTester.MonitorAndRender("{scalar}", EmptyContext.Instance, string.Empty);
+            var scalar = MonitorContextTester.GetChildField(usage, "scalar", 1, 0);
 
-            // Trigger store access
-            Assert.AreEqual(VoidValue.Instance, context["scalar"]);
-
-            // Assert usage
-            Assert.AreEqual(1, context.Usage.Fields.Count);
-            Assert.IsTrue(context.Usage.Fields.ContainsKey("scalar"));
-            Assert.AreEqual(1, context.Usage.Fields["scalar"].Count);
-
-            var firstAccessToScalar = context.Usage.Fields["scalar"][0];
-
-            Assert.AreEqual(ValueContent.Void, firstAccessToScalar.Value.Type);
-            Assert.AreEqual(0, firstAccessToScalar.Fields.Count);
+            Assert.That(scalar.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(scalar.Fields.Count, Is.EqualTo(0));
         }
 
-        [Test]
-        public static void EnumerateGenerator()
+        private static ISymbolUsage GetChildField(ISymbolUsage parent, string field, int count, int index)
         {
-            var backend = new DictionaryContext(new Dictionary<Value, Value>
-            {
-                { "range", new MapValue(i => i * 2, 5) }
-            });
+            Assert.That(parent.Fields.ContainsKey(field), Is.True);
+            Assert.That(parent.Fields[field].Count, Is.EqualTo(count));
 
+            return parent.Fields[field][index];
+        }
+
+        private static ISymbolUsage MonitorAndRender(string template, IContext backend, string expected)
+        {
+            var document = new SimpleDocument(template);
             var monitor = new MonitorContext(backend);
-            var index = 0;
 
-            foreach (var pair in monitor["range"].Fields)
-            {
-                Assert.AreEqual(ValueContent.Number, pair.Value.Type);
-                Assert.AreEqual(index * 2, pair.Value.AsNumber);
+            Assert.That(document.Render(monitor), Is.EqualTo(expected));
 
-                if (index++ == 3)
-                    break;
-            }
-
-            // Assert usage
-            Assert.AreEqual(1, monitor.Usage.Fields.Count);
-            Assert.IsTrue(monitor.Usage.Fields.ContainsKey("range"));
-            Assert.AreEqual(1, monitor.Usage.Fields["range"].Count);
-
-            var firstAccessToRange = monitor.Usage.Fields["range"][0];
-
-            Assert.AreEqual(ValueContent.Map, firstAccessToRange.Value.Type);
-            Assert.AreEqual(4, firstAccessToRange.Fields.Count);
-
-            for (var i = 0; i < 4; ++i)
-            {
-                Assert.AreEqual(1, firstAccessToRange.Fields[i].Count);
-
-                var accessToSubscript = firstAccessToRange.Fields[i][0];
-
-                Assert.AreEqual(ValueContent.Number, accessToSubscript.Value.Type);
-                Assert.AreEqual(i * 2, accessToSubscript.Value.AsNumber);
-                Assert.AreEqual(0, accessToSubscript.Value.Fields.Count);
-            }
+            return monitor.Usage;
         }
     }
 }

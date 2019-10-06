@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cottle.Values;
 
 namespace Cottle.Maps
 {
     internal abstract class AbstractMap : IMap
     {
+        public Value this[Value key] => TryGet(key, out var value) ? value : VoidValue.Instance;
+
         public abstract int Count { get; }
 
         public abstract bool Contains(Value key);

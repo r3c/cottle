@@ -18,13 +18,10 @@ namespace Cottle.Documents.Simple.Evaluators
 
         public Value Evaluate(IStore store, TextWriter output)
         {
-            var key = _subscript.Evaluate(store, output);
-            var map = _source.Evaluate(store, output);
+            var source = _source.Evaluate(store, output);
+            var subscript = _subscript.Evaluate(store, output);
 
-            if (map.Fields.TryGet(key, out var value))
-                return value;
-
-            return VoidValue.Instance;
+            return source.Fields[subscript];
         }
 
         public override string ToString()
