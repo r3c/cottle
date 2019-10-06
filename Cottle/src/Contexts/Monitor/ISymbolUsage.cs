@@ -16,5 +16,12 @@ namespace Cottle.Contexts.Monitor
         /// Value of the field when it was accessed.
         /// </summary>
         Value Value { get; }
+
+        /// <summary>
+        /// Group field usage statistics by field name. Result is a single statistics object per field name, where all
+        /// child field accesses are combined and only first field value is retained.
+        /// </summary>
+        /// <returns>Usage statistics by field name</returns>
+        IReadOnlyDictionary<Value, ISymbolUsage> GroupFieldUsages();
     }
 }

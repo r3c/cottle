@@ -4,15 +4,20 @@ namespace Cottle.Stores.Monitor
 {
     internal class CompatibilitySymbolUsage : ISymbolUsage
     {
-        private readonly Contexts.Monitor.ISymbolUsage usage;
+        private readonly Contexts.Monitor.ISymbolUsage _usage;
 
         public CompatibilitySymbolUsage(Contexts.Monitor.ISymbolUsage usage)
         {
-            this.usage = usage;
+            _usage = usage;
         }
 
-        public IReadOnlyDictionary<Value, IReadOnlyList<Contexts.Monitor.ISymbolUsage>> Fields => usage.Fields;
+        public IReadOnlyDictionary<Value, IReadOnlyList<Contexts.Monitor.ISymbolUsage>> Fields => _usage.Fields;
 
-        public Value Value => usage.Value;
+        public Value Value => _usage.Value;
+
+        public IReadOnlyDictionary<Value, Contexts.Monitor.ISymbolUsage> GroupFieldUsages()
+        {
+            return _usage.GroupFieldUsages();
+        }
     }
 }

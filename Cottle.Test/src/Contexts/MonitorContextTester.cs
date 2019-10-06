@@ -24,10 +24,40 @@ namespace Cottle.Test.Contexts
                 var rangeUsage = MonitorContextTester.GetChildField(usage, "range", 3, i);
 
                 Assert.That(rangeUsage.Value.Type, Is.EqualTo(ValueContent.Map));
-                Assert.That(rangeUsage.Fields, Does.ContainKey((Value)i));
-                Assert.That(rangeUsage.Fields[i].Count, Is.EqualTo(1));
-                Assert.That(rangeUsage.Fields[i][0].Value.AsNumber, Is.EqualTo(i * 2));
+
+                var fieldUsage = MonitorContextTester.GetChildField(rangeUsage, i, 1, 0);
+
+                Assert.That(fieldUsage.Value.AsNumber, Is.EqualTo(i * 2));
             }
+        }
+
+        [Test]
+        public static void GroupFieldsUsages()
+        {
+            const string template = "{set x to parent.child}{x.a}{x.b}{parent.child.c}";
+
+            var root = MonitorContextTester.MonitorAndRender(template, Context.Empty, string.Empty);
+            var rootFields = root.GroupFieldUsages();
+
+            Assert.That(rootFields, Does.ContainKey((Value)"parent"));
+
+            var parent = rootFields["parent"];
+
+            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
+
+            var parentFields = parent.GroupFieldUsages();
+
+            Assert.That(parentFields, Does.ContainKey((Value)"child"));
+
+            var child = parentFields["child"];
+
+            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
+
+            var childFields = child.GroupFieldUsages();
+
+            Assert.That(childFields, Does.ContainKey((Value)"a"));
+            Assert.That(childFields, Does.ContainKey((Value)"b"));
+            Assert.That(childFields, Does.ContainKey((Value)"c"));
         }
 
         [Test]
@@ -48,8 +78,7 @@ namespace Cottle.Test.Contexts
 
             var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.String));
-            Assert.That(child.Value.AsString, Is.EqualTo("value"));
+            Assert.That(child.Value, Is.EqualTo((Value)"value"));
             Assert.That(child.Fields.Count, Is.EqualTo(0));
         }
 
@@ -57,14 +86,40 @@ namespace Cottle.Test.Contexts
         public static void MemberAccessMissing()
         {
             var usage = MonitorContextTester.MonitorAndRender("{parent.child}", EmptyContext.Instance, string.Empty);
+
+            Assert.That(usage.Value, Is.EqualTo(VoidValue.Instance));
+
             var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
 
             var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
             Assert.That(child.Fields.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public static void MemberAccessMultiple()
+        {
+            const string template = "{parent.child}{parent.child}";
+
+            var usage = MonitorContextTester.MonitorAndRender(template, EmptyContext.Instance, string.Empty);
+            var parent0 = MonitorContextTester.GetChildField(usage, "parent", 2, 0);
+
+            Assert.That(parent0.Value, Is.EqualTo(VoidValue.Instance));
+
+            var child0 = MonitorContextTester.GetChildField(parent0, "child", 1, 0);
+
+            Assert.That(child0.Value, Is.EqualTo(VoidValue.Instance));
+
+            var parent1 = MonitorContextTester.GetChildField(usage, "parent", 2, 0);
+
+            Assert.That(parent1.Value, Is.EqualTo(VoidValue.Instance));
+
+            var child1 = MonitorContextTester.GetChildField(parent1, "child", 1, 0);
+
+            Assert.That(child1.Value, Is.EqualTo(VoidValue.Instance));
         }
 
         [Test]
@@ -92,7 +147,7 @@ namespace Cottle.Test.Contexts
 
             var subchild = MonitorContextTester.GetChildField(child, "subchild", 1, 0);
 
-            Assert.That(subchild.Value.AsString, Is.EqualTo("value"));
+            Assert.That(subchild.Value, Is.EqualTo((Value)"value"));
             Assert.That(subchild.Fields.Count, Is.EqualTo(0));
         }
 
@@ -100,17 +155,20 @@ namespace Cottle.Test.Contexts
         public static void MemberChildAccessMissing()
         {
             var usage = MonitorContextTester.MonitorAndRender("{parent.child.subchild}", Context.Empty, string.Empty);
+
+            Assert.That(usage.Value, Is.EqualTo(VoidValue.Instance));
+
             var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            Assert.That(parent.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
 
             var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            Assert.That(child.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
 
             var subchild = MonitorContextTester.GetChildField(child, "subchild", 1, 0);
 
-            Assert.That(subchild.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(subchild.Value, Is.EqualTo(VoidValue.Instance));
         }
 
         [Test]
@@ -131,11 +189,11 @@ namespace Cottle.Test.Contexts
             var usage = MonitorContextTester.MonitorAndRender("{scalar}", EmptyContext.Instance, string.Empty);
             var scalar = MonitorContextTester.GetChildField(usage, "scalar", 1, 0);
 
-            Assert.That(scalar.Value.Type, Is.EqualTo(ValueContent.Void));
+            Assert.That(scalar.Value, Is.EqualTo(VoidValue.Instance));
             Assert.That(scalar.Fields.Count, Is.EqualTo(0));
         }
 
-        private static ISymbolUsage GetChildField(ISymbolUsage parent, string field, int count, int index)
+        private static ISymbolUsage GetChildField(ISymbolUsage parent, Value field, int count, int index)
         {
             Assert.That(parent.Fields.ContainsKey(field), Is.True);
             Assert.That(parent.Fields[field].Count, Is.EqualTo(count));

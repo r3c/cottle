@@ -33,5 +33,30 @@ namespace Cottle.Contexts.Monitor.SymbolUsages
 
             return usage;
         }
+
+        public IReadOnlyDictionary<Value, ISymbolUsage> GroupFieldUsages()
+        {
+            return _fields.ToDictionary(field => field.Key, field =>
+            {
+                var groupUsage = new MutableSymbolUsage(field.Value[0].Value);
+
+                foreach (var fieldUsage in field.Value)
+                {
+                    foreach (var childField in fieldUsage._fields)
+                    {
+                        if (!groupUsage._fields.TryGetValue(childField.Key, out var fieldUsages))
+                        {
+                            fieldUsages = new List<MutableSymbolUsage>();
+
+                            groupUsage._fields[childField.Key] = fieldUsages;
+                        }
+
+                        fieldUsages.AddRange(childField.Value);
+                    }
+                }
+
+                return (ISymbolUsage)groupUsage;
+            });
+        }
     }
 }
