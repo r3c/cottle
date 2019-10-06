@@ -124,7 +124,7 @@ namespace Cottle.Builtins
         private static readonly IFunction FunctionDefault = new NativeFunction(v => v[0].AsBoolean ? v[0] : v[1], 2);
 
         private static readonly IFunction FunctionDefined =
-            new NativeFunction(values => values[0].Type != ValueContent.Void, 1);
+            new NativeFunction(values => values[0] != VoidValue.Instance, 1);
 
         private static readonly IFunction FunctionExcept = new NativeFunction(values =>
         {

@@ -1,3 +1,5 @@
+using Cottle.Values;
+
 namespace Cottle.Contexts
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace Cottle.Contexts
             {
                 var first = _primary[symbol];
 
-                return first.Type != ValueContent.Void ? first : _fallback[symbol];
+                return first != VoidValue.Instance ? first : _fallback[symbol];
             }
         }
     }
