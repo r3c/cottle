@@ -9,12 +9,12 @@ namespace Cottle.Documents.Dynamic
 {
     internal class Function : IFunction
     {
-        public Function(IEnumerable<string> arguments, Command command, Trimmer trimmer)
+        public Function(IEnumerable<string> arguments, Command command)
         {
             var method = new DynamicMethod(string.Empty, typeof(Value),
                 new[] { typeof(Storage), typeof(IReadOnlyList<Value>), typeof(IStore), typeof(TextWriter) },
                 GetType());
-            var compiler = new Compiler(method.GetILGenerator(), trimmer);
+            var compiler = new Compiler(method.GetILGenerator());
             var storage = compiler.Compile(arguments, command);
 
             _renderer = (Renderer)method.CreateDelegate(typeof(Renderer));
@@ -37,7 +37,7 @@ namespace Cottle.Documents.Dynamic
             var method = program.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static, typeof(Value),
                 new[] { typeof(Storage), typeof(IList<Value>), typeof(IStore), typeof(TextWriter) });
 
-            var compiler = new Compiler(method.GetILGenerator(), trimmer);
+            var compiler = new Compiler(method.GetILGenerator());
             compiler.Compile(Enumerable.Empty<string>(), command);
 
 #if NETSTANDARD2_0

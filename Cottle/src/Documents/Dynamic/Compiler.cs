@@ -9,13 +9,12 @@ namespace Cottle.Documents.Dynamic
 {
     internal class Compiler
     {
-        public Compiler(ILGenerator generator, Trimmer trimmer)
+        public Compiler(ILGenerator generator)
         {
             _constants = new List<Value>();
             _generator = generator;
             _indices = new Dictionary<Value, int>();
             _locals = new Dictionary<Type, Queue<LocalBuilder>>();
-            _trimmer = trimmer;
         }
 
         public Storage Compile(IEnumerable<string> arguments, Command command)
@@ -87,8 +86,6 @@ namespace Cottle.Documents.Dynamic
 
         private readonly Dictionary<Type, Queue<LocalBuilder>> _locals;
 
-        private readonly Trimmer _trimmer;
-
         private void CompileCommand(Command command, Label exit, int depth)
         {
             Label jump;
@@ -102,7 +99,7 @@ namespace Cottle.Documents.Dynamic
                     EmitLoadStore();
                     EmitLoadValue(command.Name);
 
-                    EmitLoadValue(new FunctionValue(new Function(command.Arguments, command.Body, _trimmer)));
+                    EmitLoadValue(new FunctionValue(new Function(command.Arguments, command.Body)));
                     EmitStoreSetCall(command.Mode);
 
                     break;
@@ -115,7 +112,7 @@ namespace Cottle.Documents.Dynamic
                     _generator.Emit(OpCodes.Stloc, buffer);
 
                     // Load function, empty arguments array, store and text writer onto stack
-                    EmitLoadValue(new FunctionValue(new Function(Enumerable.Empty<string>(), command.Body, _trimmer)));
+                    EmitLoadValue(new FunctionValue(new Function(Enumerable.Empty<string>(), command.Body)));
 
                     _generator.Emit(OpCodes.Callvirt,
                         Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
@@ -339,7 +336,7 @@ namespace Cottle.Documents.Dynamic
                 case CommandType.Literal:
                     EmitLoadOutput();
 
-                    _generator.Emit(OpCodes.Ldstr, _trimmer(command.Text));
+                    _generator.Emit(OpCodes.Ldstr, command.Text);
 
                     EmitCallWriteString();
 

@@ -27,10 +27,12 @@ namespace Cottle.Parsers
             };
 
         private readonly Lexer _lexer;
+        private readonly Trimmer _trimmer;
 
-        public ForwardParser(string blockBegin, string blockContinue, string blockEnd, char escape)
+        public ForwardParser(string blockBegin, string blockContinue, string blockEnd, char escape, Trimmer trimmer)
         {
             _lexer = new Lexer(blockBegin, blockContinue, blockEnd, escape);
+            _trimmer = trimmer;
         }
 
         public Command Parse(TextReader reader)
@@ -210,7 +212,7 @@ namespace Cottle.Parsers
                     case LexemType.Text:
                         current = new Command
                         {
-                            Text = _lexer.Current.Content,
+                            Text = _trimmer(_lexer.Current.Content),
                             Type = CommandType.Literal
                         };
 

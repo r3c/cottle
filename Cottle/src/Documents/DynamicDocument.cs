@@ -20,7 +20,7 @@ namespace Cottle.Documents
         {
             var parser = ParserFactory.BuildParser(setting);
 
-            main = new Function(Enumerable.Empty<string>(), parser.Parse(reader), setting.Trimmer);
+            main = new Function(Enumerable.Empty<string>(), parser.Parse(reader));
         }
 
         public DynamicDocument(TextReader reader) :
