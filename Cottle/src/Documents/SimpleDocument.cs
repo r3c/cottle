@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using Cottle.Documents.Simple;
-using Cottle.Documents.Simple.Evaluators;
-using Cottle.Documents.Simple.Nodes;
-using Cottle.Documents.Simple.Nodes.AssignNodes;
 using Cottle.Settings;
 using Cottle.Stores;
 
@@ -25,7 +21,7 @@ namespace Cottle.Documents
             var parser = ParserFactory.BuildParser(setting);
             var root = parser.Parse(reader);
 
-            _renderer = CompileCommand(root);
+            _renderer = Compiler.Compile(root);
             _setting = setting;
         }
 
@@ -63,105 +59,6 @@ namespace Cottle.Documents
             Source(writer);
 
             return writer.ToString();
-        }
-
-        private INode CompileCommand(Command command)
-        {
-            switch (command.Type)
-            {
-                case CommandType.AssignFunction:
-                    return new FunctionAssignNode(command.Name, command.Arguments,
-                        CompileCommand(command.Body), command.Mode);
-
-                case CommandType.AssignRender:
-                    return new RenderAssignNode(command.Name, CompileCommand(command.Body), command.Mode);
-
-                case CommandType.AssignValue:
-                    return new ValueAssignNode(command.Name, CompileExpression(command.Operand), command.Mode);
-
-                case CommandType.Composite:
-                    var nodes = new List<INode>();
-
-                    for (; command.Type == CommandType.Composite; command = command.Next)
-                        nodes.Add(CompileCommand(command.Body));
-
-                    nodes.Add(CompileCommand(command));
-
-                    return new CompositeNode(nodes);
-
-                case CommandType.Dump:
-                    return new DumpNode(CompileExpression(command.Operand));
-
-                case CommandType.Echo:
-                    return new EchoNode(CompileExpression(command.Operand));
-
-                case CommandType.For:
-                    return new ForNode(CompileExpression(command.Operand), command.Key, command.Name,
-                        CompileCommand(command.Body),
-                        command.Next != null ? CompileCommand(command.Next) : null);
-
-                case CommandType.If:
-                    var branches = new List<KeyValuePair<IEvaluator, INode>>();
-
-                    for (; command != null && command.Type == CommandType.If; command = command.Next)
-                        branches.Add(new KeyValuePair<IEvaluator, INode>(CompileExpression(command.Operand),
-                            CompileCommand(command.Body)));
-
-                    return new IfNode(branches, command != null ? CompileCommand(command) : null);
-
-                case CommandType.Literal:
-                    return new LiteralNode(command.Text);
-
-                case CommandType.Return:
-                    return new ReturnNode(CompileExpression(command.Operand));
-
-                case CommandType.While:
-                    return new WhileNode(CompileExpression(command.Operand),
-                        CompileCommand(command.Body));
-
-                default:
-                    return new LiteralNode(string.Empty);
-            }
-        }
-
-        private IEvaluator CompileExpression(Expression expression)
-        {
-            switch (expression.Type)
-            {
-                case ExpressionType.Access:
-                    return new AccessEvaluator(CompileExpression(expression.Source),
-                        CompileExpression(expression.Subscript));
-
-                case ExpressionType.Constant:
-                    return new ConstantEvaluator(expression.Value);
-
-                case ExpressionType.Invoke:
-                    var arguments = new IEvaluator[expression.Arguments.Length];
-
-                    for (var i = 0; i < arguments.Length; ++i)
-                        arguments[i] = CompileExpression(expression.Arguments[i]);
-
-                    return new InvokeEvaluator(CompileExpression(expression.Source), arguments);
-
-                case ExpressionType.Map:
-                    var elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
-
-                    for (var i = 0; i < elements.Length; ++i)
-                    {
-                        var key = CompileExpression(expression.Elements[i].Key);
-                        var value = CompileExpression(expression.Elements[i].Value);
-
-                        elements[i] = new KeyValuePair<IEvaluator, IEvaluator>(key, value);
-                    }
-
-                    return new MapEvaluator(elements);
-
-                case ExpressionType.Symbol:
-                    return new SymbolEvaluator(expression.Value);
-
-                default:
-                    return VoidEvaluator.Instance;
-            }
         }
     }
 }
