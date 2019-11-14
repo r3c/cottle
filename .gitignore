@@ -1,14 +1,10 @@
 /.idea/
 /.vscode/
-/Cottle/bin/
-/Cottle/obj/
-/Cottle.Demo/bin/
-/Cottle.Demo/obj/
-/Cottle.Test/bin/
-/Cottle.Test/obj/
 /packages/
 /tests/
 /TestResult.xml
+bin/
+obj/
 Cottle.*.nupkg
 project.lock.json
 *.project.lock.json

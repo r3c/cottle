@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Demo", "Cottle.Demo\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Test", "Cottle.Test\Cottle.Test.csproj", "{2F987317-BC12-46DB-BFDE-E54932155AF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cottle.Benchmark", "Cottle.Benchmark\Cottle.Benchmark.csproj", "{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,18 @@ Global
 		{2F987317-BC12-46DB-BFDE-E54932155AF7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2F987317-BC12-46DB-BFDE-E54932155AF7}.Release|x86.ActiveCfg = Release|Any CPU
 		{2F987317-BC12-46DB-BFDE-E54932155AF7}.Release|x86.Build.0 = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Debug|x86.Build.0 = Debug|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|x86.ActiveCfg = Release|Any CPU
+		{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
