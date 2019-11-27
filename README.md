@@ -24,6 +24,42 @@ transform. Once your template is ready, it can be re-used with any products
 list as long as it keeps the same structure (to keep with our example, products
 with names, descriptions, quantities and prices).
 
+<pre>
+&lt;table&gt;
+    {for product in products:
+        &lt;tr&gt;
+            &lt;th&gt;{product.name}&lt;/th&gt;
+            &lt;td&gt;$ {format(product.price, "n:F2"}&lt;/td&gt;
+        &lt;/tr&gt;
+    }
+&lt;table&gt;
+</pre>
+
+<pre>
+var products = new Value[]
+{
+    new Dictionary&lt;Value, Value&gt; { ["name"] = "Wine", ["price"] = 29.99f },
+    new Dictionary&lt;Value, Value&gt; { ["name"] = "Whisky", ["price"] = 60.00f }
+};
+
+var document = Document.CreateDefault(template).DocumentOrThrow;
+
+return document.Render();
+</pre>
+
+<pre>
+&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Wine&lt;/th&gt;
+        &lt;td&gt;$ 29.99&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;th&gt;Whisky&lt;/th&gt;
+        &lt;td&gt;$ 60.00&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;table&gt;
+</pre>
+
 Template files must be written using Cottle's template language as explained in
 user manual (see "Installation" section).
 
