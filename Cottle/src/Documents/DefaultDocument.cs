@@ -1,22 +1,35 @@
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Cottle.Documents.Simple;
-using Cottle.Stores;
+using Cottle.Documents.Default;
 
 namespace Cottle.Documents
 {
     internal class DefaultDocument : IDocument
     {
-        private readonly INode _root;
+        private readonly IExecutor _executor;
 
-        public DefaultDocument(Command root)
+        private readonly IReadOnlyList<Value> _globals;
+
+        private readonly int _localCount;
+
+        public DefaultDocument(Command command)
         {
-            _root = Compiler.Compile(root);
+            var (executor, globals, localCount) = Compiler.Compile(command);
+
+            _executor = executor;
+            _globals = globals;
+            _localCount = localCount;
         }
 
         public Value Render(IContext context, TextWriter writer)
         {
-            _root.Render(new ContextStore(context), writer, out var result);
+            var globals = new Value[_globals.Count];
+
+            for (var i = 0; i < _globals.Count; ++i)
+                globals[i] = context[_globals[i]];
+
+            _executor.Execute(new Stack(globals, _localCount), writer, out var result);
 
             return result;
         }
