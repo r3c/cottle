@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Cottle.Builtins;
 using Cottle.Documents;
-using Cottle.Functions;
 using Cottle.Stores;
 using Cottle.Values;
 using NUnit.Framework;
@@ -314,29 +312,16 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("abc", 42)]
-        [TestCase("xyz", 17)]
-        public void RenderExpressionInvoke(string symbol, int expected)
+        [TestCase("\"abc\"", "abcabc")]
+        [TestCase("17", "1717")]
+        public void RenderExpressionInvoke(string input, string expected)
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                { symbol, expected },
-                {
-                    "f", new NativeFunction((a, s, o) =>
-                    {
-                        var value = s[a[0]];
-
-                        o.Write(value.AsString);
-
-                        return value;
-                    }, 1)
-                }
+                ["f"] = new FunctionValue(Function.CreatePure1((state, value) => value.AsString + value.AsString))
             });
 
-            AssertRender("{f('" + symbol + "')}",
-                default, context, ((Value)expected).AsString + ((Value)expected).AsString);
-            AssertReturn("{return f('" + symbol + "')}",
-                default, context, expected.ToString(CultureInfo.InvariantCulture));
+            AssertRender($"{{f({input})}}", default, context, expected);
         }
 
         [Test]

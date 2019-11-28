@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Cottle.Documents.Dynamic
 {
-    internal static class Resolver
+    internal static class DynamicResolver
     {
         public static ConstructorInfo Constructor<T>(Expression<T> lambda)
         {

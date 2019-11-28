@@ -11,7 +11,6 @@ namespace Cottle.Test.Documents
         [TestCase("Hello, World!")]
         [TestCase("{0}")]
         [TestCase("{17}")]
-        [TestCase("{1 + 1}", "{<native()>(1, 1)}")]
         [TestCase("{declare a as 1}")]
         [TestCase("{dump 'string'}", "{dump \"string\"}")]
         [TestCase("{if 1:test}")]

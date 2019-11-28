@@ -30,7 +30,7 @@ namespace Cottle.Documents.Simple.Evaluators
                 for (var i = 0; i < _arguments.Length; ++i)
                     values[i] = _arguments[i].Evaluate(store, output);
 
-                return function.Execute(values, store, output);
+                return function.Invoke(store, values, output);
             }
 
             return VoidValue.Instance;

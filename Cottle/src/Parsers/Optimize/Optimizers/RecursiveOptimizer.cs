@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cottle.Functions;
 using Cottle.Stores;
 
 namespace Cottle.Parsers.Optimize.Optimizers
@@ -17,19 +16,18 @@ namespace Cottle.Parsers.Optimize.Optimizers
                 if (!(expression.Type == ExpressionType.Invoke &&
                       Array.TrueForAll(expression.Arguments, RecursiveOptimizer.IsConstant) &&
                       RecursiveOptimizer.IsConstant(expression.Source) &&
-                      expression.Source.Value.Type == ValueContent.Function &&
-                      expression.Source.Value.AsFunction is NativeFunction function &&
-                      function.Pure))
+                      expression.Source.Value.Type == ValueContent.Function))
                     return expression;
 
                 using (var writer = new StringWriter())
                 {
                     var arguments = expression.Arguments.Select(a => a.Value).ToList();
+                    var value = expression.Source.Value;
 
                     return new Expression
                     {
                         Type = ExpressionType.Constant,
-                        Value = function.Execute(arguments, new SimpleStore(), writer)
+                        Value = value.AsFunction.Invoke(new SimpleStore(), arguments, writer)
                     };
                 }
             }),
@@ -84,7 +82,19 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
         private static bool IsConstant(Expression expression)
         {
-            return expression.Type == ExpressionType.Constant;
+            if (expression.Type != ExpressionType.Constant)
+                return false;
+
+            var value = expression.Value;
+
+            switch (value.Type)
+            {
+                case ValueContent.Function:
+                    return value.AsFunction.IsPure;
+
+                default:
+                    return true;
+            }
         }
 
         private static bool IsConstant(ExpressionElement element)

@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace Cottle.Documents.Dynamic
 {
-    internal struct Storage
+    internal struct DynamicStorage
     {
         public readonly Value[] Constants;
 
-        public Storage(IEnumerable<Value> values)
+        public DynamicStorage(IEnumerable<Value> values)
         {
             Constants = values.ToArray();
         }

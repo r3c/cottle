@@ -1,84 +1,98 @@
-﻿using Cottle.Functions;
-using Cottle.Values;
+﻿using Cottle.Values;
 
 namespace Cottle.Builtins
 {
     internal static class BuiltinOperators
     {
-        public static readonly IFunction OperatorAdd = new NativeFunction(v => v[0].AsNumber + v[1].AsNumber, 2);
+        public static readonly IFunction OperatorAdd =
+            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber + rhs.AsNumber);
 
-        public static readonly IFunction OperatorAnd = new NativeFunction(values =>
+        public static readonly IFunction OperatorAnd = Function.CreatePure((state, arguments) =>
         {
-            foreach (var value in values)
-                if (!value.AsBoolean)
+            foreach (var argument in arguments)
+            {
+                if (!argument.AsBoolean)
                     return false;
+            }
 
             return true;
         });
 
-        public static readonly IFunction OperatorDiv = new NativeFunction(values =>
+        public static readonly IFunction OperatorDiv = Function.CreatePure2((state, lhs, rhs) =>
         {
-            var denominator = values[1].AsNumber;
+            var denominator = rhs.AsNumber;
 
             if (denominator == 0)
                 return VoidValue.Instance;
 
-            return values[0].AsNumber / denominator;
-        }, 2);
+            return lhs.AsNumber / denominator;
+        });
 
-        public static readonly IFunction OperatorEqual = new NativeFunction(values =>
+        public static readonly IFunction OperatorEqual = Function.CreatePure((state, arguments) =>
         {
-            var first = values[0];
+            var first = arguments[0];
 
-            for (var i = 1; i < values.Count; ++i)
-                if (values[i].CompareTo(first) != 0)
+            for (var i = 1; i < arguments.Count; ++i)
+            {
+                if (arguments[i].CompareTo(first) != 0)
                     return false;
+            }
 
             return true;
-        }, 1, -1);
+        }, 1, int.MaxValue);
 
-        public static readonly IFunction OperatorGreaterEqual = new NativeFunction(v => v[0].CompareTo(v[1]) >= 0, 2);
+        public static readonly IFunction OperatorGreaterEqual =
+            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) >= 0);
 
-        public static readonly IFunction OperatorGreaterThan = new NativeFunction(v => v[0].CompareTo(v[1]) > 0, 2);
+        public static readonly IFunction OperatorGreaterThan =
+            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) > 0);
 
-        public static readonly IFunction OperatorLowerEqual = new NativeFunction(v => v[0].CompareTo(v[1]) <= 0, 2);
+        public static readonly IFunction OperatorLowerEqual =
+            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) <= 0);
 
-        public static readonly IFunction OperatorLowerThan = new NativeFunction(v => v[0].CompareTo(v[1]) < 0, 2);
+        public static readonly IFunction OperatorLowerThan =
+            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) < 0);
 
-        public static readonly IFunction OperatorMod = new NativeFunction(values =>
+        public static readonly IFunction OperatorMod = Function.CreatePure2((state, lhs, rhs) =>
         {
-            var denominator = values[1].AsNumber;
+            var denominator = rhs.AsNumber;
 
             if (denominator == 0)
                 return VoidValue.Instance;
 
-            return values[0].AsNumber % denominator;
-        }, 2);
+            return lhs.AsNumber % denominator;
+        });
 
-        public static readonly IFunction OperatorMul = new NativeFunction(v => v[0].AsNumber * v[1].AsNumber, 2);
+        public static readonly IFunction OperatorMul =
+            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber * rhs.AsNumber);
 
-        public static readonly IFunction OperatorNot = new NativeFunction(v => !v[0].AsBoolean, 1);
+        public static readonly IFunction OperatorNot = Function.CreatePure1((state, value) => !value.AsBoolean);
 
-        public static readonly IFunction OperatorNotEqual = new NativeFunction(values =>
+        public static readonly IFunction OperatorNotEqual = Function.CreatePure((state, arguments) =>
         {
-            var first = values[0];
+            var first = arguments[0];
 
-            for (var i = 1; i < values.Count; ++i)
-                if (values[i].CompareTo(first) == 0)
+            for (var i = 1; i < arguments.Count; ++i)
+            {
+                if (arguments[i].CompareTo(first) == 0)
                     return false;
+            }
 
             return true;
-        }, 1, -1);
+        }, 1, int.MaxValue);
 
-        public static readonly IFunction OperatorOr = new NativeFunction(values =>
+        public static readonly IFunction OperatorOr = Function.CreatePure((state, arguments) =>
         {
-            foreach (var value in values)
-                if (value.AsBoolean)
+            foreach (var argument in arguments)
+            {
+                if (argument.AsBoolean)
                     return true;
+            }
 
             return false;
         });
 
-        public static readonly IFunction OperatorSub = new NativeFunction(v => v[0].AsNumber - v[1].AsNumber, 2);
+        public static readonly IFunction OperatorSub =
+            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber - rhs.AsNumber);
     }
 }

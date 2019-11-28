@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Cottle.Documents.Dynamic;
 using Cottle.Exceptions;
@@ -15,7 +16,7 @@ namespace Cottle.Documents
     /// </summary>
     public sealed class DynamicDocument : AbstractDocument
     {
-        private readonly Function _root;
+        private readonly DynamicFunction _root;
 
         public DynamicDocument(TextReader reader, ISetting setting)
         {
@@ -28,7 +29,7 @@ namespace Cottle.Documents
                 throw new ParseException(firstReport.Column, firstReport.Line, firstReport.Message);
             }
 
-            _root = new Function(Enumerable.Empty<string>(), command);
+            _root = new DynamicFunction(Enumerable.Empty<string>(), command);
         }
 
         public DynamicDocument(TextReader reader) :
@@ -48,7 +49,7 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            return _root.Execute(null, new ContextStore(context), writer);
+            return _root.Invoke(new ContextStore(context), Array.Empty<Value>(), writer);
         }
 
         public static void Save(TextReader reader, ISetting setting, string assemblyName, string fileName)
@@ -62,7 +63,7 @@ namespace Cottle.Documents
                 throw new ParseException(firstReport.Column, firstReport.Line, firstReport.Message);
             }
 
-            Function.Save(command, setting.Trimmer, assemblyName, fileName);
+            DynamicFunction.Save(command, setting.Trimmer, assemblyName, fileName);
         }
     }
 }

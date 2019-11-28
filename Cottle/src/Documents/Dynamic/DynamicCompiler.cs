@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection.Emit;
 using Cottle.Values;
 
 namespace Cottle.Documents.Dynamic
 {
-    internal class Compiler
+    internal class DynamicCompiler
     {
-        public Compiler(ILGenerator generator)
+        public DynamicCompiler(ILGenerator generator)
         {
             _constants = new List<Value>();
             _generator = generator;
@@ -17,7 +16,7 @@ namespace Cottle.Documents.Dynamic
             _locals = new Dictionary<Type, Queue<LocalBuilder>>();
         }
 
-        public Storage Compile(IEnumerable<string> arguments, Command command)
+        public DynamicStorage Compile(IEnumerable<string> arguments, Command command)
         {
             // Create global scope for program execution
             EmitStoreEnter();
@@ -33,11 +32,11 @@ namespace Cottle.Documents.Dynamic
                 EmitLoadStore();
                 EmitLoadValue(argument);
 
-                // Check if a value is available for current argument 
+                // Check if a value is available for current argument
                 EmitLoadArguments();
 
                 _generator.Emit(OpCodes.Callvirt,
-                    Resolver.Property<Func<IList<Value>, int>>(a => a.Count).GetGetMethod());
+                    DynamicResolver.Property<Func<IList<Value>, int>>(a => a.Count).GetGetMethod());
                 _generator.Emit(OpCodes.Ldc_I4, index);
                 _generator.Emit(OpCodes.Bgt_S, copy);
 
@@ -52,7 +51,7 @@ namespace Cottle.Documents.Dynamic
                 EmitLoadArguments();
 
                 _generator.Emit(OpCodes.Ldc_I4, index);
-                _generator.Emit(OpCodes.Callvirt, Resolver.Method<Func<IList<Value>, int, Value>>((a, i) => a[i]));
+                _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Func<IList<Value>, int, Value>>((a, i) => a[i]));
 
                 // Assign argument value
                 _generator.MarkLabel(assign);
@@ -75,7 +74,7 @@ namespace Cottle.Documents.Dynamic
 
             _generator.Emit(OpCodes.Ret);
 
-            return new Storage(_constants);
+            return new DynamicStorage(_constants);
         }
 
         private readonly List<Value> _constants;
@@ -99,7 +98,7 @@ namespace Cottle.Documents.Dynamic
                     EmitLoadStore();
                     EmitLoadValue(command.Name);
 
-                    EmitLoadValue(new FunctionValue(new Function(command.Arguments, command.Body)));
+                    EmitLoadValue(new FunctionValue(new DynamicFunction(command.Arguments, command.Body)));
                     EmitStoreSetCall(command.Mode);
 
                     break;
@@ -108,18 +107,17 @@ namespace Cottle.Documents.Dynamic
                     // Prepare new buffer to store sub-rendering
                     var buffer = LocalReserve<TextWriter>();
 
-                    _generator.Emit(OpCodes.Newobj, Resolver.Constructor<Func<StringWriter>>(() => new StringWriter()));
+                    _generator.Emit(OpCodes.Newobj, DynamicResolver.Constructor<Func<StringWriter>>(() => new StringWriter()));
                     _generator.Emit(OpCodes.Stloc, buffer);
 
                     // Load function, empty arguments array, store and text writer onto stack
-                    EmitLoadValue(new FunctionValue(new Function(Enumerable.Empty<string>(), command.Body)));
+                    EmitLoadValue(new FunctionValue(new DynamicFunction(Array.Empty<string>(), command.Body)));
 
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
-                    _generator.Emit(OpCodes.Ldc_I4, 0);
-                    _generator.Emit(OpCodes.Newarr, typeof(Value));
+                        DynamicResolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
 
                     EmitLoadStore();
+                    EmitLoadArrayEmpty<Value>();
 
                     _generator.Emit(OpCodes.Ldloc, buffer);
 
@@ -132,11 +130,11 @@ namespace Cottle.Documents.Dynamic
                     EmitLoadValue(command.Name);
 
                     _generator.Emit(OpCodes.Ldloc, buffer);
-                    _generator.Emit(OpCodes.Callvirt, Resolver.Method<Func<StringWriter, string>>(w => w.ToString()));
+                    _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Func<StringWriter, string>>(w => w.ToString()));
 
                     LocalRelease<Value>(buffer);
 
-                    _generator.Emit(OpCodes.Newobj, Resolver.Constructor<Func<string, Value>>(s => new StringValue(s)));
+                    _generator.Emit(OpCodes.Newobj, DynamicResolver.Constructor<Func<string, Value>>(s => new StringValue(s)));
 
                     EmitStoreSetCall(command.Mode);
 
@@ -176,7 +174,7 @@ namespace Cottle.Documents.Dynamic
 
                     _generator.Emit(OpCodes.Ldloc, operand);
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v)));
+                        DynamicResolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v)));
 
                     LocalRelease<Value>(operand);
 
@@ -193,7 +191,7 @@ namespace Cottle.Documents.Dynamic
 
                     _generator.Emit(OpCodes.Ldloc, operand);
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Property<Func<Value, string>>(v => v.AsString).GetGetMethod());
+                        DynamicResolver.Property<Func<Value, string>>(v => v.AsString).GetGetMethod());
 
                     LocalRelease<Value>(operand);
 
@@ -216,13 +214,13 @@ namespace Cottle.Documents.Dynamic
 
                     // Get number of fields
                     _generator.Emit(OpCodes.Ldloc, fields);
-                    _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<IMap, int>>(m => m.Count).GetGetMethod());
+                    _generator.Emit(OpCodes.Callvirt, DynamicResolver.Property<Func<IMap, int>>(m => m.Count).GetGetMethod());
                     _generator.Emit(OpCodes.Brfalse, empty);
 
                     // Evaluate command for "not empty" case
                     _generator.Emit(OpCodes.Ldloc, fields);
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator()));
+                        DynamicResolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator()));
 
                     LocalRelease<IMap>(fields);
 
@@ -234,14 +232,14 @@ namespace Cottle.Documents.Dynamic
                     _generator.MarkLabel(jump);
                     _generator.Emit(OpCodes.Ldloc, enumerator);
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext()));
+                        DynamicResolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext()));
                     _generator.Emit(OpCodes.Brfalse, skip);
                     _generator.Emit(OpCodes.Ldloc, enumerator);
 
                     LocalRelease<IEnumerator<KeyValuePair<Value, Value>>>(enumerator);
 
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver
+                        DynamicResolver
                             .Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e =>
                                 e.Current).GetGetMethod());
 
@@ -260,7 +258,7 @@ namespace Cottle.Documents.Dynamic
 
                         _generator.Emit(OpCodes.Ldloca, pair);
                         _generator.Emit(OpCodes.Call,
-                            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetGetMethod());
+                            DynamicResolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetGetMethod());
 
                         EmitStoreSetCall(StoreMode.Local);
                     }
@@ -271,7 +269,7 @@ namespace Cottle.Documents.Dynamic
 
                     _generator.Emit(OpCodes.Ldloca, pair);
                     _generator.Emit(OpCodes.Call,
-                        Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod());
+                        DynamicResolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod());
 
                     LocalRelease<KeyValuePair<Value, Value>>(pair);
                     EmitStoreSetCall(StoreMode.Local);
@@ -461,7 +459,7 @@ namespace Cottle.Documents.Dynamic
                     CompileExpression(expression.Source);
 
                     _generator.Emit(OpCodes.Callvirt,
-                        Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
+                        DynamicResolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod());
 
                     var function = LocalReserve<IFunction>();
 
@@ -495,11 +493,13 @@ namespace Cottle.Documents.Dynamic
 
                     // Invoke function delegate within exception block
                     _generator.Emit(OpCodes.Ldloc, function);
+
+                    LocalRelease<IFunction>(function);
+                    EmitLoadStore();
+
                     _generator.Emit(OpCodes.Ldloc, arguments);
 
                     LocalRelease<Value[]>(arguments);
-                    LocalRelease<IFunction>(function);
-                    EmitLoadStore();
                     EmitLoadOutput();
 
                     value = LocalReserve<Value>();
@@ -533,8 +533,8 @@ namespace Cottle.Documents.Dynamic
 
                     _generator.Emit(OpCodes.Stloc, arguments);
 
-                    // Evaluate elements and store into array 
-                    var constructor = Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
+                    // Evaluate elements and store into array
+                    var constructor = DynamicResolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
                         new KeyValuePair<Value, Value>(k, v));
 
                     for (var i = 0; i < expression.Elements.Length; ++i)
@@ -564,7 +564,7 @@ namespace Cottle.Documents.Dynamic
 
                     // Create value from array
                     constructor =
-                        Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f =>
+                        DynamicResolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f =>
                             new MapValue(f));
 
                     _generator.Emit(OpCodes.Ldloc, arguments);
@@ -612,28 +612,33 @@ namespace Cottle.Documents.Dynamic
         private void EmitCallFunctionExecute()
         {
             _generator.Emit(OpCodes.Callvirt,
-                Resolver.Method<Func<IFunction, IReadOnlyList<Value>, IStore, TextWriter, Value>>((f, a, s, o) =>
-                    f.Execute(a, s, o)));
+                DynamicResolver.Method<Func<IFunction, IStore, IReadOnlyList<Value>, TextWriter, Value>>((f, s, a, o) =>
+                    f.Invoke(s, a, o)));
         }
 
         private void EmitCallValueAsBoolean()
         {
-            _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod());
+            _generator.Emit(OpCodes.Callvirt, DynamicResolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod());
         }
 
         private void EmitCallValueFields()
         {
-            _generator.Emit(OpCodes.Callvirt, Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod());
+            _generator.Emit(OpCodes.Callvirt, DynamicResolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod());
         }
 
         private void EmitCallWriteString()
         {
-            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<TextWriter, string>>((w, v) => w.Write(v)));
+            _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Action<TextWriter, string>>((w, v) => w.Write(v)));
         }
 
         private void EmitLoadArguments()
         {
-            _generator.Emit(OpCodes.Ldarg_1);
+            _generator.Emit(OpCodes.Ldarg_2);
+        }
+
+        private void EmitLoadArrayEmpty<TElement>()
+        {
+            _generator.Emit(OpCodes.Call, DynamicResolver.Method<Func<TElement[]>>(() => Array.Empty<TElement>()));
         }
 
         private void EmitLoadContext()
@@ -648,7 +653,7 @@ namespace Cottle.Documents.Dynamic
 
         private void EmitLoadStore()
         {
-            _generator.Emit(OpCodes.Ldarg_2);
+            _generator.Emit(OpCodes.Ldarg_1);
         }
 
         private void EmitLoadValue(Value constant)
@@ -663,28 +668,28 @@ namespace Cottle.Documents.Dynamic
 
             EmitLoadContext();
 
-            _generator.Emit(OpCodes.Ldfld, Resolver.Field<Func<Storage, Value[]>>(c => c.Constants));
+            _generator.Emit(OpCodes.Ldfld, DynamicResolver.Field<Func<DynamicStorage, Value[]>>(c => c.Constants));
             _generator.Emit(OpCodes.Ldc_I4, index);
             _generator.Emit(OpCodes.Ldelem_Ref);
         }
 
         private void EmitLoadVoid()
         {
-            _generator.Emit(OpCodes.Call, Resolver.Property<Func<Value>>(() => VoidValue.Instance).GetGetMethod());
+            _generator.Emit(OpCodes.Call, DynamicResolver.Property<Func<Value>>(() => VoidValue.Instance).GetGetMethod());
         }
 
         private void EmitStoreEnter()
         {
             EmitLoadStore();
 
-            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<IStore>>(s => s.Enter()));
+            _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Action<IStore>>(s => s.Enter()));
         }
 
         private void EmitStoreLeave()
         {
             EmitLoadStore();
 
-            _generator.Emit(OpCodes.Callvirt, Resolver.Method<Action<IStore>>(s => s.Leave()));
+            _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Action<IStore>>(s => s.Leave()));
             _generator.Emit(OpCodes.Pop);
         }
 
@@ -692,7 +697,7 @@ namespace Cottle.Documents.Dynamic
         {
             _generator.Emit(OpCodes.Ldc_I4, (int)mode);
             _generator.Emit(OpCodes.Callvirt,
-                Resolver.Method<Action<IStore, Value, Value, StoreMode>>((s, n, v, m) => s.Set(n, v, m)));
+                DynamicResolver.Method<Action<IStore, Value, Value, StoreMode>>((s, n, v, m) => s.Set(n, v, m)));
         }
 
         private void LocalRelease<T>(LocalBuilder local)

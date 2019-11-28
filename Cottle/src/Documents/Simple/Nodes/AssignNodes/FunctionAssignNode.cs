@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Values;
@@ -7,15 +8,17 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
     internal class FunctionAssignNode : AssignNode, IFunction
     {
-        private readonly string[] arguments;
+        public bool IsPure => false;
 
-        private readonly INode body;
+        private readonly string[] _arguments;
+
+        private readonly INode _body;
 
         public FunctionAssignNode(string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
             base(name, mode)
         {
-            this.arguments = arguments.ToArray();
-            this.body = body;
+            _arguments = arguments.ToArray();
+            _body = body;
         }
 
         public int CompareTo(IFunction other)
@@ -28,20 +31,6 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             return CompareTo(other) == 0;
         }
 
-        public Value Execute(IReadOnlyList<Value> arguments, IStore store, TextWriter output)
-        {
-            store.Enter();
-
-            for (var i = 0; i < this.arguments.Length; ++i)
-                store.Set(this.arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
-
-            body.Render(store, output, out var result);
-
-            store.Leave();
-
-            return result;
-        }
-
         public override bool Equals(object obj)
         {
             return obj is IFunction other && Equals(other);
@@ -52,9 +41,26 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             unchecked
             {
                 return
-                    (body.GetHashCode() & (int)0xFFFFFF00) |
+                    (_body.GetHashCode() & (int)0xFFFFFF00) |
                     (base.GetHashCode() & 0x000000FF);
             }
+        }
+
+        public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+        {
+            if (!(state is IStore store))
+                throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(SimpleDocument)} from another type of document.");
+
+            store.Enter();
+
+            for (var i = 0; i < _arguments.Length; ++i)
+                store.Set(_arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
+
+            _body.Render(store, output, out var result);
+
+            store.Leave();
+
+            return result;
         }
 
         protected override Value Evaluate(IStore store, TextWriter output)
@@ -69,7 +75,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             output.Write(name);
             output.Write('(');
 
-            foreach (var argument in arguments)
+            foreach (var argument in _arguments)
             {
                 if (comma)
                     output.Write(", ");
@@ -86,7 +92,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
         {
             output.Write(':');
 
-            body.Source(setting, output);
+            _body.Source(setting, output);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,16 +9,16 @@ namespace Cottle.Documents
 {
     internal class NativeDocument : IDocument
     {
-        private readonly Function _root;
+        private readonly DynamicFunction _root;
 
         public NativeDocument(Command root)
         {
-            _root = new Function(Enumerable.Empty<string>(), root);
+            _root = new DynamicFunction(Enumerable.Empty<string>(), root);
         }
 
         public Value Render(IContext context, TextWriter writer)
         {
-            return _root.Execute(null, new ContextStore(context), writer);
+            return _root.Invoke(new ContextStore(context), Array.Empty<Value>(), writer);
         }
 
         public string Render(IContext context)
