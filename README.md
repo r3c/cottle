@@ -24,40 +24,23 @@ transform. Once your template is ready, it can be re-used with any products
 list as long as it keeps the same structure (to keep with our example, products
 with names, descriptions, quantities and prices).
 
+Cottle language and C# API look like this:
+
 <pre>
-&lt;table&gt;
-    {for product in products:
-        &lt;tr&gt;
-            &lt;th&gt;{product.name}&lt;/th&gt;
-            &lt;td&gt;$ {format(product.price, "n:F2"}&lt;/td&gt;
-        &lt;/tr&gt;
-    }
-&lt;table&gt;
+{library} is a great library to {["discover", "learn", "use"][rand(0, 3)]}!
 </pre>
 
 <pre>
-var products = new Value[]
-{
-    new Dictionary&lt;Value, Value&gt; { ["name"] = "Wine", ["price"] = 29.99f },
-    new Dictionary&lt;Value, Value&gt; { ["name"] = "Whisky", ["price"] = 60.00f }
-};
-
 var document = Document.CreateDefault(template).DocumentOrThrow;
 
-return document.Render();
+return document.Render(Context.CreateBuiltin(new Dictionary&lt;Value, Value&gt;
+{
+    ["library"] = "Cottle"
+}));
 </pre>
 
 <pre>
-&lt;table&gt;
-    &lt;tr&gt;
-        &lt;th&gt;Wine&lt;/th&gt;
-        &lt;td&gt;$ 29.99&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-        &lt;th&gt;Whisky&lt;/th&gt;
-        &lt;td&gt;$ 60.00&lt;/td&gt;
-    &lt;/tr&gt;
-&lt;table&gt;
+Cottle is a great library to learn!
 </pre>
 
 Template files must be written using Cottle's template language as explained in
