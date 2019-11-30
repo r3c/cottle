@@ -1,11 +1,11 @@
-/.idea/
-/.vscode/
-/packages/
-/tests/
-/TestResult.xml
+/src/packages/
+/src/tests/
+/src/Cottle.*.nupkg
+/src/TestResult.xml
+.idea/
+.vscode/
 bin/
 obj/
-Cottle.*.nupkg
 project.lock.json
 *.project.lock.json
 *.sln.sdsettings

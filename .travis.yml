@@ -1,5 +1,5 @@
 language: csharp
-solution: Cottle.sln
+solution: src/Cottle.sln
 
 matrix:
   include:
@@ -8,6 +8,6 @@ matrix:
       dotnet: 2.1.502
 
 script:
-  - dotnet restore Cottle.sln
-  - dotnet build ./Cottle/Cottle.csproj -c Release -f netstandard2.0
-  - dotnet test ./Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0
+  - dotnet restore src/Cottle.sln
+  - dotnet build src/Cottle/Cottle.csproj -c Release -f netstandard2.0
+  - dotnet test src/Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0

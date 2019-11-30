@@ -25,34 +25,34 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="src\DemoForm.cs">
+    <Compile Update="DemoForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\DemoForm.Designer.cs">
+    <Compile Update="DemoForm.Designer.cs">
       <DependentUpon>DemoForm.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\NodeForm.cs">
+    <Compile Update="NodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\NodeForm.Designer.cs">
+    <Compile Update="NodeForm.Designer.cs">
       <DependentUpon>NodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\SettingForm.cs">
+    <Compile Update="SettingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\SettingForm.Designer.cs">
+    <Compile Update="SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="src\DemoForm.resx">
+    <EmbeddedResource Update="DemoForm.resx">
       <DependentUpon>DemoForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\NodeForm.resx">
+    <EmbeddedResource Update="NodeForm.resx">
       <DependentUpon>NodeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\SettingForm.resx">
+    <EmbeddedResource Update="SettingForm.resx">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
