@@ -11,7 +11,7 @@ namespace Cottle
         public IDocument DocumentOrThrow => Success
             ? Document
             : throw (Reports.Count > 0
-                ? new ParseException(Reports[0].Column, Reports[0].Line, Reports[0].Message)
+                ? new ParseException(Reports[0].Offset, Reports[0].Length, Reports[0].Message)
                 : new ParseException(0, 0, "unknown error"));
 
         public readonly IDocument Document;

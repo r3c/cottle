@@ -2,14 +2,20 @@
 {
     internal readonly struct Lexem
     {
-        public readonly string Content;
+        public readonly int Length;
+
+        public readonly int Offset;
 
         public readonly LexemType Type;
 
-        public Lexem(LexemType type, string content)
+        public readonly string Value;
+
+        public Lexem(LexemType type, int offset, int length, string value)
         {
-            Content = content;
+            Length = length;
+            Offset = offset;
             Type = type;
+            Value = value;
         }
     }
 }

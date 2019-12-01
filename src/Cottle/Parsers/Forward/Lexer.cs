@@ -6,6 +6,11 @@ namespace Cottle.Parsers.Forward
 {
     internal class Lexer
     {
+        private const string EndOfStream = "end of stream";
+        private const string UnexpectedCharacter = "unexpected character";
+        private const string UnfinishedString = "unfinished string";
+        private const string UnknownOperator = "unknown operator";
+
         public Lexer(string blockBegin, string blockContinue, string blockEnd, char escape)
         {
             var graph = new LexerGraph();
@@ -26,11 +31,7 @@ namespace Cottle.Parsers.Forward
             _root = graph.Root;
         }
 
-        public int Column { get; private set; }
-
         public Lexem Current { get; private set; }
-
-        public int Line { get; private set; }
 
         // A buffer containing more than 85000 bytes will be allocated on LOH
         private const int MaxBufferSize = 84000 / sizeof(char);
@@ -44,6 +45,8 @@ namespace Cottle.Parsers.Forward
         private char? _next;
 
         private Lexem? _pending;
+
+        private int _position;
 
         private TextReader _reader;
 
@@ -59,24 +62,26 @@ namespace Cottle.Parsers.Forward
             Current = ReadRaw();
         }
 
-        public bool Reset(TextReader reader)
+        public void Reset(TextReader reader)
         {
-            Column = 1;
             Current = new Lexem();
-            Line = 1;
 
             _eof = false;
             _last = '\0';
             _next = null;
             _pending = null;
+            _position = 0;
             _reader = reader;
 
-            return Read();
+            Read();
         }
 
         private Lexem ReadBlock()
         {
             while (!_eof)
+            {
+                var offset = _position - 1;
+
                 switch (_last)
                 {
                     case '\n':
@@ -91,45 +96,45 @@ namespace Cottle.Parsers.Forward
 
                     case '!':
                         if (Read() && _last == '=')
-                            return ReadChar(LexemType.NotEqual);
+                            return ReadChar(LexemType.NotEqual, "!=");
 
-                        return new Lexem(LexemType.Bang, string.Empty);
+                        return new Lexem(LexemType.Bang, offset, 2, "!");
 
                     case '%':
-                        return ReadChar(LexemType.Percent);
+                        return ReadChar(LexemType.Percent, "%");
 
                     case '&':
                         if (Read() && _last == '&')
-                            return ReadChar(LexemType.DoubleAmpersand);
+                            return ReadChar(LexemType.DoubleAmpersand, "&&");
 
                         _next = _last;
                         _last = '&';
 
-                        return new Lexem(LexemType.None, _last.ToString());
+                        return new Lexem(LexemType.None, offset, 2, Lexer.UnknownOperator);
 
                     case '(':
-                        return ReadChar(LexemType.ParenthesisBegin);
+                        return ReadChar(LexemType.ParenthesisBegin, "(");
 
                     case ')':
-                        return ReadChar(LexemType.ParenthesisEnd);
+                        return ReadChar(LexemType.ParenthesisEnd, ")");
 
                     case '*':
-                        return ReadChar(LexemType.Star);
+                        return ReadChar(LexemType.Star, "*");
 
                     case '+':
-                        return ReadChar(LexemType.Plus);
+                        return ReadChar(LexemType.Plus, "+");
 
                     case ',':
-                        return ReadChar(LexemType.Comma);
+                        return ReadChar(LexemType.Comma, ",");
 
                     case '-':
-                        return ReadChar(LexemType.Minus);
+                        return ReadChar(LexemType.Minus, "-");
 
                     case '.':
-                        return ReadChar(LexemType.Dot);
+                        return ReadChar(LexemType.Dot, ".");
 
                     case '/':
-                        return ReadChar(LexemType.Slash);
+                        return ReadChar(LexemType.Slash, "/");
 
                     case '0':
                     case '1':
@@ -152,25 +157,25 @@ namespace Cottle.Parsers.Forward
                         } while (Read() && (_last >= '0' && _last <= '9' ||
                                             _last == '.' && !dot));
 
-                        return new Lexem(LexemType.Number, numberBuffer.ToString());
+                        return new Lexem(LexemType.Number, offset, numberBuffer.Length, numberBuffer.ToString());
 
                     case ':':
-                        return ReadChar(LexemType.Colon);
+                        return ReadChar(LexemType.Colon, ":");
 
                     case '<':
                         if (Read() && _last == '=')
-                            return ReadChar(LexemType.LowerEqual);
+                            return ReadChar(LexemType.LowerEqual, "<=");
 
-                        return new Lexem(LexemType.LowerThan, string.Empty);
+                        return new Lexem(LexemType.LowerThan, offset, 1, "<");
 
                     case '=':
-                        return ReadChar(LexemType.Equal);
+                        return ReadChar(LexemType.Equal, "=");
 
                     case '>':
                         if (Read() && _last == '=')
-                            return ReadChar(LexemType.GreaterEqual);
+                            return ReadChar(LexemType.GreaterEqual, ">=");
 
-                        return new Lexem(LexemType.GreaterThan, string.Empty);
+                        return new Lexem(LexemType.GreaterThan, offset, 1, ">");
 
                     case 'A':
                     case 'B':
@@ -235,22 +240,22 @@ namespace Cottle.Parsers.Forward
                                             _last >= 'a' && _last <= 'z' ||
                                             _last == '_'));
 
-                        return new Lexem(LexemType.Symbol, symbolBuffer.ToString());
+                        return new Lexem(LexemType.Symbol, offset, symbolBuffer.Length, symbolBuffer.ToString());
 
                     case '|':
                         if (Read() && _last == '|')
-                            return ReadChar(LexemType.DoublePipe);
+                            return ReadChar(LexemType.DoublePipe, "||");
 
                         _next = _last;
                         _last = '|';
 
-                        return new Lexem(LexemType.None, _last.ToString());
+                        return new Lexem(LexemType.None, offset, 2, Lexer.UnknownOperator);
 
                     case '[':
-                        return ReadChar(LexemType.BracketBegin);
+                        return ReadChar(LexemType.BracketBegin, "[");
 
                     case ']':
-                        return ReadChar(LexemType.BracketEnd);
+                        return ReadChar(LexemType.BracketEnd, "]");
 
                     case '\'':
                     case '"':
@@ -258,26 +263,29 @@ namespace Cottle.Parsers.Forward
                         var end = _last;
 
                         while (Read() && _last != end)
+                        {
                             if (_last != _escape || Read())
                                 stringBuffer.Append(_last);
+                        }
 
                         if (_eof)
-                            throw new ParseException(Column, Line, "<EOF>", "end of string");
+                            return new Lexem(LexemType.None, offset, stringBuffer.Length + 1, Lexer.UnfinishedString);
 
                         Read();
 
-                        return new Lexem(LexemType.String, stringBuffer.ToString());
+                        return new Lexem(LexemType.String, offset, stringBuffer.Length, stringBuffer.ToString());
 
                     default:
-                        return new Lexem(LexemType.None, _last.ToString());
+                        return new Lexem(LexemType.None, offset, 1, Lexer.UnexpectedCharacter);
                 }
+            }
 
-            return new Lexem(LexemType.EndOfFile, "<EOF>");
+            return new Lexem(LexemType.EndOfFile, _position, 0, Lexer.EndOfStream);
         }
 
-        private Lexem ReadChar(LexemType type)
+        private Lexem ReadChar(LexemType type, string value)
         {
-            var lexem = new Lexem(type, _last.ToString());
+            var lexem = new Lexem(type, _position - 1, 1, value);
 
             Read();
 
@@ -301,6 +309,7 @@ namespace Cottle.Parsers.Forward
             while (!_eof)
             {
                 var current = _last;
+                var offset = _position - 1;
 
                 Read();
 
@@ -320,29 +329,28 @@ namespace Cottle.Parsers.Forward
 
                     if (node.Type != LexemType.None)
                     {
-                        var lexem = new Lexem(node.Type, string.Empty);
+                        var lexem = new Lexem(node.Type, offset, 1, string.Empty);
 
                         if (buffer.Length < 1)
                             return lexem;
 
                         _pending = lexem;
 
-                        return new Lexem(LexemType.Text, buffer.ToString());
+                        return new Lexem(LexemType.Text, offset, buffer.Length, buffer.ToString());
                     }
 
                     // Stop appending to buffer if we're about to reach LOH
                     // size and we are not in the middle of a match candidate
                     if (buffer.Length > Lexer.MaxBufferSize && node.FallbackNode == null)
-                        return new Lexem(LexemType.Text, buffer.ToString());
+                        return new Lexem(LexemType.Text, offset, buffer.Length, buffer.ToString());
                 }
             }
 
             buffer.Append(node.FallbackDrop);
 
-            if (buffer.Length > 0)
-                return new Lexem(LexemType.Text, buffer.ToString());
-
-            return new Lexem(LexemType.EndOfFile, "<EOF>");
+            return buffer.Length > 0
+                ? new Lexem(LexemType.Text, _position - buffer.Length, buffer.Length, buffer.ToString())
+                : new Lexem(LexemType.EndOfFile, _position, 0, Lexer.EndOfStream);
         }
 
         private bool Read()
@@ -369,15 +377,7 @@ namespace Cottle.Parsers.Forward
 
             _last = (char)value;
 
-            if (_last == '\n')
-            {
-                Column = 1;
-                ++Line;
-            }
-            else
-            {
-                ++Column;
-            }
+            ++_position;
 
             return true;
         }

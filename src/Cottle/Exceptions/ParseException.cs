@@ -3,28 +3,32 @@ using System.Globalization;
 
 namespace Cottle.Exceptions
 {
-    public class ParseException : Exception
+    public sealed class ParseException : Exception
     {
-        public int Column { get; }
+        public int Column => LocationStart;
 
         public string Lexem { get; }
 
-        public int Line { get; }
+        public int Line => 0;
 
-        public ParseException(int column, int line, string message) :
+        public int LocationLength { get; }
+
+        public int LocationStart { get; }
+
+        public ParseException(int locationStart, int locationLength, string message) :
             base(message)
         {
-            Column = column;
-            Line = line;
+            LocationLength = locationLength;
+            LocationStart = locationStart;
         }
 
-        public ParseException(int column, int line, string lexem, string expected) :
+        public ParseException(int locationStart, int locationLength, string lexem, string expected) :
             base(string.Format(CultureInfo.InvariantCulture,
                 !string.IsNullOrEmpty(expected) ? "expected '{1}', found '{0}'" : "unexpected '{0}'", lexem, expected))
         {
-            Column = column;
             Lexem = lexem;
-            Line = line;
+            LocationLength = locationLength;
+            LocationStart = locationStart;
         }
     }
 }

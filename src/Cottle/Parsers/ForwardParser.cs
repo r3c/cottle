@@ -11,59 +11,49 @@ namespace Cottle.Parsers
     internal class ForwardParser : IParser
     {
         private delegate bool ParseKeyword(ForwardParser parser, out Command command,
-            out IReadOnlyList<DocumentReport> reports);
+            out IEnumerable<DocumentReport> reports);
 
         private static readonly Dictionary<string, ParseKeyword> Keywords = new Dictionary<string, ParseKeyword>
         {
             {
                 "_",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateComment(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateComment(out c, out f)
             },
             {
                 "declare",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateDeclare(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateDeclare(out c, out f)
             },
             {
                 "define",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateSet(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateSet(out c, out f)
             },
             {
                 "dump",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateDump(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateDump(out c, out f)
             },
             {
                 "echo",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateEcho(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateEcho(out c, out f)
             },
             {
                 "for",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateFor(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateFor(out c, out f)
             },
             {
                 "if",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateIf(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateIf(out c, out f)
             },
             {
                 "return",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateReturn(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateReturn(out c, out f)
             },
             {
                 "set",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateSet(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateSet(out c, out f)
             },
             {
                 "while",
-                (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
-                    p.TryCreateWhile(out c, out f)
+                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateWhile(out c, out f)
             }
         };
 
@@ -77,7 +67,7 @@ namespace Cottle.Parsers
             _trimmer = trimmer;
         }
 
-        public bool Parse(TextReader reader, out Command command, out IReadOnlyList<DocumentReport> reports)
+        public bool Parse(TextReader reader, out Command command, out IEnumerable<DocumentReport> reports)
         {
             _lexer.Reset(reader);
             _lexer.NextRaw();
@@ -111,7 +101,7 @@ namespace Cottle.Parsers
             };
         }
 
-        private bool TryCreateComment(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateComment(out Command command, out IEnumerable<DocumentReport> reports)
         {
             do
             {
@@ -124,22 +114,22 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryCreateDeclare(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateDeclare(out Command command, out IEnumerable<DocumentReport> reports)
         {
             return TryParseAssignment(StoreMode.Local, out command, out reports);
         }
 
-        private bool TryCreateDump(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateDump(out Command command, out IEnumerable<DocumentReport> reports)
         {
             return TryParseCommandOperand(CommandType.Dump, out command, out reports);
         }
 
-        private bool TryCreateEcho(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateEcho(out Command command, out IEnumerable<DocumentReport> reports)
         {
             return TryParseCommandOperand(CommandType.Echo, out command, out reports);
         }
 
-        private bool TryCreateFor(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateFor(out Command command, out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseSymbol(out var element, out reports))
             {
@@ -210,7 +200,7 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryCreateIf(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateIf(out Command command, out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var ifCondition, out reports) ||
                 !TryParseCommandBody(out var ifBody, out reports))
@@ -231,7 +221,7 @@ namespace Cottle.Parsers
             {
                 _lexer.NextBlock();
 
-                switch (_lexer.Current.Type == LexemType.Symbol ? _lexer.Current.Content : string.Empty)
+                switch (_lexer.Current.Type == LexemType.Symbol ? _lexer.Current.Value : string.Empty)
                 {
                     case "elif":
                         _lexer.NextBlock();
@@ -283,17 +273,17 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryCreateReturn(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateReturn(out Command command, out IEnumerable<DocumentReport> reports)
         {
             return TryParseCommandOperand(CommandType.Return, out command, out reports);
         }
 
-        private bool TryCreateSet(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateSet(out Command command, out IEnumerable<DocumentReport> reports)
         {
             return TryParseAssignment(StoreMode.Global, out command, out reports);
         }
 
-        private bool TryCreateWhile(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryCreateWhile(out Command command, out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var condition, out reports) ||
                 !TryParseCommandBody(out var body, out reports))
@@ -314,7 +304,7 @@ namespace Cottle.Parsers
         }
 
 
-        private bool TryParseAssignment(StoreMode mode, out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseAssignment(StoreMode mode, out Command command, out IEnumerable<DocumentReport> reports)
         {
             List<string> arguments;
 
@@ -386,15 +376,13 @@ namespace Cottle.Parsers
             // Parse 'as' or 'to' keyword
             if (mode == StoreMode.Global)
             {
-                // <TODO> remove legacy keywords handling
-                // FIXME: should raise event
-                if (_lexer.Current.Content == "as")
+                // FIXME: raise "notice" event, then remove legacy keyword handling
+                if (_lexer.Current.Value == "as")
                 {
                     _lexer.NextBlock();
 
                     mode = StoreMode.Local;
                 }
-                // </TODO>
                 else
                 {
                     if (!TryParseExpected(LexemType.Symbol, "to", "'to' keyword", out reports))
@@ -476,7 +464,7 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryParseCommand(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseCommand(out Command command, out IEnumerable<DocumentReport> reports)
         {
             Command head = null;
             Command tail = null;
@@ -497,13 +485,13 @@ namespace Cottle.Parsers
                         _lexer.NextBlock();
 
                         if (_lexer.Current.Type == LexemType.Symbol &&
-                            ForwardParser.Keywords.TryGetValue(_lexer.Current.Content, out var parse))
+                            ForwardParser.Keywords.TryGetValue(_lexer.Current.Value, out var parse))
                         {
                             _lexer.NextBlock();
                         }
                         else
                         {
-                            parse = (ForwardParser p, out Command c, out IReadOnlyList<DocumentReport> f) =>
+                            parse = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
                                 p.TryCreateEcho(out c, out f);
                         }
 
@@ -529,7 +517,7 @@ namespace Cottle.Parsers
                     case LexemType.Text:
                         current = new Command
                         {
-                            Text = _trimmer(_lexer.Current.Content),
+                            Text = _trimmer(_lexer.Current.Value),
                             Type = CommandType.Literal
                         };
 
@@ -571,7 +559,7 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryParseCommandBody(out Command command, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseCommandBody(out Command command, out IEnumerable<DocumentReport> reports)
         {
             if (_lexer.Current.Type != LexemType.Colon)
             {
@@ -587,7 +575,7 @@ namespace Cottle.Parsers
         }
 
         private bool TryParseCommandOperand(CommandType type, out Command command,
-            out IReadOnlyList<DocumentReport> reports)
+            out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var operand, out reports))
             {
@@ -608,9 +596,9 @@ namespace Cottle.Parsers
         }
 
         private bool TryParseExpected(LexemType type, string value, string message,
-            out IReadOnlyList<DocumentReport> reports)
+            out IEnumerable<DocumentReport> reports)
         {
-            if (_lexer.Current.Type != type || _lexer.Current.Content != value)
+            if (_lexer.Current.Type != type || _lexer.Current.Value != value)
             {
                 reports = CreateReports(message);
 
@@ -624,7 +612,7 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryParseExpression(out Expression expression, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseExpression(out Expression expression, out IEnumerable<DocumentReport> reports)
         {
             var operands = new Stack<Expression>();
             var operators = new Stack<Operator>();
@@ -738,7 +726,7 @@ namespace Cottle.Parsers
             }
         }
 
-        private bool TryParseSymbol(out string name, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseSymbol(out string name, out IEnumerable<DocumentReport> reports)
         {
             if (_lexer.Current.Type != LexemType.Symbol)
             {
@@ -749,14 +737,14 @@ namespace Cottle.Parsers
             }
 
             reports = default;
-            name = _lexer.Current.Content;
+            name = _lexer.Current.Value;
 
             _lexer.NextBlock();
 
             return true;
         }
 
-        private bool TryParseValue(out Expression expression, out IReadOnlyList<DocumentReport> reports)
+        private bool TryParseValue(out Expression expression, out IEnumerable<DocumentReport> reports)
         {
             switch (_lexer.Current.Type)
             {
@@ -848,7 +836,7 @@ namespace Cottle.Parsers
                     return true;
 
                 case LexemType.Number:
-                    if (!decimal.TryParse(_lexer.Current.Content, NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (!decimal.TryParse(_lexer.Current.Value, NumberStyles.Number, CultureInfo.InvariantCulture,
                         out var number))
                         number = 0;
 
@@ -890,7 +878,7 @@ namespace Cottle.Parsers
                     expression = new Expression
                     {
                         Type = ExpressionType.Constant,
-                        Value = _lexer.Current.Content
+                        Value = _lexer.Current.Value
                     };
 
                     _lexer.NextBlock();
@@ -901,7 +889,7 @@ namespace Cottle.Parsers
                     expression = new Expression
                     {
                         Type = ExpressionType.Symbol,
-                        Value = _lexer.Current.Content
+                        Value = _lexer.Current.Value
                     };
 
                     _lexer.NextBlock();
@@ -959,7 +947,7 @@ namespace Cottle.Parsers
                             Subscript = new Expression
                             {
                                 Type = ExpressionType.Constant,
-                                Value = _lexer.Current.Content
+                                Value = _lexer.Current.Value
                             },
                             Type = ExpressionType.Access
                         };
@@ -1003,9 +991,10 @@ namespace Cottle.Parsers
 
         private IReadOnlyList<DocumentReport> CreateReports(string expected)
         {
-            var message = $"expected '{expected}', found '{_lexer.Current.Content}'";
+            var current = _lexer.Current;
+            var message = $"expected {expected}, found {current.Value}";
 
-            return new[] { new DocumentReport(message, _lexer.Column, _lexer.Line) };
+            return new[] { new DocumentReport(DocumentSeverity.Error, current.Offset, current.Length, message) };
         }
     }
 }

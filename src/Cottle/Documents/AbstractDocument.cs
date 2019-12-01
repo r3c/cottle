@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using Cottle.Exceptions;
 
 namespace Cottle.Documents
 {
@@ -29,6 +32,13 @@ namespace Cottle.Documents
                 NoOptimize = !setting.Optimize,
                 Trimmer = s => trimmer(s)
             };
+        }
+
+        internal static ParseException CreateException(IEnumerable<DocumentReport> reports)
+        {
+            var firstError = reports.FirstOrDefault(r => r.Severity == DocumentSeverity.Error);
+
+            throw new ParseException(firstError.Offset, firstError.Length, firstError.Message ?? "unknown error");
         }
     }
 }

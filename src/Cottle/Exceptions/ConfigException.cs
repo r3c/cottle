@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Cottle.Exceptions
 {
-    public class ConfigException : Exception
+    public sealed class ConfigException : Exception
     {
         public string Name { get; }
 
