@@ -1,11 +1,14 @@
-﻿namespace Cottle.Demo
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Cottle.Demo.Forms
 {
-	partial class SettingForm
+	partial class ConfigurationForm
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -55,66 +58,72 @@
 			this.groupBox.Controls.Add(this.buttonAccept);
 			this.groupBox.Controls.Add(this.textBoxBlockBegin);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox.Location = new System.Drawing.Point(5, 5);
+			this.groupBox.Location = new System.Drawing.Point(6, 6);
 			this.groupBox.Name = "groupBox";
-			this.groupBox.Size = new System.Drawing.Size(274, 157);
+			this.groupBox.Size = new System.Drawing.Size(392, 181);
 			this.groupBox.TabIndex = 3;
 			this.groupBox.TabStop = false;
 			this.groupBox.Text = "Library configuration:";
 			// 
-			// comboBoxClean
+			// comboBoxTrimmer
 			// 
-			this.comboBoxTrimmer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.comboBoxTrimmer.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
 			this.comboBoxTrimmer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBoxTrimmer.FormattingEnabled = true;
-			this.comboBoxTrimmer.Location = new System.Drawing.Point(120, 99);
+			this.comboBoxTrimmer.Location = new System.Drawing.Point(140, 114);
 			this.comboBoxTrimmer.Name = "comboBoxTrimmer";
-			this.comboBoxTrimmer.Size = new System.Drawing.Size(144, 21);
+			this.comboBoxTrimmer.Size = new System.Drawing.Size(238, 23);
 			this.comboBoxTrimmer.TabIndex = 3;
 			// 
-			// labelClean
+			// labelTrimmer
 			// 
 			this.labelTrimmer.AutoSize = true;
-			this.labelTrimmer.Location = new System.Drawing.Point(8, 102);
-			this.labelTrimmer.Name = "labelClean";
-			this.labelTrimmer.Size = new System.Drawing.Size(80, 13);
+			this.labelTrimmer.Location = new System.Drawing.Point(9, 118);
+			this.labelTrimmer.Name = "labelTrimmer";
+			this.labelTrimmer.Size = new System.Drawing.Size(95, 15);
 			this.labelTrimmer.TabIndex = 17;
 			this.labelTrimmer.Text = "Trimming mode:";
 			// 
 			// textBoxBlockContinue
 			// 
-			this.textBoxBlockContinue.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxBlockContinue.Location = new System.Drawing.Point(120, 47);
+			this.textBoxBlockContinue.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxBlockContinue.Location = new System.Drawing.Point(140, 54);
 			this.textBoxBlockContinue.Name = "textBoxBlockContinue";
-			this.textBoxBlockContinue.Size = new System.Drawing.Size(144, 20);
+			this.textBoxBlockContinue.Size = new System.Drawing.Size(238, 23);
 			this.textBoxBlockContinue.TabIndex = 1;
 			// 
 			// labelBlockContinue
 			// 
 			this.labelBlockContinue.AutoSize = true;
-			this.labelBlockContinue.Location = new System.Drawing.Point(8, 50);
+			this.labelBlockContinue.Location = new System.Drawing.Point(9, 58);
 			this.labelBlockContinue.Name = "labelBlockContinue";
-			this.labelBlockContinue.Size = new System.Drawing.Size(99, 13);
+			this.labelBlockContinue.Size = new System.Drawing.Size(109, 15);
 			this.labelBlockContinue.TabIndex = 16;
 			this.labelBlockContinue.Text = "Block continue tag:";
 			// 
 			// textBoxBlockEnd
 			// 
-			this.textBoxBlockEnd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxBlockEnd.Location = new System.Drawing.Point(120, 73);
+			this.textBoxBlockEnd.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxBlockEnd.Location = new System.Drawing.Point(140, 84);
 			this.textBoxBlockEnd.Name = "textBoxBlockEnd";
-			this.textBoxBlockEnd.Size = new System.Drawing.Size(144, 20);
+			this.textBoxBlockEnd.Size = new System.Drawing.Size(238, 23);
 			this.textBoxBlockEnd.TabIndex = 2;
 			// 
 			// labelBlockEnd
 			// 
 			this.labelBlockEnd.AutoSize = true;
-			this.labelBlockEnd.Location = new System.Drawing.Point(8, 76);
+			this.labelBlockEnd.Location = new System.Drawing.Point(9, 88);
 			this.labelBlockEnd.Name = "labelBlockEnd";
-			this.labelBlockEnd.Size = new System.Drawing.Size(76, 13);
+			this.labelBlockEnd.Size = new System.Drawing.Size(82, 15);
 			this.labelBlockEnd.TabIndex = 14;
 			this.labelBlockEnd.Text = "Block end tag:";
 			// 
@@ -122,11 +131,11 @@
 			// 
 			this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.Image = global::Cottle.Demo.Properties.Resources.button_cancel;
+			this.buttonCancel.Image = global::Cottle.Demo.Resources.Glyph.button_cancel;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonCancel.Location = new System.Drawing.Point(140, 128);
+			this.buttonCancel.Location = new System.Drawing.Point(199, 147);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(100, 23);
+			this.buttonCancel.Size = new System.Drawing.Size(117, 30);
 			this.buttonCancel.TabIndex = 5;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.UseVisualStyleBackColor = true;
@@ -135,20 +144,20 @@
 			// labelBlockBegin
 			// 
 			this.labelBlockBegin.AutoSize = true;
-			this.labelBlockBegin.Location = new System.Drawing.Point(8, 24);
+			this.labelBlockBegin.Location = new System.Drawing.Point(9, 28);
 			this.labelBlockBegin.Name = "labelBlockBegin";
-			this.labelBlockBegin.Size = new System.Drawing.Size(84, 13);
+			this.labelBlockBegin.Size = new System.Drawing.Size(92, 15);
 			this.labelBlockBegin.TabIndex = 2;
 			this.labelBlockBegin.Text = "Block begin tag:";
 			// 
 			// buttonAccept
 			// 
 			this.buttonAccept.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.buttonAccept.Image = global::Cottle.Demo.Properties.Resources.button_accept;
+			this.buttonAccept.Image = global::Cottle.Demo.Resources.Glyph.button_accept;
 			this.buttonAccept.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonAccept.Location = new System.Drawing.Point(34, 128);
+			this.buttonAccept.Location = new System.Drawing.Point(76, 147);
 			this.buttonAccept.Name = "buttonAccept";
-			this.buttonAccept.Size = new System.Drawing.Size(100, 23);
+			this.buttonAccept.Size = new System.Drawing.Size(117, 30);
 			this.buttonAccept.TabIndex = 4;
 			this.buttonAccept.Text = "Accept";
 			this.buttonAccept.UseVisualStyleBackColor = true;
@@ -156,44 +165,47 @@
 			// 
 			// textBoxBlockBegin
 			// 
-			this.textBoxBlockBegin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxBlockBegin.Location = new System.Drawing.Point(120, 21);
+			this.textBoxBlockBegin.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxBlockBegin.Location = new System.Drawing.Point(140, 24);
 			this.textBoxBlockBegin.Name = "textBoxBlockBegin";
-			this.textBoxBlockBegin.Size = new System.Drawing.Size(144, 20);
+			this.textBoxBlockBegin.Size = new System.Drawing.Size(238, 23);
 			this.textBoxBlockBegin.TabIndex = 0;
 			// 
-			// SettingForm
+			// ConfigurationForm
 			// 
 			this.AcceptButton = this.buttonAccept;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(284, 167);
+			this.ClientSize = new System.Drawing.Size(404, 193);
 			this.Controls.Add(this.groupBox);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "SettingForm";
-			this.Padding = new System.Windows.Forms.Padding(5);
+			this.Name = "ConfigurationForm";
+			this.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Cottle Setting";
+			this.Text = "Document configuration";
 			this.groupBox.ResumeLayout(false);
 			this.groupBox.PerformLayout();
 			this.ResumeLayout(false);
 		}
+
 		private System.Windows.Forms.Label labelTrimmer;
 		private System.Windows.Forms.ComboBox comboBoxTrimmer;
 
 		#endregion
 
-		private System.Windows.Forms.GroupBox groupBox;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Label labelBlockBegin;
-		private System.Windows.Forms.Button buttonAccept;
-		private System.Windows.Forms.TextBox textBoxBlockBegin;
-		private System.Windows.Forms.Label labelBlockEnd;
-		private System.Windows.Forms.TextBox textBoxBlockEnd;
-		private System.Windows.Forms.TextBox textBoxBlockContinue;
 		private System.Windows.Forms.Label labelBlockContinue;
+		private System.Windows.Forms.TextBox textBoxBlockContinue;
+		private System.Windows.Forms.TextBox textBoxBlockEnd;
+		private System.Windows.Forms.Label labelBlockEnd;
+		private System.Windows.Forms.TextBox textBoxBlockBegin;
+		private System.Windows.Forms.Button buttonAccept;
+		private System.Windows.Forms.Label labelBlockBegin;
+		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.GroupBox groupBox;
 	}
 }

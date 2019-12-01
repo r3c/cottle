@@ -1,11 +1,14 @@
-﻿namespace Cottle.Demo
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Cottle.Demo.Forms
 {
 	partial class NodeForm
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -47,11 +50,13 @@
 			// 
 			// textBoxName
 			// 
-			this.textBoxName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxName.Location = new System.Drawing.Point(100, 21);
+			this.textBoxName.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxName.Location = new System.Drawing.Point(117, 24);
 			this.textBoxName.Name = "textBoxName";
-			this.textBoxName.Size = new System.Drawing.Size(344, 20);
+			this.textBoxName.Size = new System.Drawing.Size(400, 23);
 			this.textBoxName.TabIndex = 1;
 			// 
 			// groupBox
@@ -70,9 +75,9 @@
 			this.groupBox.Controls.Add(this.buttonAccept);
 			this.groupBox.Controls.Add(this.textBoxName);
 			this.groupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox.Location = new System.Drawing.Point(5, 5);
+			this.groupBox.Location = new System.Drawing.Point(6, 6);
 			this.groupBox.Name = "groupBox";
-			this.groupBox.Size = new System.Drawing.Size(454, 208);
+			this.groupBox.Size = new System.Drawing.Size(529, 240);
 			this.groupBox.TabIndex = 2;
 			this.groupBox.TabStop = false;
 			this.groupBox.Text = "Value parameters:";
@@ -80,9 +85,9 @@
 			// checkBoxValueBoolean
 			// 
 			this.checkBoxValueBoolean.AutoSize = true;
-			this.checkBoxValueBoolean.Location = new System.Drawing.Point(200, 75);
+			this.checkBoxValueBoolean.Location = new System.Drawing.Point(233, 87);
 			this.checkBoxValueBoolean.Name = "checkBoxValueBoolean";
-			this.checkBoxValueBoolean.Size = new System.Drawing.Size(55, 17);
+			this.checkBoxValueBoolean.Size = new System.Drawing.Size(58, 19);
 			this.checkBoxValueBoolean.TabIndex = 6;
 			this.checkBoxValueBoolean.Text = "Is true";
 			this.checkBoxValueBoolean.UseVisualStyleBackColor = true;
@@ -91,11 +96,11 @@
 			// 
 			this.buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Top;
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.Image = global::Cottle.Demo.Properties.Resources.button_cancel;
+			this.buttonCancel.Image = global::Cottle.Demo.Resources.Glyph.button_cancel;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonCancel.Location = new System.Drawing.Point(230, 178);
+			this.buttonCancel.Location = new System.Drawing.Point(267, 202);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(100, 23);
+			this.buttonCancel.Size = new System.Drawing.Size(117, 30);
 			this.buttonCancel.TabIndex = 13;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.UseVisualStyleBackColor = true;
@@ -103,41 +108,46 @@
 			// 
 			// textBoxValueString
 			// 
-			this.textBoxValueString.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxValueString.Location = new System.Drawing.Point(200, 125);
+			this.textBoxValueString.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxValueString.Location = new System.Drawing.Point(233, 145);
 			this.textBoxValueString.Name = "textBoxValueString";
-			this.textBoxValueString.Size = new System.Drawing.Size(244, 20);
+			this.textBoxValueString.Size = new System.Drawing.Size(283, 23);
 			this.textBoxValueString.TabIndex = 10;
 			// 
 			// textBoxValueNumber
 			// 
-			this.textBoxValueNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBoxValueNumber.Location = new System.Drawing.Point(200, 99);
+			this.textBoxValueNumber.Anchor =
+				((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+				                                       System.Windows.Forms.AnchorStyles.Left) |
+				                                      System.Windows.Forms.AnchorStyles.Right)));
+			this.textBoxValueNumber.Location = new System.Drawing.Point(233, 115);
 			this.textBoxValueNumber.Name = "textBoxValueNumber";
-			this.textBoxValueNumber.Size = new System.Drawing.Size(244, 20);
+			this.textBoxValueNumber.Size = new System.Drawing.Size(283, 23);
 			this.textBoxValueNumber.TabIndex = 8;
 			// 
 			// radioButtonValueUndefined
 			// 
 			this.radioButtonValueUndefined.AutoSize = true;
 			this.radioButtonValueUndefined.Checked = true;
-			this.radioButtonValueUndefined.Location = new System.Drawing.Point(100, 152);
+			this.radioButtonValueUndefined.Location = new System.Drawing.Point(117, 177);
 			this.radioButtonValueUndefined.Name = "radioButtonValueUndefined";
-			this.radioButtonValueUndefined.Size = new System.Drawing.Size(103, 17);
+			this.radioButtonValueUndefined.Size = new System.Drawing.Size(111, 19);
 			this.radioButtonValueUndefined.TabIndex = 11;
 			this.radioButtonValueUndefined.TabStop = true;
 			this.radioButtonValueUndefined.Text = "Undefined value";
 			this.radioButtonValueUndefined.UseVisualStyleBackColor = true;
-			this.radioButtonValueUndefined.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
+			this.radioButtonValueUndefined.CheckedChanged +=
+				new System.EventHandler(this.radioButtonValue_CheckedChanged);
 			// 
 			// radioButtonValueString
 			// 
 			this.radioButtonValueString.AutoSize = true;
-			this.radioButtonValueString.Location = new System.Drawing.Point(100, 126);
+			this.radioButtonValueString.Location = new System.Drawing.Point(117, 147);
 			this.radioButtonValueString.Name = "radioButtonValueString";
-			this.radioButtonValueString.Size = new System.Drawing.Size(81, 17);
+			this.radioButtonValueString.Size = new System.Drawing.Size(87, 19);
 			this.radioButtonValueString.TabIndex = 9;
 			this.radioButtonValueString.Text = "String value";
 			this.radioButtonValueString.UseVisualStyleBackColor = true;
@@ -146,64 +156,65 @@
 			// radioButtonValueNumber
 			// 
 			this.radioButtonValueNumber.AutoSize = true;
-			this.radioButtonValueNumber.Location = new System.Drawing.Point(100, 100);
+			this.radioButtonValueNumber.Location = new System.Drawing.Point(117, 117);
 			this.radioButtonValueNumber.Name = "radioButtonValueNumber";
-			this.radioButtonValueNumber.Size = new System.Drawing.Size(92, 17);
+			this.radioButtonValueNumber.Size = new System.Drawing.Size(100, 19);
 			this.radioButtonValueNumber.TabIndex = 7;
-			this.radioButtonValueNumber.Text = "Decimal value";
+			this.radioButtonValueNumber.Text = "Number value";
 			this.radioButtonValueNumber.UseVisualStyleBackColor = true;
 			this.radioButtonValueNumber.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
 			// 
 			// radioButtonValueBoolean
 			// 
 			this.radioButtonValueBoolean.AutoSize = true;
-			this.radioButtonValueBoolean.Location = new System.Drawing.Point(100, 74);
+			this.radioButtonValueBoolean.Location = new System.Drawing.Point(117, 87);
 			this.radioButtonValueBoolean.Name = "radioButtonValueBoolean";
-			this.radioButtonValueBoolean.Size = new System.Drawing.Size(93, 17);
+			this.radioButtonValueBoolean.Size = new System.Drawing.Size(99, 19);
 			this.radioButtonValueBoolean.TabIndex = 5;
 			this.radioButtonValueBoolean.TabStop = true;
 			this.radioButtonValueBoolean.Text = "Boolean value";
 			this.radioButtonValueBoolean.UseVisualStyleBackColor = true;
-			this.radioButtonValueBoolean.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
+			this.radioButtonValueBoolean.CheckedChanged +=
+				new System.EventHandler(this.radioButtonValue_CheckedChanged);
 			// 
-			// radioButtonValueArray
+			// radioButtonValueMap
 			// 
 			this.radioButtonValueMap.AutoSize = true;
-			this.radioButtonValueMap.Location = new System.Drawing.Point(100, 48);
-			this.radioButtonValueMap.Name = "radioButtonValueArray";
-			this.radioButtonValueMap.Size = new System.Drawing.Size(78, 17);
+			this.radioButtonValueMap.Location = new System.Drawing.Point(117, 57);
+			this.radioButtonValueMap.Name = "radioButtonValueMap";
+			this.radioButtonValueMap.Size = new System.Drawing.Size(80, 19);
 			this.radioButtonValueMap.TabIndex = 4;
 			this.radioButtonValueMap.TabStop = true;
-			this.radioButtonValueMap.Text = "Array value";
+			this.radioButtonValueMap.Text = "Map value";
 			this.radioButtonValueMap.UseVisualStyleBackColor = true;
 			this.radioButtonValueMap.CheckedChanged += new System.EventHandler(this.radioButtonValue_CheckedChanged);
 			// 
 			// labelContent
 			// 
 			this.labelContent.AutoSize = true;
-			this.labelContent.Location = new System.Drawing.Point(8, 50);
+			this.labelContent.Location = new System.Drawing.Point(9, 58);
 			this.labelContent.Name = "labelContent";
-			this.labelContent.Size = new System.Drawing.Size(76, 13);
+			this.labelContent.Size = new System.Drawing.Size(82, 15);
 			this.labelContent.TabIndex = 3;
-			this.labelContent.Text = "Value content:";
+			this.labelContent.Text = "Variable value:";
 			// 
 			// labelName
 			// 
 			this.labelName.AutoSize = true;
-			this.labelName.Location = new System.Drawing.Point(8, 24);
+			this.labelName.Location = new System.Drawing.Point(9, 28);
 			this.labelName.Name = "labelName";
-			this.labelName.Size = new System.Drawing.Size(66, 13);
+			this.labelName.Size = new System.Drawing.Size(84, 15);
 			this.labelName.TabIndex = 2;
-			this.labelName.Text = "Value name:";
+			this.labelName.Text = "Variable name:";
 			// 
 			// buttonAccept
 			// 
 			this.buttonAccept.Anchor = System.Windows.Forms.AnchorStyles.Top;
-			this.buttonAccept.Image = global::Cottle.Demo.Properties.Resources.button_accept;
+			this.buttonAccept.Image = global::Cottle.Demo.Resources.Glyph.button_accept;
 			this.buttonAccept.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonAccept.Location = new System.Drawing.Point(124, 178);
+			this.buttonAccept.Location = new System.Drawing.Point(144, 202);
 			this.buttonAccept.Name = "buttonAccept";
-			this.buttonAccept.Size = new System.Drawing.Size(100, 23);
+			this.buttonAccept.Size = new System.Drawing.Size(117, 30);
 			this.buttonAccept.TabIndex = 12;
 			this.buttonAccept.Text = "Insert";
 			this.buttonAccept.UseVisualStyleBackColor = true;
@@ -212,38 +223,37 @@
 			// NodeForm
 			// 
 			this.AcceptButton = this.buttonAccept;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(464, 218);
+			this.ClientSize = new System.Drawing.Size(541, 252);
 			this.Controls.Add(this.groupBox);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "NodeForm";
-			this.Padding = new System.Windows.Forms.Padding(5);
+			this.Padding = new System.Windows.Forms.Padding(6, 6, 6, 6);
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Value parameters";
+			this.Text = "Variable declaration";
 			this.groupBox.ResumeLayout(false);
 			this.groupBox.PerformLayout();
 			this.ResumeLayout(false);
-
 		}
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonAccept;
-		private System.Windows.Forms.TextBox textBoxName;
-		private System.Windows.Forms.GroupBox groupBox;
-		private System.Windows.Forms.Label labelContent;
-		private System.Windows.Forms.Label labelName;
-		private System.Windows.Forms.RadioButton radioButtonValueUndefined;
-		private System.Windows.Forms.RadioButton radioButtonValueString;
-		private System.Windows.Forms.RadioButton radioButtonValueNumber;
-		private System.Windows.Forms.RadioButton radioButtonValueBoolean;
-		private System.Windows.Forms.RadioButton radioButtonValueMap;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.TextBox textBoxValueString;
-		private System.Windows.Forms.TextBox textBoxValueNumber;
 		private System.Windows.Forms.CheckBox checkBoxValueBoolean;
+		private System.Windows.Forms.TextBox textBoxValueNumber;
+		private System.Windows.Forms.TextBox textBoxValueString;
+		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.RadioButton radioButtonValueMap;
+		private System.Windows.Forms.RadioButton radioButtonValueBoolean;
+		private System.Windows.Forms.RadioButton radioButtonValueNumber;
+		private System.Windows.Forms.RadioButton radioButtonValueString;
+		private System.Windows.Forms.RadioButton radioButtonValueUndefined;
+		private System.Windows.Forms.Label labelName;
+		private System.Windows.Forms.Label labelContent;
+		private System.Windows.Forms.GroupBox groupBox;
+		private System.Windows.Forms.TextBox textBoxName;
+		private System.Windows.Forms.Button buttonAccept;
 	}
 }

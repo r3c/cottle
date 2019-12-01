@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
     <StartupObject />
     <TargetFrameworks>net472</TargetFrameworks>
     <LangVersion>7.3</LangVersion>
@@ -11,6 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cottle\Cottle.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Resources.Extensions" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,10 +42,10 @@
     <Compile Update="NodeForm.Designer.cs">
       <DependentUpon>NodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Update="SettingForm.cs">
+    <Compile Update="ConfigurationForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="SettingForm.Designer.cs">
+    <Compile Update="ConfigurationForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -52,8 +57,8 @@
     <EmbeddedResource Update="NodeForm.resx">
       <DependentUpon>NodeForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="SettingForm.resx">
-      <DependentUpon>SettingForm.cs</DependentUpon>
+    <EmbeddedResource Update="ConfigurationForm.resx">
+      <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
 
@@ -61,17 +66,6 @@
     <None Include="autoload.ctv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\button_clean.png" />
-    <None Include="Resources\button_accept.png" />
-    <None Include="Resources\button_cancel.png" />
-    <None Include="Resources\button_submit.png" />
-    <None Include="Resources\menu_config.png" />
-    <None Include="Resources\menu_file_load.png" />
-    <None Include="Resources\menu_file_save.png" />
-    <None Include="Resources\menu_move_down.png" />
-    <None Include="Resources\menu_move_up.png" />
-    <None Include="Resources\menu_tree_collapse.png" />
-    <None Include="Resources\menu_tree_expand.png" />
   </ItemGroup>
 
 </Project>

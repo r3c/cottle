@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Cottle.Demo.Forms;
 
 namespace Cottle.Demo
 {
@@ -8,9 +9,9 @@ namespace Cottle.Demo
         [STAThread]
         private static void Main()
         {
-			Application.EnableVisualStyles ();
-			Application.SetCompatibleTextRenderingDefault (false);
-			Application.Run (new DemoForm ());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new DemoForm());
         }
     }
 }
