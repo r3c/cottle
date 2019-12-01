@@ -1,4 +1,9 @@
+---
+layout: default
+---
+
 MIT License
+===========
 
 Copyright (c) 2011 Remi Caput, http://remi.caput.fr/
 

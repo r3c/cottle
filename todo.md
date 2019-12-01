@@ -1,5 +1,9 @@
-Cottle TODO list
-================
+---
+layout: default
+---
+
+TODO list
+=========
 
 TODO
 ----
