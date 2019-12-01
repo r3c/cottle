@@ -1,13 +1,8 @@
-﻿using System.Text.RegularExpressions;
-
-namespace Cottle.Builtins
+﻿namespace Cottle.Builtins
 {
     public static class BuiltinTrimmers
     {
-        public static readonly Trimmer CollapseBlankCharacters =
-            text => BuiltinTrimmers.CollapseBlankCharactersRegex.Replace(text, " ");
-
-        private static readonly Regex CollapseBlankCharactersRegex = new Regex("\\s{2,}", RegexOptions.Multiline);
+        public static readonly Trimmer CollapseBlankCharacters = s => DocumentConfiguration.TrimRepeatedWhitespaces(s);
 
         public static readonly Trimmer FirstAndLastBlankLines = text =>
         {
@@ -46,27 +41,7 @@ namespace Cottle.Builtins
             return text;
         };
 
-        public static readonly Trimmer LeadAndTrailBlankCharacters = text =>
-        {
-            int index;
-
-            // Skip all leading blank characters
-            for (index = 0; index < text.Length && text[index] <= ' ';)
-                ++index;
-
-            var start = index;
-
-            // Skip all trailing blank characters
-            for (index = text.Length - 1; index >= 0 && text[index] <= ' ';)
-                --index;
-
-            var stop = index + 1;
-
-            // Select inner content if any, empty string else
-            if (start < stop)
-                return text.Substring(start, stop - start);
-
-            return string.Empty;
-        };
+        public static readonly Trimmer LeadAndTrailBlankCharacters =
+            s => DocumentConfiguration.TrimEnclosingWhitespaces(s);
     }
 }

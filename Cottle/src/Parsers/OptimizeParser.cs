@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Cottle.Parsers.Optimize.Optimizers;
 
 namespace Cottle.Parsers
@@ -12,9 +13,18 @@ namespace Cottle.Parsers
             _parser = parser;
         }
 
-        public Command Parse(TextReader reader)
+        public bool Parse(TextReader reader, out Command command, out IReadOnlyList<DocumentReport> reports)
         {
-            return RecursiveOptimizer.Instance.Optimize(_parser.Parse(reader));
+            if (!_parser.Parse(reader, out var original, out reports))
+            {
+                command = default;
+
+                return false;
+            }
+
+            command = RecursiveOptimizer.Instance.Optimize(original);
+
+            return true;
         }
     }
 }

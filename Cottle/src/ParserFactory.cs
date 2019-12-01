@@ -1,15 +1,21 @@
-﻿using Cottle.Parsers;
+﻿using System;
+using Cottle.Parsers;
 
 namespace Cottle
 {
     internal static class ParserFactory
     {
-        public static IParser BuildParser(ISetting setting)
+        public static IParser BuildParser(DocumentConfiguration configuration)
         {
-            IParser parser = new ForwardParser(setting.BlockBegin, setting.BlockContinue, setting.BlockEnd,
-                setting.Escape, setting.Trimmer);
+            var blockBegin = configuration.BlockBegin ?? DocumentConfiguration.DefaultBlockBegin;
+            var blockContinue = configuration.BlockContinue ?? DocumentConfiguration.DefaultBlockContinue;
+            var blockEnd = configuration.BlockEnd ?? DocumentConfiguration.DefaultBlockEnd;
+            var escape = configuration.Escape.GetValueOrDefault(DocumentConfiguration.DefaultEscape);
+            var trimmer = configuration.Trimmer ?? DocumentConfiguration.TrimIndentCharacters;
 
-            return setting.Optimize ? new OptimizeParser(parser) : parser;
+            IParser parser = new ForwardParser(blockBegin, blockContinue, blockEnd, escape, trimmer);
+
+            return configuration.NoOptimize ? parser : new OptimizeParser(parser);
         }
     }
 }

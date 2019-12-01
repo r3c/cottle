@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.IO;
+using System.Linq;
 using Cottle.Documents.Simple;
+using Cottle.Exceptions;
 using Cottle.Settings;
 using Cottle.Stores;
 
@@ -18,10 +20,16 @@ namespace Cottle.Documents
 
         public SimpleDocument(TextReader reader, ISetting setting)
         {
-            var parser = ParserFactory.BuildParser(setting);
-            var root = parser.Parse(reader);
+            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
 
-            _renderer = Compiler.Compile(root);
+            if (!parser.Parse(reader, out var command, out var reports))
+            {
+                var report = reports.Count > 0 ? reports[0] : new DocumentReport("unknown error", 0, 0);
+
+                throw new ParseException(report.Column, report.Line, report.Message);
+            }
+
+            _renderer = Compiler.Compile(command);
             _setting = setting;
         }
 

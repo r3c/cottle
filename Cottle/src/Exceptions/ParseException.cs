@@ -11,6 +11,13 @@ namespace Cottle.Exceptions
 
         public int Line { get; }
 
+        public ParseException(int column, int line, string message) :
+            base(message)
+        {
+            Column = column;
+            Line = line;
+        }
+
         public ParseException(int column, int line, string lexem, string expected) :
             base(string.Format(CultureInfo.InvariantCulture,
                 !string.IsNullOrEmpty(expected) ? "expected '{1}', found '{0}'" : "unexpected '{0}'", lexem, expected))

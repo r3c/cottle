@@ -1,9 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Cottle
 {
     internal interface IParser
     {
-        Command Parse(TextReader reader);
+        bool Parse(TextReader reader, out Command command, out IReadOnlyList<DocumentReport> reports);
     }
 }

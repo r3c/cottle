@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using Cottle.Documents.Dynamic;
+using Cottle.Exceptions;
 using Cottle.Settings;
 using Cottle.Stores;
 
@@ -14,13 +15,20 @@ namespace Cottle.Documents
     /// </summary>
     public sealed class DynamicDocument : AbstractDocument
     {
-        private readonly Function main;
+        private readonly Function _root;
 
         public DynamicDocument(TextReader reader, ISetting setting)
         {
-            var parser = ParserFactory.BuildParser(setting);
+            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
 
-            main = new Function(Enumerable.Empty<string>(), parser.Parse(reader));
+            if (!parser.Parse(reader, out var command, out var reports))
+            {
+                var firstReport = reports.Count > 0 ? reports[0] : new DocumentReport("unknown error", 0, 0);
+
+                throw new ParseException(firstReport.Column, firstReport.Line, firstReport.Message);
+            }
+
+            _root = new Function(Enumerable.Empty<string>(), command);
         }
 
         public DynamicDocument(TextReader reader) :
@@ -40,14 +48,21 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            return main.Execute(null, new ContextStore(context), writer);
+            return _root.Execute(null, new ContextStore(context), writer);
         }
 
         public static void Save(TextReader reader, ISetting setting, string assemblyName, string fileName)
         {
-            var parser = ParserFactory.BuildParser(setting);
+            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
 
-            Function.Save(parser.Parse(reader), setting.Trimmer, assemblyName, fileName);
+            if (!parser.Parse(reader, out var command, out var reports))
+            {
+                var firstReport = reports.Count > 0 ? reports[0] : new DocumentReport("unknown error", 0, 0);
+
+                throw new ParseException(firstReport.Column, firstReport.Line, firstReport.Message);
+            }
+
+            Function.Save(command, setting.Trimmer, assemblyName, fileName);
         }
     }
 }
