@@ -18,6 +18,7 @@ namespace Cottle.Documents
     {
         private readonly DynamicFunction _root;
 
+        [Obsolete("Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(TextReader reader, ISetting setting)
         {
             var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
@@ -32,16 +33,19 @@ namespace Cottle.Documents
             _root = new DynamicFunction(Enumerable.Empty<string>(), command);
         }
 
+        [Obsolete("Use `Document.CreateNative(template).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(TextReader reader) :
             this(reader, DefaultSetting.Instance)
         {
         }
 
+        [Obsolete("Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(string template, ISetting setting) :
             this(new StringReader(template), setting)
         {
         }
 
+        [Obsolete("Use `Document.CreateNative(template).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(string template) :
             this(new StringReader(template), DefaultSetting.Instance)
         {

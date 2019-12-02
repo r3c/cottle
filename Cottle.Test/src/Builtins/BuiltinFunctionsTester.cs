@@ -1,5 +1,4 @@
 ﻿using Cottle.Contexts;
-using Cottle.Documents;
 using NUnit.Framework;
 
 namespace Cottle.Test.Builtins
@@ -9,7 +8,7 @@ namespace Cottle.Test.Builtins
     {
         private static void AssertEqual(string expression, string expected)
         {
-            var document = new SimpleDocument("{eq(" + expression + ", " + expected + ")}");
+            var document = Document.CreateDefault($"{{({expression})=({expected})}}").DocumentOrThrow;
 
             Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo("true"), "'{0}' doesn't evaluate to '{1}'",
                 expression, expected);
@@ -17,7 +16,7 @@ namespace Cottle.Test.Builtins
 
         private static void AssertPrint(string expression, string expected)
         {
-            var document = new SimpleDocument("{echo " + expression + "}");
+            var document = Document.CreateDefault($"{{echo {expression}}}").DocumentOrThrow;
 
             Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo(expected), "'{0}' doesn't render to '{1}'",
                 expression, expected);

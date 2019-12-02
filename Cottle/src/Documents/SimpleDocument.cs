@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Cottle.Documents.Simple;
@@ -18,6 +19,7 @@ namespace Cottle.Documents
 
         private readonly ISetting _setting;
 
+        [Obsolete("Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(TextReader reader, ISetting setting)
         {
             var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
@@ -33,16 +35,19 @@ namespace Cottle.Documents
             _setting = setting;
         }
 
+        [Obsolete("Use `Document.CreateDefault(template).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(TextReader reader) :
             this(reader, DefaultSetting.Instance)
         {
         }
 
+        [Obsolete("Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(string template, ISetting setting) :
             this(new StringReader(template), setting)
         {
         }
 
+        [Obsolete("Use `Document.CreateDefault(template).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(string template) :
             this(new StringReader(template), DefaultSetting.Instance)
         {

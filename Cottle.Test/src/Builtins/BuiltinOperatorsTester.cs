@@ -1,5 +1,4 @@
 ﻿using Cottle.Contexts;
-using Cottle.Documents;
 using NUnit.Framework;
 
 namespace Cottle.Test.Builtins
@@ -9,7 +8,8 @@ namespace Cottle.Test.Builtins
     {
         private static void AssertResult(string expression, bool expected)
         {
-            var document = new SimpleDocument("{" + (expected ? "" : "!") + "(" + expression + ")}");
+            var document = Document.CreateDefault($"{{{(expected ? string.Empty : "!")}({expression})}}")
+                .DocumentOrThrow;
 
             Assert.That(document.Render(BuiltinContext.Instance), Is.EqualTo("true"));
         }
