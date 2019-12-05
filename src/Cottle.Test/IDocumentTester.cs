@@ -95,14 +95,14 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("var", "1", "1")]
-        [TestCase("_", "'A'", "\"A\"")]
-        [TestCase("some_symbol_name", "[]", "[]")]
-        public void CommandDeclareValueScope(string name, string value, string expected)
+        [TestCase("declare", "as")]
+        [TestCase("set", "to")]
+        public void CommandDeclareValueScope(string command, string suffix)
         {
-            AssertReturn(
-                "{declare f() as:{declare " + name + " as 'unused'}}{declare " + name + " as " + value +
-                "}{f()}{return " + name + "}", expected);
+            AssertReturn("{" + command + " f() " + suffix + ":{declare x as 'unused'}}" +
+                         "{" + command + " x " + suffix + " 42}" +
+                         "{f()}" +
+                         "{return x}", "42");
         }
 
         [Test]
@@ -206,6 +206,16 @@ namespace Cottle.Test
         public void RenderCommandSetFunctionReturn(string name, string body, string expected)
         {
             AssertReturn("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
+        }
+
+        [Test]
+        [TestCase("declare", "as")]
+        [TestCase("set", "to")]
+        public void RenderCommandSetFunctionScope(string command, string suffix)
+        {
+            AssertReturn("{" + command + " f(x) " + suffix + ":{return x}}" +
+                         "{" + command + " g(x) " + suffix + ":{return f(x)}}" +
+                         "{return g(17)}", "17");
         }
 
         [Test]
