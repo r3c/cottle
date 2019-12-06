@@ -9,7 +9,7 @@ namespace Cottle.Documents.Default
     {
         public static (IExecutor, IReadOnlyList<Value>, int) Compile(Command command)
         {
-            var state = new Allocator(new Dictionary<Value, int>(), true);
+            var state = new Allocator(new Dictionary<Value, int>());
             var node = Compiler.CompileCommand(command, state);
 
             return (node, state.GetGlobals(), state.GetLocalCount());
@@ -71,9 +71,7 @@ namespace Cottle.Documents.Default
 
                     allocator.EnterScope();
 
-                    var forKey = !string.IsNullOrEmpty(command.Key)
-                        ? (int?)allocator.DeclareAsLocal(command.Key)
-                        : null;
+                    var forKey = !string.IsNullOrEmpty(command.Key) ? (int?)allocator.DeclareAsLocal(command.Key) : null;
                     var forValue = allocator.DeclareAsLocal(command.Name);
 
                     var forBody = Compiler.CompileCommand(command.Body, allocator);

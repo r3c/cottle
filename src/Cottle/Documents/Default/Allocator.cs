@@ -7,14 +7,12 @@ namespace Cottle.Documents.Default
     {
         private readonly IDictionary<Value, int> _globals;
         private readonly IStore _locals;
-        private readonly bool _root;
         private int _unique;
 
-        public Allocator(IDictionary<Value, int> globals, bool root)
+        public Allocator(IDictionary<Value, int> globals)
         {
             _globals = globals;
             _locals = new SimpleStore();
-            _root = root;
             _unique = 0;
         }
 
@@ -32,7 +30,7 @@ namespace Cottle.Documents.Default
 
         public Allocator EnterFunction()
         {
-            return new Allocator(_globals, false);
+            return new Allocator(_globals);
         }
 
         public void EnterScope()
@@ -45,25 +43,25 @@ namespace Cottle.Documents.Default
             if (_locals.TryGet(name, out var local))
                 return new Symbol((int)local.AsNumber, StoreMode.Local);
 
-            if (mode == StoreMode.Global || _root)
+            int index;
+
+            if (mode == StoreMode.Global)
             {
-                if (!_globals.TryGetValue(name, out var index))
+                if (!_globals.TryGetValue(name, out index))
                 {
                     index = _globals.Count;
 
                     _globals[name] = index;
                 }
-
-                return new Symbol(index, StoreMode.Global);
             }
             else
             {
-                var index = _unique++;
+                index = _unique++;
 
                 _locals.Set(name, index, StoreMode.Local);
-
-                return new Symbol(index, StoreMode.Local);
             }
+
+            return new Symbol(index, mode);
         }
 
         public IReadOnlyList<Value> GetGlobals()

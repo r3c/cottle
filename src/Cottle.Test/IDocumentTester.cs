@@ -209,16 +209,6 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("declare", "as")]
-        [TestCase("set", "to")]
-        public void RenderCommandSetFunctionScope(string command, string suffix)
-        {
-            AssertReturn("{" + command + " f(x) " + suffix + ":{return x}}" +
-                         "{" + command + " g(x) " + suffix + ":{return f(x)}}" +
-                         "{return g(17)}", "17");
-        }
-
-        [Test]
         [TestCase("{while parent:{parent.value}{set parent to parent.child}}")]
         public void RenderCommandSetValueInLoop(string source)
         {
@@ -231,14 +221,14 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("var", "1", "1")]
-        [TestCase("_", "'A'", "\"A\"")]
-        [TestCase("some_symbol_name", "[]", "[]")]
-        public void RenderCommandSetValueScope(string name, string value, string expected)
+        [TestCase("define", "as", "default")]
+        [TestCase("set", "to", "override")]
+        public void RenderCommandSetValueScope(string command, string suffix, string expected)
         {
-            AssertReturn(
-                "{declare f() as:{set " + name + " to " + value + "}}{set " + name + " to 'default'}{f()}{return " +
-                name + "}", expected);
+            AssertRender("{declare f() as:{" + command + " x " + suffix + " 'override'}}" +
+                         "{set x to 'default'}" +
+                         "{f()}" +
+                         "{x}", expected);
         }
 
         [Test]
@@ -472,7 +462,7 @@ namespace Cottle.Test
             }
         }
 
-        private void AssertRender(string source, string expected)
+        protected void AssertRender(string source, string expected)
         {
             AssertRender(source, default, Context.Empty, expected);
         }
