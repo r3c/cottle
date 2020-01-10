@@ -202,7 +202,9 @@ namespace Cottle.Test.Contexts
 
         private static ISymbolUsage MonitorAndRender(string template, IContext backend, string expected)
         {
+#pragma warning disable 618
             var document = new SimpleDocument(template);
+#pragma warning restore 618
             var (context, usage) = Context.CreateMonitor(backend);
 
             Assert.That(document.Render(context), Is.EqualTo(expected));

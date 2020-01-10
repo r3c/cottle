@@ -17,7 +17,9 @@ namespace Cottle.Benchmark.Inputs
                 Document.CreateNative(TextReader.Null).DocumentOrThrow.GetType().Name,
                 s => Document.CreateDefault(s).DocumentOrThrow);
 
+#pragma warning disable 618
             yield return new Input<Func<string, IDocument>>(nameof(SimpleDocument), s => new SimpleDocument(s));
+#pragma warning restore 618
         }
     }
 }

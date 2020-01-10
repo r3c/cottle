@@ -22,7 +22,9 @@ namespace Cottle.Test.Documents
                 Trimmer = s => trimmer(s)
             };
 
+#pragma warning disable 618
             return DocumentResult.CreateSuccess(new DynamicDocument(template, settings));
+#pragma warning restore 618
         }
     }
 }

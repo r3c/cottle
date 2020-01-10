@@ -22,7 +22,9 @@ namespace Cottle.Test.Documents
         [TestCase("{while c:something}")]
         public void Source(string template, string expected = null)
         {
+#pragma warning disable 618
             var document = new SimpleDocument(template, new CustomSetting { Optimize = false });
+#pragma warning restore 618
 
             Assert.That(document.Source(), Is.EqualTo(expected ?? template));
         }
@@ -41,7 +43,9 @@ namespace Cottle.Test.Documents
                 Trimmer = s => trimmer(s)
             };
 
+#pragma warning disable 618
             return DocumentResult.CreateSuccess(new SimpleDocument(template, settings));
+#pragma warning restore 618
         }
     }
 }

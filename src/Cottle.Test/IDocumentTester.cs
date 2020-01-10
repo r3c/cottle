@@ -417,35 +417,35 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("", 45000)]
-        [TestCase("", 90000)]
-        [TestCase("", 200000)]
-        [TestCase("{foo}", 45000)]
-        [TestCase("{foo}", 90000)]
-        [TestCase("{foo}", 200000)]
-        public void TextTooLong(string variable, int characters)
+        [TestCase(false, 45000)]
+        [TestCase(false, 90000)]
+        [TestCase(false, 200000)]
+        [TestCase(true, 45000)]
+        [TestCase(true, 90000)]
+        [TestCase(true, 200000)]
+        public void TextTooLong(bool variable, int characters)
         {
             var builder = new StringBuilder();
-            var store = new SimpleStore();
 
             // Add some variables in the text to test a use case where we don't have only text
-            if (!string.IsNullOrEmpty(variable))
-                builder.Append(variable);
+            if (variable)
+                builder.Append("{foo}");
 
             builder.Append('a', characters);
 
             // Add some variables in the text to test a use case where we don't have only text
-            if (!string.IsNullOrEmpty(variable))
-                builder.Append(variable);
+            if (variable)
+                builder.Append("{foo}");
+
+            // Variable "foo" renders to itself
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                { "foo", "{foo}" }
+            });
 
             var input = builder.ToString();
 
-            store["foo"] = "{foo}";
-
-            var document = new SimpleDocument(input);
-            var output = document.Render(store);
-
-            Assert.That(output, Is.EqualTo(input));
+            AssertRender(input, default, context, input);
         }
 
         protected abstract DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration);
