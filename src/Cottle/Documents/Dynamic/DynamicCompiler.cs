@@ -96,7 +96,7 @@ namespace Cottle.Documents.Dynamic
             {
                 case CommandType.AssignFunction:
                     EmitLoadStore();
-                    EmitLoadValue(command.Name);
+                    EmitLoadValue(command.Key);
 
                     EmitLoadValue(new FunctionValue(new DynamicFunction(command.Arguments, command.Body)));
                     EmitStoreSetCall(command.Mode);
@@ -127,7 +127,7 @@ namespace Cottle.Documents.Dynamic
 
                     // Convert buffer into string and set to store
                     EmitLoadStore();
-                    EmitLoadValue(command.Name);
+                    EmitLoadValue(command.Key);
 
                     _generator.Emit(OpCodes.Ldloc, buffer);
                     _generator.Emit(OpCodes.Callvirt, DynamicResolver.Method<Func<StringWriter, string>>(w => w.ToString()));
@@ -148,7 +148,7 @@ namespace Cottle.Documents.Dynamic
                     _generator.Emit(OpCodes.Stloc, operand);
 
                     EmitLoadStore();
-                    EmitLoadValue(command.Name);
+                    EmitLoadValue(command.Key);
 
                     _generator.Emit(OpCodes.Ldloc, operand);
 
@@ -265,7 +265,7 @@ namespace Cottle.Documents.Dynamic
 
                     // Set current element value
                     EmitLoadStore();
-                    EmitLoadValue(command.Name);
+                    EmitLoadValue(command.Value);
 
                     _generator.Emit(OpCodes.Ldloca, pair);
                     _generator.Emit(OpCodes.Call,
@@ -334,7 +334,7 @@ namespace Cottle.Documents.Dynamic
                 case CommandType.Literal:
                     EmitLoadOutput();
 
-                    _generator.Emit(OpCodes.Ldstr, command.Text);
+                    _generator.Emit(OpCodes.Ldstr, command.Value);
 
                     EmitCallWriteString();
 

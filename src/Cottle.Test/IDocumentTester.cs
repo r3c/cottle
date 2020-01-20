@@ -147,6 +147,8 @@ namespace Cottle.Test
         [TestCase("'something'", "visible", "visible")]
         [TestCase("[]", "invisible", "")]
         [TestCase("[1, 2, 3]", "visible", "visible")]
+        [TestCase("1", "a|else:b", "a")]
+        [TestCase("0", "a|else:b", "b")]
         [TestCase("1", "a|elif 1:b|else:c", "a")]
         [TestCase("0", "a|elif 1:b|else:c", "b")]
         [TestCase("0", "a|elif 0:b|else:c", "c")]

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cottle.Documents.Default.Evaluators;
 using Cottle.Documents.Default.Executors;
@@ -21,15 +22,15 @@ namespace Cottle.Documents.Default
             {
                 case CommandType.AssignFunction:
                     var functionState = allocator.EnterFunction();
-                    var functionArguments = new int[command.Arguments.Length];
+                    var functionArguments = new int[command.Arguments.Count];
 
-                    for (var i = 0; i < command.Arguments.Length; ++i)
+                    for (var i = 0; i < command.Arguments.Count; ++i)
                         functionArguments[i] = functionState.DeclareAsLocal(command.Arguments[i]);
 
                     var functionBody = Compiler.CompileCommand(command.Body, functionState);
                     var localCount = functionState.GetLocalCount();
 
-                    var functionSymbol = allocator.FindOrDeclare(command.Name, command.Mode);
+                    var functionSymbol = allocator.FindOrDeclare(command.Key, command.Mode);
 
                     return new FunctionAssignExecutor(functionSymbol, localCount, functionArguments, functionBody);
 
@@ -40,13 +41,13 @@ namespace Cottle.Documents.Default
 
                     allocator.LeaveScope();
 
-                    var renderSymbol = allocator.FindOrDeclare(command.Name, command.Mode);
+                    var renderSymbol = allocator.FindOrDeclare(command.Key, command.Mode);
 
                     return new RenderAssignExecutor(renderSymbol, renderBody);
 
                 case CommandType.AssignValue:
                     var expression = Compiler.CompileExpression(command.Operand, allocator);
-                    var valueSymbol = allocator.FindOrDeclare(command.Name, command.Mode);
+                    var valueSymbol = allocator.FindOrDeclare(command.Key, command.Mode);
 
                     return new ValueAssignExecutor(valueSymbol, expression);
 
@@ -72,10 +73,10 @@ namespace Cottle.Documents.Default
                     allocator.EnterScope();
 
                     var forKey = !string.IsNullOrEmpty(command.Key) ? (int?)allocator.DeclareAsLocal(command.Key) : null;
-                    var forValue = allocator.DeclareAsLocal(command.Name);
+                    var forValue = allocator.DeclareAsLocal(command.Value);
 
                     var forBody = Compiler.CompileCommand(command.Body, allocator);
-                    var forEmpty = command.Next != null ? Compiler.CompileCommand(command.Next, allocator) : null;
+                    var forEmpty = command.Next.Type != CommandType.None ? Compiler.CompileCommand(command.Next, allocator) : null;
 
                     allocator.LeaveScope();
 
@@ -84,7 +85,7 @@ namespace Cottle.Documents.Default
                 case CommandType.If:
                     var ifBranches = new List<KeyValuePair<IEvaluator, IExecutor>>();
 
-                    for (; command != null && command.Type == CommandType.If; command = command.Next)
+                    for (; command.Type == CommandType.If; command = command.Next)
                     {
                         var condition = Compiler.CompileExpression(command.Operand, allocator);
 
@@ -99,7 +100,7 @@ namespace Cottle.Documents.Default
 
                     IExecutor ifFallback;
 
-                    if (command != null)
+                    if (command.Type != CommandType.None)
                     {
                         allocator.EnterScope();
 
@@ -113,7 +114,10 @@ namespace Cottle.Documents.Default
                     return new IfExecutor(ifBranches, ifFallback);
 
                 case CommandType.Literal:
-                    return new LiteralExecutor(command.Text);
+                    return new LiteralExecutor(command.Value);
+
+                case CommandType.None:
+                    return new LiteralExecutor(string.Empty);
 
                 case CommandType.Return:
                     return new ReturnExecutor(Compiler.CompileExpression(command.Operand, allocator));
@@ -130,7 +134,7 @@ namespace Cottle.Documents.Default
                     return new WhileExecutor(whileCondition, whileBody);
 
                 default:
-                    return new LiteralExecutor(string.Empty);
+                    throw new ArgumentOutOfRangeException(nameof(command));
             }
         }
 

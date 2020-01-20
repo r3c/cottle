@@ -12,16 +12,16 @@ namespace Cottle.Test.Parsers
         [Test]
         public void Parse_OptimizeAccess_FindSymbolFromConstantIndices()
         {
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateAccess(
-                Expression.CreateMap(new[]
-                {
-                    new ExpressionElement(Expression.CreateConstant(0),
-                        Expression.CreateSymbol("AAA")),
-                    new ExpressionElement(Expression.CreateConstant(1),
-                        Expression.CreateSymbol("BBB")),
-                    new ExpressionElement(Expression.CreateConstant(2),
-                        Expression.CreateSymbol("CCC"))
-                }),
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateAccess(Expression.CreateMap(
+                    new[]
+                    {
+                        new ExpressionElement(Expression.CreateConstant(0),
+                            Expression.CreateSymbol("AAA")),
+                        new ExpressionElement(Expression.CreateConstant(1),
+                            Expression.CreateSymbol("BBB")),
+                        new ExpressionElement(Expression.CreateConstant(2),
+                            Expression.CreateSymbol("CCC"))
+                    }),
                 Expression.CreateConstant(1)
             )));
 
@@ -33,16 +33,16 @@ namespace Cottle.Test.Parsers
         [Test]
         public void Parse_OptimizeAccess_FindVoidFromConstantIndices()
         {
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateAccess(
-                Expression.CreateMap(new[]
-                {
-                    new ExpressionElement(Expression.CreateConstant(0),
-                        Expression.CreateSymbol("AAA")),
-                    new ExpressionElement(Expression.CreateConstant(1),
-                        Expression.CreateSymbol("BBB")),
-                    new ExpressionElement(Expression.CreateConstant(2),
-                        Expression.CreateSymbol("CCC"))
-                }),
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateAccess(Expression.CreateMap(
+                    new[]
+                    {
+                        new ExpressionElement(Expression.CreateConstant(0),
+                            Expression.CreateSymbol("AAA")),
+                        new ExpressionElement(Expression.CreateConstant(1),
+                            Expression.CreateSymbol("BBB")),
+                        new ExpressionElement(Expression.CreateConstant(2),
+                            Expression.CreateSymbol("CCC"))
+                    }),
                 Expression.CreateConstant(3)
             )));
 
@@ -54,16 +54,16 @@ namespace Cottle.Test.Parsers
         [Test]
         public void Parse_OptimizeAccess_SkipFromVariableIndices()
         {
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateAccess(
-                Expression.CreateMap(new[]
-                {
-                    new ExpressionElement(Expression.CreateConstant(0),
-                        Expression.CreateSymbol("AAA")),
-                    new ExpressionElement(Expression.CreateConstant(1),
-                        Expression.CreateSymbol("BBB")),
-                    new ExpressionElement(Expression.CreateSymbol("x"),
-                        Expression.CreateSymbol("CCC"))
-                }), 
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateAccess(Expression.CreateMap(
+                    new[]
+                    {
+                        new ExpressionElement(Expression.CreateConstant(0),
+                            Expression.CreateSymbol("AAA")),
+                        new ExpressionElement(Expression.CreateConstant(1),
+                            Expression.CreateSymbol("BBB")),
+                        new ExpressionElement(Expression.CreateSymbol("x"),
+                            Expression.CreateSymbol("CCC"))
+                    }),
                 Expression.CreateConstant(3)
             )));
 
@@ -75,7 +75,7 @@ namespace Cottle.Test.Parsers
         public void Parse_OptimizeInvoke_CallPureFunction()
         {
             var function = Function.CreatePure2((state, a, b) => 3);
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateInvoke(
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateInvoke(
                 Expression.CreateConstant(new FunctionValue(function)), new[]
                 {
                     Expression.CreateConstant(1),
@@ -91,7 +91,7 @@ namespace Cottle.Test.Parsers
         public void Parse_OptimizeInvoke_SkipImpureFunction()
         {
             var function = Function.Create1((state, value, output) => VoidValue.Instance);
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateInvoke(
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateInvoke(
                 Expression.CreateConstant(new FunctionValue(function)), new[]
                 {
                     Expression.CreateConstant(1),
@@ -106,7 +106,7 @@ namespace Cottle.Test.Parsers
         public void Parse_OptimizeInvoke_SkipSymbolArgument()
         {
             var function = Function.CreatePure1((state, value) => VoidValue.Instance);
-            var command = OptimizeParserTester.Optimize(OptimizeParserTester.CreateCommandEcho(Expression.CreateInvoke(
+            var command = OptimizeParserTester.Optimize(Command.CreateEcho(Expression.CreateInvoke(
                 Expression.CreateConstant(new FunctionValue(function)), new[]
                 {
                     Expression.CreateConstant(1),
@@ -115,11 +115,6 @@ namespace Cottle.Test.Parsers
 
             Assert.That(command.Type, Is.EqualTo(CommandType.Echo));
             Assert.That(command.Operand.Type, Is.EqualTo(ExpressionType.Invoke));
-        }
-
-        private static Command CreateCommandEcho(Expression operand)
-        {
-            return new Command { Operand = operand, Type = CommandType.Echo };
         }
 
         private static Command Optimize(Command command)

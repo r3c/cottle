@@ -114,12 +114,12 @@ namespace Cottle.Parsers
 
         private bool TryCreateDump(out Command command, out IEnumerable<DocumentReport> reports)
         {
-            return TryParseCommandOperand(CommandType.Dump, out command, out reports);
+            return TryParseCommandOperand(Command.CreateDump, out command, out reports);
         }
 
         private bool TryCreateEcho(out Command command, out IEnumerable<DocumentReport> reports)
         {
-            return TryParseCommandOperand(CommandType.Echo, out command, out reports);
+            return TryParseCommandOperand(Command.CreateEcho, out command, out reports);
         }
 
         private bool TryCreateFor(out Command command, out IEnumerable<DocumentReport> reports)
@@ -179,15 +179,7 @@ namespace Cottle.Parsers
             else
                 empty = null;
 
-            command = new Command
-            {
-                Body = body,
-                Key = key,
-                Name = value,
-                Next = empty,
-                Operand = source,
-                Type = CommandType.For
-            };
+            command = Command.CreateFor(key, value, source, body, empty);
             reports = default;
 
             return true;
@@ -203,14 +195,13 @@ namespace Cottle.Parsers
                 return false;
             }
 
-            var first = new Command
-            {
-                Body = ifBody,
-                Operand = ifCondition,
-                Type = CommandType.If
-            };
+            var branches = new List<(Expression, Command)>();
+            var final = Command.NoOp;
+            var next = true;
 
-            for (var current = first; current.Next == null && _lexer.Current.Type == LexemType.BlockContinue; )
+            branches.Add((ifCondition, ifBody));
+
+            while (next && _lexer.Current.Type == LexemType.BlockContinue)
             {
                 _lexer.NextBlock();
 
@@ -227,14 +218,7 @@ namespace Cottle.Parsers
                             return false;
                         }
 
-                        current.Next = new Command
-                        {
-                            Body = elifBody,
-                            Operand = elifCondition,
-                            Type = CommandType.If
-                        };
-
-                        current = current.Next;
+                        branches.Add((elifCondition, elifBody));
 
                         break;
 
@@ -248,7 +232,8 @@ namespace Cottle.Parsers
                             return false;
                         }
 
-                        current.Next = elseBody;
+                        final = elseBody;
+                        next = false;
 
                         break;
 
@@ -260,7 +245,10 @@ namespace Cottle.Parsers
                 }
             }
 
-            command = first;
+            for (var i = branches.Count - 1; i >= 0; --i)
+                final = Command.CreateIf(branches[i].Item1, branches[i].Item2, final);
+
+            command = final;
             reports = default;
 
             return true;
@@ -268,7 +256,7 @@ namespace Cottle.Parsers
 
         private bool TryCreateReturn(out Command command, out IEnumerable<DocumentReport> reports)
         {
-            return TryParseCommandOperand(CommandType.Return, out command, out reports);
+            return TryParseCommandOperand(Command.CreateReturn, out command, out reports);
         }
 
         private bool TryCreateSet(out Command command, out IEnumerable<DocumentReport> reports)
@@ -286,12 +274,7 @@ namespace Cottle.Parsers
                 return false;
             }
 
-            command = new Command
-            {
-                Body = body,
-                Operand = condition,
-                Type = CommandType.While
-            };
+            command = Command.CreateWhile(condition, body);
 
             return true;
         }
@@ -341,26 +324,14 @@ namespace Cottle.Parsers
                 // Arguments were defined, build function assignment
                 if (arguments != null)
                 {
-                    command = new Command
-                    {
-                        Arguments = arguments.ToArray(),
-                        Mode = mode,
-                        Name = name,
-                        Type = CommandType.AssignFunction
-                    };
+                    command = Command.CreateAssignFunction(name, arguments, mode, Command.NoOp);
                     reports = default;
 
                     return true;
                 }
 
                 // Arguments where not defined, build value assignment
-                command = new Command
-                {
-                    Mode = mode,
-                    Name = name,
-                    Operand = Expression.Void,
-                    Type = CommandType.AssignValue
-                };
+                command = Command.CreateAssignValue(name, mode, Expression.Void);
                 reports = default;
 
                 return true;
@@ -403,14 +374,7 @@ namespace Cottle.Parsers
                     return false;
                 }
 
-                command = new Command
-                {
-                    Arguments = arguments.ToArray(),
-                    Body = body,
-                    Mode = mode,
-                    Name = name,
-                    Type = CommandType.AssignFunction
-                };
+                command = Command.CreateAssignFunction(name, arguments, mode, body);
 
                 return true;
             }
@@ -425,13 +389,7 @@ namespace Cottle.Parsers
                     return false;
                 }
 
-                command = new Command
-                {
-                    Body = body,
-                    Mode = mode,
-                    Name = name,
-                    Type = CommandType.AssignRender
-                };
+                command = Command.CreateAssignRender(name, mode, body);
 
                 return true;
             }
@@ -446,21 +404,14 @@ namespace Cottle.Parsers
 
             _lexer.NextRaw();
 
-            command = new Command
-            {
-                Mode = mode,
-                Name = name,
-                Operand = operand,
-                Type = CommandType.AssignValue
-            };
+            command = Command.CreateAssignValue(name, mode, operand);
 
             return true;
         }
 
         private bool TryParseCommand(out Command command, out IEnumerable<DocumentReport> reports)
         {
-            Command head = null;
-            Command tail = null;
+            var commands = new List<Command>();
 
             while
             (
@@ -469,9 +420,7 @@ namespace Cottle.Parsers
                 _lexer.Current.Type != LexemType.EndOfFile
             )
             {
-                // Parse next block or exit loop
-                Command current;
-
+                // Parse next command or exit loop
                 switch (_lexer.Current.Type)
                 {
                     case LexemType.BlockBegin:
@@ -488,7 +437,7 @@ namespace Cottle.Parsers
                                 p.TryCreateEcho(out c, out f);
                         }
 
-                        if (!parse(this, out current, out reports))
+                        if (!parse(this, out var blockCommand, out reports))
                         {
                             command = default;
 
@@ -503,16 +452,16 @@ namespace Cottle.Parsers
                             return false;
                         }
 
+                        // Ignore empty commands
+                        if (blockCommand != null)
+                            commands.Add(blockCommand);
+
                         _lexer.NextRaw();
 
                         break;
 
                     case LexemType.Text:
-                        current = new Command
-                        {
-                            Text = _trimmer(_lexer.Current.Value),
-                            Type = CommandType.Literal
-                        };
+                        commands.Add(Command.CreateLiteral(_trimmer(_lexer.Current.Value)));
 
                         _lexer.NextRaw();
 
@@ -524,29 +473,22 @@ namespace Cottle.Parsers
 
                         return false;
                 }
-
-                // Ignore empty blocks
-                if (current == null)
-                    continue;
-
-                // Chain current block to parent
-                if (tail != null)
-                {
-                    tail.Next = new Command { Body = tail.Next, Next = current, Type = CommandType.Composite };
-                    tail = tail.Next;
-                }
-                else if (head != null)
-                {
-                    tail = new Command { Body = head, Next = current, Type = CommandType.Composite };
-                    head = tail;
-                }
-                else
-                {
-                    head = current;
-                }
             }
 
-            command = head ?? new Command { Text = string.Empty, Type = CommandType.Literal };
+            if (commands.Count < 1)
+                command = Command.NoOp;
+            else if (commands.Count == 1)
+                command = commands[0];
+            else
+            {
+                var composite = commands[commands.Count - 1];
+
+                for (var i = commands.Count - 2; i >= 0; --i)
+                    composite = Command.CreateComposite(commands[i], composite);
+
+                command = composite;
+            }
+
             reports = default;
 
             return true;
@@ -567,7 +509,7 @@ namespace Cottle.Parsers
             return TryParseCommand(out command, out reports);
         }
 
-        private bool TryParseCommandOperand(CommandType type, out Command command,
+        private bool TryParseCommandOperand(Func<Expression, Command> constructor, out Command command,
             out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var operand, out reports))
@@ -579,11 +521,7 @@ namespace Cottle.Parsers
 
             _lexer.NextRaw();
 
-            command = new Command
-            {
-                Operand = operand,
-                Type = type
-            };
+            command = constructor(operand);
 
             return true;
         }

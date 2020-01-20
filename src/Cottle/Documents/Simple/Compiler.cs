@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cottle.Documents.Simple.Evaluators;
 using Cottle.Documents.Simple.Nodes;
@@ -17,14 +18,14 @@ namespace Cottle.Documents.Simple
             switch (command.Type)
             {
                 case CommandType.AssignFunction:
-                    return new FunctionAssignNode(command.Name, command.Arguments,
+                    return new FunctionAssignNode(command.Key, command.Arguments,
                         Compiler.CompileCommand(command.Body), command.Mode);
 
                 case CommandType.AssignRender:
-                    return new RenderAssignNode(command.Name, Compiler.CompileCommand(command.Body), command.Mode);
+                    return new RenderAssignNode(command.Key, Compiler.CompileCommand(command.Body), command.Mode);
 
                 case CommandType.AssignValue:
-                    return new ValueAssignNode(command.Name, Compiler.CompileExpression(command.Operand), command.Mode);
+                    return new ValueAssignNode(command.Key, Compiler.CompileExpression(command.Operand), command.Mode);
 
                 case CommandType.Composite:
                     var nodes = new List<INode>();
@@ -43,14 +44,14 @@ namespace Cottle.Documents.Simple
                     return new EchoNode(Compiler.CompileExpression(command.Operand));
 
                 case CommandType.For:
-                    return new ForNode(Compiler.CompileExpression(command.Operand), command.Key, command.Name,
+                    return new ForNode(Compiler.CompileExpression(command.Operand), command.Key, command.Value,
                         Compiler.CompileCommand(command.Body),
                         command.Next != null ? Compiler.CompileCommand(command.Next) : null);
 
                 case CommandType.If:
                     var branches = new List<KeyValuePair<IEvaluator, INode>>();
 
-                    for (; command != null && command.Type == CommandType.If; command = command.Next)
+                    for (; command.Type == CommandType.If; command = command.Next)
                     {
                         var condition = Compiler.CompileExpression(command.Operand);
                         var body = Compiler.CompileCommand(command.Body);
@@ -58,10 +59,15 @@ namespace Cottle.Documents.Simple
                         branches.Add(new KeyValuePair<IEvaluator, INode>(condition, body));
                     }
 
-                    return new IfNode(branches, command != null ? Compiler.CompileCommand(command) : null);
+                    var fallback = command.Type != CommandType.None ? Compiler.CompileCommand(command) : null;
+
+                    return new IfNode(branches, fallback);
 
                 case CommandType.Literal:
-                    return new LiteralNode(command.Text);
+                    return new LiteralNode(command.Value);
+
+                case CommandType.None:
+                    return new LiteralNode(string.Empty);
 
                 case CommandType.Return:
                     return new ReturnNode(Compiler.CompileExpression(command.Operand));
@@ -71,7 +77,7 @@ namespace Cottle.Documents.Simple
                         Compiler.CompileCommand(command.Body));
 
                 default:
-                    return new LiteralNode(string.Empty);
+                    throw new ArgumentOutOfRangeException(nameof(command));
             }
         }
 
@@ -111,7 +117,7 @@ namespace Cottle.Documents.Simple
                     return new SymbolEvaluator(expression.Value);
 
                 default:
-                    return VoidEvaluator.Instance;
+                    throw new ArgumentOutOfRangeException(nameof(expression));
             }
         }
     }

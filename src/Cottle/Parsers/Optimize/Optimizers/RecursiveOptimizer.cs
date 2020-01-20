@@ -118,16 +118,47 @@ namespace Cottle.Parsers.Optimize.Optimizers
             foreach (var optimizer in _optimizers)
                 command = optimizer.Optimize(command);
 
-            if (command.Body != null)
-                command.Body = Optimize(command.Body);
+            switch (command.Type)
+            {
+                case CommandType.AssignFunction:
+                    return Command.CreateAssignFunction(command.Key, command.Arguments, command.Mode,
+                        Optimize(command.Body));
 
-            if (command.Next != null)
-                command.Next = Optimize(command.Next);
+                case CommandType.AssignRender:
+                    return Command.CreateAssignRender(command.Key, command.Mode, Optimize(command.Body));
 
-            if (command.Operand != null)
-                command.Operand = Optimize(command.Operand);
+                case CommandType.AssignValue:
+                    return Command.CreateAssignValue(command.Key, command.Mode, Optimize(command.Operand));
 
-            return command;
+                case CommandType.Composite:
+                    return Command.CreateComposite(Optimize(command.Body), Optimize(command.Next));
+
+                case CommandType.Dump:
+                    return Command.CreateDump(Optimize(command.Operand));
+
+                case CommandType.Echo:
+                    return Command.CreateEcho(Optimize(command.Operand));
+
+                case CommandType.For:
+                    return Command.CreateFor(command.Key, command.Value, Optimize(command.Operand),
+                        Optimize(command.Body), Optimize(command.Next));
+
+                case CommandType.If:
+                    return Command.CreateIf(Optimize(command.Operand), Optimize(command.Body), Optimize(command.Next));
+
+                case CommandType.Literal:
+                case CommandType.None:
+                    return command;
+
+                case CommandType.Return:
+                    return Command.CreateReturn(Optimize(command.Operand));
+
+                case CommandType.While:
+                    return Command.CreateWhile(Optimize(command.Operand), Optimize(command.Body));
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(command));
+            }
         }
 
         public Expression Optimize(Expression expression)
