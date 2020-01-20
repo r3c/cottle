@@ -15,46 +15,26 @@ namespace Cottle.Parsers
 
         private static readonly Dictionary<string, ParseKeyword> Keywords = new Dictionary<string, ParseKeyword>
         {
-            {
-                "_",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateComment(out c, out f)
-            },
-            {
-                "declare",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateDeclare(out c, out f)
-            },
-            {
-                "define",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateSet(out c, out f)
-            },
-            {
-                "dump",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateDump(out c, out f)
-            },
-            {
-                "echo",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateEcho(out c, out f)
-            },
-            {
-                "for",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateFor(out c, out f)
-            },
-            {
-                "if",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateIf(out c, out f)
-            },
-            {
-                "return",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateReturn(out c, out f)
-            },
-            {
-                "set",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateSet(out c, out f)
-            },
-            {
-                "while",
-                (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) => p.TryCreateWhile(out c, out f)
-            }
+            ["_"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateComment(out c, out f),
+            ["declare"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateDeclare(out c, out f),
+            ["define"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateSet(out c, out f),
+            ["dump"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateDump(out c, out f),
+            ["echo"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateEcho(out c, out f),
+            ["for"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateFor(out c, out f),
+            ["if"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateIfThen(out c, out f),
+            ["return"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateReturn(out c, out f),
+            ["set"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateSet(out c, out f),
+            ["while"] = (ForwardParser p, out Command c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateWhile(out c, out f)
         };
 
         private readonly Lexer _lexer;
@@ -185,7 +165,7 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryCreateIf(out Command command, out IEnumerable<DocumentReport> reports)
+        private bool TryCreateIfThen(out Command command, out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var ifCondition, out reports) ||
                 !TryParseCommandBody(out var ifBody, out reports))
