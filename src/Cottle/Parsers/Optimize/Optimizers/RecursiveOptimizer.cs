@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Stores;
+using Cottle.Values;
 
 namespace Cottle.Parsers.Optimize.Optimizers
 {
@@ -10,33 +11,75 @@ namespace Cottle.Parsers.Optimize.Optimizers
     {
         public static readonly IOptimizer Instance = new RecursiveOptimizer(new[]
         {
-            // Evaluate constant invoke expressions using pure functions
+            // Fold constant access expressions into constant expressions
             new DelegateOptimizer(expression =>
             {
-                if (!(expression.Type == ExpressionType.Invoke &&
-                      Array.TrueForAll(expression.Arguments, RecursiveOptimizer.IsConstant) &&
-                      RecursiveOptimizer.IsConstant(expression.Source) &&
-                      expression.Source.Value.Type == ValueContent.Function))
+                if (!(expression.Type == ExpressionType.Access &&
+                      expression.Subscript.Type == ExpressionType.Constant))
                     return expression;
 
-                using (var writer = new StringWriter())
-                {
-                    var arguments = expression.Arguments.Select(a => a.Value).ToList();
-                    var value = expression.Source.Value;
+                var subscript = expression.Subscript.Value;
 
-                    return new Expression
-                    {
-                        Type = ExpressionType.Constant,
-                        Value = value.AsFunction.Invoke(new SimpleStore(), arguments, writer)
-                    };
+                switch (expression.Source.Type)
+                {
+                    case ExpressionType.Constant:
+                        return new Expression
+                        {
+                            Type = ExpressionType.Constant,
+                            Value = expression.Source.Value.Fields[subscript]
+                        };
+
+                    case ExpressionType.Map:
+                        var unresolved = false;
+
+                        foreach (var element in expression.Source.Elements)
+                        {
+                            if (element.Key.Type != ExpressionType.Constant)
+                                unresolved = true;
+                            else if (element.Key.Value == subscript)
+                                return element.Value;
+                        }
+
+                        return unresolved
+                            ? expression
+                            : new Expression
+                            {
+                                Type = ExpressionType.Constant,
+                                Value = VoidValue.Instance
+                            };
+
+                    default:
+                        return expression;
                 }
             }),
 
-            // Converts constant map expressions to constant expressions
+            // Evaluate constant invoke expressions on pure functions into constant expressions
+            new DelegateOptimizer(expression =>
+            {
+                if (!(expression.Type == ExpressionType.Invoke &&
+                      expression.Source.Type == ExpressionType.Constant &&
+                      expression.Source.Value.Type == ValueContent.Function &&
+                      expression.Source.Value.AsFunction.IsPure &&
+                      Array.TrueForAll(expression.Arguments, argument => argument.Type == ExpressionType.Constant)))
+                    return expression;
+
+                var arguments = expression.Arguments.Select(a => a.Value).ToList();
+                var value = expression.Source.Value;
+
+                return new Expression
+                {
+                    Type = ExpressionType.Constant,
+                    Value = value.AsFunction.Invoke(new SimpleStore(), arguments, TextWriter.Null)
+                };
+            }),
+
+            // Fold constant map expressions into constant expressions
             new DelegateOptimizer(expression =>
             {
                 if (!(expression.Type == ExpressionType.Map &&
-                      Array.TrueForAll(expression.Elements, RecursiveOptimizer.IsConstant)))
+                      Array.TrueForAll(expression.Elements,
+                          element => element.Key.Type == ExpressionType.Constant &&
+                                     element.Value.Type == ExpressionType.Constant)))
                     return expression;
 
                 var pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];
@@ -79,28 +122,6 @@ namespace Cottle.Parsers.Optimize.Optimizers
                 return command;
             })
         });
-
-        private static bool IsConstant(Expression expression)
-        {
-            if (expression.Type != ExpressionType.Constant)
-                return false;
-
-            var value = expression.Value;
-
-            switch (value.Type)
-            {
-                case ValueContent.Function:
-                    return value.AsFunction.IsPure;
-
-                default:
-                    return true;
-            }
-        }
-
-        private static bool IsConstant(ExpressionElement element)
-        {
-            return RecursiveOptimizer.IsConstant(element.Key) && RecursiveOptimizer.IsConstant(element.Value);
-        }
 
         private readonly IEnumerable<IOptimizer> _optimizers;
 
