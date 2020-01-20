@@ -89,16 +89,9 @@ namespace Cottle.Parsers
 
         private static Expression BuildInvoke(IFunction function, params Expression[] arguments)
         {
-            return new Expression
-            {
-                Arguments = arguments,
-                Source = new Expression
-                {
-                    Type = ExpressionType.Constant,
-                    Value = new FunctionValue(function)
-                },
-                Type = ExpressionType.Invoke
-            };
+            var source = Expression.CreateConstant(new FunctionValue(function));
+
+            return Expression.CreateInvoke(source, arguments);
         }
 
         private bool TryCreateComment(out Command command, out IEnumerable<DocumentReport> reports)
@@ -365,7 +358,7 @@ namespace Cottle.Parsers
                 {
                     Mode = mode,
                     Name = name,
-                    Operand = Expression.Empty,
+                    Operand = Expression.Void,
                     Type = CommandType.AssignValue
                 };
                 reports = default;
@@ -794,7 +787,7 @@ namespace Cottle.Parsers
                         }
                         else
                         {
-                            key = new Expression { Type = ExpressionType.Constant, Value = index++ };
+                            key = Expression.CreateConstant(index++);
                             value = element;
                         }
 
@@ -804,11 +797,7 @@ namespace Cottle.Parsers
                             _lexer.NextBlock();
                     }
 
-                    expression = new Expression
-                    {
-                        Elements = elements.ToArray(),
-                        Type = ExpressionType.Map
-                    };
+                    expression = Expression.CreateMap(elements);
 
                     _lexer.NextBlock();
 
@@ -824,11 +813,7 @@ namespace Cottle.Parsers
                         return false;
                     }
 
-                    var minusLhs = new Expression
-                    {
-                        Type = ExpressionType.Constant,
-                        Value = 0
-                    };
+                    var minusLhs = Expression.CreateConstant(0);
 
                     expression = ForwardParser.BuildInvoke(BuiltinOperators.OperatorSub, minusLhs, minusRhs);
                     reports = default;
@@ -840,11 +825,7 @@ namespace Cottle.Parsers
                         out var number))
                         number = 0;
 
-                    expression = new Expression
-                    {
-                        Type = ExpressionType.Constant,
-                        Value = number
-                    };
+                    expression = Expression.CreateConstant(number);
 
                     _lexer.NextBlock();
 
@@ -875,22 +856,14 @@ namespace Cottle.Parsers
                     return TryParseValue(out expression, out reports);
 
                 case LexemType.String:
-                    expression = new Expression
-                    {
-                        Type = ExpressionType.Constant,
-                        Value = _lexer.Current.Value
-                    };
+                    expression = Expression.CreateConstant(_lexer.Current.Value);
 
                     _lexer.NextBlock();
 
                     break;
 
                 case LexemType.Symbol:
-                    expression = new Expression
-                    {
-                        Type = ExpressionType.Symbol,
-                        Value = _lexer.Current.Value
-                    };
+                    expression = Expression.CreateSymbol(_lexer.Current.Value);
 
                     _lexer.NextBlock();
 
@@ -922,12 +895,7 @@ namespace Cottle.Parsers
 
                         _lexer.NextBlock();
 
-                        expression = new Expression
-                        {
-                            Source = expression,
-                            Subscript = subscript,
-                            Type = ExpressionType.Access
-                        };
+                        expression = Expression.CreateAccess(expression, subscript);
 
                         break;
 
@@ -941,16 +909,8 @@ namespace Cottle.Parsers
                             return false;
                         }
 
-                        expression = new Expression
-                        {
-                            Source = expression,
-                            Subscript = new Expression
-                            {
-                                Type = ExpressionType.Constant,
-                                Value = _lexer.Current.Value
-                            },
-                            Type = ExpressionType.Access
-                        };
+                        expression =
+                            Expression.CreateAccess(expression, Expression.CreateConstant(_lexer.Current.Value));
 
                         _lexer.NextBlock();
 
@@ -972,12 +932,7 @@ namespace Cottle.Parsers
 
                         _lexer.NextBlock();
 
-                        expression = new Expression
-                        {
-                            Arguments = arguments.ToArray(),
-                            Source = expression,
-                            Type = ExpressionType.Invoke
-                        };
+                        expression = Expression.CreateInvoke(expression, arguments);
 
                         break;
 

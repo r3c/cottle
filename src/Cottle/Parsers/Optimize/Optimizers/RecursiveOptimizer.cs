@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cottle.Stores;
+using Cottle.Contexts;
 using Cottle.Values;
 
 namespace Cottle.Parsers.Optimize.Optimizers
@@ -23,11 +22,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
                 switch (expression.Source.Type)
                 {
                     case ExpressionType.Constant:
-                        return new Expression
-                        {
-                            Type = ExpressionType.Constant,
-                            Value = expression.Source.Value.Fields[subscript]
-                        };
+                        return Expression.CreateConstant(expression.Source.Value.Fields[subscript]);
 
                     case ExpressionType.Map:
                         var unresolved = false;
@@ -40,13 +35,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
                                 return element.Value;
                         }
 
-                        return unresolved
-                            ? expression
-                            : new Expression
-                            {
-                                Type = ExpressionType.Constant,
-                                Value = VoidValue.Instance
-                            };
+                        return unresolved ? expression : Expression.CreateConstant(VoidValue.Instance);
 
                     default:
                         return expression;
@@ -60,41 +49,34 @@ namespace Cottle.Parsers.Optimize.Optimizers
                       expression.Source.Type == ExpressionType.Constant &&
                       expression.Source.Value.Type == ValueContent.Function &&
                       expression.Source.Value.AsFunction.IsPure &&
-                      Array.TrueForAll(expression.Arguments, argument => argument.Type == ExpressionType.Constant)))
+                      expression.Arguments.All(argument => argument.Type == ExpressionType.Constant)))
                     return expression;
 
                 var arguments = expression.Arguments.Select(a => a.Value).ToList();
-                var value = expression.Source.Value;
+                var source = expression.Source.Value;
+                var result = source.AsFunction.Invoke(EmptyContext.Instance, arguments, TextWriter.Null);
 
-                return new Expression
-                {
-                    Type = ExpressionType.Constant,
-                    Value = value.AsFunction.Invoke(new SimpleStore(), arguments, TextWriter.Null)
-                };
+                return Expression.CreateConstant(result);
             }),
 
             // Fold constant map expressions into constant expressions
             new DelegateOptimizer(expression =>
             {
                 if (!(expression.Type == ExpressionType.Map &&
-                      Array.TrueForAll(expression.Elements,
-                          element => element.Key.Type == ExpressionType.Constant &&
-                                     element.Value.Type == ExpressionType.Constant)))
+                      expression.Elements.All(element =>
+                          element.Key.Type == ExpressionType.Constant &&
+                          element.Value.Type == ExpressionType.Constant)))
                     return expression;
 
-                var pairs = new KeyValuePair<Value, Value>[expression.Elements.Length];
+                var pairs = new KeyValuePair<Value, Value>[expression.Elements.Count];
 
-                for (var i = expression.Elements.Length; i-- > 0;)
+                for (var i = expression.Elements.Count; i-- > 0;)
                 {
                     pairs[i] = new KeyValuePair<Value, Value>(expression.Elements[i].Key.Value,
                         expression.Elements[i].Value.Value);
                 }
 
-                return new Expression
-                {
-                    Type = ExpressionType.Constant,
-                    Value = pairs
-                };
+                return Expression.CreateConstant(pairs);
             }),
 
             // Simplify "if" command with constant conditions
@@ -152,33 +134,40 @@ namespace Cottle.Parsers.Optimize.Optimizers
             foreach (var optimizer in _optimizers)
                 expression = optimizer.Optimize(expression);
 
-            if (expression.Arguments != null)
+            switch (expression.Type)
             {
-                for (var i = 0; i < expression.Arguments.Length; ++i)
-                {
-                    var argument = expression.Arguments[i];
+                case ExpressionType.Access:
+                    return Expression.CreateAccess(Optimize(expression.Source), Optimize(expression.Subscript));
 
-                    expression.Arguments[i] = Optimize(argument);
-                }
+                case ExpressionType.Constant:
+                    return Expression.CreateConstant(expression.Value);
+
+                case ExpressionType.Invoke:
+                    var arguments = new Expression[expression.Arguments.Count];
+
+                    for (var i = 0; i < expression.Arguments.Count; ++i)
+                        arguments[i] = Optimize(expression.Arguments[i]);
+
+                    return Expression.CreateInvoke(Optimize(expression.Source), arguments);
+
+                case ExpressionType.Map:
+                    var elements = new ExpressionElement[expression.Elements.Count];
+
+                    for (var i = 0; i < expression.Elements.Count; ++i)
+                    {
+                        var element = expression.Elements[i];
+
+                        elements[i] = new ExpressionElement(Optimize(element.Key), Optimize(element.Value));
+                    }
+
+                    return Expression.CreateMap(elements);
+
+                case ExpressionType.Symbol:
+                    return Expression.CreateSymbol(expression.Value);
+
+                default:
+                    return Expression.Void;
             }
-
-            if (expression.Elements != null)
-            {
-                for (var i = 0; i < expression.Elements.Length; ++i)
-                {
-                    var element = expression.Elements[i];
-
-                    expression.Elements[i] = new ExpressionElement(Optimize(element.Key), Optimize(element.Value));
-                }
-            }
-
-            if (expression.Source != null)
-                expression.Source = Optimize(expression.Source);
-
-            if (expression.Subscript != null)
-                expression.Subscript = Optimize(expression.Subscript);
-
-            return expression;
         }
     }
 }

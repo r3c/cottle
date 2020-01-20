@@ -468,7 +468,7 @@ namespace Cottle.Documents.Dynamic
                     _generator.Emit(OpCodes.Brfalse, failure);
 
                     // Create array to store evaluated values
-                    _generator.Emit(OpCodes.Ldc_I4, expression.Arguments.Length);
+                    _generator.Emit(OpCodes.Ldc_I4, expression.Arguments.Count);
                     _generator.Emit(OpCodes.Newarr, typeof(Value));
 
                     arguments = LocalReserve<Value[]>();
@@ -476,7 +476,7 @@ namespace Cottle.Documents.Dynamic
                     _generator.Emit(OpCodes.Stloc, arguments);
 
                     // Evaluate arguments and store into array
-                    for (var i = 0; i < expression.Arguments.Length; ++i)
+                    for (var i = 0; i < expression.Arguments.Count; ++i)
                     {
                         CompileExpression(expression.Arguments[i]);
 
@@ -526,7 +526,7 @@ namespace Cottle.Documents.Dynamic
 
                 case ExpressionType.Map:
                     // Create array to store evaluated pairs
-                    _generator.Emit(OpCodes.Ldc_I4, expression.Elements.Length);
+                    _generator.Emit(OpCodes.Ldc_I4, expression.Elements.Count);
                     _generator.Emit(OpCodes.Newarr, typeof(KeyValuePair<Value, Value>));
 
                     arguments = LocalReserve<KeyValuePair<Value, Value>[]>();
@@ -537,7 +537,7 @@ namespace Cottle.Documents.Dynamic
                     var constructor = DynamicResolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
                         new KeyValuePair<Value, Value>(k, v));
 
-                    for (var i = 0; i < expression.Elements.Length; ++i)
+                    for (var i = 0; i < expression.Elements.Count; ++i)
                     {
                         CompileExpression(expression.Elements[i].Key);
 

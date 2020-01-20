@@ -1,22 +1,58 @@
-﻿namespace Cottle
+﻿using System.Collections.Generic;
+
+namespace Cottle
 {
     internal class Expression
     {
-        public static readonly Expression Empty = new Expression
+        public static Expression CreateAccess(Expression source, Expression subscript)
         {
-            Type = ExpressionType.Void
-        };
+            return new Expression(ExpressionType.Access, default, default, source, subscript, default);
+        }
 
-        public Expression[] Arguments;
+        public static Expression CreateConstant(Value value)
+        {
+            return new Expression(ExpressionType.Constant, default, default, default, default, value);
+        }
 
-        public ExpressionElement[] Elements;
+        public static Expression CreateInvoke(Expression source, IReadOnlyList<Expression> arguments)
+        {
+            return new Expression(ExpressionType.Invoke, arguments, default, source, default, default);
+        }
 
-        public Expression Source;
+        public static Expression CreateMap(IReadOnlyList<ExpressionElement> elements)
+        {
+            return new Expression(ExpressionType.Map, default, elements, default, default, default);
+        }
 
-        public Expression Subscript;
+        public static Expression CreateSymbol(Value value)
+        {
+            return new Expression(ExpressionType.Symbol, default, default, default, default, value);
+        }
 
-        public ExpressionType Type;
+        public static readonly Expression Void = new Expression(ExpressionType.Void, default, default, default, default,
+            default);        
 
-        public Value Value;
+        public readonly IReadOnlyList<Expression> Arguments;
+
+        public readonly IReadOnlyList<ExpressionElement> Elements;
+
+        public readonly Expression Source;
+
+        public readonly Expression Subscript;
+
+        public readonly ExpressionType Type;
+
+        public readonly Value Value;
+
+        private Expression(ExpressionType type, IReadOnlyList<Expression> arguments,
+            IReadOnlyList<ExpressionElement> elements, Expression source, Expression subscript, Value value)
+        {
+            Arguments = arguments;
+            Elements = elements;
+            Source = source;
+            Subscript = subscript;
+            Type = type;
+            Value = value;
+        }
     }
 }

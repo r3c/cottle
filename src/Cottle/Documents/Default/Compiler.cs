@@ -146,7 +146,7 @@ namespace Cottle.Documents.Default
                     return new ConstantEvaluator(expression.Value);
 
                 case ExpressionType.Invoke:
-                    var arguments = new IEvaluator[expression.Arguments.Length];
+                    var arguments = new IEvaluator[expression.Arguments.Count];
 
                     for (var i = 0; i < arguments.Length; ++i)
                         arguments[i] = Compiler.CompileExpression(expression.Arguments[i], allocator);
@@ -154,7 +154,7 @@ namespace Cottle.Documents.Default
                     return new InvokeEvaluator(Compiler.CompileExpression(expression.Source, allocator), arguments);
 
                 case ExpressionType.Map:
-                    var elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Length];
+                    var elements = new KeyValuePair<IEvaluator, IEvaluator>[expression.Elements.Count];
 
                     for (var i = 0; i < elements.Length; ++i)
                     {
