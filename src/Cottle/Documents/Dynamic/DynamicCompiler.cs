@@ -602,10 +602,8 @@ namespace Cottle.Documents.Dynamic
 
                     break;
 
-                case ExpressionType.Void:
-                    EmitLoadVoid();
-
-                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(expression));
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -166,7 +167,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
                     return Expression.CreateSymbol(expression.Value);
 
                 default:
-                    return Expression.Void;
+                    throw new ArgumentOutOfRangeException(nameof(expression));
             }
         }
     }

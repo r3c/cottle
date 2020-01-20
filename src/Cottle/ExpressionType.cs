@@ -6,7 +6,6 @@
         Constant,
         Invoke,
         Map,
-        Symbol,
-        Void
+        Symbol
     }
 }
