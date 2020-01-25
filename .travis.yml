@@ -1,13 +1,15 @@
 language: csharp
+mono: none
+
 solution: src/Cottle.sln
 
 matrix:
   include:
     - os: linux
-      dist: trusty
-      dotnet: 2.1.502
+      dist: bionic
+      dotnet: 3.1
 
 script:
   - dotnet restore src/Cottle.sln
   - dotnet build src/Cottle/Cottle.csproj -c Release -f netstandard2.0
-  - dotnet test src/Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp2.0
+  - dotnet test src/Cottle.Test/Cottle.Test.csproj -c Release -f netcoreapp3.1
