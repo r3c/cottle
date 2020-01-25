@@ -8,17 +8,17 @@ using Cottle.Benchmark.Inputs;
 
 namespace Cottle.Benchmark.Benchmarks
 {
-    public class DocumentRenderBenchmark
+    public class CottleBenchmark
     {
-        [ParamsSource(nameof(DocumentRenderBenchmark.GetConstructors))]
+        [ParamsSource(nameof(CottleBenchmark.GetConstructors))]
         public Input<Func<string, IDocument>> Constructor;
 
-        [ParamsSource(nameof(DocumentRenderBenchmark.GetTemplates))]
+        [ParamsSource(nameof(CottleBenchmark.GetTemplates))]
         public Input<string> Template;
 
-        public static IEnumerable<Input<Func<string, IDocument>>> GetConstructors => DocumentInput.Get();
+        public static IEnumerable<Input<Func<string, IDocument>>> GetConstructors => CottleDocument.Inputs;
 
-        public static IEnumerable<Input<string>> GetTemplates => TemplateInput.Get();
+        public static IEnumerable<Input<string>> GetTemplates => CottleTemplate.Inputs;
 
         private IDocument _document;
 
@@ -35,9 +35,15 @@ namespace Cottle.Benchmark.Benchmarks
         }
 
         [Benchmark]
-        public void Execute()
+        public void Create()
         {
-            _document.Render(DocumentRenderBenchmark.Context);
+            Constructor.Value(Template.Value);
+        }
+
+        [Benchmark]
+        public void Render()
+        {
+            _document.Render(CottleBenchmark.Context);
         }
 
         [GlobalSetup]
