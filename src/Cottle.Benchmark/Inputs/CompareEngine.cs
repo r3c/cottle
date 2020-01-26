@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DotLiquid;
+using Fluid;
+using Fluid.Values;
 using RazorLight;
 using RazorLight.Razor;
 using Scriban;
@@ -85,27 +87,78 @@ namespace Cottle.Benchmark.Inputs
   {% for product in products %}
     <li>
       <h2>{{ product.name }}</h2>
-      <p>{{ product.description | slice: 0, 15 }} - Only {{ product.price }}$</p>
+      <p>{{ product.description | slice: 0, 15 }} - Only {{ product.price | tostring: ""f1"", ""en-US"" }}$</p>
     </li>
   {% endfor %}
 </ul>";
 
-                var context = Hash.FromAnonymousObject(new
+                var renderParameters = new RenderParameters(CultureInfo.InvariantCulture)
                 {
-                    products = CompareEngine.Products.Select(p => new Dictionary<string, object>
+                    Filters = new[] { typeof(DotLiquidFilter) }, LocalVariables = Hash.FromAnonymousObject(new
                     {
-                        ["description"] = p.Description, ["name"] = p.Name,
-                        ["price"] = p.Price.ToString("f1", CultureInfo.GetCultureInfo("en-US"))
-                    }).ToArray()
-                });
+                        products = CompareEngine.Products.Select(p => new Dictionary<string, object>
+                        {
+                            ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
+                        }).ToArray()
+                    })
+                };
 
                 return () =>
                 {
                     var template = DotLiquid.Template.Parse(source);
 
+                    return () => template.Render(renderParameters);
+                };
+            }),
+
+            // Render template with Fluid
+            new Input<Func<Func<Func<string>>>>(nameof(Fluid), () =>
+            {
+                const string source = @"
+<ul id='products'>
+  {% for product in products %}
+    <li>
+      <h2>{{ product.Name }}</h2>
+      <p>{{ product.Description | safeslice: 0, 15 }} - Only {{ product.Price | tostring: ""f1"", ""en-US"" }}$</p>
+    </li>
+  {% endfor %}
+</ul>";
+
+                var context = new Fluid.TemplateContext();
+
+                // Copy of "slice" filter with added missing safety check on length and no support for negative start
+                context.Filters.AddFilter("safeslice", (input, arguments, _) =>
+                {
+                    var inputString = input.ToStringValue();
+                    var rawStart = Convert.ToInt32(arguments.At(0).ToNumberValue());
+                    var rawLength = Convert.ToInt32(arguments.At(1).ToNumberValue());
+
+                    var safeStart = Math.Min(rawStart, inputString.Length);
+                    var safeLength = Math.Min(rawLength, inputString.Length - safeStart);
+
+                    return new StringValue(inputString.Substring(safeStart, safeLength));
+                });
+
+                // Formatting filter from floating point value to string
+                context.Filters.AddFilter("tostring", (input, arguments, _) =>
+                {
+                    var format = arguments.At(0).ToStringValue();
+                    var culture = CultureInfo.GetCultureInfo(arguments.At(1).ToStringValue());
+
+                    return new StringValue(input.ToNumberValue().ToString(format, culture));
+                });
+
+                context.MemberAccessStrategy.Register<Product>();
+                context.SetValue("products", CompareEngine.Products);
+
+                return () =>
+                {
+                    if (!BaseFluidTemplate<FluidTemplate>.TryParse(source, out var template, out var messages))
+                        throw new ArgumentOutOfRangeException(nameof(source), string.Join(", ", messages));
+
                     return () => template.Render(context);
                 };
-            }), 
+            }),
 
             // Render template with Mustachio
             new Input<Func<Func<Func<string>>>>(nameof(Mustachio), () =>
@@ -206,6 +259,14 @@ namespace Cottle.Benchmark.Inputs
             public string Description;
             public float Price;
             public string Name;
+        }
+
+        public static class DotLiquidFilter
+        {
+            public static string Tostring(float input, string format, string culture)
+            {
+                return input.ToString(format, CultureInfo.GetCultureInfo(culture));
+            }
         }
 
         private class StringRazorLightProject : RazorLightProject
