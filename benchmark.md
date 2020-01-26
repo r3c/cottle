@@ -12,13 +12,11 @@ library.
 
 **Parsing** benchmark measures the time needed to transform a template stored
 as a string into an in-memory object that can be passed input data for
-rendering. This part is usually the most costly as it involves text
-tokenization and a few internal optimizations.
+rendering. This part is usually the most time consuming, which is why result
+should be cached by client application.
 
 **Rendering** benchmark measures the time needed to render a parsed template
-into a string output, taking variable input data at render time. This part is
-expected to be as fast as possible to improve overall performance when parsed
-templates are cached by client application.
+into a string output, taking variable input data at render time.
 
 Same template source code was used for both benchmarks and adapted to every
 template engine library. Here is the Cottle version of this source code:
@@ -149,10 +147,10 @@ Discussion
 ==========
 
 Template parsing time in Cottle can be greatly reduced by
-[disabling these optimizations](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
-but this feature implies a higher rendering cost. Optimizations were kept
-enabled for this benchmark in order to maintain a fair comparaison with other
-libraries that don't provide similar feature.
+[disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
+but implies a higher rendering cost. Optimizations were kept enabled for this
+benchmark in order to maintain a fair comparaison with other libraries that
+don't provide similar feature.
 
 Mustachio is missing required floating point number formatting feature (used
 for rendering product price as a string using en-US locale) and therefore
