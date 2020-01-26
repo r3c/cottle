@@ -1,5 +1,6 @@
 ---
 layout: default
+title: Cottle - High performance & lightweight template library for .NET
 ---
 
 <div style="text-align: center;">

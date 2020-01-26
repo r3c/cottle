@@ -1,5 +1,6 @@
 ---
 layout: default
+title: Cottle - Benchmark
 ---
 
 Methodology
@@ -27,7 +28,7 @@ template engine library. Here is the Cottle version of this source code:
   {for product in products:
     <li>
       <h2>{product.name}</h2>
-      <p>{slice(product.description, 0, 15)} - Only {format(product.price, ""n:f1"", ""en-US"")}$</p>
+      <p>{slice(product.description, 0, 15)} - Only {format(product.price, "n:f1", "en-US")}$</p>
     </li>
   }
 </ul>
@@ -49,7 +50,7 @@ Template engines compared in this benchmark are:
 Result
 ======
 
-Here is a chart version of benchmark obtained on following configuration:
+Benchmark was performed on following configuration:
 
 ```
 BenchmarkDotNet=v0.12.0, OS=Windows 10.0.18362
@@ -58,6 +59,8 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
   [Host]     : .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), X64 RyuJIT
   DefaultJob : .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), X64 RyuJIT
 ```
+
+Here is a chart version of benchmark results:
 
 <div style="display: flex; justify-content: space-evenly;">
     <canvas id="create" width="400" height="480"></canvas>
@@ -103,18 +106,18 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
 
         // Build charts
         var charts = [{
-            element: 'create',
+            element: document.getElementById('create'),
             extract: b => b.Create.value,
             label: 'Parsing time',
             shift: 0
         }, {
-            element: 'render',
+            element: document.getElementById('render'),
             extract: b => b.Render.value,
             label: 'Rendering time',
             shift: 0.05
         }];
 
-        charts.forEach(chart => new Chart(document.getElementById(chart.element).getContext('2d'), {
+        charts.forEach(chart => new Chart(chart.element.getContext('2d'), {
             type: 'bar',
             data: {
                 labels: Object.keys(benchmarks),
