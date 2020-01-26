@@ -19,7 +19,10 @@ Overview
 ========
 
 Cottle is an open-source (MIT) templating engine for C# .NET designed to be
-light, fast and extensible. Cottle language and C# API look like this:
+light (no external dependency & simple API), fast (see
+[benchmark](./benchmark.html)) and extensible (see
+[advanced features](https://cottle.readthedocs.io/en/stable/page/05-advanced.html)).
+Cottle language and C# API look like this:
 
 ```sh
 {library} is a great library to {["discover", "learn", "use"][rand(0, 3)]}!
@@ -39,15 +42,19 @@ Cottle is a great library to learn!
 ```
 
 
-Documentation
-=============
+Getting started
+===============
 
-Documentation is available at [Read the Docs](https://cottle.readthedocs.io/)
-and explains how to use the library with many code snippets and examples.
+[User documentation](https://cottle.readthedocs.io/) is available at Read the
+Docs and explains how to use the library with many code snippets and examples.
+
+[Performance benchmark](./benchmark.html) against similar libraries shows how
+Cottle performs compared to other equivalent template engines.
 
 
 License
 =======
 
 This project is open-source, released under MIT licence. See
-[license page](./license.html) for details.
+[license page](https://github.com/r3c/cottle/blob/master/license.md) for
+details.
