@@ -20,9 +20,9 @@ Sample
 Hello, {name}!
 
 {if len(messages) > 0:
-	You have {len(messages)} new message{if len(messages) > 1:s} in your mailbox!
+    You have {len(messages)} new message{if len(messages) > 1:s} in your mailbox!
 |else:
-	You have no new message.
+    You have no new message.
 }
 ```
 
@@ -31,7 +31,7 @@ var document = Document.CreateDefault(template).DocumentOrThrow;
 
 return document.Render(Context.CreateBuiltin(new Dictionary<Value, Value>
 {
-	["messages"] = GetMessages(),
+    ["messages"] = GetMessages(),
     ["name"] = new Value[]
 }));
 ```
