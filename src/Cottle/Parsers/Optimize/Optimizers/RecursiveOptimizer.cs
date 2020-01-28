@@ -18,25 +18,26 @@ namespace Cottle.Parsers.Optimize.Optimizers
                       expression.Subscript.Type == ExpressionType.Constant))
                     return expression;
 
+                var source = expression.Source;
                 var subscript = expression.Subscript.Value;
 
-                switch (expression.Source.Type)
+                switch (source.Type)
                 {
                     case ExpressionType.Constant:
-                        return Expression.CreateConstant(expression.Source.Value.Fields[subscript]);
+                        return Expression.CreateConstant(source.Value.Fields[subscript]);
 
                     case ExpressionType.Map:
-                        var unresolved = false;
+                        var impure = false;
 
-                        foreach (var element in expression.Source.Elements)
+                        foreach (var element in source.Elements)
                         {
-                            if (element.Key.Type != ExpressionType.Constant)
-                                unresolved = true;
-                            else if (element.Key.Value == subscript)
+                            if (!RecursiveOptimizer.IsPure(element.Key) || !RecursiveOptimizer.IsPure(element.Value))
+                                impure = true;
+                            else if (element.Key.Type == ExpressionType.Constant && element.Key.Value == subscript)
                                 return element.Value;
                         }
 
-                        return unresolved ? expression : Expression.CreateConstant(VoidValue.Instance);
+                        return impure ? expression : Expression.CreateConstant(VoidValue.Instance);
 
                     default:
                         return expression;
@@ -47,20 +48,25 @@ namespace Cottle.Parsers.Optimize.Optimizers
             new DelegateOptimizer(expression =>
             {
                 if (!(expression.Type == ExpressionType.Invoke &&
-                      expression.Source.Type == ExpressionType.Constant &&
-                      expression.Source.Value.Type == ValueContent.Function &&
-                      expression.Source.Value.AsFunction.IsPure &&
+                      expression.Source.Type == ExpressionType.Constant))
+                    return expression;
+
+                var source = expression.Source.Value;
+
+                if (source.Type != ValueContent.Function)
+                    return Expression.Void;
+
+                if (!(source.AsFunction.IsPure &&
                       expression.Arguments.All(argument => argument.Type == ExpressionType.Constant)))
                     return expression;
 
                 var arguments = expression.Arguments.Select(a => a.Value).ToList();
-                var source = expression.Source.Value;
                 var result = source.AsFunction.Invoke(EmptyContext.Instance, arguments, TextWriter.Null);
 
                 return Expression.CreateConstant(result);
             }),
 
-            // Fold constant map expressions into constant expressions
+            // Fold map of constant expressions into constant map expression
             new DelegateOptimizer(expression =>
             {
                 if (!(expression.Type == ExpressionType.Map &&
@@ -73,8 +79,9 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
                 for (var i = expression.Elements.Count; i-- > 0;)
                 {
-                    pairs[i] = new KeyValuePair<Value, Value>(expression.Elements[i].Key.Value,
-                        expression.Elements[i].Value.Value);
+                    var element = expression.Elements[i];
+
+                    pairs[i] = new KeyValuePair<Value, Value>(element.Key.Value, element.Value.Value);
                 }
 
                 return Expression.CreateConstant(pairs);
@@ -105,6 +112,33 @@ namespace Cottle.Parsers.Optimize.Optimizers
                 return command;
             })
         });
+
+        private static bool IsPure(Expression expression)
+        {
+            switch (expression.Type)
+            {
+                case ExpressionType.Access:
+                    return RecursiveOptimizer.IsPure(expression.Source) &&
+                           RecursiveOptimizer.IsPure(expression.Subscript);
+
+                case ExpressionType.Constant:
+                    return expression.Value.Type != ValueContent.Function || expression.Value.AsFunction.IsPure;
+
+                case ExpressionType.Invoke:
+                    return RecursiveOptimizer.IsPure(expression.Source) &&
+                           expression.Arguments.All(RecursiveOptimizer.IsPure);
+
+                case ExpressionType.Map:
+                    return expression.Elements.All(element =>
+                        RecursiveOptimizer.IsPure(element.Key) && RecursiveOptimizer.IsPure(element.Value));
+
+                case ExpressionType.Symbol:
+                    return true;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(expression));
+            }
+        }
 
         private readonly IEnumerable<IOptimizer> _optimizers;
 
