@@ -157,7 +157,7 @@ namespace Cottle.Parsers
                 }
             }
             else
-                empty = null;
+                empty = Command.NoOp;
 
             command = Command.CreateFor(key, value, source, body, empty);
             reports = default;
