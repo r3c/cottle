@@ -46,7 +46,7 @@ namespace Cottle.Documents.Simple
                 case CommandType.For:
                     return new ForNode(Compiler.CompileExpression(command.Operand), command.Key, command.Value,
                         Compiler.CompileCommand(command.Body),
-                        command.Next != null ? Compiler.CompileCommand(command.Next) : null);
+                        command.Next.Type != CommandType.None ? Compiler.CompileCommand(command.Next) : null);
 
                 case CommandType.If:
                     var branches = new List<KeyValuePair<IEvaluator, INode>>();
