@@ -61,7 +61,7 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
 
 Here is a chart version of benchmark results:
 
-<div style="display: flex; justify-content: space-evenly;">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
     <canvas id="create" width="400" height="480"></canvas>
     <canvas id="render" width="400" height="480"></canvas>
 </div>
