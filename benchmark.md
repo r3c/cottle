@@ -6,6 +6,9 @@ title: Cottle - Benchmark
 Methodology
 ===========
 
+Benchmark contents
+---
+
 This page contains parsing and rendering benchmark of Cottle compared to other
 template engines, using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
 library.
@@ -36,12 +39,14 @@ Template is then rendered with an input context built with an array of 5 items
 as the `products` variable. Full benchmark source code can be found
 [here](https://github.com/r3c/cottle/blob/master/src/Cottle.Benchmark/Inputs/CompareEngine.cs).
 
-Template engines compared in this benchmark are:
 
-- Cottle v1.6.0 (see details in [Discussion](#discussion) section)
+Template engines
+---
+
+- Cottle v1.6.0 (see discussion [about Cottle](#about-cottle))
 - Fluid v1.0.0-beta9634
 - DotLiquid v2.0.314
-- Mustachio v2.1.0 (see details in [Discussion](#discussion) section)
+- Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
 - RazorLight v2.0.0-beta4
 - Scriban v2.1.1
 
@@ -49,7 +54,8 @@ Template engines compared in this benchmark are:
 Result
 ======
 
-Benchmark was performed on following configuration:
+Benchmark configuration
+---
 
 ```
 BenchmarkDotNet=v0.12.0, OS=Windows 10.0.18362
@@ -59,7 +65,9 @@ Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cor
   DefaultJob : .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), X64 RyuJIT
 ```
 
-Here is a chart version of benchmark results:
+
+Benchmark scores
+---
 
 <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
     <canvas id="create" width="400" height="480"></canvas>
@@ -147,14 +155,24 @@ Here is a chart version of benchmark results:
 Discussion
 ==========
 
-Template parsing time in Cottle can be greatly reduced by
-[disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
-but implies a higher rendering cost. Optimizations were kept enabled for this
-benchmark in order to maintain a fair comparaison with other libraries that
-don't provide similar feature.
+About Cottle
+---
 
-Mustachio doesn't support function calls required for formatting price data
-from a floating point value to a string, and therefore can't have a source code
-1:1 equivalent to reference version. Formatting was pre-applied in C# code
-here, resulting in an apparent slight performance boost due to this processing
-not being considered as part of the measurement.
+Both parsing and rendering time can be significantly improved with Cottle:
+
+* Parsing time can be reduced by [disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation) but implies a higher rendering cost
+* Rendering time can be reduced by [using native documents](https://cottle.readthedocs.io/en/latest/page/06-api.html#method-Cottle.Document.CreateNative) but implies a higher compilation cost
+
+Default document and configuration was used for this benchmark.
+
+
+About Mustachio
+---
+
+Function calls could not be adapted to Mustachio benchmark due to the
+logic-less approach of the library. These functions were however required for
+formatting price floating point values to strings, so source code for Mustachio
+is not a 1:1 equivalent to the reference version. Formatting was pre-applied in
+C# code instead, resulting in an artificial slight performance boost in favor
+of Mustachio due to this processing not being considered as part of the
+measurement.
