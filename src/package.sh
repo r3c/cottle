@@ -10,4 +10,4 @@ if [ -z "$version" ]; then
 	exit 1
 fi
 
-dotnet pack -c Release "$base/Cottle/Cottle.csproj"
+dotnet pack -c Release "$base"/Cottle
