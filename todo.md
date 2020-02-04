@@ -4,10 +4,10 @@ TODO list
 TODO
 ----
 
-- Sample `include` function available in documentation
+- Implement compile-time variable resolution for `NativeDocument`
 - New syntax with {{ }} default separators & multiple statements support
 - Value type replacement of `Value` class
-- Value type replacement of `ISetting` interface
+- Sample `include` function available in documentation
 
 DONE
 ----
@@ -17,3 +17,4 @@ DONE
 - Optimize string and value storage lookup (Cottle.Documents.Dynamic.Compiler)
 - Write "return" optimizer (Cottle.Parsers.Post.Optimizers.ReturnOptimizer)
 - Reduce .maxstack size in dynamic documents (Cottle.Documents.Dynamic.Compiler)
+- Value type replacement of `ISetting` interface
