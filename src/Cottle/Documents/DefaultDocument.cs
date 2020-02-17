@@ -29,7 +29,7 @@ namespace Cottle.Documents
             for (var i = 0; i < _globals.Count; ++i)
                 globals[i] = context[_globals[i]];
 
-            _executor.Execute(new Stack(globals, _localCount), writer, out var result);
+            _executor.Execute(new Frame(globals, _localCount), writer, out var result);
 
             return result;
         }

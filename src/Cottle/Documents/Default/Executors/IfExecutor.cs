@@ -17,16 +17,16 @@ namespace Cottle.Documents.Default.Executors
 
         private readonly IExecutor _fallback;
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
             foreach (var branch in _branches)
             {
-                if (branch.Key.Evaluate(stack, output).AsBoolean)
-                    return branch.Value.Execute(stack, output, out result);
+                if (branch.Key.Evaluate(frame, output).AsBoolean)
+                    return branch.Value.Execute(frame, output, out result);
             }
 
             if (_fallback != null)
-                return _fallback.Execute(stack, output, out result);
+                return _fallback.Execute(frame, output, out result);
 
             result = VoidValue.Instance;
 

@@ -24,24 +24,24 @@ namespace Cottle.Documents.Default.Executors
             _value = value;
         }
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            var fields = _from.Evaluate(stack, output).Fields;
+            var fields = _from.Evaluate(frame, output).Fields;
 
             if (fields.Count > 0)
             {
                 foreach (var pair in fields)
                 {
                     if (_key.HasValue)
-                        stack.Locals[_key.Value] = pair.Key;
+                        frame.Locals[_key.Value] = pair.Key;
 
-                    stack.Locals[_value] = pair.Value;
+                    frame.Locals[_value] = pair.Value;
 
-                    if (_body.Execute(stack, output, out result))
+                    if (_body.Execute(frame, output, out result))
                         return true;
                 }
             }
-            else if (_empty != null && _empty.Execute(stack, output, out result))
+            else if (_empty != null && _empty.Execute(frame, output, out result))
                 return true;
 
             result = VoidValue.Instance;

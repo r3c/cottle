@@ -14,12 +14,12 @@ namespace Cottle.Documents.Default.Evaluators
             _elements = elements.ToArray();
         }
 
-        public Value Evaluate(Stack stack, TextWriter writer)
+        public Value Evaluate(Frame frame, TextWriter writer)
         {
             return new MapValue(_elements.Select(element =>
             {
-                var key = element.Key.Evaluate(stack, writer);
-                var value = element.Value.Evaluate(stack, writer);
+                var key = element.Key.Evaluate(frame, writer);
+                var value = element.Value.Evaluate(frame, writer);
 
                 return new KeyValuePair<Value, Value>(key, value);
             }));

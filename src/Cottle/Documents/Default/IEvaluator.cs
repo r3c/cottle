@@ -4,6 +4,6 @@ namespace Cottle.Documents.Default
 {
     internal interface IEvaluator
     {
-        Value Evaluate(Stack stack, TextWriter output);
+        Value Evaluate(Frame frame, TextWriter output);
     }
 }

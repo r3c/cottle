@@ -11,7 +11,9 @@ namespace Cottle.Stores
         public ContextStore(IContext context)
         {
             _context = context;
+#pragma warning disable 618
             _store = new SimpleStore();
+#pragma warning restore 618
         }
 
         public Value this[Value symbol]

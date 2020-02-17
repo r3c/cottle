@@ -11,9 +11,9 @@ namespace Cottle.Documents.Default.Executors
             _expression = expression;
         }
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            result = _expression.Evaluate(stack, output);
+            result = _expression.Evaluate(frame, output);
 
             return true;
         }

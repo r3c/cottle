@@ -12,9 +12,9 @@ namespace Cottle.Documents.Default.Executors
             _expression = expression;
         }
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            output.Write(_expression.Evaluate(stack, output));
+            output.Write(_expression.Evaluate(frame, output));
 
             result = VoidValue.Instance;
 

@@ -7,7 +7,7 @@ namespace Cottle.Documents.Default.Evaluators
     {
         public static readonly VoidEvaluator Instance = new VoidEvaluator();
 
-        public Value Evaluate(Stack stack, TextWriter output)
+        public Value Evaluate(Frame frame, TextWriter output)
         {
             return VoidValue.Instance;
         }

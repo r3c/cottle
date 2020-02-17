@@ -12,7 +12,7 @@ namespace Cottle.Test.Contexts
         {
             var context = Context.CreateBuiltin(Context.Empty);
             var function = context["add"].AsFunction;
-            var result = function.Invoke(new SimpleStore(), new Value[] { 1, 2 }, new StringWriter());
+            var result = function.Invoke(Context.Empty, new Value[] { 1, 2 }, new StringWriter());
 
             Assert.That(result, Is.EqualTo((Value)3));
         }

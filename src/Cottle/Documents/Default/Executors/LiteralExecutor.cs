@@ -13,7 +13,7 @@ namespace Cottle.Documents.Default.Executors
             _text = text;
         }
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
             output.Write(_text);
 

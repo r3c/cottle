@@ -8,7 +8,7 @@ namespace Cottle.Documents.Default.Executors
     {
         private readonly int _index;
 
-        private readonly Action<Stack, int, Value> _setter;
+        private readonly Action<Frame, int, Value> _setter;
 
         protected AssignExecutor(Symbol symbol)
         {
@@ -31,11 +31,11 @@ namespace Cottle.Documents.Default.Executors
             _index = symbol.Index;
         }
 
-        protected abstract Value Evaluate(Stack stack, TextWriter output);
+        protected abstract Value Evaluate(Frame frame, TextWriter output);
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            _setter(stack, _index, Evaluate(stack, output));
+            _setter(frame, _index, Evaluate(frame, output));
 
             result = VoidValue.Instance;
 

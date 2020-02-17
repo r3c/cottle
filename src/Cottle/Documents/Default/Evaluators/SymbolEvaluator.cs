@@ -6,7 +6,7 @@ namespace Cottle.Documents.Default.Evaluators
 {
     internal class SymbolEvaluator : IEvaluator
     {
-        private readonly Func<Stack, int, Value> _getter;
+        private readonly Func<Frame, int, Value> _getter;
 
         private readonly int _index;
 
@@ -31,9 +31,9 @@ namespace Cottle.Documents.Default.Evaluators
             _index = symbol.Index;
         }
 
-        public Value Evaluate(Stack stack, TextWriter output)
+        public Value Evaluate(Frame frame, TextWriter output)
         {
-            return _getter(stack, _index);
+            return _getter(frame, _index);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Cottle.Documents.Default.Evaluators
             _value = value;
         }
 
-        public Value Evaluate(Stack stack, TextWriter output)
+        public Value Evaluate(Frame frame, TextWriter output)
         {
             return _value;
         }

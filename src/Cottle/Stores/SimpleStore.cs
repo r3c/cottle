@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cottle.Stores
 {
+    [Obsolete("Use `Context.CreateCustom` method to get a `IContext` instance and pass it at document rendering")]
     public sealed class SimpleStore : AbstractStore
     {
         private readonly Stack<HashSet<Value>> _frames;
-
         private readonly Dictionary<Value, Stack<Value>> _stacks;
         private int _depth;
 

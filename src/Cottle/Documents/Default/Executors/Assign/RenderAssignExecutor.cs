@@ -12,11 +12,11 @@ namespace Cottle.Documents.Default.Executors.Assign
             _body = body;
         }
 
-        protected override Value Evaluate(Stack stack, TextWriter output)
+        protected override Value Evaluate(Frame frame, TextWriter output)
         {
             using (var buffer = new StringWriter())
             {
-                _body.Execute(stack, buffer, out _);
+                _body.Execute(frame, buffer, out _);
 
                 return buffer.ToString();
             }

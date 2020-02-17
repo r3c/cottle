@@ -229,7 +229,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
                     return Expression.CreateMap(elements);
 
                 case ExpressionType.Symbol:
-                    return Expression.CreateSymbol(expression.Value);
+                    return Expression.CreateSymbol(expression.Value.AsString);
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expression));

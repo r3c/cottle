@@ -12,9 +12,9 @@ namespace Cottle.Documents.Default.Executors.Assign
             _expression = expression;
         }
 
-        protected override Value Evaluate(Stack stack, TextWriter output)
+        protected override Value Evaluate(Frame frame, TextWriter output)
         {
-            return _expression.Evaluate(stack, output);
+            return _expression.Evaluate(frame, output);
         }
     }
 }

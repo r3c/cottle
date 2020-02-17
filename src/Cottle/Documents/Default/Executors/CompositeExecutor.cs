@@ -14,10 +14,10 @@ namespace Cottle.Documents.Default.Executors
             _nodes = nodes.ToArray();
         }
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
             foreach (var node in _nodes)
-                if (node.Execute(stack, output, out result))
+                if (node.Execute(frame, output, out result))
                     return true;
 
             result = VoidValue.Instance;

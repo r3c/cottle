@@ -14,10 +14,10 @@ namespace Cottle.Documents.Default.Evaluators
 
         private readonly IEvaluator _subscript;
 
-        public Value Evaluate(Stack stack, TextWriter output)
+        public Value Evaluate(Frame frame, TextWriter output)
         {
-            var source = _source.Evaluate(stack, output);
-            var subscript = _subscript.Evaluate(stack, output);
+            var source = _source.Evaluate(frame, output);
+            var subscript = _subscript.Evaluate(frame, output);
 
             return source.Fields[subscript];
         }

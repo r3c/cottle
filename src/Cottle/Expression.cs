@@ -25,7 +25,7 @@ namespace Cottle
             return new Expression(ExpressionType.Map, default, elements, default, default, default);
         }
 
-        public static Expression CreateSymbol(Value value)
+        public static Expression CreateSymbol(string value)
         {
             return new Expression(ExpressionType.Symbol, default, default, default, default, value);
         }

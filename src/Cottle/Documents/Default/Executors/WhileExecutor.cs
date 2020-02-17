@@ -15,11 +15,11 @@ namespace Cottle.Documents.Default.Executors
 
         private readonly IEvaluator _condition;
 
-        public bool Execute(Stack stack, TextWriter output, out Value result)
+        public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            while (_condition.Evaluate(stack, output).AsBoolean)
+            while (_condition.Evaluate(frame, output).AsBoolean)
             {
-                if (_body.Execute(stack, output, out result))
+                if (_body.Execute(frame, output, out result))
                     return true;
             }
 

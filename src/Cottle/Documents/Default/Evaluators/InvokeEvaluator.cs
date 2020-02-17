@@ -17,9 +17,9 @@ namespace Cottle.Documents.Default.Evaluators
 
         private readonly IEvaluator _caller;
 
-        public Value Evaluate(Stack stack, TextWriter output)
+        public Value Evaluate(Frame frame, TextWriter output)
         {
-            var source = _caller.Evaluate(stack, output);
+            var source = _caller.Evaluate(frame, output);
             var function = source.AsFunction;
 
             if (function != null)
@@ -27,9 +27,9 @@ namespace Cottle.Documents.Default.Evaluators
                 var values = new Value[_arguments.Length];
 
                 for (var i = 0; i < _arguments.Length; ++i)
-                    values[i] = _arguments[i].Evaluate(stack, output);
+                    values[i] = _arguments[i].Evaluate(frame, output);
 
-                return function.Invoke(stack, values, output);
+                return function.Invoke(frame, values, output);
             }
 
             return VoidValue.Instance;

@@ -23,7 +23,7 @@ namespace Cottle.Documents.Default.Executors.Assign
             _localCount = localCount;
         }
 
-        protected override Value Evaluate(Stack stack, TextWriter output)
+        protected override Value Evaluate(Frame frame, TextWriter output)
         {
             return new FunctionValue(new NodeFunction(_localCount, _arguments, _body));
         }
@@ -62,11 +62,11 @@ namespace Cottle.Documents.Default.Executors.Assign
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (!(state is Stack parentStack))
+                if (!(state is Frame parentStack))
                     throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(DefaultDocument)} from another type of document.");
 
                 var functionArguments = Math.Min(_arguments.Length, arguments.Count);
-                var functionStack = new Stack(parentStack.Globals, _localCount);
+                var functionStack = new Frame(parentStack.Globals, _localCount);
 
                 for (var i = 0; i < functionArguments; ++i)
                     functionStack.Locals[_arguments[i]] = arguments[i];
