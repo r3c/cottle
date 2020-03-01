@@ -9,15 +9,15 @@ namespace Cottle.Documents.Evaluated.Executors
 {
     internal class IfExecutor : IExecutor
     {
-        public IfExecutor(IEnumerable<KeyValuePair<IEvaluator, IExecutor>> branches, IExecutor fallback)
-        {
-            _branches = branches.ToArray();
-            _fallback = fallback;
-        }
-
-        private readonly KeyValuePair<IEvaluator, IExecutor>[] _branches;
+        private readonly IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> _branches;
 
         private readonly IExecutor _fallback;
+
+        public IfExecutor(IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> branches, IExecutor fallback)
+        {
+            _branches = branches;
+            _fallback = fallback;
+        }
 
         public bool Execute(Frame frame, TextWriter output, out Value result)
         {

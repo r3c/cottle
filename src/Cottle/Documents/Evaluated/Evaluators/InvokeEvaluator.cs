@@ -9,32 +9,30 @@ namespace Cottle.Documents.Evaluated.Evaluators
 {
     internal class InvokeEvaluator : IEvaluator
     {
-        public InvokeEvaluator(IEvaluator caller, IEnumerable<IEvaluator> arguments)
-        {
-            _arguments = arguments.ToArray();
-            _caller = caller;
-        }
-
-        private readonly IEvaluator[] _arguments;
+        private readonly IReadOnlyList<IEvaluator> _arguments;
 
         private readonly IEvaluator _caller;
+
+        public InvokeEvaluator(IEvaluator caller, IReadOnlyList<IEvaluator> arguments)
+        {
+            _arguments = arguments;
+            _caller = caller;
+        }
 
         public Value Evaluate(Frame frame, TextWriter output)
         {
             var source = _caller.Evaluate(frame, output);
             var function = source.AsFunction;
 
-            if (function != null)
-            {
-                var values = new Value[_arguments.Length];
+            if (function == null)
+                return VoidValue.Instance;
 
-                for (var i = 0; i < _arguments.Length; ++i)
-                    values[i] = _arguments[i].Evaluate(frame, output);
+            var values = new Value[_arguments.Count];
 
-                return function.Invoke(frame, values, output);
-            }
+            for (var i = 0; i < _arguments.Count; ++i)
+                values[i] = _arguments[i].Evaluate(frame, output);
 
-            return VoidValue.Instance;
+            return function.Invoke(frame, values, output);
         }
     }
 }

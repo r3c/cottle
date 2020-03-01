@@ -16,13 +16,13 @@ namespace Cottle.Documents.Compiled.Compilers
         }
 
         protected abstract TCompiled CreateCommandAssignFunction(Symbol symbol, int localCount,
-            IEnumerable<int> arguments, TCompiled body);
+            IReadOnlyList<int> arguments, TCompiled body);
 
         protected abstract TCompiled CreateCommandAssignRender(Symbol symbol, TCompiled body);
 
         protected abstract TCompiled CreateCommandAssignValue(Symbol symbol, TExpression expression);
 
-        protected abstract TCompiled CreateCommandComposite(IEnumerable<TCompiled> commands);
+        protected abstract TCompiled CreateCommandComposite(IReadOnlyList<TCompiled> commands);
 
         protected abstract TCompiled CreateCommandDump(TExpression expression);
 
@@ -31,7 +31,7 @@ namespace Cottle.Documents.Compiled.Compilers
         protected abstract TCompiled CreateCommandFor(TExpression source, int? key, int value, TCompiled body,
             TCompiled empty);
 
-        protected abstract TCompiled CreateCommandIf(IEnumerable<KeyValuePair<TExpression, TCompiled>> branches,
+        protected abstract TCompiled CreateCommandIf(IReadOnlyList<KeyValuePair<TExpression, TCompiled>> branches,
             TCompiled fallback);
 
         protected abstract TCompiled CreateCommandLiteral(string text);
@@ -46,10 +46,10 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TExpression CreateExpressionConstant(Value value);
 
-        protected abstract TExpression CreateExpressionInvoke(TExpression caller, IEnumerable<TExpression> arguments);
+        protected abstract TExpression CreateExpressionInvoke(TExpression caller, IReadOnlyList<TExpression> arguments);
 
         protected abstract TExpression
-            CreateExpressionMap(IEnumerable<KeyValuePair<TExpression, TExpression>> elements);
+            CreateExpressionMap(IReadOnlyList<KeyValuePair<TExpression, TExpression>> elements);
 
         protected abstract TExpression CreateExpressionSymbol(Symbol symbol);
 

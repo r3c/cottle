@@ -9,18 +9,20 @@ namespace Cottle.Documents.Evaluated.Executors
 {
     internal class CompositeExecutor : IExecutor
     {
-        private readonly IExecutor[] _nodes;
+        private readonly IReadOnlyList<IExecutor> _nodes;
 
-        public CompositeExecutor(IEnumerable<IExecutor> nodes)
+        public CompositeExecutor(IReadOnlyList<IExecutor> nodes)
         {
-            _nodes = nodes.ToArray();
+            _nodes = nodes;
         }
 
         public bool Execute(Frame frame, TextWriter output, out Value result)
         {
             foreach (var node in _nodes)
+            {
                 if (node.Execute(frame, output, out result))
                     return true;
+            }
 
             result = VoidValue.Instance;
 

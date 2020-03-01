@@ -9,7 +9,8 @@ namespace Cottle.Documents.Evaluated
 {
     internal class Compiler : AbstractCompiler<IExecutor, IEvaluator>
     {
-        protected override IExecutor CreateCommandAssignFunction(Symbol symbol, int localCount, IEnumerable<int> arguments, IExecutor body)
+        protected override IExecutor CreateCommandAssignFunction(Symbol symbol, int localCount,
+            IReadOnlyList<int> arguments, IExecutor body)
         {
             return new FunctionAssignExecutor(symbol, localCount, arguments, body);
         }
@@ -24,7 +25,7 @@ namespace Cottle.Documents.Evaluated
             return new ValueAssignExecutor(symbol, expression);
         }
 
-        protected override IExecutor CreateCommandComposite(IEnumerable<IExecutor> commands)
+        protected override IExecutor CreateCommandComposite(IReadOnlyList<IExecutor> commands)
         {
             return new CompositeExecutor(commands);
         }
@@ -44,7 +45,7 @@ namespace Cottle.Documents.Evaluated
             return new ForExecutor(source, key, value, body, empty);
         }
 
-        protected override IExecutor CreateCommandIf(IEnumerable<KeyValuePair<IEvaluator, IExecutor>> branches,
+        protected override IExecutor CreateCommandIf(IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> branches,
             IExecutor fallback)
         {
             return new IfExecutor(branches, fallback);
@@ -80,12 +81,12 @@ namespace Cottle.Documents.Evaluated
             return new ConstantEvaluator(value);
         }
 
-        protected override IEvaluator CreateExpressionInvoke(IEvaluator caller, IEnumerable<IEvaluator> arguments)
+        protected override IEvaluator CreateExpressionInvoke(IEvaluator caller, IReadOnlyList<IEvaluator> arguments)
         {
             return new InvokeEvaluator(caller, arguments);
         }
 
-        protected override IEvaluator CreateExpressionMap(IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
+        protected override IEvaluator CreateExpressionMap(IReadOnlyList<KeyValuePair<IEvaluator, IEvaluator>> elements)
         {
             return new MapEvaluator(elements);
         }

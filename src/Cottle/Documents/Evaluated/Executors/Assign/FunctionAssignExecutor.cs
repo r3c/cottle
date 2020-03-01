@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
-using Cottle.Documents.Evaluated;
 using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors.Assign
 {
     internal class FunctionAssignExecutor : AssignExecutor
     {
-        private readonly int[] _arguments;
+        private readonly IReadOnlyList<int> _arguments;
 
         private readonly IExecutor _body;
 
         private readonly int _localCount;
 
-        public FunctionAssignExecutor(Symbol symbol, int localCount, IEnumerable<int> arguments, IExecutor body) :
+        public FunctionAssignExecutor(Symbol symbol, int localCount, IReadOnlyList<int> arguments, IExecutor body) :
             base(symbol)
         {
-            _arguments = arguments.ToArray();
+            _arguments = arguments;
             _body = body;
             _localCount = localCount;
         }
@@ -34,13 +32,13 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
         {
             public bool IsPure => false;
 
-            private readonly int[] _arguments;
+            private readonly IReadOnlyList<int> _arguments;
 
             private readonly IExecutor _body;
 
             private readonly int _localCount;
 
-            public Function(int localCount, int[] arguments, IExecutor body)
+            public Function(int localCount, IReadOnlyList<int> arguments, IExecutor body)
             {
                 _arguments = arguments;
                 _body = body;
@@ -72,16 +70,16 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
                 if (!(state is Frame parentFrame))
                     throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
-                var functionArguments = Math.Min(_arguments.Length, arguments.Count);
-                var functionStack = new Frame(parentFrame.Globals, _localCount);
+                var functionArguments = Math.Min(_arguments.Count, arguments.Count);
+                var functionFrame = new Frame(parentFrame.Globals, _localCount);
 
                 for (var i = 0; i < functionArguments; ++i)
-                    functionStack.Locals[_arguments[i]] = arguments[i];
+                    functionFrame.Locals[_arguments[i]] = arguments[i];
 
-                for (var i = arguments.Count; i < _arguments.Length; ++i)
-                    functionStack.Locals[_arguments[i]] = VoidValue.Instance;
+                for (var i = arguments.Count; i < _arguments.Count; ++i)
+                    functionFrame.Locals[_arguments[i]] = VoidValue.Instance;
 
-                _body.Execute(functionStack, output, out var result);
+                _body.Execute(functionFrame, output, out var result);
 
                 return result;
             }

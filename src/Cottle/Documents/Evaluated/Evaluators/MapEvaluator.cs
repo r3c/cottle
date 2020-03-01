@@ -9,11 +9,11 @@ namespace Cottle.Documents.Evaluated.Evaluators
 {
     internal class MapEvaluator : IEvaluator
     {
-        private readonly KeyValuePair<IEvaluator, IEvaluator>[] _elements;
+        private readonly IReadOnlyList<KeyValuePair<IEvaluator, IEvaluator>> _elements;
 
-        public MapEvaluator(IEnumerable<KeyValuePair<IEvaluator, IEvaluator>> elements)
+        public MapEvaluator(IReadOnlyList<KeyValuePair<IEvaluator, IEvaluator>> elements)
         {
-            _elements = elements.ToArray();
+            _elements = elements;
         }
 
         public Value Evaluate(Frame frame, TextWriter writer)
