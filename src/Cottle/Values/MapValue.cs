@@ -65,19 +65,26 @@ namespace Cottle.Values
         public override string ToString()
         {
             var builder = new StringBuilder();
-            var separator = false;
+            var comma = false;
+            var index = 0;
 
             builder.Append('[');
 
             foreach (var pair in Fields)
             {
-                if (separator)
+                if (comma)
                     builder.Append(", ");
                 else
-                    separator = true;
+                    comma = true;
 
-                builder.Append(pair.Key);
-                builder.Append(": ");
+                if (pair.Key.Type == ValueContent.Number && pair.Key.AsNumber == index)
+                    ++index;
+                else
+                {
+                    builder.Append(pair.Key);
+                    builder.Append(": ");
+                }
+
                 builder.Append(pair.Value);
             }
 

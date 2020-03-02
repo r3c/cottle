@@ -461,7 +461,7 @@ When your template doesn't render as you would expect, the ``dump`` command can 
     "string"
     42
     <void>
-    [0: 856, 1: "hello", "x": 17]
+    [856, "hello", "x": 17]
 
 .. note::
 

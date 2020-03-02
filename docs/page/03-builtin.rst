@@ -632,7 +632,7 @@ Concatenate all input maps or strings into a single one. Keys are **not** preser
     :caption: Rendering output
 
     "Hello, World!"
-    [0: 1, 1: 2, 2: 3]
+    [1, 2, 3]
 
 .. warning::
 
@@ -714,8 +714,8 @@ Optional arguments can be specified when calling ``filter`` and will be passed t
 .. code-block:: plain
     :caption: Rendering output
 
-    [0: "a", 1: "b", 2: "c"]
-    [0: 6, 1: 9, 2: 0]
+    ["a", "b", "c"]
+    [6, 9, 0]
 
 
 flip(map)
@@ -733,7 +733,7 @@ Return a map were pairs are created by swapping each key and value pair from inp
     :caption: Rendering output
 
     ["hello,": 1, "world!": 2]
-    [0: "a", 0: "b"]
+    ["a", 0: "b"]
 
 
 join(map[, string])
@@ -790,7 +790,7 @@ Optional arguments can be specified when calling ``map`` and will be passed to e
 .. code-block:: plain
     :caption: Rendering output
 
-    [0: 1, 1: 4, 2: 9, 3: 16]
+    [1, 4, 9, 16]
     ["a": 1, "b": 0, "c": 0, "d": 0, "e": 1, "f": 1, "g": 0]
 
 
@@ -980,7 +980,7 @@ Match ``subject`` against given regular expression pattern. If match is successf
 .. code-block:: plain
     :caption: Rendering output
 
-    [0: "abc123", 1: "123"]
+    ["abc123", "123"]
     <void>
 
 
@@ -1015,7 +1015,7 @@ Split ``subject`` string according to given string separator ``separator``. Resu
 .. code-block:: plain
     :caption: Rendering output
 
-    [0: "2011", 1: "01", 2: "01"]
+    ["2011", "01", "01"]
 
 
 token(subject, search, index[, replace])

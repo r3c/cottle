@@ -60,7 +60,7 @@ Here are a few examples about how to use them:
     :caption: Rendering output
 
     "I can."
-    [0: 4, 1: 8, 0: 15, 1: 16, 4: 23, 5: 42]
+    [4, 8, 15, 16, 23, 42]
     ["let_me": "I shouldn't be touched", "append_me": "I'm here!"]
 
 

@@ -28,16 +28,17 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
                     case ExpressionType.Map:
                         var impure = false;
+                        var value = Expression.Void;
 
                         foreach (var element in source.Elements)
                         {
                             if (!RecursiveOptimizer.IsPure(element.Key) || !RecursiveOptimizer.IsPure(element.Value))
                                 impure = true;
                             else if (element.Key.Type == ExpressionType.Constant && element.Key.Value == subscript)
-                                return element.Value;
+                                value = element.Value;
                         }
 
-                        return impure ? expression : Expression.CreateConstant(VoidValue.Instance);
+                        return impure ? expression : value;
 
                     default:
                         return expression;

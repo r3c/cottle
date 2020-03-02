@@ -701,6 +701,10 @@ namespace Cottle.Parsers
                                 return false;
                             }
 
+                            if (element.Type == ExpressionType.Constant && element.Value.Type == ValueContent.Number &&
+                                element.Value.AsNumber == index)
+                                ++index;
+
                             key = element;
                         }
                         else

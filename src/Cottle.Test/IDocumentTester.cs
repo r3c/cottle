@@ -116,7 +116,21 @@ namespace Cottle.Test
 
         [Test]
         [TestCase("5", "5")]
+        [TestCase("\"Hello, World!\"", "\"Hello, World!\"")]
+        [TestCase("[1, 2]", "[1, 2]")]
+        [TestCase("[0: 1, 1: 2]", "[1, 2]")]
+        [TestCase("[0: 1, 2, 2: 3]", "[1, 2, 3]")]
+        [TestCase("[0: 1, 2, 3: 3]", "[1, 2, 3: 3]")]
+        [TestCase("[1: 1, 2, 1: 3]", "[1: 1, 2, 3]")]
+        public void RenderCommandDump(string value, string expected)
+        {
+            AssertRender("{dump " + value + "}", expected);
+        }
+
+        [Test]
+        [TestCase("5", "5")]
         [TestCase("\"Hello, World!\"", "Hello, World!")]
+        [TestCase("[1, 2]", "")]
         public void RenderCommandEcho(string value, string expected)
         {
             AssertRender("{echo " + value + "}", expected);
@@ -332,6 +346,9 @@ namespace Cottle.Test
         [TestCase("[5][0]", "5")]
         [TestCase("[5][1]", "<void>")]
         [TestCase("[5, 8, 2][1]", "8")]
+        [TestCase("['implicit', 'second'][0]", "\"implicit\"")]
+        [TestCase("['implicit', 1: 'explicit'][0]", "\"implicit\"")]
+        [TestCase("['implicit', 0: 'explicit'][0]", "\"explicit\"")]
         [TestCase("[5, 2, 'A', 2][2]", "\"A\"")]
         [TestCase("[2: 'A', 5: 'B'][0]", "<void>")]
         [TestCase("[2: 'A', 5: 'B'][2]", "\"A\"")]
