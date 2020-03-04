@@ -3,8 +3,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Cottle.Builtins;
-using Cottle.Documents;
-using Cottle.Stores;
 using Cottle.Values;
 using NUnit.Framework;
 

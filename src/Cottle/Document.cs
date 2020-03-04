@@ -49,7 +49,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateNative(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, command => new NativeDocument(command));
+            return Document.Create(template, configuration, command => new EmittedDocument(command));
         }
 
         /// <summary>

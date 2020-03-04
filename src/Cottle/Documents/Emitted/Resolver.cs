@@ -2,15 +2,13 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Cottle.Documents.Dynamic
+namespace Cottle.Documents.Emitted
 {
-    internal static class DynamicResolver
+    internal static class Resolver
     {
         public static ConstructorInfo Constructor<T>(Expression<T> lambda)
         {
-            var expression = lambda.Body as NewExpression;
-
-            if (expression == null)
+            if (!(lambda.Body is NewExpression expression))
                 throw new ArgumentException("can't get constructor information from expression", nameof(lambda));
 
             return expression.Constructor;
@@ -18,9 +16,7 @@ namespace Cottle.Documents.Dynamic
 
         public static FieldInfo Field<T>(Expression<T> lambda)
         {
-            var expression = lambda.Body as MemberExpression;
-
-            if (expression == null || expression.Member.MemberType != MemberTypes.Field)
+            if (!(lambda.Body is MemberExpression expression) || expression.Member.MemberType != MemberTypes.Field)
                 throw new ArgumentException("can't get field information from expression", nameof(lambda));
 
             return (FieldInfo)expression.Member;
@@ -28,9 +24,7 @@ namespace Cottle.Documents.Dynamic
 
         public static MethodInfo Method<T>(Expression<T> lambda)
         {
-            var expression = lambda.Body as MethodCallExpression;
-
-            if (expression == null)
+            if (!(lambda.Body is MethodCallExpression expression))
                 throw new ArgumentException("can't get method information from expression", nameof(lambda));
 
             return expression.Method;
@@ -38,9 +32,7 @@ namespace Cottle.Documents.Dynamic
 
         public static PropertyInfo Property<T>(Expression<T> lambda)
         {
-            var expression = lambda.Body as MemberExpression;
-
-            if (expression == null || expression.Member.MemberType != MemberTypes.Property)
+            if (!(lambda.Body is MemberExpression expression) || expression.Member.MemberType != MemberTypes.Property)
                 throw new ArgumentException("can't get property information from expression", nameof(lambda));
 
             return (PropertyInfo)expression.Member;

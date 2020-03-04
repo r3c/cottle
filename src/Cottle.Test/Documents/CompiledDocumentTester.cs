@@ -1,4 +1,3 @@
-using System.IO;
 using NUnit.Framework;
 
 namespace Cottle.Test.Documents

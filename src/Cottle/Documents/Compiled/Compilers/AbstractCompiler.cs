@@ -48,8 +48,8 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TExpression CreateExpressionInvoke(TExpression caller, IReadOnlyList<TExpression> arguments);
 
-        protected abstract TExpression
-            CreateExpressionMap(IReadOnlyList<KeyValuePair<TExpression, TExpression>> elements);
+        protected abstract TExpression CreateExpressionMap(
+            IReadOnlyList<KeyValuePair<TExpression, TExpression>> elements);
 
         protected abstract TExpression CreateExpressionSymbol(Symbol symbol);
 
