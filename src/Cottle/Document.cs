@@ -20,7 +20,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateDefault(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, command => new DefaultDocument(command));
+            return Document.Create(template, configuration, command => new EvaluatedDocument(command));
         }
 
         /// <summary>
