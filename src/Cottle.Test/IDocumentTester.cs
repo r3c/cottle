@@ -79,6 +79,14 @@ namespace Cottle.Test
         }
 
         [Test]
+        [TestCase("A{x}B", "AB")]
+        [TestCase("A{x}B{y}C", "ABC")]
+        public void RenderCommandComposite(string expression, string expected)
+        {
+            AssertRender(expression, expected);
+        }
+
+        [Test]
         public void RenderCommandDeclare()
         {
             AssertRender("{declare var}", string.Empty);
@@ -137,22 +145,18 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("k", "v", "[]", "-", "EMPTY")]
-        [TestCase("key", "value", "['A': 'X', 'B': 'Y', 'C': 'Z']", "{key}{value}", "AXBYCZ")]
-        [TestCase("i", "j", "[1, 5, 9]", "{i}{j}", "011529")]
-        public void RenderCommandForKeyValue(string name1, string name2, string source, string body, string expected)
+        [TestCase("_", "[]", "something", "array", "array")]
+        [TestCase("_", "17", "something", "scalar", "scalar")]
+        [TestCase("_", "\"\"", "something", "", "")]
+        [TestCase("dummy", "[1, 5, 9]", "X", null, "XXX")]
+        [TestCase("v", "[1, 5, 9]", "{v}", null, "159")]
+        [TestCase("name", "[5: 'A', 9: 'B', 2: 'C']", "{name}", null, "ABC")]
+        [TestCase("k, v", "[]", "-", "array", "array")]
+        [TestCase("key, value", "['A': 'X', 'B': 'Y', 'C': 'Z']", "{key}{value}", null, "AXBYCZ")]
+        [TestCase("i, j", "[1, 5, 9]", "{i}{j}", null, "011529")]
+        public void RenderCommandFor(string pairs, string source, string body, string empty, string expected)
         {
-            AssertRender("{for " + name1 + ", " + name2 + " in " + source + ":" + body + "|empty:EMPTY}", expected);
-        }
-
-        [Test]
-        [TestCase("unused", "[]", "-", "EMPTY")]
-        [TestCase("dummy", "[1, 5, 9]", "X", "XXX")]
-        [TestCase("v", "[1, 5, 9]", "{v}", "159")]
-        [TestCase("name", "[5: 'A', 9: 'B', 2: 'C']", "{name}", "ABC")]
-        public void RenderCommandForValue(string name, string source, string body, string expected)
-        {
-            AssertRender("{for " + name + " in " + source + ":" + body + "|empty:EMPTY}", expected);
+            AssertRender("{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) + "}", expected);
         }
 
         [Test]
