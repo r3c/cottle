@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using Cottle.Documents.Dynamic;
 using Cottle.Settings;
-using Cottle.Stores;
 
 namespace Cottle.Documents
 {
@@ -15,17 +12,12 @@ namespace Cottle.Documents
     /// </summary>
     public sealed class DynamicDocument : AbstractDocument
     {
-        private readonly DynamicFunction _root;
+        private readonly IDocument _document;
 
         [Obsolete("Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(TextReader reader, ISetting setting)
         {
-            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
-
-            if (!parser.Parse(reader, out var command, out var reports))
-                throw AbstractDocument.CreateException(reports);
-
-            _root = new DynamicFunction(Enumerable.Empty<string>(), command);
+            _document = Document.CreateNative(reader, AbstractDocument.CreateConfiguration(setting)).DocumentOrThrow;
         }
 
         [Obsolete("Use `Document.CreateNative(template).DocumentOrThrow` to get an equivalent document instance")]
@@ -48,17 +40,7 @@ namespace Cottle.Documents
 
         public override Value Render(IContext context, TextWriter writer)
         {
-            return _root.Invoke(new ContextStore(context), Array.Empty<Value>(), writer);
-        }
-
-        public static void Save(TextReader reader, ISetting setting, string assemblyName, string fileName)
-        {
-            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
-
-            if (!parser.Parse(reader, out var command, out var reports))
-                throw AbstractDocument.CreateException(reports);
-
-            DynamicFunction.Save(command, setting.Trimmer, assemblyName, fileName);
+            return _document.Render(context, writer);
         }
     }
 }
