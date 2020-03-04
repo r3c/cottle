@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Cottle.Test.Documents
 {
     [TestFixture]
-    public abstract class CompiledDocumentTester : IDocumentTester
+    public abstract class CompiledDocumentTester : DocumentTester
     {
         [Test]
         [TestCase("declare", "as", "")]

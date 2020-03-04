@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace Cottle.Test.Documents
 {
     [TestFixture]
-    public class SimpleDocumentTester : IDocumentTester
+    public class SimpleDocumentTester : DocumentTester
     {
         [Test]
         [TestCase("Hello, World!")]

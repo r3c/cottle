@@ -9,8 +9,7 @@ using NUnit.Framework;
 namespace Cottle.Test
 {
     [TestFixture]
-    // ReSharper disable once InconsistentNaming
-    public abstract class IDocumentTester
+    public abstract class DocumentTester
     {
         [Test]
         [TestCase("<|", "|>", "1 || 0", "true")]
@@ -264,7 +263,7 @@ namespace Cottle.Test
         public void RenderCommandWhile(string init, string condition, string body, string expected)
         {
             AssertRender(init + "{while " + condition + ":" + body + "}", default,
-                IDocumentTester.CreateContextWithBuiltins("add", "lt"), expected);
+                DocumentTester.CreateContextWithBuiltins("add", "lt"), expected);
         }
 
         [Test]

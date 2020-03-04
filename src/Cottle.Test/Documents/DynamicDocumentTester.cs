@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Cottle.Test.Documents
 {
     [TestFixture]
-    public class DynamicDocumentTester : IDocumentTester
+    public class DynamicDocumentTester : DocumentTester
     {
         protected override DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration)
         {
