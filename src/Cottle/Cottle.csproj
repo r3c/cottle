@@ -2,11 +2,12 @@
 
   <PropertyGroup>
     <AssemblyName>Cottle</AssemblyName>
-    <AssemblyTitle>Cottle: Compact Object to Text Transform Language</AssemblyTitle>
-    <Description>Lightweight &amp; extensible template engine library for .NET 4.7.2 and above.</Description>
+    <AssemblyTitle>Cottle: High performance template engine</AssemblyTitle>
+    <Description>High performance, light &amp; extensible template engine library for .NET 4.7.2 and above.</Description>
     <Version>1.6.1</Version>
     <Authors>Remi Caput</Authors>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <Title>Cottle: High performance template engine</Title>
     <LangVersion>7.3</LangVersion>
     <PackageIcon>icon.png</PackageIcon>
     <PackageId>Cottle</PackageId>
