@@ -73,14 +73,7 @@ namespace Cottle.Documents.Emitted.Generators
                 if (!(state is Frame parentFrame))
                     throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(EmittedDocument)} from another type of document.");
 
-                var functionArguments = Math.Min(_arguments.Count, arguments.Count);
-                var functionFrame = new Frame(parentFrame.Globals, _localCount);
-
-                for (var i = 0; i < functionArguments; ++i)
-                    functionFrame.Locals[_arguments[i]] = arguments[i];
-
-                for (var i = arguments.Count; i < _arguments.Count; ++i)
-                    functionFrame.Locals[_arguments[i]] = VoidValue.Instance;
+                var functionFrame = parentFrame.CreateForFunction(_arguments, arguments, _localCount);
 
                 return _program.Executable(_program.Constants, functionFrame, output, out var result)
                     ? result

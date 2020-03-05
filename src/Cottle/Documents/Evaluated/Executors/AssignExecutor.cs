@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Documents.Evaluated;
 using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors
