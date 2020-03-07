@@ -4,13 +4,13 @@ namespace Cottle.Benchmark.Inputs
 {
     public static class CottleTemplate
     {
-        public static readonly IReadOnlyList<Input<string>> Inputs = new[]
+        public static IEnumerable<Input<string>> GetInputs()
         {
-            new Input<string>("empty template", string.Empty),
+            yield return new Input<string>("empty template", string.Empty);
 
-            new Input<string>("simple interpolation", "Hello {a} world {b}!"),
+            yield return new Input<string>("simple interpolation", "Hello {a} world {b}!");
 
-            new Input<string>("factorial", @"
+            yield return new Input<string>("factorial", @"
                 {set factorial(n) to:
                     {if n > 1:
                         {return n * factorial(n - 1)}
@@ -18,9 +18,9 @@ namespace Cottle.Benchmark.Inputs
                         {return 1}
                     }
                 }
-                {return factorial(5)}"),
+                {return factorial(5)}");
 
-            new Input<string>("hanoi towers", @"
+            yield return new Input<string>("hanoi towers", @"
                 {set hanoi_rec(n, from, by, to) to:
                     {set n to n - 1}
                     {if n > 0:
@@ -34,7 +34,7 @@ namespace Cottle.Benchmark.Inputs
                 {set hanoi(n) to:
                     {hanoi_rec(n, 'A', 'B', 'C')}
                 }
-                {hanoi(3)}")
-        };
+                {hanoi(3)}");
+        }
     }
 }

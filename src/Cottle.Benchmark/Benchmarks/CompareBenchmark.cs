@@ -11,10 +11,10 @@ namespace Cottle.Benchmark.Benchmarks
 {
     public class CompareBenchmark
     {
-        [ParamsSource(nameof(CompareBenchmark.GetEngines))]
+        [ParamsSource(nameof(CompareBenchmark.Engines))]
         public Input<Func<Func<Func<string>>>> Engine;
 
-        public static IEnumerable<Input<Func<Func<Func<string>>>>> GetEngines => CompareEngine.Inputs;
+        public static IEnumerable<Input<Func<Func<Func<string>>>>> Engines => CompareEngine.GetInputs();
 
         private Func<Func<string>> _constructor;
         private Func<string> _renderer;
@@ -27,15 +27,15 @@ namespace Cottle.Benchmark.Benchmarks
         }
 
         [Benchmark]
-        public void Create()
+        public object Create()
         {
-            _constructor();
+            return _constructor();
         }
 
         [Benchmark]
-        public void Render()
+        public object Render()
         {
-            _renderer();
+            return _renderer();
         }
 
         [GlobalSetup]

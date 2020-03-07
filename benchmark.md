@@ -77,7 +77,7 @@ Benchmark scores
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":13186,"render":5456},"DotLiquid":{"create":63607,"render":212599},"Fluid":{"create":30136,"render":7461},"Mustachio":{"create":8895,"render":10659},"RazorLight":{"create":84139,"render":90835},"Scriban":{"create":10496,"render":19036}};
+        var benchmarks = {"Cottle (default)":{"create":13728,"render":6239},"Cottle (native)":{"create":37600,"render":4887},"DotLiquid":{"create":63862,"render":214749},"Fluid":{"create":30288,"render":7348},"Mustachio":{"create":9084,"render":9996},"RazorLight":{"create":85094,"render":90180},"Scriban":{"create":10646,"render":18396}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
@@ -138,12 +138,13 @@ Discussion
 About Cottle
 ---
 
-Both parsing and rendering time can be significantly improved with Cottle:
-
-* Parsing time can be reduced by [disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation) but implies a higher rendering cost
-* Rendering time can be reduced by [using native documents](https://cottle.readthedocs.io/en/latest/page/06-api.html#method-Cottle.Document.CreateNative) but implies a higher compilation cost
-
-Default document and configuration was used for this benchmark.
+Both "default" (using `Document.CreateDefault` method) and "native" (using
+`Document.CreateNative` method) were included in the benchmark as they offer
+quite different parsing/rendering performance tradeoffs. Parsing time can also
+be significantly improved for both implementations by
+[disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
+at the cost of a higher rendering time, but this option wasn't used in the
+benchmark to avoid multiplying configurations.
 
 
 About Mustachio

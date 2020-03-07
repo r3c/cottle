@@ -10,15 +10,15 @@ namespace Cottle.Benchmark.Benchmarks
 {
     public class CottleBenchmark
     {
-        [ParamsSource(nameof(CottleBenchmark.GetConstructors))]
+        [ParamsSource(nameof(CottleBenchmark.Constructors))]
         public Input<Func<string, IDocument>> Constructor;
 
-        [ParamsSource(nameof(CottleBenchmark.GetTemplates))]
+        [ParamsSource(nameof(CottleBenchmark.Templates))]
         public Input<string> Template;
 
-        public static IEnumerable<Input<Func<string, IDocument>>> GetConstructors => CottleDocument.Inputs;
+        public static IEnumerable<Input<Func<string, IDocument>>> Constructors => CottleDocument.GetInputs();
 
-        public static IEnumerable<Input<string>> GetTemplates => CottleTemplate.Inputs;
+        public static IEnumerable<Input<string>> Templates => CottleTemplate.GetInputs();
 
         private IDocument _document;
 
@@ -35,15 +35,15 @@ namespace Cottle.Benchmark.Benchmarks
         }
 
         [Benchmark]
-        public void Create()
+        public object Create()
         {
-            Constructor.Value(Template.Value);
+            return Constructor.Value(Template.Value);
         }
 
         [Benchmark]
-        public void Render()
+        public object Render()
         {
-            _document.Render(CottleBenchmark.Context);
+            return _document.Render(CottleBenchmark.Context);
         }
 
         [GlobalSetup]

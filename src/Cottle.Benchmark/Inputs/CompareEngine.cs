@@ -48,12 +48,18 @@ namespace Cottle.Benchmark.Inputs
     </li>
 </ul>";
 
-        public static IEnumerable<Input<Func<Func<Func<string>>>>> Inputs => new[]
+        public static IEnumerable<Input<Func<Func<Func<string>>>>> GetInputs()
         {
-            // Render template with Cottle
-            new Input<Func<Func<Func<string>>>>(nameof(Cottle), () =>
+            // Render template with Cottle, both default and native document implementations
+            foreach (var (name, constructor) in new (string, Func<string, DocumentResult>)[]
             {
-                const string template = @"
+                ($"{nameof(Cottle)} (default)", t => Document.CreateDefault(t)),
+                ($"{nameof(Cottle)} (native)", t => Document.CreateNative(t))
+            })
+            {
+                yield return new Input<Func<Func<Func<string>>>>(name, () =>
+                {
+                    const string template = @"
 <ul id='products'>
   {for product in products:
     <li>
@@ -63,24 +69,25 @@ namespace Cottle.Benchmark.Inputs
   }
 </ul>";
 
-                var context = Context.CreateBuiltin(new Dictionary<Value, Value>
-                {
-                    ["products"] = CompareEngine.Products.Select(p => (Value)new Dictionary<Value, Value>
+                    var context = Context.CreateBuiltin(new Dictionary<Value, Value>
                     {
-                        ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
-                    }).ToArray()
+                        ["products"] = CompareEngine.Products.Select(p => (Value)new Dictionary<Value, Value>
+                        {
+                            ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
+                        }).ToArray()
+                    });
+
+                    return () =>
+                    {
+                        var document = constructor(template).DocumentOrThrow;
+
+                        return () => document.Render(context);
+                    };
                 });
-
-                return () =>
-                {
-                    var document = Document.CreateDefault(template).DocumentOrThrow;
-
-                    return () => document.Render(context);
-                };
-            }),
+            }
 
             // Render template with DotLiquid
-            new Input<Func<Func<Func<string>>>>(nameof(DotLiquid), () =>
+            yield return new Input<Func<Func<Func<string>>>>(nameof(DotLiquid), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -109,10 +116,10 @@ namespace Cottle.Benchmark.Inputs
 
                     return () => template.Render(renderParameters);
                 };
-            }),
+            });
 
             // Render template with Fluid
-            new Input<Func<Func<Func<string>>>>(nameof(Fluid), () =>
+            yield return new Input<Func<Func<Func<string>>>>(nameof(Fluid), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -158,10 +165,10 @@ namespace Cottle.Benchmark.Inputs
 
                     return () => template.Render(context);
                 };
-            }),
+            });
 
             // Render template with Mustachio
-            new Input<Func<Func<Func<string>>>>(nameof(Mustachio), () =>
+            yield return new Input<Func<Func<Func<string>>>>(nameof(Mustachio), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -190,10 +197,10 @@ namespace Cottle.Benchmark.Inputs
 
                     return () => template(context);
                 };
-            }),
+            });
 
             // Render template with RazorLight
-            new Input<Func<Func<Func<string>>>>(nameof(RazorLight), () =>
+            yield return new Input<Func<Func<Func<string>>>>(nameof(RazorLight), () =>
             {
                 const string content = @"
 <ul id='products'>
@@ -214,10 +221,10 @@ namespace Cottle.Benchmark.Inputs
 
                     return () => engine.CompileRenderAsync(string.Empty, context).Result;
                 };
-            }),
+            });
 
             // Render template with Scriban
-            new Input<Func<Func<Func<string>>>>(nameof(Scriban), () =>
+            yield return new Input<Func<Func<Func<string>>>>(nameof(Scriban), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -247,8 +254,8 @@ namespace Cottle.Benchmark.Inputs
 
                     return () => template.Render(context);
                 };
-            }),
-        };
+            });
+        }
 
         private static readonly IReadOnlyList<Product> Products = Enumerable.Range(0, 5).Select(i => new Product
                 { Description = "Description " + new string('#', i + 1), Name = $"Product {i}", Price = i * 0.3f })
