@@ -102,7 +102,7 @@ namespace Cottle.Test
         [Test]
         [TestCase("declare", "as")]
         [TestCase("set", "to")]
-        public void CommandDeclareValueScope(string command, string suffix)
+        public void RenderCommandDeclareValueScope(string command, string suffix)
         {
             AssertReturn("{" + command + " f() " + suffix + ":{declare x as 'unused'}}" +
                          "{" + command + " x " + suffix + " 42}" +
