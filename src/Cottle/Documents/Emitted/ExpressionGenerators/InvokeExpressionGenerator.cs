@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
-    internal class ExpressionInvokeGenerator : IGenerator
+    internal class InvokeExpressionGenerator : IExpressionGenerator
     {
-        private readonly IReadOnlyList<IGenerator> _arguments;
-        private readonly IGenerator _caller;
+        private readonly IReadOnlyList<IExpressionGenerator> _arguments;
+        private readonly IExpressionGenerator _caller;
 
-        public ExpressionInvokeGenerator(IGenerator caller, IReadOnlyList<IGenerator> argumentses)
+        public InvokeExpressionGenerator(IExpressionGenerator caller, IReadOnlyList<IExpressionGenerator> arguments)
         {
-            _arguments = argumentses;
+            _arguments = arguments;
             _caller = caller;
         }
 

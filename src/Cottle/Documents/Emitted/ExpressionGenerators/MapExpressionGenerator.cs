@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
-    internal class ExpressionMapGenerator : IGenerator
+    internal class MapExpressionGenerator : IExpressionGenerator
     {
-        private readonly IReadOnlyList<KeyValuePair<IGenerator, IGenerator>> _elements;
+        private readonly IReadOnlyList<KeyValuePair<IExpressionGenerator, IExpressionGenerator>> _elements;
 
-        public ExpressionMapGenerator(IReadOnlyList<KeyValuePair<IGenerator, IGenerator>> elements)
+        public MapExpressionGenerator(IReadOnlyList<KeyValuePair<IExpressionGenerator, IExpressionGenerator>> elements)
         {
             _elements = elements;
         }

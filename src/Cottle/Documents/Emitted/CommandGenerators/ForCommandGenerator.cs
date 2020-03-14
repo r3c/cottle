@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandForGenerator : IGenerator
+    internal class ForCommandGenerator : ICommandGenerator
     {
-        private readonly IGenerator _body;
-        private readonly IGenerator _empty;
+        private readonly ICommandGenerator _body;
+        private readonly ICommandGenerator _empty;
         private readonly int? _key;
-        private readonly IGenerator _source;
+        private readonly IExpressionGenerator _source;
         private readonly int _value;
 
-        public CommandForGenerator(IGenerator source, int? key, int value, IGenerator body,
-            IGenerator empty)
+        public ForCommandGenerator(IExpressionGenerator source, int? key, int value, ICommandGenerator body,
+            ICommandGenerator empty)
         {
             _body = body;
             _empty = empty;
@@ -21,7 +21,7 @@ namespace Cottle.Documents.Emitted.Generators
             _value = value;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             // Evaluate operand fields and store as local
             _source.Generate(emitter);
@@ -44,13 +44,13 @@ namespace Cottle.Documents.Emitted.Generators
             var enumerator = emitter.DeclareLocalAndStore<IEnumerator<KeyValuePair<Value, Value>>>();
 
             // Try moving to next element if any or terminate loop otherwise
-            var complete = emitter.DeclareLabel();
+            var exitRegular = emitter.DeclareLabel();
             var loop = emitter.DeclareLabel();
 
             emitter.MarkLabel(loop);
             emitter.LoadLocalReference(enumerator);
             emitter.InvokeMapEnumeratorMoveNext();
-            emitter.BranchIfFalse(complete);
+            emitter.BranchIfFalse(exitRegular);
 
             // Fetch current key/value pair and store as local
             emitter.LoadLocalReferenceAndRelease(enumerator);
@@ -74,36 +74,47 @@ namespace Cottle.Documents.Emitted.Generators
             emitter.StoreReferenceAtIndex();
 
             // Evaluate body and restart cycle
-            var halt = emitter.DeclareLabel();
+            var exitReturn = emitter.DeclareLabel();
+            var mayReturn = false;
 
-            _body.Generate(emitter);
+            if (_body.Generate(emitter))
+            {
+                emitter.LoadDuplicate();
+                emitter.BranchIfTrue(exitReturn);
+                emitter.Discard();
 
-            emitter.BranchIfTrue(halt);
+                mayReturn = true;
+            }
+
             emitter.BranchAlways(loop);
 
             // Evaluate command for "empty" case
-            var exit = emitter.DeclareLabel();
-
             emitter.MarkLabel(empty);
 
             if (_empty != null)
             {
-                _empty.Generate(emitter);
+                if (_empty.Generate(emitter))
+                {
+                    emitter.LoadDuplicate();
+                    emitter.BranchIfTrue(exitReturn);
+                    emitter.Discard();
 
-                emitter.BranchAlways(exit);
+                    mayReturn = true;
+                }
+
+                emitter.BranchAlways(exitRegular);
             }
 
-            // Exit loop with no-return flag
-            emitter.MarkLabel(complete);
-            emitter.LoadBoolean(false);
-            emitter.BranchAlways(exit);
+            // End of branch
+            emitter.MarkLabel(exitRegular);
 
-            // Exit loop with return flag
-            emitter.MarkLabel(halt);
-            emitter.LoadBoolean(true);
+            if (mayReturn)
+                emitter.LoadBoolean(false);
 
             // Exit command
-            emitter.MarkLabel(exit);
+            emitter.MarkLabel(exitReturn);
+
+            return mayReturn;
         }
     }
 }

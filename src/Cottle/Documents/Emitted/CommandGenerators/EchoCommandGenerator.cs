@@ -1,15 +1,15 @@
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandEchoGenerator : IGenerator
+    internal class EchoCommandGenerator : ICommandGenerator
     {
-        private readonly IGenerator _expression;
+        private readonly IExpressionGenerator _expression;
 
-        public CommandEchoGenerator(IGenerator expression)
+        public EchoCommandGenerator(IExpressionGenerator expression)
         {
             _expression = expression;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             _expression.Generate(emitter);
 
@@ -19,7 +19,8 @@ namespace Cottle.Documents.Emitted.Generators
             emitter.LoadLocalReferenceAndRelease(operand);
             emitter.InvokeValueAsString();
             emitter.InvokeTextWriterWriteString();
-            emitter.LoadBoolean(false);
+
+            return false;
         }
     }
 }

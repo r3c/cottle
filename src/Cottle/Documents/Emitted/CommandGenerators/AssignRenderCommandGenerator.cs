@@ -1,20 +1,20 @@
 using System.IO;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandAssignRenderGenerator : IGenerator
+    internal class AssignRenderCommandGenerator : ICommandGenerator
     {
-        private readonly IGenerator _body;
+        private readonly ICommandGenerator _body;
         private readonly Symbol _symbol;
 
-        public CommandAssignRenderGenerator(Symbol symbol, IGenerator body)
+        public AssignRenderCommandGenerator(Symbol symbol, ICommandGenerator body)
         {
             _body = body;
             _symbol = symbol;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             // Prepare new buffer to store sub-rendering
             emitter.NewStringWriter();
@@ -24,9 +24,9 @@ namespace Cottle.Documents.Emitted.Generators
             // Override output buffer, render body and retore previous buffer
             emitter.OutputEnqueue(buffer);
 
-            _body.Generate(emitter);
+            var mayReturn = _body.Generate(emitter);
+            var mayReturnCode = mayReturn ? (Local<bool>?)emitter.DeclareLocalAndStore<bool>() : null;
 
-            emitter.Discard();
             emitter.OutputDequeue();
 
             // Render output buffer and store as local
@@ -35,7 +35,14 @@ namespace Cottle.Documents.Emitted.Generators
             emitter.InvokeStringWriterToString();
             emitter.NewStringValue();
             emitter.StoreReferenceAtIndex();
-            emitter.LoadBoolean(false);
+
+            // Forward return code to caller
+            if (!mayReturn)
+                return false;
+
+            emitter.LoadLocalValueAndRelease(mayReturnCode.Value);
+
+            return true;
         }
     }
 }

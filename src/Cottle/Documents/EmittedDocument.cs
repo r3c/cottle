@@ -5,7 +5,7 @@ using Cottle.Values;
 
 namespace Cottle.Documents
 {
-    internal class EmittedDocument : CompiledDocument<IGenerator, Program>
+    internal class EmittedDocument : CompiledDocument<ICommandGenerator, Program>
     {
         public EmittedDocument(Command command) :
             base(new Compiler(), Program.Create, command)

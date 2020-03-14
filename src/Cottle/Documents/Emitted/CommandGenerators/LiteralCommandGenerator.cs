@@ -1,20 +1,21 @@
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandLiteralGenerator : IGenerator
+    internal class LiteralCommandGenerator : ICommandGenerator
     {
         private readonly string _text;
 
-        public CommandLiteralGenerator(string text)
+        public LiteralCommandGenerator(string text)
         {
             _text = text;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             emitter.LoadOutput();
             emitter.LoadString(_text);
             emitter.InvokeTextWriterWriteString();
-            emitter.LoadBoolean(false);
+
+            return false;
         }
     }
 }

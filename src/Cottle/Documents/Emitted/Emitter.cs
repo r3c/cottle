@@ -239,6 +239,11 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Callvirt, Emitter.ArgumentsIndex);
         }
 
+        public void LoadDuplicate()
+        {
+            _generator.Emit(OpCodes.Dup);
+        }
+
         public void LoadElementAddress<TElement>()
         {
             _generator.Emit(OpCodes.Ldelema, typeof(TElement));

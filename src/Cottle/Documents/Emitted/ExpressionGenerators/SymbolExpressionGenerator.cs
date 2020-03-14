@@ -1,12 +1,12 @@
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
-    internal class ExpressionSymbolGenerator : IGenerator
+    internal class SymbolExpressionGenerator : IExpressionGenerator
     {
         private readonly Symbol _symbol;
 
-        public ExpressionSymbolGenerator(Symbol symbol)
+        public SymbolExpressionGenerator(Symbol symbol)
         {
             _symbol = symbol;
         }

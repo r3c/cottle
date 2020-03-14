@@ -8,6 +8,7 @@ using Cottle.Benchmark.Inputs;
 
 namespace Cottle.Benchmark.Benchmarks
 {
+    [MemoryDiagnoser]
     public class CottleBenchmark
     {
         [ParamsSource(nameof(CottleBenchmark.Constructors))]

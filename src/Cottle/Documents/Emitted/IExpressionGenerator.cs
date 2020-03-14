@@ -1,7 +1,6 @@
-
 namespace Cottle.Documents.Emitted
 {
-    internal interface IGenerator
+    internal interface IExpressionGenerator
     {
         void Generate(Emitter emitter);
     }

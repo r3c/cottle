@@ -1,19 +1,19 @@
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandAssignValueGenerator : IGenerator
+    internal class AssignValueCommandGenerator : ICommandGenerator
     {
-        private readonly IGenerator _expression;
+        private readonly IExpressionGenerator _expression;
         private readonly Symbol _symbol;
 
-        public CommandAssignValueGenerator(Symbol symbol, IGenerator expression)
+        public AssignValueCommandGenerator(Symbol symbol, IExpressionGenerator expression)
         {
             _expression = expression;
             _symbol = symbol;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             _expression.Generate(emitter);
 
@@ -22,7 +22,8 @@ namespace Cottle.Documents.Emitted.Generators
             emitter.LoadFrameSymbol(_symbol);
             emitter.LoadLocalReferenceAndRelease(value);
             emitter.StoreReferenceAtIndex();
-            emitter.LoadBoolean(false);
+
+            return false;
         }
     }
 }

@@ -1,10 +1,10 @@
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
-    internal class ExpressionConstantGenerator : IGenerator
+    internal class ConstantExpressionGenerator : IExpressionGenerator
     {
         private readonly Value _value;
 
-        public ExpressionConstantGenerator(Value value)
+        public ConstantExpressionGenerator(Value value)
         {
             _value = value;
         }

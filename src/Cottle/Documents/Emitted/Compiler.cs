@@ -1,104 +1,105 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
 using Cottle.Documents.Compiled.Compilers;
-using Cottle.Documents.Emitted.Generators;
+using Cottle.Documents.Emitted.CommandGenerators;
+using Cottle.Documents.Emitted.ExpressionGenerators;
 using Cottle.Values;
 
 namespace Cottle.Documents.Emitted
 {
-    internal class Compiler : AbstractCompiler<IGenerator, IGenerator>
+    internal class Compiler : AbstractCompiler<ICommandGenerator, IExpressionGenerator>
     {
-        protected override IGenerator CreateCommandAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, IGenerator body)
+        protected override ICommandGenerator CreateCommandAssignFunction(Symbol symbol, int localCount,
+            IReadOnlyList<int> arguments, ICommandGenerator body)
         {
-            return new CommandAssignFunctionGenerator(symbol, localCount, arguments, body);
+            return new AssignFunctionCommandGenerator(symbol, localCount, arguments, body);
         }
 
-        protected override IGenerator CreateCommandAssignRender(Symbol symbol, IGenerator body)
+        protected override ICommandGenerator CreateCommandAssignRender(Symbol symbol, ICommandGenerator body)
         {
-            return new CommandAssignRenderGenerator(symbol, body);
+            return new AssignRenderCommandGenerator(symbol, body);
         }
 
-        protected override IGenerator CreateCommandAssignValue(Symbol symbol, IGenerator expression)
+        protected override ICommandGenerator CreateCommandAssignValue(Symbol symbol, IExpressionGenerator expression)
         {
-            return new CommandAssignValueGenerator(symbol, expression);
+            return new AssignValueCommandGenerator(symbol, expression);
         }
 
-        protected override IGenerator CreateCommandComposite(IReadOnlyList<IGenerator> commands)
+        protected override ICommandGenerator CreateCommandComposite(IReadOnlyList<ICommandGenerator> commands)
         {
-            return new CommandCompositeGenerator(commands);
+            return new CompositeCommandGenerator(commands);
         }
 
-        protected override IGenerator CreateCommandDump(IGenerator expression)
+        protected override ICommandGenerator CreateCommandDump(IExpressionGenerator expression)
         {
-            return new CommandDumpGenerator(expression);
+            return new DumpCommandGenerator(expression);
         }
 
-        protected override IGenerator CreateCommandEcho(IGenerator expression)
+        protected override ICommandGenerator CreateCommandEcho(IExpressionGenerator expression)
         {
-            return new CommandEchoGenerator(expression);
+            return new EchoCommandGenerator(expression);
         }
 
-        protected override IGenerator CreateCommandFor(IGenerator source, int? key, int value, IGenerator body,
-            IGenerator empty)
+        protected override ICommandGenerator CreateCommandFor(IExpressionGenerator source, int? key, int value,
+            ICommandGenerator body, ICommandGenerator empty)
         {
-            return new CommandForGenerator(source, key, value, body, empty);
+            return new ForCommandGenerator(source, key, value, body, empty);
         }
 
-        protected override IGenerator CreateCommandIf(IReadOnlyList<KeyValuePair<IGenerator, IGenerator>> branches,
-            IGenerator fallback)
+        protected override ICommandGenerator CreateCommandIf(IReadOnlyList<KeyValuePair<IExpressionGenerator, ICommandGenerator>> branches,
+            ICommandGenerator fallback)
         {
-            return new CommandIfGenerator(branches, fallback);
+            return new IfCommandGenerator(branches, fallback);
         }
 
-        protected override IGenerator CreateCommandLiteral(string text)
+        protected override ICommandGenerator CreateCommandLiteral(string text)
         {
-            return new CommandLiteralGenerator(text);
+            return new LiteralCommandGenerator(text);
         }
 
-        protected override IGenerator CreateCommandNone()
+        protected override ICommandGenerator CreateCommandNone()
         {
-            return new CommandNoneGenerator();
+            return new NoneCommandGenerator();
         }
 
-        protected override IGenerator CreateCommandReturn(IGenerator expression)
+        protected override ICommandGenerator CreateCommandReturn(IExpressionGenerator expression)
         {
-            return new CommandReturnGenerator(expression);
+            return new ReturnCommandGenerator(expression);
         }
 
-        protected override IGenerator CreateCommandWhile(IGenerator condition, IGenerator body)
+        protected override ICommandGenerator CreateCommandWhile(IExpressionGenerator condition, ICommandGenerator body)
         {
-            return new CommandWhileGenerator(condition, body);
+            return new WhileCommandGenerator(condition, body);
         }
 
-        protected override IGenerator CreateExpressionAccess(IGenerator source, IGenerator subscript)
+        protected override IExpressionGenerator CreateExpressionAccess(IExpressionGenerator source, IExpressionGenerator subscript)
         {
-            return new ExpressionAccessGenerator(source, subscript);
+            return new AccessExpressionGenerator(source, subscript);
         }
 
-        protected override IGenerator CreateExpressionConstant(Value value)
+        protected override IExpressionGenerator CreateExpressionConstant(Value value)
         {
-            return new ExpressionConstantGenerator(value);
+            return new ConstantExpressionGenerator(value);
         }
 
-        protected override IGenerator CreateExpressionInvoke(IGenerator caller, IReadOnlyList<IGenerator> arguments)
+        protected override IExpressionGenerator CreateExpressionInvoke(IExpressionGenerator caller, IReadOnlyList<IExpressionGenerator> arguments)
         {
-            return new ExpressionInvokeGenerator(caller, arguments);
+            return new InvokeExpressionGenerator(caller, arguments);
         }
 
-        protected override IGenerator CreateExpressionMap(IReadOnlyList<KeyValuePair<IGenerator, IGenerator>> elements)
+        protected override IExpressionGenerator CreateExpressionMap(IReadOnlyList<KeyValuePair<IExpressionGenerator, IExpressionGenerator>> elements)
         {
-            return new ExpressionMapGenerator(elements);
+            return new MapExpressionGenerator(elements);
         }
 
-        protected override IGenerator CreateExpressionSymbol(Symbol symbol)
+        protected override IExpressionGenerator CreateExpressionSymbol(Symbol symbol)
         {
-            return new ExpressionSymbolGenerator(symbol);
+            return new SymbolExpressionGenerator(symbol);
         }
 
-        protected override IGenerator CreateExpressionVoid()
+        protected override IExpressionGenerator CreateExpressionVoid()
         {
-            return new ExpressionConstantGenerator(VoidValue.Instance);
+            return new ConstantExpressionGenerator(VoidValue.Instance);
         }
     }
 }

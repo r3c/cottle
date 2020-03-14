@@ -1,11 +1,11 @@
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
-    internal class ExpressionAccessGenerator : IGenerator
+    internal class AccessExpressionGenerator : IExpressionGenerator
     {
-        private readonly IGenerator _source;
-        private readonly IGenerator _subscript;
+        private readonly IExpressionGenerator _source;
+        private readonly IExpressionGenerator _subscript;
 
-        public ExpressionAccessGenerator(IGenerator source, IGenerator subscript)
+        public AccessExpressionGenerator(IExpressionGenerator source, IExpressionGenerator subscript)
         {
             _source = source;
             _subscript = subscript;

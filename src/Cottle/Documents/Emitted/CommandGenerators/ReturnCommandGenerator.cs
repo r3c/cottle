@@ -1,15 +1,15 @@
-namespace Cottle.Documents.Emitted.Generators
+namespace Cottle.Documents.Emitted.CommandGenerators
 {
-    internal class CommandReturnGenerator : IGenerator
+    internal class ReturnCommandGenerator : ICommandGenerator
     {
-        private readonly IGenerator _expression;
+        private readonly IExpressionGenerator _expression;
 
-        public CommandReturnGenerator(IGenerator expression)
+        public ReturnCommandGenerator(IExpressionGenerator expression)
         {
             _expression = expression;
         }
 
-        public void Generate(Emitter emitter)
+        public bool Generate(Emitter emitter)
         {
             _expression.Generate(emitter);
 
@@ -19,6 +19,8 @@ namespace Cottle.Documents.Emitted.Generators
             emitter.LoadLocalReferenceAndRelease(result);
             emitter.StoreReferenceAtAddress();
             emitter.LoadBoolean(true);
+
+            return true;
         }
     }
 }
