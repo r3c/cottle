@@ -211,6 +211,7 @@ namespace Cottle.Test
         [Test]
         [TestCase("f", "Hello, World!", "Hello, World!")]
         [TestCase("test", "{'Some String'}", "Some String")]
+        [TestCase("test", "AAA{return 0}BBB", "AAA")]
         public void RenderCommandSetFunctionRender(string name, string body, string expected)
         {
             AssertRender("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
@@ -223,6 +224,15 @@ namespace Cottle.Test
         public void RenderCommandSetFunctionReturn(string name, string body, string expected)
         {
             AssertReturn("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
+        }
+
+        [Test]
+        [TestCase("x", "123", "123")]
+        [TestCase("y", "{'a'}b{'c'}", "abc")]
+        [TestCase("z", "A{return void}B", "A")]
+        public void RenderCommandSetRender(string name, string body, string expected)
+        {
+            AssertRender("{set f() to:{set " + name + " to:" + body + "}}{f()}{echo " + name + "}", expected);
         }
 
         [Test]
