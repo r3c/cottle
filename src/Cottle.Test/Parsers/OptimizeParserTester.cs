@@ -61,7 +61,7 @@ namespace Cottle.Test.Parsers
                     new[]
                     {
                         new ExpressionElement(Expression.CreateConstant(0),
-                            Expression.CreateInvoke(OptimizeParserTester.ImpureFunction, Array.Empty<Expression>())),
+                            Expression.CreateSymbol("AAA")),
                         new ExpressionElement(Expression.CreateConstant(1),
                             Expression.CreateSymbol("BBB")),
                         new ExpressionElement(Expression.CreateSymbol("x"),
