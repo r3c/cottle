@@ -25,6 +25,12 @@ namespace Cottle.Documents.Emitted
             Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
                 new KeyValuePair<Value, Value>(k, v));
 
+        private static readonly IReadOnlyList<OpCode> LoadIntegers = new[]
+        {
+            OpCodes.Ldc_I4_0, OpCodes.Ldc_I4_1, OpCodes.Ldc_I4_2, OpCodes.Ldc_I4_3, OpCodes.Ldc_I4_4, OpCodes.Ldc_I4_5,
+            OpCodes.Ldc_I4_6, OpCodes.Ldc_I4_7, OpCodes.Ldc_I4_8
+        };
+
         private static readonly MethodInfo MapCount =
             Resolver.Property<Func<IMap, int>>(m => m.Count).GetGetMethod();
 
@@ -80,7 +86,7 @@ namespace Cottle.Documents.Emitted
 
         private static readonly MethodInfo VoidValueInstance =
             Resolver.Property<Func<Value>>(() => VoidValue.Instance).GetGetMethod();
-        
+
         private readonly Dictionary<Value, int> _constants;
         private readonly ILGenerator _generator;
         private readonly Dictionary<Type, Stack<LocalBuilder>> _locals;
@@ -216,7 +222,8 @@ namespace Cottle.Documents.Emitted
 
         public void LoadArray<TElement>(int count)
         {
-            _generator.Emit(OpCodes.Ldc_I4, count);
+            LoadInteger(count);
+
             _generator.Emit(OpCodes.Newarr, typeof(TElement));
         }
 
@@ -235,7 +242,9 @@ namespace Cottle.Documents.Emitted
             }
 
             _generator.Emit(OpCodes.Ldarg_0);
-            _generator.Emit(OpCodes.Ldc_I4, index);
+
+            LoadInteger(index);
+
             _generator.Emit(OpCodes.Callvirt, Emitter.ArgumentsIndex);
         }
 
@@ -277,12 +286,18 @@ namespace Cottle.Documents.Emitted
 
             _generator.Emit(OpCodes.Ldarg_1);
             _generator.Emit(OpCodes.Ldfld, fieldInfo);
-            _generator.Emit(OpCodes.Ldc_I4, symbol.Index);
+
+            LoadInteger(symbol.Index);
         }
 
         public void LoadInteger(int value)
         {
-            _generator.Emit(OpCodes.Ldc_I4, value);
+            if (value < Emitter.LoadIntegers.Count)
+                _generator.Emit(Emitter.LoadIntegers[value]);
+            else if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
+                _generator.Emit(OpCodes.Ldc_I4_S, value);
+            else
+                _generator.Emit(OpCodes.Ldc_I4, value);
         }
 
         public void LoadLocalReference<TValue>(Local<TValue> local)

@@ -12,8 +12,6 @@ namespace Cottle.Documents.Emitted
 
         public static Program Create(ICommandGenerator generator)
         {
-            var arguments = new[] { typeof(IReadOnlyList<Value>), typeof(Frame), typeof(TextWriter), Program.OutValue };
-
 #if COTTLE_IL_SAVE && !NETSTANDARD
             var assemblyName = new System.Reflection.AssemblyName("Test");
             var fileName = assemblyName.Name + ".dll";
@@ -36,14 +34,15 @@ namespace Cottle.Documents.Emitted
             File.Copy(saveSource, saveDestination, true);
 #endif
 
-            var executableMethod = new DynamicMethod(string.Empty, typeof(bool), arguments, typeof(EmittedDocument));
-            var executableEmitter = new Emitter(executableMethod.GetILGenerator());
+            var arguments = new[] { typeof(IReadOnlyList<Value>), typeof(Frame), typeof(TextWriter), Program.OutValue };
+            var method = new DynamicMethod(string.Empty, typeof(bool), arguments, typeof(EmittedDocument));
+            var emitter = new Emitter(method.GetILGenerator());
 
-            Program.Emit(executableEmitter, generator);
+            Program.Emit(emitter, generator);
 
-            var executable = (Executable)executableMethod.CreateDelegate(typeof(Executable));
+            var executable = (Executable)method.CreateDelegate(typeof(Executable));
 
-            return new Program(executable, executableEmitter.CreateConstants());
+            return new Program(executable, emitter.CreateConstants());
         }
 
         private static void Emit(Emitter emitter, ICommandGenerator generator)
