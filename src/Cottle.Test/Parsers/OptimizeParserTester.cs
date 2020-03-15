@@ -14,9 +14,29 @@ namespace Cottle.Test.Parsers
             Expression.CreateConstant(
                 new FunctionValue(Function.Create((state, arguments, output) => VoidValue.Instance)));
 
+        private static readonly Expression PureFunction =
+            Expression.CreateConstant(new FunctionValue(Function.CreatePure((s, a) => 0)));
+
         [Test]
-        public void Parse_OptimizeAccess_FindWhenPresentInConstantIndices()
+        public void Parse_CommandReturn()
         {
+            // Command: X{return 1}Y
+            var command = OptimizeParserTester.Optimize(Command.CreateComposite(Command.CreateLiteral("X"),
+                Command.CreateComposite(Command.CreateReturn(Expression.CreateConstant(1)),
+                    Command.CreateLiteral("Y"))));
+
+            Assert.That(command.Type, Is.EqualTo(CommandType.Composite));
+            Assert.That(command.Body.Type, Is.EqualTo(CommandType.Literal));
+            Assert.That(command.Body.Value, Is.EqualTo("X"));
+            Assert.That(command.Next.Type, Is.EqualTo(CommandType.Return));
+            Assert.That(command.Next.Operand.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(command.Next.Operand.Value, Is.EqualTo((Value)1));
+        }
+
+        [Test]
+        public void Parse_ExpressionAccess_FindWhenPresentInConstantIndices()
+        {
+            // Expression: [0: AAA, 1: BBB, 2: pure()][1]
             var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(Expression.CreateMap(
                     new[]
                     {
@@ -25,7 +45,7 @@ namespace Cottle.Test.Parsers
                         new ExpressionElement(Expression.CreateConstant(1),
                             Expression.CreateSymbol("BBB")),
                         new ExpressionElement(Expression.CreateConstant(2),
-                            Expression.CreateSymbol("CCC"))
+                            Expression.CreateInvoke(OptimizeParserTester.PureFunction, Array.Empty<Expression>()))
                     }),
                 Expression.CreateConstant(1)
             ));
@@ -35,8 +55,9 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeAccess_FindWhenMissingFromConstantIndices()
+        public void Parse_ExpressionAccess_FindWhenMissingFromConstantIndices()
         {
+            // Expression: [0: AAA, 1: BBB, 2: CCC][3]
             var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(Expression.CreateMap(
                     new[]
                     {
@@ -55,8 +76,9 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeAccess_SkipWhenNonPureIndices()
+        public void Parse_ExpressionAccess_SkipWhenNonPureIndices()
         {
+            // Expression: [0: AAA, 1: BBB, x: CCC][3]
             var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(Expression.CreateMap(
                     new[]
                     {
@@ -74,8 +96,38 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeInvoke_CallPureFunction()
+        public void Parse_ExpressionMap_FoldConstant()
         {
+            // Expression: [0: "X", 1: "Y", x: "Z"]
+            var expression = OptimizeParserTester.Optimize(Expression.CreateMap(new[]
+            {
+                new ExpressionElement(Expression.CreateConstant(0), Expression.CreateConstant("X")),
+                new ExpressionElement(Expression.CreateConstant(1), Expression.CreateConstant("Y")),
+                new ExpressionElement(Expression.CreateConstant(2), Expression.CreateConstant("Z"))
+            }));
+
+            Assert.That(expression.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(expression.Value, Is.EqualTo((Value)new Value[] { "X", "Y", "Z" }));
+        }
+
+        [Test]
+        public void Parse_ExpressionMap_SkipDynamic()
+        {
+            // Expression: [0: "X", 1: "Y", x: "Z"]
+            var expression = OptimizeParserTester.Optimize(Expression.CreateMap(new[]
+            {
+                new ExpressionElement(Expression.CreateConstant(0), Expression.CreateConstant("X")),
+                new ExpressionElement(Expression.CreateConstant(1), Expression.CreateSymbol("Y")),
+                new ExpressionElement(Expression.CreateConstant(2), Expression.CreateConstant("Z"))
+            }));
+
+            Assert.That(expression.Type, Is.EqualTo(ExpressionType.Map));
+        }
+
+        [Test]
+        public void Parse_ExpressionInvoke_CallPureFunction()
+        {
+            // Expression: pure(1, 2)
             var function = Function.CreatePure2((state, a, b) => 3);
             var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(
                 Expression.CreateConstant(new FunctionValue(function)),
@@ -86,8 +138,9 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeInvoke_ResolveNotAFunction()
+        public void Parse_ExpressionInvoke_ResolveNotAFunction()
         {
+            // Expression: 1()
             var expression =
                 OptimizeParserTester.Optimize(Expression.CreateInvoke(Expression.CreateConstant(1),
                     Array.Empty<Expression>()));
@@ -97,8 +150,9 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeInvoke_SkipImpureFunction()
+        public void Parse_ExpressionInvoke_SkipImpureFunction()
         {
+            // Expression: impure(1, 2)
             var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.ImpureFunction,
                 new[]
                 {
@@ -110,8 +164,9 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_OptimizeInvoke_SkipSymbolArgument()
+        public void Parse_ExpressionInvoke_SkipSymbolArgument()
         {
+            // Expression: impure(1, x)
             var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.ImpureFunction,
                 new[]
                 {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using Cottle.Builtins;
 using Cottle.Values;
 using NUnit.Framework;
@@ -12,81 +11,17 @@ namespace Cottle.Test
     public abstract class DocumentTester
     {
         [Test]
-        [TestCase("<|", "|>", "1 || 0", "true")]
-        [TestCase("<&", "&>", "1 && 0", "")]
-        public void ConfigurationBlockAmbiguous(string blockBegin, string blockEnd, string expression, string expected)
-        {
-            var configuration = new DocumentConfiguration
-                { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
-
-            AssertRender(blockBegin + expression + blockEnd, configuration, Context.Empty, expected);
-        }
-
-        [Test]
-        [TestCase("{\"\\\"\"}", '\\', "\"")]
-        [TestCase("{\"xxxy\"}", 'x', "xy")]
-        public void ConfigurationEscapeCommand(string input, char escape, string expected)
-        {
-            var configuration = new DocumentConfiguration { Escape = escape };
-
-            AssertRender(input, configuration, Context.Empty, expected);
-        }
-
-        [Test]
-        [TestCase("Escaped\\ Literal", '\\', "Escaped Literal")]
-        [TestCase("-{'x'-}", '-', "{'x'}")]
-        [TestCase("ABC", 'x', "ABC")]
-        [TestCase("--", '-', "-")]
-        public void ConfigurationEscapeText(string input, char escape, string expected)
-        {
-            var configuration = new DocumentConfiguration { Escape = escape };
-
-            AssertRender(input, configuration, Context.Empty, expected);
-        }
-
-        [Test]
-        [TestCase(false)]
-        [TestCase(true)]
-        public void ConfigurationOptimizeConstantMap(bool noOptimize)
-        {
-            var configuration = new DocumentConfiguration { NoOptimize = noOptimize };
-
-            AssertRender("{['X', 'Y', 'Z'][0]}", configuration, Context.Empty, "X");
-        }
-
-        [Test]
-        [TestCase(false)]
-        [TestCase(true)]
-        public void ConfigurationOptimizeReturn(bool noOptimize)
-        {
-            var configuration = new DocumentConfiguration { NoOptimize = noOptimize };
-
-            AssertRender("X{return 1}Y", configuration, Context.Empty, "X");
-        }
-
-        [Test]
-        [TestCase("A", "A", "B", "B")]
-        [TestCase("X  Y", " +", " ", "X Y")]
-        [TestCase("df98gd76dfg5df4g321gh0", "[^0-9]", "", "9876543210")]
-        public void ConfigurationTrimmer(string value, string pattern, string replacement, string expected)
-        {
-            var configuration = new DocumentConfiguration { Trimmer = s => Regex.Replace(s, pattern, replacement) };
-
-            AssertRender(value, configuration, Context.Empty, expected);
-        }
-
-        [Test]
         [TestCase("A{x}B", "AB")]
         [TestCase("A{x}B{y}C", "ABC")]
-        public void RenderCommandComposite(string expression, string expected)
+        public void Render_CommandComposite(string expression, string expected)
         {
-            AssertRender(expression, expected);
+            AssertOutput(expression, expected);
         }
 
         [Test]
-        public void RenderCommandDeclare()
+        public void Render_CommandDeclare()
         {
-            AssertRender("{declare var}", string.Empty);
+            AssertOutput("{declare var}", string.Empty);
         }
 
         [Test]
@@ -94,15 +29,15 @@ namespace Cottle.Test
         [TestCase("mixed", "A{'B'}C", "ABC")]
         [TestCase("number", "1", "1")]
         [TestCase("text", "something", "something")]
-        public void RenderCommandDeclareRender(string name, string body, string expected)
+        public void Render_CommandDeclareRender(string name, string body, string expected)
         {
-            AssertRender("{declare " + name + " as:" + body + "}{echo " + name + "}", expected);
+            AssertOutput("{declare " + name + " as:" + body + "}{echo " + name + "}", expected);
         }
 
         [Test]
         [TestCase("declare", "as")]
         [TestCase("set", "to")]
-        public void RenderCommandDeclareValueScope(string command, string suffix)
+        public void Render_CommandDeclareValueScope(string command, string suffix)
         {
             AssertReturn("{" + command + " f() " + suffix + ":{declare x as 'unused'}}" +
                          "{" + command + " x " + suffix + " 42}" +
@@ -114,7 +49,7 @@ namespace Cottle.Test
         [TestCase("var", "1", "1")]
         [TestCase("_", "'A'", "\"A\"")]
         [TestCase("some_symbol_name", "[]", "[]")]
-        public void RenderCommandDeclareValueSimple(string name, string value, string expected)
+        public void Render_CommandDeclareValueSimple(string name, string value, string expected)
         {
             AssertReturn("{declare " + name + " as " + value + "}{return " + name + "}", expected);
         }
@@ -127,18 +62,18 @@ namespace Cottle.Test
         [TestCase("[0: 1, 2, 2: 3]", "[1, 2, 3]")]
         [TestCase("[0: 1, 2, 3: 3]", "[1, 2, 3: 3]")]
         [TestCase("[1: 1, 2, 1: 3]", "[1: 1, 2, 3]")]
-        public void RenderCommandDump(string value, string expected)
+        public void Render_CommandDump(string value, string expected)
         {
-            AssertRender("{dump " + value + "}", expected);
+            AssertOutput("{dump " + value + "}", expected);
         }
 
         [Test]
         [TestCase("5", "5")]
         [TestCase("\"Hello, World!\"", "Hello, World!")]
         [TestCase("[1, 2]", "")]
-        public void RenderCommandEcho(string value, string expected)
+        public void Render_CommandEcho(string value, string expected)
         {
-            AssertRender("{echo " + value + "}", expected);
+            AssertOutput("{echo " + value + "}", expected);
         }
 
         [Test]
@@ -151,9 +86,9 @@ namespace Cottle.Test
         [TestCase("k, v", "[]", "-", "array", "array")]
         [TestCase("key, value", "['A': 'X', 'B': 'Y', 'C': 'Z']", "{key}{value}", null, "AXBYCZ")]
         [TestCase("i, j", "[1, 5, 9]", "{i}{j}", null, "011529")]
-        public void RenderCommandFor(string pairs, string source, string body, string empty, string expected)
+        public void Render_CommandFor(string pairs, string source, string body, string empty, string expected)
         {
-            AssertRender("{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) + "}", expected);
+            AssertOutput("{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) + "}", expected);
         }
 
         [Test]
@@ -170,16 +105,16 @@ namespace Cottle.Test
         [TestCase("1 + 0", "a|elif 1 + 0:b|else:c", "a")]
         [TestCase("0 + 0", "a|elif 1 + 0:b|else:c", "b")]
         [TestCase("0 + 0", "a|elif 0 + 0:b|else:c", "c")]
-        public void RenderCommandIf(string condition, string body, string expected)
+        public void Render_CommandIf(string condition, string body, string expected)
         {
-            AssertRender("{if " + condition + ":" + body + "}", expected);
+            AssertOutput("{if " + condition + ":" + body + "}", expected);
         }
 
         [Test]
         [TestCase("1", "1")]
         [TestCase("'A'", "\"A\"")]
         [TestCase("[]", "[]")]
-        public void RenderCommandReturnDirect(string value, string expected)
+        public void Render_CommandReturnDirect(string value, string expected)
         {
             AssertReturn("{return " + value + "}", expected);
         }
@@ -189,39 +124,39 @@ namespace Cottle.Test
         [TestCase("0", "1", "\"B\"")]
         [TestCase("1", "0", "\"AB\"")]
         [TestCase("1", "1", "\"AA\"")]
-        public void RenderCommandReturnNested(string a, string b, string expected)
+        public void Render_CommandReturnNested(string a, string b, string expected)
         {
             AssertReturn("{if " + a + ":{if " + b + ":{return 'AA'}|else:{return 'AB'}}|else:{return 'B'}}", expected);
         }
 
         [Test]
-        public void RenderCommandSet()
+        public void Render_CommandSet()
         {
-            AssertRender("{set var}", string.Empty);
+            AssertOutput("{set var}", string.Empty);
         }
 
         [Test]
         [TestCase("{set a to 1}{set b to 2}", "", "{a}{b}", "12")]
         [TestCase("{set a to 1}{set b to 2}", "{a}{b}", "{a}{b}", "3412")]
-        public void RenderCommandSetFunctionArguments(string pre, string body, string post, string expected)
+        public void Render_CommandSetFunctionArguments(string pre, string body, string post, string expected)
         {
-            AssertRender(pre + "{set f(a, b) to:" + body + "}{f(3, 4)}" + post, expected);
+            AssertOutput(pre + "{set f(a, b) to:" + body + "}{f(3, 4)}" + post, expected);
         }
 
         [Test]
         [TestCase("f", "Hello, World!", "Hello, World!")]
         [TestCase("test", "{'Some String'}", "Some String")]
         [TestCase("test", "AAA{return 0}BBB", "AAA")]
-        public void RenderCommandSetFunctionRender(string name, string body, string expected)
+        public void Render_CommandSetFunctionRender(string name, string body, string expected)
         {
-            AssertRender("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
+            AssertOutput("{set " + name + "() to:" + body + "}{return " + name + "()}", expected);
         }
 
         [Test]
         [TestCase("f", "{return 1}", "1")]
         [TestCase("test", "{return 'Some String'}", "\"Some String\"")]
         [TestCase("x", "{if 1:{return 'X'}|else:{return 'Y'}}", "\"X\"")]
-        public void RenderCommandSetFunctionReturn(string name, string body, string expected)
+        public void Render_CommandSetFunctionReturn(string name, string body, string expected)
         {
             AssertReturn("{set " + name + "(a) to:" + body + "}{return " + name + "()}", expected);
         }
@@ -230,16 +165,16 @@ namespace Cottle.Test
         [TestCase("x", "123", "123")]
         [TestCase("y", "{'a'}b{'c'}", "abc")]
         [TestCase("z", "A{return void}B", "A")]
-        public void RenderCommandSetRender(string name, string body, string expected)
+        public void Render_CommandSetRender(string name, string body, string expected)
         {
-            AssertRender("{set f() to:{set " + name + " to:" + body + "}}{f()}{echo " + name + "}", expected);
+            AssertOutput("{set f() to:{set " + name + " to:" + body + "}}{f()}{echo " + name + "}", expected);
         }
 
         [Test]
         [TestCase("{while parent:{parent.value}{set parent to parent.child}}")]
-        public void RenderCommandSetValueInLoop(string source)
+        public void Render_CommandSetValueInLoop(string source)
         {
-            AssertRender(source, default, Context.CreateCustom(
+            AssertOutput(source, default, Context.CreateCustom(
                 new Dictionary<Value, Value>
                 {
                     ["parent"] = new Dictionary<Value, Value>
@@ -250,9 +185,9 @@ namespace Cottle.Test
         [Test]
         [TestCase("define", "as", "default")]
         [TestCase("set", "to", "override")]
-        public void RenderCommandSetValueScope(string command, string suffix, string expected)
+        public void Render_CommandSetValueScope(string command, string suffix, string expected)
         {
-            AssertRender("{declare f() as:{" + command + " x " + suffix + " 'override'}}" +
+            AssertOutput("{declare f() as:{" + command + " x " + suffix + " 'override'}}" +
                          "{set x to 'default'}" +
                          "{f()}" +
                          "{x}", expected);
@@ -262,7 +197,7 @@ namespace Cottle.Test
         [TestCase("var", "1", "1")]
         [TestCase("_", "'A'", "\"A\"")]
         [TestCase("some_symbol_name", "[]", "[]")]
-        public void RenderCommandSetValueSimple(string name, string value, string expected)
+        public void Render_CommandSetValueSimple(string name, string value, string expected)
         {
             AssertReturn("{set " + name + " to " + value + "}{return " + name + "}", expected);
         }
@@ -270,33 +205,33 @@ namespace Cottle.Test
         [Test]
         [TestCase("{set a to 0}", "lt(a, 8)", "{set a to add(a, 1)}{a}", "12345678")]
         [TestCase("{set a to 8}", "lt(0, a)", "{set a to add(a, -1)}X", "XXXXXXXX")]
-        public void RenderCommandWhile(string init, string condition, string body, string expected)
+        public void Render_CommandWhile(string init, string condition, string body, string expected)
         {
-            AssertRender(init + "{while " + condition + ":" + body + "}", default,
+            AssertOutput(init + "{while " + condition + ":" + body + "}", default,
                 DocumentTester.CreateContextWithBuiltins("add", "lt"), expected);
         }
 
         [Test]
         [TestCase("Hello, World!")]
         [TestCase("This is some literal text")]
-        public void RenderLiteral(string expected)
+        public void Render_Literal(string expected)
         {
-            AssertRender(expected, expected);
+            AssertOutput(expected, expected);
         }
 
         [Test]
-        public void RenderLiteralEmpty()
+        public void Render_LiteralEmpty()
         {
-            AssertRender(string.Empty, string.Empty);
+            AssertOutput(string.Empty, string.Empty);
         }
 
         [Test]
         [TestCase("\\\\", "\\")]
         [TestCase("\\{\\|\\}", "{|}")]
         [TestCase("a\\{b\\|c\\}d", "a{b|c}d")]
-        public void RenderLiteralEscape(string escaped, string expected)
+        public void Render_LiteralEscape(string escaped, string expected)
         {
-            AssertRender(escaped, expected);
+            AssertOutput(escaped, expected);
         }
 
         [Test]
@@ -313,7 +248,7 @@ namespace Cottle.Test
         [TestCase("ccc[1]", "42")]
         [TestCase("ccc['1']", "<void>")]
         [TestCase("ddd", "<void>")]
-        public void RenderExpressionAccess(string access, string expected)
+        public void Render_ExpressionAccess(string access, string expected)
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
@@ -333,7 +268,7 @@ namespace Cottle.Test
         [TestCase("-17.2", "-17.2")]
         [TestCase("\"42\"", "\"42\"")]
         [TestCase("\"ABC\"", "\"ABC\"")]
-        public void RenderExpressionConstant(string constant, string expected)
+        public void Render_ExpressionConstant(string constant, string expected)
         {
             AssertReturn("{return " + constant + "}", expected);
         }
@@ -341,14 +276,14 @@ namespace Cottle.Test
         [Test]
         [TestCase("\"abc\"", "abcabc")]
         [TestCase("17", "1717")]
-        public void RenderExpressionInvoke(string input, string expected)
+        public void Render_ExpressionInvoke(string input, string expected)
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
                 ["f"] = new FunctionValue(Function.CreatePure1((state, value) => value.AsString + value.AsString))
             });
 
-            AssertRender($"{{f({input})}}", default, context, expected);
+            AssertOutput($"{{f({input})}}", default, context, expected);
         }
 
         [Test]
@@ -366,7 +301,7 @@ namespace Cottle.Test
         [TestCase("[2: 'A', 5: 'B']['2']", "<void>")]
         [TestCase("['x': 'X', 'y': 'Y']['y']", "\"Y\"")]
         [TestCase("['a': ['b': ['c': 42]]]['a']['b']['c']", "42")]
-        public void RenderExpressionMap(string expression, string expected)
+        public void Render_ExpressionMap(string expression, string expected)
         {
             AssertReturn("{return " + expression + "}", expected);
         }
@@ -375,7 +310,7 @@ namespace Cottle.Test
         [TestCase("aaa", "aaa", "I sense a soul", "\"I sense a soul\"")]
         [TestCase("_", "_", "in search of answers", "\"in search of answers\"")]
         [TestCase("x", "missing", "x", "<void>")]
-        public void RenderExpressionSymbol(string set, string get, string value, string expected)
+        public void Render_ExpressionSymbol(string set, string get, string value, string expected)
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
@@ -389,7 +324,7 @@ namespace Cottle.Test
         [TestCase("1", "1")]
         [TestCase("3", "6")]
         [TestCase("8", "40320")]
-        public void SampleFactorial(string value, string expected)
+        public void Render_SampleFactorial(string value, string expected)
         {
             AssertReturn(@"
                 {set factorial(n) to:
@@ -407,9 +342,9 @@ namespace Cottle.Test
         [Test]
         [TestCase("2", "A -> B, A -> C, B -> C, ")]
         [TestCase("3", "A -> C, A -> B, C -> B, A -> C, B -> A, B -> C, A -> C, ")]
-        public void SampleHanoiTowers(string disks, string expected)
+        public void Render_SampleHanoiTowers(string disks, string expected)
         {
-            AssertRender(@"
+            AssertOutput(@"
                 {set hanoi_rec(n, from, by, to) to:
                     {set n to n - 1}
                     {if n > 0:
@@ -432,7 +367,7 @@ namespace Cottle.Test
         [TestCase("2", "4")]
         [TestCase("8", "256")]
         [TestCase("16", "65536")]
-        public void SamplePowerOfTwo(string value, string expected)
+        public void Render_SamplePowerOfTwo(string value, string expected)
         {
             AssertReturn(@"
                 {set a to " + value + @"}
@@ -453,7 +388,7 @@ namespace Cottle.Test
         [TestCase(true, 45000)]
         [TestCase(true, 90000)]
         [TestCase(true, 200000)]
-        public void TextTooLong(bool variable, int characters)
+        public void Render_TextTooLong(bool variable, int characters)
         {
             var builder = new StringBuilder();
 
@@ -475,12 +410,12 @@ namespace Cottle.Test
 
             var input = builder.ToString();
 
-            AssertRender(input, default, context, input);
+            AssertOutput(input, default, context, input);
         }
 
         protected abstract DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration);
 
-        private void AssertRender(string source, DocumentConfiguration configuration, IContext context,
+        private void AssertOutput(string source, DocumentConfiguration configuration, IContext context,
             string expected)
         {
             using (var template = new StringReader(source))
@@ -492,9 +427,9 @@ namespace Cottle.Test
             }
         }
 
-        protected void AssertRender(string source, string expected)
+        protected void AssertOutput(string source, string expected)
         {
-            AssertRender(source, default, Context.Empty, expected);
+            AssertOutput(source, default, Context.Empty, expected);
         }
 
         private void AssertReturn(string source, DocumentConfiguration configuration, IContext context,
@@ -516,17 +451,17 @@ namespace Cottle.Test
 
         private static IContext CreateContextWithBuiltins(params string[] names)
         {
-            var variables = new Dictionary<Value, Value>();
+            var symbols = new Dictionary<Value, Value>();
 
             foreach (var name in names)
             {
                 if (!BuiltinFunctions.TryGet(name, out var function))
                     continue;
 
-                variables[name] = new FunctionValue(function);
+                symbols[name] = new FunctionValue(function);
             }
 
-            return Context.CreateCustom(variables);
+            return Context.CreateCustom(symbols);
         }
     }
 }
