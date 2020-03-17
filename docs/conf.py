@@ -6,7 +6,7 @@ Resources:
 https://pythonhosted.org/an_example_pypi_project/sphinx.html
 https://github.com/djungelorm/sphinx-csharp
 https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
-http://docutils.sourceforge.net/docs/user/rst/quickref.html
+https://docutils.sourceforge.net/docs/user/rst/quickref.html
 """
 
 import sys

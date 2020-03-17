@@ -43,7 +43,7 @@ Source code is open for reviews and contributions!
 Download the library
 ====================
 
-Cottle is available as an installable package on `NuGet <http://www.nuget.org/packages/Cottle/>`__ official website. Just open your extension manager in Visual Studio, search for "Cottle" and install from there.
+Cottle is available as an installable package on `NuGet <https://www.nuget.org/packages/Cottle/>`__ official website. Just open your extension manager in Visual Studio, search for "Cottle" and install from there.
 
 You can also read, download or contribute to the source code on `GitHub <https://github.com/r3c/cottle>`__.
 

@@ -41,6 +41,6 @@ Resource
 
 * Home page: https://r3c.github.io/cottle/
 * Documentation: https://cottle.readthedocs.io/
-* Benchmark: http://r3c.github.io/cottle/benchmark.html
+* Benchmark: https://r3c.github.io/cottle/benchmark.html
 * NuGet package: https://www.nuget.org/packages/Cottle
 * License: [license.md](license.md)

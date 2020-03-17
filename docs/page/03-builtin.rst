@@ -903,7 +903,7 @@ Text
 char(codepoint)
 ---------------
 
-Get a 1-character string from its Unicode code point integer value. See more about Unicode and code points on `Wikipedia <http://en.wikipedia.org/wiki/Unicode>`__.
+Get a 1-character string from its Unicode code point integer value. See more about Unicode and code points on `Wikipedia <https://en.wikipedia.org/wiki/Unicode>`__.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -987,7 +987,7 @@ Match ``subject`` against given regular expression pattern. If match is successf
 ord(character)
 --------------
 
-Get the Unicode code point value of the first character of given string. See more about Unicode and code points on `Wikipedia <http://en.wikipedia.org/wiki/Unicode>`__.
+Get the Unicode code point value of the first character of given string. See more about Unicode and code points on `Wikipedia <https://en.wikipedia.org/wiki/Unicode>`__.
 
 .. code-block:: plain
     :caption: Cottle template
