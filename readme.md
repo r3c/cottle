@@ -32,7 +32,7 @@ var document = Document.CreateDefault(template).DocumentOrThrow;
 return document.Render(Context.CreateBuiltin(new Dictionary<Value, Value>
 {
     ["messages"] = GetMessages(),
-    ["name"] = new Value[]
+    ["name"] = "JC Denton"
 }));
 ```
 
