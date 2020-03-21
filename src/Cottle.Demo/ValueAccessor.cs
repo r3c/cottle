@@ -6,7 +6,7 @@ namespace Cottle.Demo
 {
     public static class ValueAccessor
     {
-        public static bool Load(BinaryReader reader, IDictionary<string, Value> values)
+        public static bool TryLoad(BinaryReader reader, int version, IDictionary<string, Value> values)
         {
             int count;
 
@@ -14,7 +14,7 @@ namespace Cottle.Demo
             {
                 var key = reader.ReadString();
 
-                if (!ValueAccessor.Load(reader, out var value))
+                if (!ValueAccessor.TryReadValue(reader, version, out var value))
                     return false;
 
                 values[key] = value;
@@ -31,13 +31,68 @@ namespace Cottle.Demo
             {
                 writer.Write(pair.Key);
 
-                ValueAccessor.Save(writer, pair.Value);
+                ValueAccessor.WriteValue(writer, pair.Value);
             }
         }
 
-        private static bool Load(BinaryReader reader, out Value value)
+        private static bool TryReadType(BinaryReader reader, int version, out ValueContent type)
         {
-            var type = (ValueContent)reader.ReadInt32();
+            var value = reader.ReadInt32();
+
+            if (version >= 3)
+            {
+                type = (ValueContent)value;
+
+                return value >= 0 && value < Enum.GetNames(typeof(ValueContent)).Length;
+            }
+
+            switch (value)
+            {
+                case 0:
+                    type = ValueContent.Map;
+
+                    return true;
+
+                case 1:
+                    type = ValueContent.Boolean;
+
+                    return true;
+
+                case 2:
+                    type = ValueContent.Function;
+
+                    return true;
+
+                case 3:
+                    type = ValueContent.Number;
+
+                    return true;
+
+                case 4:
+                    type = ValueContent.String;
+
+                    return true;
+
+                case 5:
+                    type = ValueContent.Void;
+
+                    return true;
+
+                default:
+                    type = default;
+
+                    return false;
+            }
+        }
+
+        private static bool TryReadValue(BinaryReader reader, int version, out Value value)
+        {
+            if (!ValueAccessor.TryReadType(reader, version, out var type))
+            {
+                value = default;
+
+                return false;
+            }
 
             switch (type)
             {
@@ -48,27 +103,27 @@ namespace Cottle.Demo
 
                 case ValueContent.Map:
                     var count = reader.ReadInt32();
-                    var array = new List<KeyValuePair<Value, Value>>(count);
+                    var list = new List<KeyValuePair<Value, Value>>(count);
 
                     while (count-- > 0)
                     {
-                        if (!ValueAccessor.Load(reader, out var arrayKey) ||
-                            !ValueAccessor.Load(reader, out var arrayValue))
+                        if (!ValueAccessor.TryReadValue(reader, version, out var mapKey) ||
+                            !ValueAccessor.TryReadValue(reader, version, out var mapValue))
                         {
                             value = default;
 
                             return false;
                         }
 
-                        array.Add(new KeyValuePair<Value, Value>(arrayKey, arrayValue));
+                        list.Add(new KeyValuePair<Value, Value>(mapKey, mapValue));
                     }
 
-                    value = array;
+                    value = list;
 
                     break;
 
                 case ValueContent.Number:
-                    value = reader.ReadDecimal();
+                    value = version < 3 ? (double)reader.ReadDecimal() : reader.ReadDouble();
 
                     break;
 
@@ -90,7 +145,7 @@ namespace Cottle.Demo
             return true;
         }
 
-        private static void Save(BinaryWriter writer, Value value)
+        private static void WriteValue(BinaryWriter writer, Value value)
         {
             writer.Write((int)value.Type);
 
@@ -101,13 +156,17 @@ namespace Cottle.Demo
 
                     break;
 
+                case ValueContent.Function:
+                case ValueContent.Void:
+                    break;
+
                 case ValueContent.Map:
                     writer.Write(value.Fields.Count);
 
                     foreach (var pair in value.Fields)
                     {
-                        ValueAccessor.Save(writer, pair.Key);
-                        ValueAccessor.Save(writer, pair.Value);
+                        ValueAccessor.WriteValue(writer, pair.Key);
+                        ValueAccessor.WriteValue(writer, pair.Value);
                     }
 
                     break;
@@ -121,6 +180,9 @@ namespace Cottle.Demo
                     writer.Write(value.AsString);
 
                     break;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
     }

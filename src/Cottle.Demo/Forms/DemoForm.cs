@@ -296,14 +296,14 @@ namespace Cottle.Demo.Forms
                     var values = new Dictionary<string, Value>();
                     var version = reader.ReadInt32();
 
-                    if (version < 1 || version > 2)
+                    if (version < 1 || version > 3)
                     {
                         MessageBox.Show(this, @"Incompatible file format");
 
                         return;
                     }
 
-                    if (ValueAccessor.Load(reader, values))
+                    if (ValueAccessor.TryLoad(reader, version, values))
                     {
                         foreach (var pair in values)
                             root.Nodes.Add(DemoForm.NodeCreate(pair.Key, pair.Value));
@@ -335,10 +335,10 @@ namespace Cottle.Demo.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            catch
+            catch (IOException exception)
             {
-                MessageBox.Show(this, $@"Cannot open input file ""{path}""", @"File load error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show(this, $@"Cannot open input file ""{path}"": " + exception.Message, @"File load error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -356,7 +356,7 @@ namespace Cottle.Demo.Forms
             {
                 using (var writer = new BinaryWriter(new FileStream(path, FileMode.Create), Encoding.UTF8))
                 {
-                    writer.Write(2);
+                    writer.Write(3);
 
                     ValueAccessor.Save(writer, values);
 
