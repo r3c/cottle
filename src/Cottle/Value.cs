@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Cottle.Evaluables;
 using Cottle.Functions;
@@ -278,19 +279,19 @@ namespace Cottle
                 switch (_type)
                 {
                     case Value.ContentEvaluable:
-                        return _evaluable.AsBoolean;
+                        return _unionReference.Evaluable.AsBoolean;
 
                     case ValueContent.Boolean:
-                        return _boolean;
+                        return _unionValue.Boolean;
 
                     case ValueContent.Map:
                         return Fields.Count > 0;
 
                     case ValueContent.Number:
-                        return Math.Abs(_number) > double.Epsilon;
+                        return Math.Abs(_unionValue.Number) > double.Epsilon;
 
                     case ValueContent.String:
-                        return !string.IsNullOrEmpty(_string);
+                        return !string.IsNullOrEmpty(_unionReference.String);
 
                     case ValueContent.Function:
                     case ValueContent.Void:
@@ -309,7 +310,7 @@ namespace Cottle
                 switch (_type)
                 {
                     case Value.ContentEvaluable:
-                        return _evaluable.AsFunction;
+                        return _unionReference.Evaluable.AsFunction;
 
                     case ValueContent.Boolean:
                     case ValueContent.Map:
@@ -319,7 +320,7 @@ namespace Cottle
                         return Function.Empty;
 
                     case ValueContent.Function:
-                        return _function;
+                        return _unionReference.Function;
 
                     default:
                         throw new InvalidOperationException();
@@ -334,20 +335,20 @@ namespace Cottle
                 switch (_type)
                 {
                     case Value.ContentEvaluable:
-                        return _evaluable.AsNumber;
+                        return _unionReference.Evaluable.AsNumber;
 
                     case ValueContent.Boolean:
-                        return _boolean ? 1 : 0;
+                        return _unionValue.Boolean ? 1 : 0;
 
                     case ValueContent.Map:
-                        return _map.Count;
+                        return _unionReference.Map.Count;
 
                     case ValueContent.Number:
-                        return _number;
+                        return _unionValue.Number;
 
                     case ValueContent.String:
-                        return double.TryParse(_string, NumberStyles.Number, CultureInfo.InvariantCulture,
-                            out var number)
+                        return double.TryParse(_unionReference.String, NumberStyles.Number,
+                            CultureInfo.InvariantCulture, out var number)
                             ? number
                             : 0;
 
@@ -368,16 +369,16 @@ namespace Cottle
                 switch (_type)
                 {
                     case Value.ContentEvaluable:
-                        return _evaluable.AsString;
+                        return _unionReference.Evaluable.AsString;
 
                     case ValueContent.Boolean:
-                        return _boolean ? "true" : string.Empty;
+                        return _unionValue.Boolean ? "true" : string.Empty;
 
                     case ValueContent.Number:
-                        return _number.ToString(CultureInfo.InvariantCulture);
+                        return _unionValue.Number.ToString(CultureInfo.InvariantCulture);
 
                     case ValueContent.String:
-                        return _string;
+                        return _unionReference.String;
 
                     case ValueContent.Function:
                     case ValueContent.Map:
@@ -397,10 +398,10 @@ namespace Cottle
                 switch (_type)
                 {
                     case Value.ContentEvaluable:
-                        return _evaluable.Fields;
+                        return _unionReference.Evaluable.Fields;
 
                     case ValueContent.Map:
-                        return _map;
+                        return _unionReference.Map;
 
                     case ValueContent.Boolean:
                     case ValueContent.Function:
@@ -415,129 +416,179 @@ namespace Cottle
             }
         }
 
-        public ValueContent Type => _type == Value.ContentEvaluable ? _evaluable.Type : _type;
+        [StructLayout(LayoutKind.Explicit)]
+        private struct UnionReference
+        {
+            [FieldOffset(0)]
+            public IFunction Function;
 
-        private readonly bool _boolean;
+            [FieldOffset(0)]
+            public IEvaluable Evaluable;
 
-        private readonly IFunction _function;
+            [FieldOffset(0)]
+            public IMap Map;
 
-        private readonly IEvaluable _evaluable;
+            [FieldOffset(0)]
+            public string String;
+        }
 
-        private readonly IMap _map;
+        [StructLayout(LayoutKind.Explicit)]
+        private struct UnionValue
+        {
+            [FieldOffset(0)]
+            public bool Boolean;
 
-        private readonly double _number;
+            [FieldOffset(0)]
+            public double Number;
+        }
 
-        private readonly string _string;
+        public ValueContent Type => _type == Value.ContentEvaluable ? _unionReference.Evaluable.Type : _type;
 
         private readonly ValueContent _type;
 
-        private Value(IEvaluable value) :
-            this()
+        private readonly UnionReference _unionReference;
+
+        private readonly UnionValue _unionValue;
+
+        private Value(IEvaluable value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _evaluable = value;
                 _type = Value.ContentEvaluable;
+                _unionReference = new UnionReference { Evaluable = value };
+                _unionValue = default;
             }
         }
 
-        private Value(IFunction value) :
-            this()
+        private Value(IFunction value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _function = value;
                 _type = ValueContent.Function;
+                _unionReference = new UnionReference { Function = value };
+                _unionValue = default;
             }
         }
 
-        private Value(IReadOnlyDictionary<Value, Value> value) :
-            this()
+        private Value(IReadOnlyDictionary<Value, Value> value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _map = new HashMap(value);
                 _type = ValueContent.Map;
+                _unionReference = new UnionReference { Map = new HashMap(value) };
+                _unionValue = default;
             }
         }
 
-        private Value(IEnumerable<KeyValuePair<Value, Value>> value) :
-            this()
+        private Value(IEnumerable<KeyValuePair<Value, Value>> value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _map = new MixMap(value);
                 _type = ValueContent.Map;
+                _unionReference = new UnionReference { Map = new MixMap(value) };
+                _unionValue = default;
             }
         }
 
-        private Value(IEnumerable<Value> value) :
-            this()
+        private Value(IEnumerable<Value> value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _map = new ArrayMap(value);
                 _type = ValueContent.Map;
+                _unionReference = new UnionReference { Map = new ArrayMap(value) };
+                _unionValue = default;
             }
         }
 
-        private Value(IMap value) :
-            this()
+        private Value(IMap value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _map = value;
                 _type = ValueContent.Map;
+                _unionReference = new UnionReference { Map = value };
+                _unionValue = default;
             }
         }
 
-        private Value(Func<int, Value> generator, int count) :
-            this()
+        private Value(Func<int, Value> generator, int count)
         {
             if (generator == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _map = new GeneratorMap(generator, count);
                 _type = ValueContent.Map;
+                _unionReference = new UnionReference { Map = new GeneratorMap(generator, count) };
+                _unionValue = default;
             }
         }
 
-        private Value(bool value) :
-            this()
+        private Value(bool value)
         {
-            _boolean = value;
             _type = ValueContent.Boolean;
+            _unionReference = default;
+            _unionValue = new UnionValue { Boolean = value };
         }
 
-        private Value(double value) :
-            this()
+        private Value(double value)
         {
-            _number = value;
             _type = ValueContent.Number;
+            _unionReference = default;
+            _unionValue = new UnionValue { Number = value };
         }
 
-        private Value(string value) :
-            this()
+        private Value(string value)
         {
             if (value == null)
+            {
                 _type = ValueContent.Void;
+                _unionReference = default;
+                _unionValue = default;
+            }
             else
             {
-                _string = value;
                 _type = ValueContent.String;
+                _unionReference = new UnionReference { String = value };
+                _unionValue = default;
             }
         }
 
@@ -551,22 +602,22 @@ namespace Cottle
             switch (_type)
             {
                 case Value.ContentEvaluable:
-                    return _evaluable.CompareTo(other);
+                    return _unionReference.Evaluable.CompareTo(other);
 
                 case ValueContent.Boolean:
-                    return _boolean.CompareTo(other.AsBoolean);
+                    return _unionValue.Boolean.CompareTo(other.AsBoolean);
 
                 case ValueContent.Function:
-                    return _function.CompareTo(other.AsFunction);
+                    return _unionReference.Function.CompareTo(other.AsFunction);
 
                 case ValueContent.Map:
-                    return _map.CompareTo(other.Fields);
+                    return _unionReference.Map.CompareTo(other.Fields);
 
                 case ValueContent.Number:
-                    return _number.CompareTo(other.AsNumber);
+                    return _unionValue.Number.CompareTo(other.AsNumber);
 
                 case ValueContent.String:
-                    return string.CompareOrdinal(_string, other.AsString);
+                    return string.CompareOrdinal(_unionReference.String, other.AsString);
 
                 case ValueContent.Void:
                     return 0;
@@ -594,22 +645,22 @@ namespace Cottle
             switch (_type)
             {
                 case Value.ContentEvaluable:
-                    return _evaluable.GetHashCode();
+                    return _unionReference.Evaluable.GetHashCode();
 
                 case ValueContent.Boolean:
-                    return (_boolean.GetHashCode() << shift) | ((int)ValueContent.Boolean & mask);
+                    return (_unionValue.Boolean.GetHashCode() << shift) | ((int)ValueContent.Boolean & mask);
 
                 case ValueContent.Function:
-                    return (_function.GetHashCode() << shift) | ((int)ValueContent.Function & mask);
+                    return (_unionReference.Function.GetHashCode() << shift) | ((int)ValueContent.Function & mask);
 
                 case ValueContent.Map:
-                    return (_map.GetHashCode() << shift) | ((int)ValueContent.Map & mask);
+                    return (_unionReference.Map.GetHashCode() << shift) | ((int)ValueContent.Map & mask);
 
                 case ValueContent.Number:
-                    return (_number.GetHashCode() << shift) | ((int)ValueContent.Number & mask);
+                    return (_unionValue.Number.GetHashCode() << shift) | ((int)ValueContent.Number & mask);
 
                 case ValueContent.String:
-                    return (_string.GetHashCode() << shift) | ((int)ValueContent.String & mask);
+                    return (_unionReference.String.GetHashCode() << shift) | ((int)ValueContent.String & mask);
 
                 case ValueContent.Void:
                     return Type.GetHashCode();
@@ -624,10 +675,10 @@ namespace Cottle
             switch (_type)
             {
                 case Value.ContentEvaluable:
-                    return _evaluable.ToString();
+                    return _unionReference.Evaluable.ToString();
 
                 case ValueContent.Boolean:
-                    return "<" + (_boolean ? "true" : "false") + ">";
+                    return "<" + (_unionValue.Boolean ? "true" : "false") + ">";
 
                 case ValueContent.Function:
                     return "<" + AsFunction + "()>";
@@ -665,14 +716,14 @@ namespace Cottle
                     return mapBuilder.ToString();
 
                 case ValueContent.Number:
-                    return _number.ToString(CultureInfo.InvariantCulture);
+                    return _unionValue.Number.ToString(CultureInfo.InvariantCulture);
 
                 case ValueContent.String:
                     var stringBuilder = new StringBuilder();
 
                     stringBuilder.Append('"');
 
-                    foreach (var c in _string)
+                    foreach (var c in _unionReference.String)
                     {
                         if (c == '\\' || c == '"')
                             stringBuilder.Append('\\');
