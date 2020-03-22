@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cottle.Contexts;
-using Cottle.Values;
 
 namespace Cottle.Parsers.Optimize.Optimizers
 {
@@ -150,64 +149,88 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
         public Command Optimize(Command command)
         {
-            foreach (var optimizer in _optimizers)
-                command = optimizer.Optimize(command);
-
+            // Recursively apply optimizations to command components
             switch (command.Type)
             {
                 case CommandType.AssignFunction:
-                    return Command.CreateAssignFunction(command.Key, command.Arguments, command.Mode,
+                    command = Command.CreateAssignFunction(command.Key, command.Arguments, command.Mode,
                         Optimize(command.Body));
 
+                    break;
+
                 case CommandType.AssignRender:
-                    return Command.CreateAssignRender(command.Key, command.Mode, Optimize(command.Body));
+                    command = Command.CreateAssignRender(command.Key, command.Mode, Optimize(command.Body));
+
+                    break;
 
                 case CommandType.AssignValue:
-                    return Command.CreateAssignValue(command.Key, command.Mode, Optimize(command.Operand));
+                    command = Command.CreateAssignValue(command.Key, command.Mode, Optimize(command.Operand));
+
+                    break;
 
                 case CommandType.Composite:
-                    return Command.CreateComposite(Optimize(command.Body), Optimize(command.Next));
+                    command = Command.CreateComposite(Optimize(command.Body), Optimize(command.Next));
+
+                    break;
 
                 case CommandType.Dump:
-                    return Command.CreateDump(Optimize(command.Operand));
+                    command = Command.CreateDump(Optimize(command.Operand));
+
+                    break;
 
                 case CommandType.Echo:
-                    return Command.CreateEcho(Optimize(command.Operand));
+                    command = Command.CreateEcho(Optimize(command.Operand));
+
+                    break;
 
                 case CommandType.For:
-                    return Command.CreateFor(command.Key, command.Value, Optimize(command.Operand),
+                    command = Command.CreateFor(command.Key, command.Value, Optimize(command.Operand),
                         Optimize(command.Body), Optimize(command.Next));
 
+                    break;
+
                 case CommandType.If:
-                    return Command.CreateIf(Optimize(command.Operand), Optimize(command.Body), Optimize(command.Next));
+                    command = Command.CreateIf(Optimize(command.Operand), Optimize(command.Body),
+                        Optimize(command.Next));
+
+                    break;
 
                 case CommandType.Literal:
                 case CommandType.None:
-                    return command;
+                    break;
 
                 case CommandType.Return:
-                    return Command.CreateReturn(Optimize(command.Operand));
+                    command = Command.CreateReturn(Optimize(command.Operand));
+
+                    break;
 
                 case CommandType.While:
-                    return Command.CreateWhile(Optimize(command.Operand), Optimize(command.Body));
+                    command = Command.CreateWhile(Optimize(command.Operand), Optimize(command.Body));
+
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(command));
             }
+
+            // Apply optimizations to command itself
+            return _optimizers.Aggregate(command, (current, optimizer) => optimizer.Optimize(current));
         }
 
         public Expression Optimize(Expression expression)
         {
-            foreach (var optimizer in _optimizers)
-                expression = optimizer.Optimize(expression);
-
+            // Recursively apply optimizations to expression components
             switch (expression.Type)
             {
                 case ExpressionType.Access:
-                    return Expression.CreateAccess(Optimize(expression.Source), Optimize(expression.Subscript));
+                    expression = Expression.CreateAccess(Optimize(expression.Source), Optimize(expression.Subscript));
+
+                    break;
 
                 case ExpressionType.Constant:
-                    return Expression.CreateConstant(expression.Value);
+                    expression = Expression.CreateConstant(expression.Value);
+
+                    break;
 
                 case ExpressionType.Invoke:
                     var arguments = new Expression[expression.Arguments.Count];
@@ -215,7 +238,9 @@ namespace Cottle.Parsers.Optimize.Optimizers
                     for (var i = 0; i < expression.Arguments.Count; ++i)
                         arguments[i] = Optimize(expression.Arguments[i]);
 
-                    return Expression.CreateInvoke(Optimize(expression.Source), arguments);
+                    expression = Expression.CreateInvoke(Optimize(expression.Source), arguments);
+
+                    break;
 
                 case ExpressionType.Map:
                     var elements = new ExpressionElement[expression.Elements.Count];
@@ -227,14 +252,21 @@ namespace Cottle.Parsers.Optimize.Optimizers
                         elements[i] = new ExpressionElement(Optimize(element.Key), Optimize(element.Value));
                     }
 
-                    return Expression.CreateMap(elements);
+                    expression = Expression.CreateMap(elements);
+
+                    break;
 
                 case ExpressionType.Symbol:
-                    return Expression.CreateSymbol(expression.Value.AsString);
+                    expression = Expression.CreateSymbol(expression.Value.AsString);
+
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expression));
             }
+
+            // Apply optimizations to expression itself
+            return _optimizers.Aggregate(expression, (current, optimizer) => optimizer.Optimize(current));
         }
     }
 }

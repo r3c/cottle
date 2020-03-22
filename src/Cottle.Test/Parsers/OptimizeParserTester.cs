@@ -21,6 +21,7 @@ namespace Cottle.Test.Parsers
         public void Parse_CommandReturn()
         {
             // Command: X{return 1}Y
+            // Result: X{return 1}
             var command = OptimizeParserTester.Optimize(Command.CreateComposite(Command.CreateLiteral("X"),
                 Command.CreateComposite(Command.CreateReturn(Expression.CreateConstant(1)),
                     Command.CreateLiteral("Y"))));
@@ -37,6 +38,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionAccess_FindWhenPresentInConstantIndices()
         {
             // Expression: [0: AAA, 1: BBB, 2: pure()][1]
+            // Result: BBB
             var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(Expression.CreateMap(
                     new[]
                     {
@@ -58,6 +60,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionAccess_FindWhenMissingFromConstantIndices()
         {
             // Expression: [0: AAA, 1: BBB, 2: CCC][3]
+            // Result: <void>
             var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(Expression.CreateMap(
                     new[]
                     {
@@ -73,6 +76,32 @@ namespace Cottle.Test.Parsers
 
             Assert.That(expression.Type, Is.EqualTo(ExpressionType.Constant));
             Assert.That(expression.Value, Is.EqualTo(VoidValue.Instance));
+        }
+
+        [Test]
+        public void Parse_ExpressionAccess_FindNestedConstantExpressions()
+        {
+            // Expression: [17: [3: 42][3]][[2: 17][2]]
+            // Result: 42
+            const int value = 42;
+
+            var index1 = Expression.CreateConstant(17);
+            var index2 = Expression.CreateConstant(3);
+            var index3 = Expression.CreateConstant(2);
+
+            var expression = OptimizeParserTester.Optimize(Expression.CreateAccess(
+                Expression.CreateMap(new[]
+                {
+                    new ExpressionElement(index1,
+                        Expression.CreateAccess(
+                            Expression.CreateMap(new[]
+                                { new ExpressionElement(index2, Expression.CreateConstant(value)) }), index2))
+                }),
+                Expression.CreateAccess(Expression.CreateMap(new[] { new ExpressionElement(index3, index1) }),
+                    index3)));
+
+            Assert.That(expression.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(expression.Value, Is.EqualTo((Value)value));
         }
 
         [Test]
@@ -99,6 +128,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionMap_FoldConstant()
         {
             // Expression: [0: "X", 1: "Y", x: "Z"]
+            // Result: <map>
             var expression = OptimizeParserTester.Optimize(Expression.CreateMap(new[]
             {
                 new ExpressionElement(Expression.CreateConstant(0), Expression.CreateConstant("X")),
@@ -128,6 +158,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionInvoke_CallPureFunction()
         {
             // Expression: pure(1, 2)
+            // Result: 3
             var function = Function.CreatePure2((state, a, b) => 3);
             var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(
                 Expression.CreateConstant(new FunctionValue(function)),
@@ -141,6 +172,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionInvoke_ResolveNotAFunction()
         {
             // Expression: 1()
+            // Result: <void>
             var expression =
                 OptimizeParserTester.Optimize(Expression.CreateInvoke(Expression.CreateConstant(1),
                     Array.Empty<Expression>()));
@@ -166,8 +198,8 @@ namespace Cottle.Test.Parsers
         [Test]
         public void Parse_ExpressionInvoke_SkipSymbolArgument()
         {
-            // Expression: impure(1, x)
-            var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.ImpureFunction,
+            // Expression: pure(1, x)
+            var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.PureFunction,
                 new[]
                 {
                     Expression.CreateConstant(1),
