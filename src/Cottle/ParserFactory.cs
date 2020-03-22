@@ -1,5 +1,4 @@
-﻿using System;
-using Cottle.Parsers;
+﻿using Cottle.Parsers;
 
 namespace Cottle
 {

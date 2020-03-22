@@ -1,6 +1,6 @@
 ﻿using Cottle.Values;
 
-namespace Cottle.Builtins
+ namespace Cottle.Builtins
 {
     internal static class BuiltinOperators
     {

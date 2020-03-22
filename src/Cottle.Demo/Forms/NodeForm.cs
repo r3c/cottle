@@ -60,7 +60,7 @@ namespace Cottle.Demo.Forms
 
             if (string.IsNullOrEmpty(key))
             {
-                MessageBox.Show(this, "Please enter a non-empty name for this value.", "Invalid name");
+                MessageBox.Show(this, @"Please enter a non-empty name for this value.", @"Invalid name");
 
                 return;
             }
@@ -82,8 +82,8 @@ namespace Cottle.Demo.Forms
                         out var number))
                     {
                         MessageBox.Show(this,
-                            $"\"{textBoxValueNumber.Text}\" is not a valid number, please enter a valid decimal value (e.g.: 5.0, 27, .897).",
-                            "Invalid number");
+                            $@"""{textBoxValueNumber.Text}"" is not a valid number, please enter a valid decimal value (e.g.: 5.0, 27, .897).",
+                            @"Invalid number");
 
                         return;
                     }

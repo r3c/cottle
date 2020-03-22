@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Cottle.Documents.Compiled;
-using Cottle.Documents.Evaluated;
 using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Evaluators

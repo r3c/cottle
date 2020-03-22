@@ -1,5 +1,4 @@
 using System.IO;
-using Cottle.Stores;
 using Cottle.Values;
 using NUnit.Framework;
 

@@ -8,31 +8,31 @@ namespace Cottle.Stores
     {
         private static readonly IStore Constant = new ContextStore(BuiltinContext.Instance);
 
-        private readonly FallbackStore store;
+        private readonly FallbackStore _store;
 
         public BuiltinStore()
         {
-            store = new FallbackStore(BuiltinStore.Constant, new SimpleStore());
+            _store = new FallbackStore(BuiltinStore.Constant, new SimpleStore());
         }
 
         public override void Enter()
         {
-            store.Enter();
+            _store.Enter();
         }
 
         public override bool Leave()
         {
-            return store.Leave();
+            return _store.Leave();
         }
 
         public override void Set(Value symbol, Value value, StoreMode mode)
         {
-            store.Set(symbol, value, mode);
+            _store.Set(symbol, value, mode);
         }
 
         public override bool TryGet(Value symbol, out Value value)
         {
-            return store.TryGet(symbol, out value);
+            return _store.TryGet(symbol, out value);
         }
     }
 }

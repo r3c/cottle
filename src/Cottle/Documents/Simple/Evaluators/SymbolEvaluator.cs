@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
