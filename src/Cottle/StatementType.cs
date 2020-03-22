@@ -1,6 +1,6 @@
 ﻿namespace Cottle
 {
-    internal enum CommandType
+    internal enum StatementType
     {
         None,
         AssignFunction,

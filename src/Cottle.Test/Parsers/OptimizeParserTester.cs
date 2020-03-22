@@ -18,23 +18,6 @@ namespace Cottle.Test.Parsers
             Expression.CreateConstant(new FunctionValue(Function.CreatePure((s, a) => 0)));
 
         [Test]
-        public void Parse_CommandReturn()
-        {
-            // Command: X{return 1}Y
-            // Result: X{return 1}
-            var command = OptimizeParserTester.Optimize(Command.CreateComposite(Command.CreateLiteral("X"),
-                Command.CreateComposite(Command.CreateReturn(Expression.CreateConstant(1)),
-                    Command.CreateLiteral("Y"))));
-
-            Assert.That(command.Type, Is.EqualTo(CommandType.Composite));
-            Assert.That(command.Body.Type, Is.EqualTo(CommandType.Literal));
-            Assert.That(command.Body.Value, Is.EqualTo("X"));
-            Assert.That(command.Next.Type, Is.EqualTo(CommandType.Return));
-            Assert.That(command.Next.Operand.Type, Is.EqualTo(ExpressionType.Constant));
-            Assert.That(command.Next.Operand.Value, Is.EqualTo((Value)1));
-        }
-
-        [Test]
         public void Parse_ExpressionAccess_FindWhenPresentInConstantIndices()
         {
             // Expression: [0: AAA, 1: BBB, 2: pure()][1]
@@ -209,12 +192,29 @@ namespace Cottle.Test.Parsers
             Assert.That(expression.Type, Is.EqualTo(ExpressionType.Invoke));
         }
 
-        private static Command Optimize(Command command)
+        [Test]
+        public void Parse_StatementReturn()
+        {
+            // Statement: X{return 1}Y
+            // Result: X{return 1}
+            var statement = OptimizeParserTester.Optimize(Statement.CreateComposite(Statement.CreateLiteral("X"),
+                Statement.CreateComposite(Statement.CreateReturn(Expression.CreateConstant(1)),
+                    Statement.CreateLiteral("Y"))));
+
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Composite));
+            Assert.That(statement.Body.Type, Is.EqualTo(StatementType.Literal));
+            Assert.That(statement.Body.Value, Is.EqualTo("X"));
+            Assert.That(statement.Next.Type, Is.EqualTo(StatementType.Return));
+            Assert.That(statement.Next.Operand.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(statement.Next.Operand.Value, Is.EqualTo((Value)1));
+        }
+
+        private static Statement Optimize(Statement statement)
         {
             var parserMock = new Mock<IParser>();
             var reports = Enumerable.Empty<DocumentReport>();
 
-            parserMock.Setup(p => p.Parse(It.IsAny<TextReader>(), out command, out reports)).Returns(true);
+            parserMock.Setup(p => p.Parse(It.IsAny<TextReader>(), out statement, out reports)).Returns(true);
 
             var parser = new OptimizeParser(parserMock.Object);
 
@@ -225,11 +225,11 @@ namespace Cottle.Test.Parsers
 
         private static Expression Optimize(Expression expression)
         {
-            var command = OptimizeParserTester.Optimize(Command.CreateEcho(expression));
+            var statement = OptimizeParserTester.Optimize(Statement.CreateEcho(expression));
 
-            Assert.That(command.Type, Is.EqualTo(CommandType.Echo));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Echo));
 
-            return command.Operand;
+            return statement.Operand;
         }
     }
 }

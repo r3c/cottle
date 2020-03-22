@@ -10,7 +10,7 @@ namespace Cottle.Documents.Emitted
     {
         private static readonly Type OutValue = typeof(Value).MakeByRefType();
 
-        public static Program Create(ICommandGenerator generator)
+        public static Program Create(IStatementGenerator generator)
         {
 #if COTTLE_IL_SAVE && !NETSTANDARD
             var assemblyName = new System.Reflection.AssemblyName("Test");
@@ -45,7 +45,7 @@ namespace Cottle.Documents.Emitted
             return new Program(executable, emitter.CreateConstants());
         }
 
-        private static void Emit(Emitter emitter, ICommandGenerator generator)
+        private static void Emit(Emitter emitter, IStatementGenerator generator)
         {
             if (!generator.Generate(emitter))
                 emitter.LoadBoolean(false);

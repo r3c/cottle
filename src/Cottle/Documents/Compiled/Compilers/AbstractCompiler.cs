@@ -3,44 +3,17 @@ using System.Collections.Generic;
 
 namespace Cottle.Documents.Compiled.Compilers
 {
-    internal abstract class AbstractCompiler<TCompiled, TExpression> : ICompiler<TCompiled>
-        where TCompiled : class
+    internal abstract class AbstractCompiler<TAssembly, TExpression> : ICompiler<TAssembly>
+        where TAssembly : class
         where TExpression : class
     {
-        public (TCompiled, IReadOnlyList<Value>, int) Compile(Command command)
+        public (TAssembly, IReadOnlyList<Value>, int) Compile(Statement statement)
         {
             var scope = new Scope(new Dictionary<Value, int>());
-            var result = CompileCommand(command, scope);
+            var result = CompileStatement(statement, scope);
 
             return (result, scope.CreateGlobalNames(), scope.LocalCount);
         }
-
-        protected abstract TCompiled CreateCommandAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, TCompiled body);
-
-        protected abstract TCompiled CreateCommandAssignRender(Symbol symbol, TCompiled body);
-
-        protected abstract TCompiled CreateCommandAssignValue(Symbol symbol, TExpression expression);
-
-        protected abstract TCompiled CreateCommandComposite(IReadOnlyList<TCompiled> commands);
-
-        protected abstract TCompiled CreateCommandDump(TExpression expression);
-
-        protected abstract TCompiled CreateCommandEcho(TExpression expression);
-
-        protected abstract TCompiled CreateCommandFor(TExpression source, int? key, int value, TCompiled body,
-            TCompiled empty);
-
-        protected abstract TCompiled CreateCommandIf(IReadOnlyList<KeyValuePair<TExpression, TCompiled>> branches,
-            TCompiled fallback);
-
-        protected abstract TCompiled CreateCommandLiteral(string text);
-
-        protected abstract TCompiled CreateCommandNone();
-
-        protected abstract TCompiled CreateCommandReturn(TExpression expression);
-
-        protected abstract TCompiled CreateCommandWhile(TExpression condition, TCompiled body);
 
         protected abstract TExpression CreateExpressionAccess(TExpression source, TExpression subscript);
 
@@ -55,129 +28,32 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TExpression CreateExpressionVoid();
 
-        private TCompiled CompileCommand(Command command, Scope scope)
-        {
-            switch (command.Type)
-            {
-                case CommandType.AssignFunction:
-                    var functionArguments = new int[command.Arguments.Count];
-                    var functionScope = scope.CreateLocalScope();
+        protected abstract TAssembly CreateStatementAssignFunction(Symbol symbol, int localCount,
+            IReadOnlyList<int> arguments, TAssembly body);
 
-                    for (var i = 0; i < command.Arguments.Count; ++i)
-                        functionArguments[i] = functionScope.DeclareLocal(command.Arguments[i]);
+        protected abstract TAssembly CreateStatementAssignRender(Symbol symbol, TAssembly body);
 
-                    var functionBody = CompileCommand(command.Body, functionScope);
-                    var localCount = functionScope.LocalCount;
+        protected abstract TAssembly CreateStatementAssignValue(Symbol symbol, TExpression expression);
 
-                    var functionSymbol = scope.Resolve(command.Key, command.Mode);
+        protected abstract TAssembly CreateStatementComposite(IReadOnlyList<TAssembly> statements);
 
-                    return CreateCommandAssignFunction(functionSymbol, localCount, functionArguments, functionBody);
+        protected abstract TAssembly CreateStatementDump(TExpression expression);
 
-                case CommandType.AssignRender:
-                    scope.Enter();
+        protected abstract TAssembly CreateStatementEcho(TExpression expression);
 
-                    var renderBody = CompileCommand(command.Body, scope);
+        protected abstract TAssembly CreateStatementFor(TExpression source, int? key, int value, TAssembly body,
+            TAssembly empty);
 
-                    scope.Leave();
+        protected abstract TAssembly CreateStatementIf(IReadOnlyList<KeyValuePair<TExpression, TAssembly>> branches,
+            TAssembly fallback);
 
-                    var renderSymbol = scope.Resolve(command.Key, command.Mode);
+        protected abstract TAssembly CreateStatementLiteral(string text);
 
-                    return CreateCommandAssignRender(renderSymbol, renderBody);
+        protected abstract TAssembly CreateStatementNone();
 
-                case CommandType.AssignValue:
-                    var expression = CompileExpression(command.Operand, scope);
-                    var valueSymbol = scope.Resolve(command.Key, command.Mode);
+        protected abstract TAssembly CreateStatementReturn(TExpression expression);
 
-                    return CreateCommandAssignValue(valueSymbol, expression);
-
-                case CommandType.Composite:
-                    var nodes = new List<TCompiled>();
-
-                    for (; command.Type == CommandType.Composite; command = command.Next)
-                        nodes.Add(CompileCommand(command.Body, scope));
-
-                    nodes.Add(CompileCommand(command, scope));
-
-                    return CreateCommandComposite(nodes);
-
-                case CommandType.Dump:
-                    return CreateCommandDump(CompileExpression(command.Operand, scope));
-
-                case CommandType.Echo:
-                    return CreateCommandEcho(CompileExpression(command.Operand, scope));
-
-                case CommandType.For:
-                    var forSource = CompileExpression(command.Operand, scope);
-
-                    scope.Enter();
-
-                    var forKey = !string.IsNullOrEmpty(command.Key) ? (int?)scope.DeclareLocal(command.Key) : null;
-                    var forValue = scope.DeclareLocal(command.Value);
-
-                    var forBody = CompileCommand(command.Body, scope);
-                    var forEmpty = command.Next.Type != CommandType.None
-                        ? CompileCommand(command.Next, scope)
-                        : null;
-
-                    scope.Leave();
-
-                    return CreateCommandFor(forSource, forKey, forValue, forBody, forEmpty);
-
-                case CommandType.If:
-                    var ifBranches = new List<KeyValuePair<TExpression, TCompiled>>();
-
-                    for (; command.Type == CommandType.If; command = command.Next)
-                    {
-                        var condition = CompileExpression(command.Operand, scope);
-
-                        scope.Enter();
-
-                        var body = CompileCommand(command.Body, scope);
-
-                        scope.Leave();
-
-                        ifBranches.Add(new KeyValuePair<TExpression, TCompiled>(condition, body));
-                    }
-
-                    TCompiled ifFallback;
-
-                    if (command.Type != CommandType.None)
-                    {
-                        scope.Enter();
-
-                        ifFallback = CompileCommand(command, scope);
-
-                        scope.Leave();
-                    }
-                    else
-                        ifFallback = null;
-
-                    return CreateCommandIf(ifBranches, ifFallback);
-
-                case CommandType.Literal:
-                    return CreateCommandLiteral(command.Value);
-
-                case CommandType.None:
-                    return CreateCommandNone();
-
-                case CommandType.Return:
-                    return CreateCommandReturn(CompileExpression(command.Operand, scope));
-
-                case CommandType.While:
-                    var whileCondition = CompileExpression(command.Operand, scope);
-
-                    scope.Enter();
-
-                    var whileBody = CompileCommand(command.Body, scope);
-
-                    scope.Leave();
-
-                    return CreateCommandWhile(whileCondition, whileBody);
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(command));
-            }
-        }
+        protected abstract TAssembly CreateStatementWhile(TExpression condition, TAssembly body);
 
         private TExpression CompileExpression(Expression expression, Scope scope)
         {
@@ -216,6 +92,130 @@ namespace Cottle.Documents.Compiled.Compilers
 
                 default:
                     return CreateExpressionVoid();
+            }
+        }
+
+        private TAssembly CompileStatement(Statement statement, Scope scope)
+        {
+            switch (statement.Type)
+            {
+                case StatementType.AssignFunction:
+                    var functionArguments = new int[statement.Arguments.Count];
+                    var functionScope = scope.CreateLocalScope();
+
+                    for (var i = 0; i < statement.Arguments.Count; ++i)
+                        functionArguments[i] = functionScope.DeclareLocal(statement.Arguments[i]);
+
+                    var functionBody = CompileStatement(statement.Body, functionScope);
+                    var localCount = functionScope.LocalCount;
+
+                    var functionSymbol = scope.Resolve(statement.Key, statement.Mode);
+
+                    return CreateStatementAssignFunction(functionSymbol, localCount, functionArguments, functionBody);
+
+                case StatementType.AssignRender:
+                    scope.Enter();
+
+                    var renderBody = CompileStatement(statement.Body, scope);
+
+                    scope.Leave();
+
+                    var renderSymbol = scope.Resolve(statement.Key, statement.Mode);
+
+                    return CreateStatementAssignRender(renderSymbol, renderBody);
+
+                case StatementType.AssignValue:
+                    var expression = CompileExpression(statement.Operand, scope);
+                    var valueSymbol = scope.Resolve(statement.Key, statement.Mode);
+
+                    return CreateStatementAssignValue(valueSymbol, expression);
+
+                case StatementType.Composite:
+                    var nodes = new List<TAssembly>();
+
+                    for (; statement.Type == StatementType.Composite; statement = statement.Next)
+                        nodes.Add(CompileStatement(statement.Body, scope));
+
+                    nodes.Add(CompileStatement(statement, scope));
+
+                    return CreateStatementComposite(nodes);
+
+                case StatementType.Dump:
+                    return CreateStatementDump(CompileExpression(statement.Operand, scope));
+
+                case StatementType.Echo:
+                    return CreateStatementEcho(CompileExpression(statement.Operand, scope));
+
+                case StatementType.For:
+                    var forSource = CompileExpression(statement.Operand, scope);
+
+                    scope.Enter();
+
+                    var forKey = !string.IsNullOrEmpty(statement.Key) ? (int?)scope.DeclareLocal(statement.Key) : null;
+                    var forValue = scope.DeclareLocal(statement.Value);
+
+                    var forBody = CompileStatement(statement.Body, scope);
+                    var forEmpty = statement.Next.Type != StatementType.None
+                        ? CompileStatement(statement.Next, scope)
+                        : null;
+
+                    scope.Leave();
+
+                    return CreateStatementFor(forSource, forKey, forValue, forBody, forEmpty);
+
+                case StatementType.If:
+                    var ifBranches = new List<KeyValuePair<TExpression, TAssembly>>();
+
+                    for (; statement.Type == StatementType.If; statement = statement.Next)
+                    {
+                        var condition = CompileExpression(statement.Operand, scope);
+
+                        scope.Enter();
+
+                        var body = CompileStatement(statement.Body, scope);
+
+                        scope.Leave();
+
+                        ifBranches.Add(new KeyValuePair<TExpression, TAssembly>(condition, body));
+                    }
+
+                    TAssembly ifFallback;
+
+                    if (statement.Type != StatementType.None)
+                    {
+                        scope.Enter();
+
+                        ifFallback = CompileStatement(statement, scope);
+
+                        scope.Leave();
+                    }
+                    else
+                        ifFallback = null;
+
+                    return CreateStatementIf(ifBranches, ifFallback);
+
+                case StatementType.Literal:
+                    return CreateStatementLiteral(statement.Value);
+
+                case StatementType.None:
+                    return CreateStatementNone();
+
+                case StatementType.Return:
+                    return CreateStatementReturn(CompileExpression(statement.Operand, scope));
+
+                case StatementType.While:
+                    var whileCondition = CompileExpression(statement.Operand, scope);
+
+                    scope.Enter();
+
+                    var whileBody = CompileStatement(statement.Body, scope);
+
+                    scope.Leave();
+
+                    return CreateStatementWhile(whileCondition, whileBody);
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statement));
             }
         }
     }

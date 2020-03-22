@@ -15,45 +15,45 @@ namespace Cottle.Test.Parsers
         {
             var configuration = new DocumentConfiguration
                 { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
-            var command = ForwardParserTester.Parse(ForwardParserTester.Create(configuration),
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(configuration),
                 blockBegin + expression + blockEnd);
 
-            Assert.That(command.Type, Is.EqualTo(CommandType.Echo));
-            Assert.That(command.Operand.Type, Is.EqualTo(ExpressionType.Invoke));
-            Assert.That(command.Operand.Arguments.Count, Is.EqualTo(2));
-            Assert.That(command.Operand.Arguments[0].Type, Is.EqualTo(ExpressionType.Constant));
-            Assert.That(command.Operand.Arguments[0].Value, Is.EqualTo((Value)1));
-            Assert.That(command.Operand.Arguments[1].Type, Is.EqualTo(ExpressionType.Constant));
-            Assert.That(command.Operand.Arguments[1].Value, Is.EqualTo((Value)0));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Echo));
+            Assert.That(statement.Operand.Type, Is.EqualTo(ExpressionType.Invoke));
+            Assert.That(statement.Operand.Arguments.Count, Is.EqualTo(2));
+            Assert.That(statement.Operand.Arguments[0].Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(statement.Operand.Arguments[0].Value, Is.EqualTo((Value)1));
+            Assert.That(statement.Operand.Arguments[1].Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(statement.Operand.Arguments[1].Value, Is.EqualTo((Value)0));
         }
 
         [Test]
-        [TestCase("{for i in c:x}", "", "i", ExpressionType.Symbol, CommandType.Literal, CommandType.None)]
-        [TestCase("{for k, v in []:{echo i}|empty:x}", "k", "v", ExpressionType.Map, CommandType.Echo, CommandType.Literal)]
-        public void Parse_CommandFor(string template, string expectedKey, string expectedValue, int expectedOperand,
+        [TestCase("{for i in c:x}", "", "i", ExpressionType.Symbol, StatementType.Literal, StatementType.None)]
+        [TestCase("{for k, v in []:{echo i}|empty:x}", "k", "v", ExpressionType.Map, StatementType.Echo, StatementType.Literal)]
+        public void Parse_StatementFor(string template, string expectedKey, string expectedValue, int expectedOperand,
             int expectedBody, int expectedNext)
         {
-            var command = ForwardParserTester.Parse(ForwardParserTester.Create(), template);
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(), template);
 
-            Assert.That(command.Body.Type, Is.EqualTo((CommandType)expectedBody));
-            Assert.That(command.Key, Is.EqualTo(expectedKey));
-            Assert.That(command.Value, Is.EqualTo(expectedValue));
-            Assert.That(command.Operand.Type, Is.EqualTo((ExpressionType)expectedOperand));
-            Assert.That(command.Next.Type, Is.EqualTo((CommandType)expectedNext));
-            Assert.That(command.Type, Is.EqualTo(CommandType.For));
+            Assert.That(statement.Body.Type, Is.EqualTo((StatementType)expectedBody));
+            Assert.That(statement.Key, Is.EqualTo(expectedKey));
+            Assert.That(statement.Value, Is.EqualTo(expectedValue));
+            Assert.That(statement.Operand.Type, Is.EqualTo((ExpressionType)expectedOperand));
+            Assert.That(statement.Next.Type, Is.EqualTo((StatementType)expectedNext));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.For));
         }
 
         [Test]
         [TestCase("{\"\\\"\"}", '\\', "\"")]
         [TestCase("{\"xxxy\"}", 'x', "xy")]
-        public void Parse_ConfigurationEscapeCommand(string template, char escape, string expected)
+        public void Parse_ConfigurationEscapeStatement(string template, char escape, string expected)
         {
             var configuration = new DocumentConfiguration { Escape = escape };
-            var command = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
 
-            Assert.That(command.Type, Is.EqualTo(CommandType.Echo));
-            Assert.That(command.Operand.Type, Is.EqualTo(ExpressionType.Constant));
-            Assert.That(command.Operand.Value, Is.EqualTo((Value)expected));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Echo));
+            Assert.That(statement.Operand.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(statement.Operand.Value, Is.EqualTo((Value)expected));
         }
 
         [Test]
@@ -64,10 +64,10 @@ namespace Cottle.Test.Parsers
         public void Parse_ConfigurationEscapeLiteral(string template, char escape, string expected)
         {
             var configuration = new DocumentConfiguration { Escape = escape };
-            var command = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
 
-            Assert.That(command.Type, Is.EqualTo(CommandType.Literal));
-            Assert.That(command.Value, Is.EqualTo(expected));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Literal));
+            Assert.That(statement.Value, Is.EqualTo(expected));
         }
 
         [Test]
@@ -77,10 +77,10 @@ namespace Cottle.Test.Parsers
         public void Parse_ConfigurationTrimmer(string template, string pattern, string replacement, string expected)
         {
             var configuration = new DocumentConfiguration { Trimmer = s => Regex.Replace(s, pattern, replacement) };
-            var command = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(configuration), template);
 
-            Assert.That(command.Type, Is.EqualTo(CommandType.Literal));
-            Assert.That(command.Value, Is.EqualTo(expected));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Literal));
+            Assert.That(statement.Value, Is.EqualTo(expected));
         }
         
         [TestCase("{1", 2, 0, "expected end of block, found end of stream")]
@@ -111,13 +111,13 @@ namespace Cottle.Test.Parsers
                 configuration.Trimmer ?? (s => s));
         }
 
-        private static Command Parse(IParser parser, string template)
+        private static Statement Parse(IParser parser, string template)
         {
             using (var reader = new StringReader(template))
             {
-                Assert.That(parser.Parse(reader, out var command, out _), Is.True);
+                Assert.That(parser.Parse(reader, out var statement, out _), Is.True);
 
-                return command;
+                return statement;
             }
         }
     }

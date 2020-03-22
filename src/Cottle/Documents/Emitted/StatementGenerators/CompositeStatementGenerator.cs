@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class CompositeCommandGenerator : ICommandGenerator
+    internal class CompositeStatementGenerator : IStatementGenerator
     {
-        private readonly IReadOnlyList<ICommandGenerator> _commands;
+        private readonly IReadOnlyList<IStatementGenerator> _statements;
 
-        public CompositeCommandGenerator(IReadOnlyList<ICommandGenerator> commands)
+        public CompositeStatementGenerator(IReadOnlyList<IStatementGenerator> statements)
         {
-            _commands = commands;
+            _statements = statements;
         }
 
         public bool Generate(Emitter emitter)
@@ -16,9 +16,9 @@ namespace Cottle.Documents.Emitted.CommandGenerators
             var exitReturn = emitter.DeclareLabel();
             var mayReturn = false;
 
-            foreach (var command in _commands)
+            foreach (var statement in _statements)
             {
-                if (!command.Generate(emitter))
+                if (!statement.Generate(emitter))
                     continue;
 
                 emitter.LoadDuplicate();

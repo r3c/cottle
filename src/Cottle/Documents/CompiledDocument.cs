@@ -15,9 +15,9 @@ namespace Cottle.Documents
         private readonly int _locals;
 
         protected CompiledDocument(ICompiler<TAssembly> compiler, Func<TAssembly, TExecutable> assemble,
-            Command command)
+            Statement statement)
         {
-            var (program, globals, locals) = compiler.Compile(command);
+            var (program, globals, locals) = compiler.Compile(statement);
 
             _executable = assemble(program);
             _globals = globals;

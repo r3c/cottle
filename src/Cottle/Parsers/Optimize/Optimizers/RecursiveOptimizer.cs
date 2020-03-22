@@ -87,29 +87,29 @@ namespace Cottle.Parsers.Optimize.Optimizers
                 return Expression.CreateConstant(pairs);
             }),
 
-            // Simplify "if" command with constant conditions
-            new DelegateOptimizer(command =>
+            // Simplify "if" statement with constant conditions
+            new DelegateOptimizer(statement =>
             {
-                while (command != null && command.Type == CommandType.If &&
-                       command.Operand.Type == ExpressionType.Constant)
+                while (statement != null && statement.Type == StatementType.If &&
+                       statement.Operand.Type == ExpressionType.Constant)
                 {
-                    if (command.Operand.Value.AsBoolean)
-                        return command.Body;
+                    if (statement.Operand.Value.AsBoolean)
+                        return statement.Body;
 
-                    command = command.Next;
+                    statement = statement.Next;
                 }
 
-                return command ?? Command.NoOp;
+                return statement ?? Statement.NoOp;
             }),
 
-            // Remove all commands following "return" in a composite command
-            new DelegateOptimizer(command =>
+            // Remove all statements following "return" in a composite statement
+            new DelegateOptimizer(statement =>
             {
-                if (command.Type == CommandType.Composite && command.Body != null &&
-                    command.Body.Type == CommandType.Return)
-                    return command.Body;
+                if (statement.Type == StatementType.Composite && statement.Body != null &&
+                    statement.Body.Type == StatementType.Return)
+                    return statement.Body;
 
-                return command;
+                return statement;
             })
         });
 
@@ -145,76 +145,6 @@ namespace Cottle.Parsers.Optimize.Optimizers
         private RecursiveOptimizer(IEnumerable<IOptimizer> optimizers)
         {
             _optimizers = optimizers;
-        }
-
-        public Command Optimize(Command command)
-        {
-            // Recursively apply optimizations to command components
-            switch (command.Type)
-            {
-                case CommandType.AssignFunction:
-                    command = Command.CreateAssignFunction(command.Key, command.Arguments, command.Mode,
-                        Optimize(command.Body));
-
-                    break;
-
-                case CommandType.AssignRender:
-                    command = Command.CreateAssignRender(command.Key, command.Mode, Optimize(command.Body));
-
-                    break;
-
-                case CommandType.AssignValue:
-                    command = Command.CreateAssignValue(command.Key, command.Mode, Optimize(command.Operand));
-
-                    break;
-
-                case CommandType.Composite:
-                    command = Command.CreateComposite(Optimize(command.Body), Optimize(command.Next));
-
-                    break;
-
-                case CommandType.Dump:
-                    command = Command.CreateDump(Optimize(command.Operand));
-
-                    break;
-
-                case CommandType.Echo:
-                    command = Command.CreateEcho(Optimize(command.Operand));
-
-                    break;
-
-                case CommandType.For:
-                    command = Command.CreateFor(command.Key, command.Value, Optimize(command.Operand),
-                        Optimize(command.Body), Optimize(command.Next));
-
-                    break;
-
-                case CommandType.If:
-                    command = Command.CreateIf(Optimize(command.Operand), Optimize(command.Body),
-                        Optimize(command.Next));
-
-                    break;
-
-                case CommandType.Literal:
-                case CommandType.None:
-                    break;
-
-                case CommandType.Return:
-                    command = Command.CreateReturn(Optimize(command.Operand));
-
-                    break;
-
-                case CommandType.While:
-                    command = Command.CreateWhile(Optimize(command.Operand), Optimize(command.Body));
-
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(command));
-            }
-
-            // Apply optimizations to command itself
-            return _optimizers.Aggregate(command, (current, optimizer) => optimizer.Optimize(current));
         }
 
         public Expression Optimize(Expression expression)
@@ -267,6 +197,76 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
             // Apply optimizations to expression itself
             return _optimizers.Aggregate(expression, (current, optimizer) => optimizer.Optimize(current));
+        }
+
+        public Statement Optimize(Statement statement)
+        {
+            // Recursively apply optimizations to statement components
+            switch (statement.Type)
+            {
+                case StatementType.AssignFunction:
+                    statement = Statement.CreateAssignFunction(statement.Key, statement.Arguments, statement.Mode,
+                        Optimize(statement.Body));
+
+                    break;
+
+                case StatementType.AssignRender:
+                    statement = Statement.CreateAssignRender(statement.Key, statement.Mode, Optimize(statement.Body));
+
+                    break;
+
+                case StatementType.AssignValue:
+                    statement = Statement.CreateAssignValue(statement.Key, statement.Mode, Optimize(statement.Operand));
+
+                    break;
+
+                case StatementType.Composite:
+                    statement = Statement.CreateComposite(Optimize(statement.Body), Optimize(statement.Next));
+
+                    break;
+
+                case StatementType.Dump:
+                    statement = Statement.CreateDump(Optimize(statement.Operand));
+
+                    break;
+
+                case StatementType.Echo:
+                    statement = Statement.CreateEcho(Optimize(statement.Operand));
+
+                    break;
+
+                case StatementType.For:
+                    statement = Statement.CreateFor(statement.Key, statement.Value, Optimize(statement.Operand),
+                        Optimize(statement.Body), Optimize(statement.Next));
+
+                    break;
+
+                case StatementType.If:
+                    statement = Statement.CreateIf(Optimize(statement.Operand), Optimize(statement.Body),
+                        Optimize(statement.Next));
+
+                    break;
+
+                case StatementType.Literal:
+                case StatementType.None:
+                    break;
+
+                case StatementType.Return:
+                    statement = Statement.CreateReturn(Optimize(statement.Operand));
+
+                    break;
+
+                case StatementType.While:
+                    statement = Statement.CreateWhile(Optimize(statement.Operand), Optimize(statement.Body));
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statement));
+            }
+
+            // Apply optimizations to statement itself
+            return _optimizers.Aggregate(statement, (current, optimizer) => optimizer.Optimize(current));
         }
     }
 }

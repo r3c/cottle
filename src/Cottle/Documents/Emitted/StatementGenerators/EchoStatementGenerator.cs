@@ -1,10 +1,10 @@
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class DumpCommandGenerator : ICommandGenerator
+    internal class EchoStatementGenerator : IStatementGenerator
     {
         private readonly IExpressionGenerator _expression;
 
-        public DumpCommandGenerator(IExpressionGenerator expression)
+        public EchoStatementGenerator(IExpressionGenerator expression)
         {
             _expression = expression;
         }
@@ -17,7 +17,8 @@ namespace Cottle.Documents.Emitted.CommandGenerators
 
             emitter.LoadOutput();
             emitter.LoadLocalReferenceAndRelease(operand);
-            emitter.InvokeTextWriterWriteObject();
+            emitter.InvokeValueAsString();
+            emitter.InvokeTextWriterWriteString();
 
             return false;
         }

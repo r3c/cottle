@@ -1,13 +1,13 @@
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class AssignValueCommandGenerator : ICommandGenerator
+    internal class AssignValueStatementGenerator : IStatementGenerator
     {
         private readonly IExpressionGenerator _expression;
         private readonly Symbol _symbol;
 
-        public AssignValueCommandGenerator(Symbol symbol, IExpressionGenerator expression)
+        public AssignValueStatementGenerator(Symbol symbol, IExpressionGenerator expression)
         {
             _expression = expression;
             _symbol = symbol;

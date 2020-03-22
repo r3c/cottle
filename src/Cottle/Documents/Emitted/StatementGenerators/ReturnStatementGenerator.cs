@@ -1,10 +1,10 @@
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class ReturnCommandGenerator : ICommandGenerator
+    internal class ReturnStatementGenerator : IStatementGenerator
     {
         private readonly IExpressionGenerator _expression;
 
-        public ReturnCommandGenerator(IExpressionGenerator expression)
+        public ReturnStatementGenerator(IExpressionGenerator expression)
         {
             _expression = expression;
         }

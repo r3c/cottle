@@ -1,14 +1,14 @@
 using System.IO;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class AssignRenderCommandGenerator : ICommandGenerator
+    internal class AssignRenderStatementGenerator : IStatementGenerator
     {
-        private readonly ICommandGenerator _body;
+        private readonly IStatementGenerator _body;
         private readonly Symbol _symbol;
 
-        public AssignRenderCommandGenerator(Symbol symbol, ICommandGenerator body)
+        public AssignRenderStatementGenerator(Symbol symbol, IStatementGenerator body)
         {
             _body = body;
             _symbol = symbol;

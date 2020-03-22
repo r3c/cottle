@@ -1,10 +1,10 @@
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class LiteralCommandGenerator : ICommandGenerator
+    internal class LiteralStatementGenerator : IStatementGenerator
     {
         private readonly string _text;
 
-        public LiteralCommandGenerator(string text)
+        public LiteralStatementGenerator(string text)
         {
             _text = text;
         }

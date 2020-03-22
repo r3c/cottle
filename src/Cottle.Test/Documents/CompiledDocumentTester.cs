@@ -8,7 +8,7 @@ namespace Cottle.Test.Documents
         [Test]
         [TestCase("declare", "as", "")]
         [TestCase("set", "to", "17")]
-        public void Render_CommandSetFunctionScope(string command, string suffix, string expected)
+        public void Render_StatementSetFunctionScope(string command, string suffix, string expected)
         {
             AssertOutput("{" + command + " f(x) " + suffix + ":{return x}}" +
                          "{set g(x) to:{return f(x)}}" +

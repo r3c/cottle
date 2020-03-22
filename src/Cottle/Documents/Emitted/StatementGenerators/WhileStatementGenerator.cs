@@ -1,11 +1,11 @@
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class WhileCommandGenerator : ICommandGenerator
+    internal class WhileStatementGenerator : IStatementGenerator
     {
-        private readonly ICommandGenerator _body;
+        private readonly IStatementGenerator _body;
         private readonly IExpressionGenerator _condition;
 
-        public WhileCommandGenerator(IExpressionGenerator condition, ICommandGenerator body)
+        public WhileStatementGenerator(IExpressionGenerator condition, IStatementGenerator body)
         {
             _body = body;
             _condition = condition;
@@ -26,10 +26,10 @@ namespace Cottle.Documents.Emitted.CommandGenerators
             emitter.InvokeValueAsBoolean();
             emitter.BranchIfFalse(exitRegular);
 
-            // Execute loop command
+            // Execute loop statement
             var mayReturn = _body.Generate(emitter);
 
-            // Exit loop following return command from body
+            // Exit loop following return statement from body
             var exitReturn = emitter.DeclareLabel();
 
             if (mayReturn)
@@ -48,7 +48,7 @@ namespace Cottle.Documents.Emitted.CommandGenerators
             if (mayReturn)
                 emitter.LoadBoolean(false);
 
-            // Exit command
+            // Exit statement
             emitter.MarkLabel(exitReturn);
 
             return mayReturn;

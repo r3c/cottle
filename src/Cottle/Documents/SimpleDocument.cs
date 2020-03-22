@@ -22,10 +22,10 @@ namespace Cottle.Documents
         {
             var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
 
-            if (!parser.Parse(reader, out var command, out var reports))
+            if (!parser.Parse(reader, out var statement, out var reports))
                 throw AbstractDocument.CreateException(reports);
 
-            _renderer = Compiler.Compile(command);
+            _renderer = Compiler.Compile(statement);
             _setting = setting;
         }
 

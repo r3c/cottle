@@ -9,64 +9,64 @@ namespace Cottle.Documents.Evaluated
 {
     internal class Compiler : AbstractCompiler<IExecutor, IEvaluator>
     {
-        protected override IExecutor CreateCommandAssignFunction(Symbol symbol, int localCount,
+        protected override IExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
             IReadOnlyList<int> arguments, IExecutor body)
         {
             return new FunctionAssignExecutor(symbol, localCount, arguments, body);
         }
 
-        protected override IExecutor CreateCommandAssignRender(Symbol symbol, IExecutor body)
+        protected override IExecutor CreateStatementAssignRender(Symbol symbol, IExecutor body)
         {
             return new RenderAssignExecutor(symbol, body);
         }
 
-        protected override IExecutor CreateCommandAssignValue(Symbol symbol, IEvaluator expression)
+        protected override IExecutor CreateStatementAssignValue(Symbol symbol, IEvaluator expression)
         {
             return new ValueAssignExecutor(symbol, expression);
         }
 
-        protected override IExecutor CreateCommandComposite(IReadOnlyList<IExecutor> commands)
+        protected override IExecutor CreateStatementComposite(IReadOnlyList<IExecutor> statements)
         {
-            return new CompositeExecutor(commands);
+            return new CompositeExecutor(statements);
         }
 
-        protected override IExecutor CreateCommandDump(IEvaluator expression)
+        protected override IExecutor CreateStatementDump(IEvaluator expression)
         {
             return new DumpExecutor(expression);
         }
 
-        protected override IExecutor CreateCommandEcho(IEvaluator expression)
+        protected override IExecutor CreateStatementEcho(IEvaluator expression)
         {
             return new EchoExecutor(expression);
         }
 
-        protected override IExecutor CreateCommandFor(IEvaluator source, int? key, int value, IExecutor body, IExecutor empty)
+        protected override IExecutor CreateStatementFor(IEvaluator source, int? key, int value, IExecutor body, IExecutor empty)
         {
             return new ForExecutor(source, key, value, body, empty);
         }
 
-        protected override IExecutor CreateCommandIf(IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> branches,
+        protected override IExecutor CreateStatementIf(IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> branches,
             IExecutor fallback)
         {
             return new IfExecutor(branches, fallback);
         }
 
-        protected override IExecutor CreateCommandLiteral(string text)
+        protected override IExecutor CreateStatementLiteral(string text)
         {
             return new LiteralExecutor(text);
         }
 
-        protected override IExecutor CreateCommandNone()
+        protected override IExecutor CreateStatementNone()
         {
             return new LiteralExecutor(string.Empty);
         }
 
-        protected override IExecutor CreateCommandReturn(IEvaluator expression)
+        protected override IExecutor CreateStatementReturn(IEvaluator expression)
         {
             return new ReturnExecutor(expression);
         }
 
-        protected override IExecutor CreateCommandWhile(IEvaluator condition, IExecutor body)
+        protected override IExecutor CreateStatementWhile(IEvaluator condition, IExecutor body)
         {
             return new WhileExecutor(condition, body);
         }

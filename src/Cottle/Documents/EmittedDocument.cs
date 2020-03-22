@@ -5,10 +5,10 @@ using Cottle.Values;
 
 namespace Cottle.Documents
 {
-    internal class EmittedDocument : CompiledDocument<ICommandGenerator, Program>
+    internal class EmittedDocument : CompiledDocument<IStatementGenerator, Program>
     {
-        public EmittedDocument(Command command) :
-            base(new Compiler(), Program.Create, command)
+        public EmittedDocument(Statement statement) :
+            base(new Compiler(), Program.Create, statement)
         {
         }
 

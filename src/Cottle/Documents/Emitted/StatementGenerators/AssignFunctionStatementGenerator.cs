@@ -5,17 +5,17 @@ using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
 using Cottle.Values;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class AssignFunctionCommandGenerator : ICommandGenerator
+    internal class AssignFunctionStatementGenerator : IStatementGenerator
     {
         private readonly IReadOnlyList<int> _arguments;
-        private readonly ICommandGenerator _body;
+        private readonly IStatementGenerator _body;
         private readonly int _localCount;
         private readonly Symbol _symbol;
 
-        public AssignFunctionCommandGenerator(Symbol symbol, int localCount, IReadOnlyList<int> arguments,
-            ICommandGenerator body)
+        public AssignFunctionStatementGenerator(Symbol symbol, int localCount, IReadOnlyList<int> arguments,
+            IStatementGenerator body)
         {
             _arguments = arguments;
             _body = body;

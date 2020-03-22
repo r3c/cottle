@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class ForCommandGenerator : ICommandGenerator
+    internal class ForStatementGenerator : IStatementGenerator
     {
-        private readonly ICommandGenerator _body;
-        private readonly ICommandGenerator _empty;
+        private readonly IStatementGenerator _body;
+        private readonly IStatementGenerator _empty;
         private readonly int? _key;
         private readonly IExpressionGenerator _source;
         private readonly int _value;
 
-        public ForCommandGenerator(IExpressionGenerator source, int? key, int value, ICommandGenerator body,
-            ICommandGenerator empty)
+        public ForStatementGenerator(IExpressionGenerator source, int? key, int value, IStatementGenerator body,
+            IStatementGenerator empty)
         {
             _body = body;
             _empty = empty;
@@ -88,7 +88,7 @@ namespace Cottle.Documents.Emitted.CommandGenerators
 
             emitter.BranchAlways(loop);
 
-            // Evaluate command for "empty" case
+            // Evaluate statement for "empty" case
             emitter.MarkLabel(empty);
 
             if (_empty != null)
@@ -111,7 +111,7 @@ namespace Cottle.Documents.Emitted.CommandGenerators
             if (mayReturn)
                 emitter.LoadBoolean(false);
 
-            // Exit command
+            // Exit statement
             emitter.MarkLabel(exitReturn);
 
             return mayReturn;

@@ -20,7 +20,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateDefault(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, command => new EvaluatedDocument(command));
+            return Document.Create(template, configuration, statement => new EvaluatedDocument(statement));
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateNative(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, command => new EmittedDocument(command));
+            return Document.Create(template, configuration, statement => new EmittedDocument(statement));
         }
 
         /// <summary>
@@ -70,12 +70,12 @@ namespace Cottle
         }
 
         private static DocumentResult Create(TextReader template, DocumentConfiguration configuration,
-            Func<Command, IDocument> constructor)
+            Func<Statement, IDocument> constructor)
         {
             var parser = ParserFactory.BuildParser(configuration);
 
-            return parser.Parse(template, out var command, out var reports)
-                ? DocumentResult.CreateSuccess(constructor(command))
+            return parser.Parse(template, out var statement, out var reports)
+                ? DocumentResult.CreateSuccess(constructor(statement))
                 : DocumentResult.CreateFailure(reports);
         }
     }

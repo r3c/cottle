@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 
-namespace Cottle.Documents.Emitted.CommandGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class IfCommandGenerator : ICommandGenerator
+    internal class IfStatementGenerator : IStatementGenerator
     {
-        private readonly IReadOnlyList<KeyValuePair<IExpressionGenerator, ICommandGenerator>> _branches;
-        private readonly ICommandGenerator _fallback;
+        private readonly IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> _branches;
+        private readonly IStatementGenerator _fallback;
 
-        public IfCommandGenerator(IReadOnlyList<KeyValuePair<IExpressionGenerator, ICommandGenerator>> branches,
-            ICommandGenerator fallback)
+        public IfStatementGenerator(IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches,
+            IStatementGenerator fallback)
         {
             _branches = branches;
             _fallback = fallback;
@@ -61,7 +61,7 @@ namespace Cottle.Documents.Emitted.CommandGenerators
             if (mayReturn)
                 emitter.LoadBoolean(false);
 
-            // Exit command
+            // Exit statement
             emitter.MarkLabel(exitReturn);
 
             return mayReturn;

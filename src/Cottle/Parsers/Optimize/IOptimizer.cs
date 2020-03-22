@@ -2,7 +2,7 @@
 {
     internal interface IOptimizer
     {
-        Command Optimize(Command command);
+        Statement Optimize(Statement statement);
 
         Expression Optimize(Expression expression);
     }

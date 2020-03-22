@@ -13,16 +13,16 @@ namespace Cottle.Parsers
             _parser = parser;
         }
 
-        public bool Parse(TextReader reader, out Command command, out IEnumerable<DocumentReport> reports)
+        public bool Parse(TextReader reader, out Statement statement, out IEnumerable<DocumentReport> reports)
         {
             if (!_parser.Parse(reader, out var original, out reports))
             {
-                command = default;
+                statement = default;
 
                 return false;
             }
 
-            command = RecursiveOptimizer.Instance.Optimize(original);
+            statement = RecursiveOptimizer.Instance.Optimize(original);
 
             return true;
         }

@@ -8,77 +8,9 @@ namespace Cottle.Documents.Simple
 {
     internal static class Compiler
     {
-        public static INode Compile(Command command)
+        public static INode Compile(Statement statement)
         {
-            return Compiler.CompileCommand(command);
-        }
-
-        private static INode CompileCommand(Command command)
-        {
-            switch (command.Type)
-            {
-                case CommandType.AssignFunction:
-                    return new FunctionAssignNode(command.Key, command.Arguments,
-                        Compiler.CompileCommand(command.Body), command.Mode);
-
-                case CommandType.AssignRender:
-                    return new RenderAssignNode(command.Key, Compiler.CompileCommand(command.Body), command.Mode);
-
-                case CommandType.AssignValue:
-                    return new ValueAssignNode(command.Key, Compiler.CompileExpression(command.Operand), command.Mode);
-
-                case CommandType.Composite:
-                    var nodes = new List<INode>();
-
-                    for (; command.Type == CommandType.Composite; command = command.Next)
-                        nodes.Add(Compiler.CompileCommand(command.Body));
-
-                    nodes.Add(Compiler.CompileCommand(command));
-
-                    return new CompositeNode(nodes);
-
-                case CommandType.Dump:
-                    return new DumpNode(Compiler.CompileExpression(command.Operand));
-
-                case CommandType.Echo:
-                    return new EchoNode(Compiler.CompileExpression(command.Operand));
-
-                case CommandType.For:
-                    return new ForNode(Compiler.CompileExpression(command.Operand), command.Key, command.Value,
-                        Compiler.CompileCommand(command.Body),
-                        command.Next.Type != CommandType.None ? Compiler.CompileCommand(command.Next) : null);
-
-                case CommandType.If:
-                    var branches = new List<KeyValuePair<IEvaluator, INode>>();
-
-                    for (; command.Type == CommandType.If; command = command.Next)
-                    {
-                        var condition = Compiler.CompileExpression(command.Operand);
-                        var body = Compiler.CompileCommand(command.Body);
-
-                        branches.Add(new KeyValuePair<IEvaluator, INode>(condition, body));
-                    }
-
-                    var fallback = command.Type != CommandType.None ? Compiler.CompileCommand(command) : null;
-
-                    return new IfNode(branches, fallback);
-
-                case CommandType.Literal:
-                    return new LiteralNode(command.Value);
-
-                case CommandType.None:
-                    return new LiteralNode(string.Empty);
-
-                case CommandType.Return:
-                    return new ReturnNode(Compiler.CompileExpression(command.Operand));
-
-                case CommandType.While:
-                    return new WhileNode(Compiler.CompileExpression(command.Operand),
-                        Compiler.CompileCommand(command.Body));
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(command));
-            }
+            return Compiler.CompileStatement(statement);
         }
 
         private static IEvaluator CompileExpression(Expression expression)
@@ -118,6 +50,74 @@ namespace Cottle.Documents.Simple
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expression));
+            }
+        }
+
+        private static INode CompileStatement(Statement statement)
+        {
+            switch (statement.Type)
+            {
+                case StatementType.AssignFunction:
+                    return new FunctionAssignNode(statement.Key, statement.Arguments,
+                        Compiler.CompileStatement(statement.Body), statement.Mode);
+
+                case StatementType.AssignRender:
+                    return new RenderAssignNode(statement.Key, Compiler.CompileStatement(statement.Body), statement.Mode);
+
+                case StatementType.AssignValue:
+                    return new ValueAssignNode(statement.Key, Compiler.CompileExpression(statement.Operand), statement.Mode);
+
+                case StatementType.Composite:
+                    var nodes = new List<INode>();
+
+                    for (; statement.Type == StatementType.Composite; statement = statement.Next)
+                        nodes.Add(Compiler.CompileStatement(statement.Body));
+
+                    nodes.Add(Compiler.CompileStatement(statement));
+
+                    return new CompositeNode(nodes);
+
+                case StatementType.Dump:
+                    return new DumpNode(Compiler.CompileExpression(statement.Operand));
+
+                case StatementType.Echo:
+                    return new EchoNode(Compiler.CompileExpression(statement.Operand));
+
+                case StatementType.For:
+                    return new ForNode(Compiler.CompileExpression(statement.Operand), statement.Key, statement.Value,
+                        Compiler.CompileStatement(statement.Body),
+                        statement.Next.Type != StatementType.None ? Compiler.CompileStatement(statement.Next) : null);
+
+                case StatementType.If:
+                    var branches = new List<KeyValuePair<IEvaluator, INode>>();
+
+                    for (; statement.Type == StatementType.If; statement = statement.Next)
+                    {
+                        var condition = Compiler.CompileExpression(statement.Operand);
+                        var body = Compiler.CompileStatement(statement.Body);
+
+                        branches.Add(new KeyValuePair<IEvaluator, INode>(condition, body));
+                    }
+
+                    var fallback = statement.Type != StatementType.None ? Compiler.CompileStatement(statement) : null;
+
+                    return new IfNode(branches, fallback);
+
+                case StatementType.Literal:
+                    return new LiteralNode(statement.Value);
+
+                case StatementType.None:
+                    return new LiteralNode(string.Empty);
+
+                case StatementType.Return:
+                    return new ReturnNode(Compiler.CompileExpression(statement.Operand));
+
+                case StatementType.While:
+                    return new WhileNode(Compiler.CompileExpression(statement.Operand),
+                        Compiler.CompileStatement(statement.Body));
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statement));
             }
         }
     }

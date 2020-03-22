@@ -1,77 +1,14 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
 using Cottle.Documents.Compiled.Compilers;
-using Cottle.Documents.Emitted.CommandGenerators;
 using Cottle.Documents.Emitted.ExpressionGenerators;
+using Cottle.Documents.Emitted.StatementGenerators;
 using Cottle.Values;
 
 namespace Cottle.Documents.Emitted
 {
-    internal class Compiler : AbstractCompiler<ICommandGenerator, IExpressionGenerator>
+    internal class Compiler : AbstractCompiler<IStatementGenerator, IExpressionGenerator>
     {
-        protected override ICommandGenerator CreateCommandAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, ICommandGenerator body)
-        {
-            return new AssignFunctionCommandGenerator(symbol, localCount, arguments, body);
-        }
-
-        protected override ICommandGenerator CreateCommandAssignRender(Symbol symbol, ICommandGenerator body)
-        {
-            return new AssignRenderCommandGenerator(symbol, body);
-        }
-
-        protected override ICommandGenerator CreateCommandAssignValue(Symbol symbol, IExpressionGenerator expression)
-        {
-            return new AssignValueCommandGenerator(symbol, expression);
-        }
-
-        protected override ICommandGenerator CreateCommandComposite(IReadOnlyList<ICommandGenerator> commands)
-        {
-            return new CompositeCommandGenerator(commands);
-        }
-
-        protected override ICommandGenerator CreateCommandDump(IExpressionGenerator expression)
-        {
-            return new DumpCommandGenerator(expression);
-        }
-
-        protected override ICommandGenerator CreateCommandEcho(IExpressionGenerator expression)
-        {
-            return new EchoCommandGenerator(expression);
-        }
-
-        protected override ICommandGenerator CreateCommandFor(IExpressionGenerator source, int? key, int value,
-            ICommandGenerator body, ICommandGenerator empty)
-        {
-            return new ForCommandGenerator(source, key, value, body, empty);
-        }
-
-        protected override ICommandGenerator CreateCommandIf(IReadOnlyList<KeyValuePair<IExpressionGenerator, ICommandGenerator>> branches,
-            ICommandGenerator fallback)
-        {
-            return new IfCommandGenerator(branches, fallback);
-        }
-
-        protected override ICommandGenerator CreateCommandLiteral(string text)
-        {
-            return new LiteralCommandGenerator(text);
-        }
-
-        protected override ICommandGenerator CreateCommandNone()
-        {
-            return new NoneCommandGenerator();
-        }
-
-        protected override ICommandGenerator CreateCommandReturn(IExpressionGenerator expression)
-        {
-            return new ReturnCommandGenerator(expression);
-        }
-
-        protected override ICommandGenerator CreateCommandWhile(IExpressionGenerator condition, ICommandGenerator body)
-        {
-            return new WhileCommandGenerator(condition, body);
-        }
-
         protected override IExpressionGenerator CreateExpressionAccess(IExpressionGenerator source, IExpressionGenerator subscript)
         {
             return new AccessExpressionGenerator(source, subscript);
@@ -100,6 +37,69 @@ namespace Cottle.Documents.Emitted
         protected override IExpressionGenerator CreateExpressionVoid()
         {
             return new ConstantExpressionGenerator(VoidValue.Instance);
+        }
+
+        protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, int localCount,
+            IReadOnlyList<int> arguments, IStatementGenerator body)
+        {
+            return new AssignFunctionStatementGenerator(symbol, localCount, arguments, body);
+        }
+
+        protected override IStatementGenerator CreateStatementAssignRender(Symbol symbol, IStatementGenerator body)
+        {
+            return new AssignRenderStatementGenerator(symbol, body);
+        }
+
+        protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol, IExpressionGenerator expression)
+        {
+            return new AssignValueStatementGenerator(symbol, expression);
+        }
+
+        protected override IStatementGenerator CreateStatementComposite(IReadOnlyList<IStatementGenerator> statements)
+        {
+            return new CompositeStatementGenerator(statements);
+        }
+
+        protected override IStatementGenerator CreateStatementDump(IExpressionGenerator expression)
+        {
+            return new DumpStatementGenerator(expression);
+        }
+
+        protected override IStatementGenerator CreateStatementEcho(IExpressionGenerator expression)
+        {
+            return new EchoStatementGenerator(expression);
+        }
+
+        protected override IStatementGenerator CreateStatementFor(IExpressionGenerator source, int? key, int value,
+            IStatementGenerator body, IStatementGenerator empty)
+        {
+            return new ForStatementGenerator(source, key, value, body, empty);
+        }
+
+        protected override IStatementGenerator CreateStatementIf(
+            IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches, IStatementGenerator fallback)
+        {
+            return new IfStatementGenerator(branches, fallback);
+        }
+
+        protected override IStatementGenerator CreateStatementLiteral(string text)
+        {
+            return new LiteralStatementGenerator(text);
+        }
+
+        protected override IStatementGenerator CreateStatementNone()
+        {
+            return new NoneStatementGenerator();
+        }
+
+        protected override IStatementGenerator CreateStatementReturn(IExpressionGenerator expression)
+        {
+            return new ReturnStatementGenerator(expression);
+        }
+
+        protected override IStatementGenerator CreateStatementWhile(IExpressionGenerator condition, IStatementGenerator body)
+        {
+            return new WhileStatementGenerator(condition, body);
         }
     }
 }
