@@ -39,7 +39,7 @@ namespace Cottle.Documents.Emitted
         }
 
         protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, IStatementGenerator body)
+            IReadOnlyList<Symbol> arguments, IStatementGenerator body)
         {
             return new AssignFunctionStatementGenerator(symbol, localCount, arguments, body);
         }
@@ -69,8 +69,8 @@ namespace Cottle.Documents.Emitted
             return new EchoStatementGenerator(expression);
         }
 
-        protected override IStatementGenerator CreateStatementFor(IExpressionGenerator source, int? key, int value,
-            IStatementGenerator body, IStatementGenerator empty)
+        protected override IStatementGenerator CreateStatementFor(IExpressionGenerator source, Symbol? key,
+            Symbol value, IStatementGenerator body, IStatementGenerator empty)
         {
             return new ForStatementGenerator(source, key, value, body, empty);
         }

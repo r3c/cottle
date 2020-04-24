@@ -10,7 +10,7 @@ namespace Cottle.Documents.Evaluated
     internal class Compiler : AbstractCompiler<IExecutor, IEvaluator>
     {
         protected override IExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, IExecutor body)
+            IReadOnlyList<Symbol> arguments, IExecutor body)
         {
             return new FunctionAssignExecutor(symbol, localCount, arguments, body);
         }
@@ -40,7 +40,8 @@ namespace Cottle.Documents.Evaluated
             return new EchoExecutor(expression);
         }
 
-        protected override IExecutor CreateStatementFor(IEvaluator source, int? key, int value, IExecutor body, IExecutor empty)
+        protected override IExecutor CreateStatementFor(IEvaluator source, Symbol? key, Symbol value, IExecutor body,
+            IExecutor empty)
         {
             return new ForExecutor(source, key, value, body, empty);
         }

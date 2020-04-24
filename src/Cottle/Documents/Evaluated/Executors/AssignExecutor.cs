@@ -6,36 +6,18 @@ namespace Cottle.Documents.Evaluated.Executors
 {
     internal abstract class AssignExecutor : IExecutor
     {
-        private readonly int _index;
-
-        private readonly Action<Frame, int, Value> _setter;
+        private readonly Action<Frame, Value> _setter;
 
         protected AssignExecutor(Symbol symbol)
         {
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    _setter = (stack, index, value) => stack.Globals[index] = value;
-
-                    break;
-
-                case StoreMode.Local:
-                    _setter = (stack, index, value) => stack.Locals[index] = value;
-
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            _index = symbol.Index;
+            _setter = Frame.CreateSetter(symbol);
         }
 
         protected abstract Value Evaluate(Frame frame, TextWriter output);
 
         public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            _setter(frame, _index, Evaluate(frame, output));
+            _setter(frame, Evaluate(frame, output));
 
             result = Value.Undefined;
 

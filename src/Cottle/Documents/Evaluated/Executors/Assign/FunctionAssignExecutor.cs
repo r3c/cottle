@@ -8,13 +8,13 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
 {
     internal class FunctionAssignExecutor : AssignExecutor
     {
-        private readonly IReadOnlyList<int> _arguments;
+        private readonly IReadOnlyList<Symbol> _arguments;
 
         private readonly IExecutor _body;
 
         private readonly int _localCount;
 
-        public FunctionAssignExecutor(Symbol symbol, int localCount, IReadOnlyList<int> arguments, IExecutor body) :
+        public FunctionAssignExecutor(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments, IExecutor body) :
             base(symbol)
         {
             _arguments = arguments;
@@ -31,13 +31,13 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
         {
             public bool IsPure => false;
 
-            private readonly IReadOnlyList<int> _arguments;
+            private readonly IReadOnlyList<Symbol> _arguments;
 
             private readonly IExecutor _body;
 
             private readonly int _localCount;
 
-            public Function(int localCount, IReadOnlyList<int> arguments, IExecutor body)
+            public Function(int localCount, IReadOnlyList<Symbol> arguments, IExecutor body)
             {
                 _arguments = arguments;
                 _body = body;

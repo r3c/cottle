@@ -6,34 +6,16 @@ namespace Cottle.Documents.Evaluated.Evaluators
 {
     internal class SymbolEvaluator : IEvaluator
     {
-        private readonly Func<Frame, int, Value> _getter;
-
-        private readonly int _index;
+        private readonly Func<Frame, Value> _getter;
 
         public SymbolEvaluator(Symbol symbol)
         {
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    _getter = (stack, index) => stack.Globals[index];
-
-                    break;
-
-                case StoreMode.Local:
-                    _getter = (stack, index) => stack.Locals[index];
-
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            _index = symbol.Index;
+            _getter = Frame.CreateGetter(symbol);
         }
 
         public Value Evaluate(Frame frame, TextWriter output)
         {
-            return _getter(frame, _index);
+            return _getter(frame);
         }
     }
 }

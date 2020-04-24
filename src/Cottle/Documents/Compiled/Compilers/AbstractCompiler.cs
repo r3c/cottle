@@ -29,7 +29,7 @@ namespace Cottle.Documents.Compiled.Compilers
         protected abstract TExpression CreateExpressionVoid();
 
         protected abstract TAssembly CreateStatementAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<int> arguments, TAssembly body);
+            IReadOnlyList<Symbol> arguments, TAssembly body);
 
         protected abstract TAssembly CreateStatementAssignRender(Symbol symbol, TAssembly body);
 
@@ -41,7 +41,7 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TAssembly CreateStatementEcho(TExpression expression);
 
-        protected abstract TAssembly CreateStatementFor(TExpression source, int? key, int value, TAssembly body,
+        protected abstract TAssembly CreateStatementFor(TExpression source, Symbol? key, Symbol value, TAssembly body,
             TAssembly empty);
 
         protected abstract TAssembly CreateStatementIf(IReadOnlyList<KeyValuePair<TExpression, TAssembly>> branches,
@@ -88,7 +88,7 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateExpressionMap(elements);
 
                 case ExpressionType.Symbol:
-                    return CreateExpressionSymbol(scope.Resolve(expression.Value.AsString, StoreMode.Global));
+                    return CreateExpressionSymbol(scope.GetOrDeclareClosest(expression.Value.AsString, StoreMode.Global));
 
                 default:
                     return CreateExpressionVoid();
@@ -100,16 +100,16 @@ namespace Cottle.Documents.Compiled.Compilers
             switch (statement.Type)
             {
                 case StatementType.AssignFunction:
-                    var functionArguments = new int[statement.Arguments.Count];
+                    var functionArguments = new Symbol[statement.Arguments.Count];
                     var functionScope = scope.CreateLocalScope();
 
                     for (var i = 0; i < statement.Arguments.Count; ++i)
-                        functionArguments[i] = functionScope.DeclareLocal(statement.Arguments[i]);
+                        functionArguments[i] = functionScope.GetOrDeclareLocal(statement.Arguments[i]);
 
                     var functionBody = CompileStatement(statement.Body, functionScope);
                     var localCount = functionScope.LocalCount;
 
-                    var functionSymbol = scope.Resolve(statement.Key, statement.Mode);
+                    var functionSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
                     return CreateStatementAssignFunction(functionSymbol, localCount, functionArguments, functionBody);
 
@@ -120,13 +120,13 @@ namespace Cottle.Documents.Compiled.Compilers
 
                     scope.Leave();
 
-                    var renderSymbol = scope.Resolve(statement.Key, statement.Mode);
+                    var renderSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
                     return CreateStatementAssignRender(renderSymbol, renderBody);
 
                 case StatementType.AssignValue:
                     var expression = CompileExpression(statement.Operand, scope);
-                    var valueSymbol = scope.Resolve(statement.Key, statement.Mode);
+                    var valueSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
                     return CreateStatementAssignValue(valueSymbol, expression);
 
@@ -151,8 +151,10 @@ namespace Cottle.Documents.Compiled.Compilers
 
                     scope.Enter();
 
-                    var forKey = !string.IsNullOrEmpty(statement.Key) ? (int?)scope.DeclareLocal(statement.Key) : null;
-                    var forValue = scope.DeclareLocal(statement.Value);
+                    var forKey = !string.IsNullOrEmpty(statement.Key)
+                        ? (Symbol?)scope.GetOrDeclareLocal(statement.Key)
+                        : null;
+                    var forValue = scope.GetOrDeclareLocal(statement.Value);
 
                     var forBody = CompileStatement(statement.Body, scope);
                     var forEmpty = statement.Next.Type != StatementType.None

@@ -8,12 +8,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 {
     internal class AssignFunctionStatementGenerator : IStatementGenerator
     {
-        private readonly IReadOnlyList<int> _arguments;
+        private readonly IReadOnlyList<Symbol> _arguments;
         private readonly IStatementGenerator _body;
         private readonly int _localCount;
         private readonly Symbol _symbol;
 
-        public AssignFunctionStatementGenerator(Symbol symbol, int localCount, IReadOnlyList<int> arguments,
+        public AssignFunctionStatementGenerator(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments,
             IStatementGenerator body)
         {
             _arguments = arguments;
@@ -37,11 +37,11 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         {
             public bool IsPure => false;
 
-            private readonly IReadOnlyList<int> _arguments;
+            private readonly IReadOnlyList<Symbol> _arguments;
             private readonly int _localCount;
             private readonly Program _program;
 
-            public Function(int localCount, IReadOnlyList<int> arguments, Program program)
+            public Function(int localCount, IReadOnlyList<Symbol> arguments, Program program)
             {
                 _arguments = arguments;
                 _localCount = localCount;

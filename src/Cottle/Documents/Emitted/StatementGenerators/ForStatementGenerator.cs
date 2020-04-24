@@ -7,11 +7,11 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     {
         private readonly IStatementGenerator _body;
         private readonly IStatementGenerator _empty;
-        private readonly int? _key;
+        private readonly Symbol? _key;
         private readonly IExpressionGenerator _source;
-        private readonly int _value;
+        private readonly Symbol _value;
 
-        public ForStatementGenerator(IExpressionGenerator source, int? key, int value, IStatementGenerator body,
+        public ForStatementGenerator(IExpressionGenerator source, Symbol? key, Symbol value, IStatementGenerator body,
             IStatementGenerator empty)
         {
             _body = body;
@@ -64,14 +64,14 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Set current element key if defined
             if (_key.HasValue)
             {
-                emitter.LoadFrameSymbol(new Symbol(_key.Value, StoreMode.Local));
+                emitter.LoadFrameSymbol(_key.Value);
                 emitter.LoadLocalAddress(pair);
                 emitter.InvokePairKey();
                 emitter.StoreValueAtIndex<Value>();
             }
 
             // Set current element value
-            emitter.LoadFrameSymbol(new Symbol(_value, StoreMode.Local));
+            emitter.LoadFrameSymbol(_value);
             emitter.LoadLocalAddressAndRelease(pair);
             emitter.InvokePairValue();
             emitter.StoreValueAtIndex<Value>();
