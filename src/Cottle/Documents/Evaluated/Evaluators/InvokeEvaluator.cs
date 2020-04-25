@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Evaluators
 {
@@ -23,7 +22,7 @@ namespace Cottle.Documents.Evaluated.Evaluators
             var function = source.AsFunction;
 
             if (function == null)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             var values = new Value[_arguments.Count];
 

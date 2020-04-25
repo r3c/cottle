@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text;
 
 namespace Cottle.Values
@@ -26,8 +27,8 @@ namespace Cottle.Values
 
         public override bool AsBoolean => !string.IsNullOrEmpty(Value);
 
-        public override decimal AsNumber =>
-            decimal.TryParse(Value, NumberStyles.Number, CultureInfo.InvariantCulture, out var number)
+        public override double AsNumber =>
+            double.TryParse(Value, NumberStyles.Number, CultureInfo.InvariantCulture, out var number)
                 ? number
                 : 0;
 
@@ -35,11 +36,13 @@ namespace Cottle.Values
 
         public override ValueContent Type => ValueContent.String;
 
+        [Obsolete("Use `Value.FromString()`")]
         public StringValue(string value) :
             base(value, source => source.AsString)
         {
         }
 
+        [Obsolete("Use `Value.FromString()`")]
         public StringValue(char value) :
             this(value.ToString())
         {

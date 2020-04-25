@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test.Contexts
@@ -11,7 +10,7 @@ namespace Cottle.Test.Contexts
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value> { { "a", "value" } });
 
-            Assert.That(context["a"], Is.EqualTo(new StringValue("value")));
+            Assert.That(context["a"], Is.EqualTo(Value.FromString("value")));
         }
 
         [Test]
@@ -19,7 +18,7 @@ namespace Cottle.Test.Contexts
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>());
 
-            Assert.That(context["a"], Is.EqualTo(VoidValue.Instance));
+            Assert.That(context["a"], Is.EqualTo(Value.Undefined));
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors.Assign
 {
@@ -25,7 +24,7 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
 
         protected override Value Evaluate(Frame frame, TextWriter output)
         {
-            return new FunctionValue(new Function(_localCount, _arguments, _body));
+            return Value.FromFunction(new Function(_localCount, _arguments, _body));
         }
 
         private class Function : IFunction

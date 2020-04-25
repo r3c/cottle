@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cottle.Values;
 
 namespace Cottle.Contexts
 {
@@ -12,6 +11,6 @@ namespace Cottle.Contexts
             _symbols = symbols;
         }
 
-        public Value this[Value symbol] => _symbols.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
+        public Value this[Value symbol] => _symbols.TryGetValue(symbol, out var value) ? value : Value.Undefined;
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Cottle.Stores;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test.Stores
@@ -13,16 +12,16 @@ namespace Cottle.Test.Stores
             var context = Context.CreateCustom(new Dictionary<Value, Value> {{"field", 42}});
             var store = new ContextStore(context) {["field"] = 53};
 
-            Assert.That(store["field"], Is.EqualTo(new NumberValue(53)));
+            Assert.That(store["field"], Is.EqualTo(Value.FromNumber(53)));
         }
 
         [Test]
         public void AccessorOverwriteWithVoid()
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value> {{"field", 42}});
-            var store = new ContextStore(context) {["field"] = VoidValue.Instance};
+            var store = new ContextStore(context) {["field"] = Value.Undefined};
 
-            Assert.That(store["field"], Is.EqualTo(VoidValue.Instance));
+            Assert.That(store["field"], Is.EqualTo(Value.Undefined));
         }
 
         [Test]
@@ -45,7 +44,7 @@ namespace Cottle.Test.Stores
         [Test]
         public void TryGetWithVoid()
         {
-            var context = Context.CreateCustom(new Dictionary<Value, Value> { ["field"] = VoidValue.Instance });
+            var context = Context.CreateCustom(new Dictionary<Value, Value> { ["field"] = Value.Undefined });
             var store = new ContextStore(context);
 
             Assert.That(store.TryGet("field", out _), Is.False);

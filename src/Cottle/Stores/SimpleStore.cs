@@ -73,7 +73,7 @@ namespace Cottle.Stores
                     if (_frames.Count > 0 && !_frames.Peek().Add(symbol))
                         stack.Pop();
 
-                    break;
+                    break;                    
             }
 
             stack.Push(value);
@@ -88,7 +88,7 @@ namespace Cottle.Stores
                 return true;
             }
 
-            value = null;
+            value = default;
 
             return false;
         }

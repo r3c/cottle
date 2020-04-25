@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test
@@ -175,7 +174,7 @@ namespace Cottle.Test
                 var result = function.Invoke(FunctionTester.State, arguments, writer);
 
                 Assert.That(function.IsPure, Is.False);
-                Assert.That(result, Is.EqualTo(VoidValue.Instance));
+                Assert.That(result, Is.EqualTo(Value.Undefined));
                 Assert.That(writer.ToString(), Is.Empty);
             }
         }
@@ -199,7 +198,7 @@ namespace Cottle.Test
                 var result = function.Invoke(FunctionTester.State, arguments, writer);
 
                 Assert.That(function.IsPure, Is.True);
-                Assert.That(result, Is.EqualTo(VoidValue.Instance));
+                Assert.That(result, Is.EqualTo(Value.Undefined));
                 Assert.That(writer.ToString(), Is.Empty);
             }
         }

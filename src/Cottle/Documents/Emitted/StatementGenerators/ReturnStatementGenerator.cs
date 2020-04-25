@@ -15,9 +15,9 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             var result = emitter.DeclareLocalAndStore<Value>();
 
-            emitter.LoadResultAddress();
-            emitter.LoadLocalReferenceAndRelease(result);
-            emitter.StoreReferenceAtAddress();
+            emitter.LoadResult();
+            emitter.LoadLocalValueAndRelease(result);
+            emitter.StoreValueAtAddress<Value>();
             emitter.LoadBoolean(true);
 
             return true;

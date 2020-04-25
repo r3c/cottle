@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Cottle.Values;
 
 namespace Cottle.Demo.Forms
 {
@@ -247,7 +246,7 @@ namespace Cottle.Demo.Forms
             switch (value.Type)
             {
                 case ValueContent.Boolean:
-                    DemoForm.NodeAssign(node, key, new BooleanValue(value.AsBoolean));
+                    DemoForm.NodeAssign(node, key, value.AsBoolean);
 
                     return node;
 
@@ -260,22 +259,22 @@ namespace Cottle.Demo.Forms
 
                     node.Nodes.AddRange(range);
 
-                    DemoForm.NodeAssign(node, key, MapValue.Empty);
+                    DemoForm.NodeAssign(node, key, Value.EmptyMap);
 
                     return node;
 
                 case ValueContent.Number:
-                    DemoForm.NodeAssign(node, key, new NumberValue(value.AsNumber));
+                    DemoForm.NodeAssign(node, key, value.AsNumber);
 
                     return node;
 
                 case ValueContent.String:
-                    DemoForm.NodeAssign(node, key, new StringValue(value.AsString));
+                    DemoForm.NodeAssign(node, key, value.AsString);
 
                     return node;
 
                 default:
-                    DemoForm.NodeAssign(node, key, VoidValue.Instance);
+                    DemoForm.NodeAssign(node, key, Value.Undefined);
 
                     return node;
             }

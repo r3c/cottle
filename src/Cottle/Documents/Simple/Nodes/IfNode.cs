@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
@@ -44,7 +43,7 @@ namespace Cottle.Documents.Simple.Nodes
                 return halt;
             }
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

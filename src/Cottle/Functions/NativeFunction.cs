@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Functions
 {
@@ -100,7 +99,7 @@ namespace Cottle.Functions
                 throw new InvalidOperationException("You're calling an instance of `NativeFunction` from an incompatible document type. Please replace all usages of `NativeFunction` by calls to `Function.Create*` static methods.");
 
             if (_min > arguments.Count || _max >= 0 && _max < arguments.Count)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             return _callback(arguments, store, output);
         }

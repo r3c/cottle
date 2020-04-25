@@ -30,13 +30,13 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                 var value = emitter.DeclareLocalAndStore<Value>();
 
                 // Load address of arguments[i]
-                emitter.LoadLocalReference(arguments);
+                emitter.LoadLocalValue(arguments);
                 emitter.LoadInteger(i);
                 emitter.LoadElementAddress<KeyValuePair<Value, Value>>();
 
                 // Build pair from key and value
-                emitter.LoadLocalReferenceAndRelease(key);
-                emitter.LoadLocalReferenceAndRelease(value);
+                emitter.LoadLocalValueAndRelease(key);
+                emitter.LoadLocalValueAndRelease(value);
                 emitter.NewKeyValuePair();
 
                 // Store pair in arguments[i]
@@ -44,8 +44,8 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             }
 
             // Create value from array
-            emitter.LoadLocalReferenceAndRelease(arguments);
-            emitter.NewMapValue();
+            emitter.LoadLocalValueAndRelease(arguments);
+            emitter.InvokeValueFromDictionary();
         }
     }
 }

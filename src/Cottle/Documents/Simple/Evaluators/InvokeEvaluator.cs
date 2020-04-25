@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Evaluators
 {
@@ -33,7 +32,7 @@ namespace Cottle.Documents.Simple.Evaluators
                 return function.Invoke(store, values, output);
             }
 
-            return VoidValue.Instance;
+            return Value.Undefined;
         }
 
         public override string ToString()

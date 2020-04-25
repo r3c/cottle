@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes.AssignNodes
 {
@@ -54,7 +53,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             store.Enter();
 
             for (var i = 0; i < _arguments.Length; ++i)
-                store.Set(_arguments[i], i < arguments.Count ? arguments[i] : VoidValue.Instance, StoreMode.Local);
+                store.Set(_arguments[i], i < arguments.Count ? arguments[i] : Value.Undefined, StoreMode.Local);
 
             _body.Render(store, output, out var result);
 
@@ -65,7 +64,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 
         protected override Value Evaluate(IStore store, TextWriter output)
         {
-            return new FunctionValue(this);
+            return Value.FromFunction(this);
         }
 
         protected override void SourceSymbol(string name, TextWriter output)

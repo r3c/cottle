@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors
 {
@@ -38,7 +37,7 @@ namespace Cottle.Documents.Evaluated.Executors
         {
             _setter(frame, _index, Evaluate(frame, output));
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

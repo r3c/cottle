@@ -6,6 +6,7 @@ namespace Cottle.Values
     {
         private readonly Func<Value> _resolver;
 
+        [Obsolete("Use `Value.FromLazy()`")]
         public LazyValue(Func<Value> resolver)
         {
             _resolver = resolver;

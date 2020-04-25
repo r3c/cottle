@@ -1,16 +1,18 @@
-﻿using Cottle.Maps;
+﻿using System;
+using Cottle.Maps;
 
 namespace Cottle.Values
 {
-    public sealed class VoidValue : Value
+    public sealed class VoidValue : BaseValue
     {
+        [Obsolete("Use `Value.Undefined`")]
         public static VoidValue Instance { get; } = new VoidValue();
 
         public override bool AsBoolean => false;
 
         public override IFunction AsFunction => null;
 
-        public override decimal AsNumber => 0;
+        public override double AsNumber => 0;
 
         public override string AsString => string.Empty;
 
@@ -20,9 +22,6 @@ namespace Cottle.Values
 
         public override int CompareTo(Value other)
         {
-            if (other == null)
-                return 1;
-
             if (Type != other.Type)
                 return ((int)Type).CompareTo((int)other.Type);
 

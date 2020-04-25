@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Evaluators
 {
@@ -17,7 +16,7 @@ namespace Cottle.Documents.Evaluated.Evaluators
 
         public Value Evaluate(Frame frame, TextWriter writer)
         {
-            return new MapValue(_elements.Select(element =>
+            return Value.FromEnumerable(_elements.Select(element =>
             {
                 var key = element.Key.Evaluate(frame, writer);
                 var value = element.Value.Evaluate(frame, writer);

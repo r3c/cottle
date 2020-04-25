@@ -4,7 +4,12 @@ namespace Cottle.Maps
 {
     internal class HashMap : AbstractMap
     {
-        private readonly Dictionary<Value, Value> _hash;
+        private readonly IReadOnlyDictionary<Value, Value> _hash;
+
+        public HashMap(IReadOnlyDictionary<Value, Value> hash)
+        {
+            _hash = hash;
+        }
 
         public HashMap(IDictionary<Value, Value> hash)
         {

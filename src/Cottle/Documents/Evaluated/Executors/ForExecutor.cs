@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors
 {
@@ -45,7 +44,7 @@ namespace Cottle.Documents.Evaluated.Executors
             else if (_empty != null && _empty.Execute(frame, output, out result))
                 return true;
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

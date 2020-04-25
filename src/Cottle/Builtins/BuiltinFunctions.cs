@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Cottle.Values;
+using Cottle.Maps;
 
 namespace Cottle.Builtins
 {
@@ -29,7 +29,7 @@ namespace Cottle.Builtins
             var i = 0;
 
             if (function == null)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             foreach (var pair in arguments.Fields)
                 fields[i++] = pair.Value;
@@ -54,7 +54,7 @@ namespace Cottle.Builtins
                     return value.AsString;
 
                 default:
-                    return VoidValue.Instance;
+                    return Value.Undefined;
             }
         });
 
@@ -62,6 +62,18 @@ namespace Cottle.Builtins
         {
             switch (arguments[0].Type)
             {
+                case ValueContent.Boolean:
+                case ValueContent.Function:
+                case ValueContent.Number:
+                case ValueContent.String:
+                case ValueContent.Void:
+                    var builder = new StringBuilder();
+
+                    foreach (var argument in arguments)
+                        builder.Append(argument.AsString);
+
+                    return builder.ToString();
+
                 case ValueContent.Map:
                     var concat = new List<Value>();
 
@@ -74,12 +86,8 @@ namespace Cottle.Builtins
                     return concat;
 
                 default:
-                    var builder = new StringBuilder();
+                    throw new InvalidOperationException();
 
-                    foreach (var argument in arguments)
-                        builder.Append(argument.AsString);
-
-                    return builder.ToString();
             }
         }, 1, int.MaxValue);
 
@@ -100,8 +108,7 @@ namespace Cottle.Builtins
 
         private static readonly IFunction Compare = Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs));
 
-        private static readonly IFunction Cosine =
-            Function.CreatePure1((state, value) => Math.Cos((double)value.AsNumber));
+        private static readonly IFunction Cosine = Function.CreatePure1((state, value) => Math.Cos(value.AsNumber));
 
         private static readonly IFunction Cross = Function.CreatePure((state, arguments) =>
         {
@@ -132,7 +139,7 @@ namespace Cottle.Builtins
             Function.CreatePure2((state, value, fallback) => value.AsBoolean ? value : fallback);
 
         private static readonly IFunction Defined =
-            Function.CreatePure1((state, value) => value != VoidValue.Instance);
+            Function.CreatePure1((state, value) => value != Value.Undefined);
 
         private static readonly IFunction Except = Function.CreatePure((state, arguments) =>
         {
@@ -166,7 +173,7 @@ namespace Cottle.Builtins
             var result = new List<KeyValuePair<Value, Value>>(arguments[0].Fields.Count);
 
             if (function == null)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             foreach (var pair in arguments[0].Fields)
             {
@@ -237,6 +244,13 @@ namespace Cottle.Builtins
 
                             break;
 
+                        case ValueContent.Function:
+                        case ValueContent.Map:
+                        case ValueContent.Void:
+                            target = null;
+
+                            break;
+
                         case ValueContent.Number:
                             target = arguments[0].AsNumber;
 
@@ -248,9 +262,7 @@ namespace Cottle.Builtins
                             break;
 
                         default:
-                            target = null;
-
-                            break;
+                            throw new InvalidOperationException();
                     }
 
                     break;
@@ -262,12 +274,12 @@ namespace Cottle.Builtins
 
                 case "d":
                 case "du":
-                    target = BuiltinFunctions.Epoch.AddSeconds((double)arguments[0].AsNumber);
+                    target = BuiltinFunctions.Epoch.AddSeconds(arguments[0].AsNumber);
 
                     break;
 
                 case "dl":
-                    target = BuiltinFunctions.Epoch.AddSeconds((double)arguments[0].AsNumber).ToLocalTime();
+                    target = BuiltinFunctions.Epoch.AddSeconds(arguments[0].AsNumber).ToLocalTime();
 
                     break;
 
@@ -287,7 +299,7 @@ namespace Cottle.Builtins
                     break;
 
                 default:
-                    return VoidValue.Instance;
+                    return Value.Undefined;
             }
 
             return string.Format(culture, $"{{0:{format.Substring(index + 1)}}}", target);
@@ -343,7 +355,7 @@ namespace Cottle.Builtins
             var result = new KeyValuePair<Value, Value>[arguments[0].Fields.Count];
 
             if (function == null)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             var i = 0;
 
@@ -366,7 +378,7 @@ namespace Cottle.Builtins
             var match = Regex.Match(arguments[0].AsString, arguments[1].AsString);
 
             if (!match.Success)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             var groups = new List<Value>(match.Groups.Count);
 
@@ -404,7 +416,7 @@ namespace Cottle.Builtins
         });
 
         private static readonly IFunction Power =
-            Function.CreatePure2((state, x, y) => Math.Pow((double)x.AsNumber, (double)y.AsNumber));
+            Function.CreatePure2((state, x, y) => Math.Pow(x.AsNumber, y.AsNumber));
 
         private static readonly IFunction Random = Function.CreatePure((state, arguments) =>
         {
@@ -432,26 +444,26 @@ namespace Cottle.Builtins
             var stop = arguments.Count > 1 ? (int)arguments[1].AsNumber : (int)arguments[0].AsNumber;
 
             if (step == 0)
-                return MapValue.Empty;
+                return Value.FromMap(EmptyMap.Instance);
 
             int sign;
 
             if (step < 0)
             {
                 if (start < stop)
-                    return MapValue.Empty;
+                    return Value.FromMap(EmptyMap.Instance);
 
                 sign = 1;
             }
             else
             {
                 if (start > stop)
-                    return MapValue.Empty;
+                    return Value.FromMap(EmptyMap.Instance);
 
                 sign = -1;
             }
 
-            return new MapValue(i => start + step * i, (stop - start + step + sign) / step);
+            return Value.FromGenerator(i => start + step * i, (stop - start + step + sign) / step);
         }, 1, 3);
 
         private static readonly IFunction Round = Function.CreatePure((state, arguments) =>
@@ -462,8 +474,7 @@ namespace Cottle.Builtins
             return Math.Round(arguments[0].AsNumber);
         }, 1, 2);
 
-        private static readonly IFunction Sine =
-            Function.CreatePure1((state, angle) => Math.Sin((double)angle.AsNumber));
+        private static readonly IFunction Sine = Function.CreatePure1((state, angle) => Math.Sin(angle.AsNumber));
 
         private static readonly IFunction Slice = Function.CreatePure((state, arguments) =>
         {
@@ -502,7 +513,7 @@ namespace Cottle.Builtins
                 var callback = arguments[1].AsFunction;
 
                 if (callback == null)
-                    return VoidValue.Instance;
+                    return Value.Undefined;
 
                 sorted.Sort((a, b) =>
                     (int)callback.Invoke(state, new[] { a.Value, b.Value }, TextWriter.Null).AsNumber);
@@ -513,9 +524,9 @@ namespace Cottle.Builtins
             return sorted;
         }, 1, 2);
 
-        private static readonly IFunction Split = Function.CreatePure2((state, source, separator) => source
-            .AsString.Split(new[] { separator.AsString }, StringSplitOptions.None).Select(s => new StringValue(s))
-            .ToArray());
+        private static readonly IFunction Split = Function.CreatePure2((state, source, separator) =>
+            Value.FromEnumerable(source.AsString.Split(new[] { separator.AsString }, StringSplitOptions.None)
+                .Select(Value.FromString)));
 
         private static readonly IFunction Token = Function.CreatePure((state, arguments) =>
         {
@@ -577,7 +588,7 @@ namespace Cottle.Builtins
             if (arguments[0].AsBoolean)
                 return arguments[1];
 
-            return arguments.Count > 2 ? arguments[2] : VoidValue.Instance;
+            return arguments.Count > 2 ? arguments[2] : Value.Undefined;
         }, 2, 3);
 
         private static readonly IFunction Xor = Function.CreatePure((state, arguments) =>

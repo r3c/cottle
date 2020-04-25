@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using Cottle.Builtins;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test
@@ -79,7 +78,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = new FunctionValue(Function.CreatePure1((state, value) => value.AsString + value.AsString))
+                ["f"] = Value.FromFunction(Function.CreatePure1((state, value) => value.AsString + value.AsString))
             });
 
             AssertOutput($"{{f({input})}}", default, context, expected);
@@ -458,7 +457,7 @@ namespace Cottle.Test
                 if (!BuiltinFunctions.TryGet(name, out var function))
                     continue;
 
-                symbols[name] = new FunctionValue(function);
+                symbols[name] = Value.FromFunction(function);
             }
 
             return Context.CreateCustom(symbols);

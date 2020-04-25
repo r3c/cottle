@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
-using Cottle.Values;
 
 namespace Cottle.Demo.Forms
 {
@@ -73,12 +72,12 @@ namespace Cottle.Demo.Forms
                     break;
 
                 case ValueContent.Map:
-                    _assign(key, MapValue.Empty);
+                    _assign(key, Value.EmptyMap);
 
                     break;
 
                 case ValueContent.Number:
-                    if (!decimal.TryParse(textBoxValueNumber.Text, NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (!double.TryParse(textBoxValueNumber.Text, NumberStyles.Number, CultureInfo.InvariantCulture,
                         out var number))
                     {
                         MessageBox.Show(this,
@@ -98,7 +97,7 @@ namespace Cottle.Demo.Forms
                     break;
 
                 default:
-                    _assign(key, VoidValue.Instance);
+                    _assign(key, Value.Undefined);
 
                     break;
             }

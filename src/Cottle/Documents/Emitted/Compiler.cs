@@ -3,7 +3,6 @@ using Cottle.Documents.Compiled;
 using Cottle.Documents.Compiled.Compilers;
 using Cottle.Documents.Emitted.ExpressionGenerators;
 using Cottle.Documents.Emitted.StatementGenerators;
-using Cottle.Values;
 
 namespace Cottle.Documents.Emitted
 {
@@ -36,7 +35,7 @@ namespace Cottle.Documents.Emitted
 
         protected override IExpressionGenerator CreateExpressionVoid()
         {
-            return new ConstantExpressionGenerator(VoidValue.Instance);
+            return new ConstantExpressionGenerator(Value.Undefined);
         }
 
         protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, int localCount,

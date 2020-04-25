@@ -1,3 +1,5 @@
+//#define COTTLE_IL_SAVE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +14,8 @@ namespace Cottle.Documents.Emitted
 
         public static Program Create(IStatementGenerator generator)
         {
+            var arguments = new[] { typeof(IReadOnlyList<Value>), typeof(Frame), typeof(TextWriter), Program.OutValue };
+
 #if COTTLE_IL_SAVE && !NETSTANDARD
             var assemblyName = new System.Reflection.AssemblyName("Test");
             var fileName = assemblyName.Name + ".dll";
@@ -22,8 +26,9 @@ namespace Cottle.Documents.Emitted
             var saveMethod = saveProgram.DefineMethod("Main",
                 System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static,
                 System.Reflection.CallingConventions.Any, typeof(bool), arguments);
+            var saveEmitter = new Emitter(saveMethod.GetILGenerator());
 
-            Program.Emit(new Emitter(saveMethod.GetILGenerator()), generator);
+            Program.Emit(saveEmitter, generator);
 
             saveProgram.CreateType();
             saveAssembly.Save(assemblyName.Name + ".dll");
@@ -34,13 +39,12 @@ namespace Cottle.Documents.Emitted
             File.Copy(saveSource, saveDestination, true);
 #endif
 
-            var arguments = new[] { typeof(IReadOnlyList<Value>), typeof(Frame), typeof(TextWriter), Program.OutValue };
-            var method = new DynamicMethod(string.Empty, typeof(bool), arguments, typeof(EmittedDocument));
-            var emitter = new Emitter(method.GetILGenerator());
+            var dynamicMethod = new DynamicMethod(string.Empty, typeof(bool), arguments, typeof(EmittedDocument));
+            var emitter = new Emitter(dynamicMethod.GetILGenerator());
 
             Program.Emit(emitter, generator);
 
-            var executable = (Executable)method.CreateDelegate(typeof(Executable));
+            var executable = (Executable)dynamicMethod.CreateDelegate(typeof(Executable));
 
             return new Program(executable, emitter.CreateConstants());
         }

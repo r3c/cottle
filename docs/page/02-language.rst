@@ -76,7 +76,7 @@ Passing variables
 
 To send variables so they can be used when a document is rendered you must provide them through a :type:`IContext` instance which is used as a render-time storage. This interface behaves quite like an immutable ``Dictionary<Cottle.Value, Cottle.Value>`` where :type:`Value` is a data structure able to store any value Cottle can handle. Key and value pairs within this dictionary are used as variable names and their associated values.
 
-Implicit constructors from some native .NET types to :type:`Value` type are provided so you usually don't have to explicitly do the conversion yourself but you can browse ``Cottle.Values`` namespace to see available types.
+Implicit constructors from some native .NET types to :type:`Value` type are provided so you usually don't have to explicitly do the conversion yourself but you can also create values using ``Value.FromSomething()`` static construction methods (where "Something" is a known .NET type). See API documentation about :type:`Value` type for details.
 
 Once you assigned variables to a context, pass it to your document's rendering method so you can read them from your template (see section :ref:`getting_started` for a full example):
 
@@ -109,7 +109,7 @@ Value types
 Cottle supports immutable values which can either be declared as constants in templates or set in contexts you pass when rendering a document. Values have a type which can be one of the following:
 
 -  Boolean (value is either true or false),
--  Number (equivalent to .NET's decimal),
+-  Number (equivalent to .NET's double),
 -  String (sequence of character),
 -  Map (associative key/value container),
 -  Void (value is undefined ; any undeclared variable has void type).
@@ -140,7 +140,7 @@ Map values are associative tables that contain multiple children values stored a
 
 Please note the quotes used in subscript notation. Trying to access value of ``{mymap[f2]}`` will result in a very different behavior, since it will search for the value whose key is the value of ``f2`` (which hasn't be defined), leading to an undefined result. It is valid to have a map in which two or more keys are equal, but you will only be able to access the last one when using direct access. Iterating over the map's elements will however show you its entire contents.
 
-Implicit constructors on :type:`Value` class allow you to convert most .NET standard types into a Cottle value instance. To get a void value your from C# code use the ``Cottle.Values.VoidValue.Instance`` static property.
+Implicit constructors on :type:`Value` class allow you to convert most .NET standard types into a Cottle value instance. To get an undefined value your from C# code use the ``Cottle.Value.Undefined`` static field.
 
 You can also declare constant values in your templates with following constructs:
 
@@ -184,7 +184,7 @@ You can also use ``(`` and ``)`` to group sub-expressions and change natural pre
 
 .. note::
 
-    Mathematical operators (``+``, ``-``, ``*``, ``/`` and ``%``) only accept numeric operands and will try to cast other types to numbers (see section :ref:`api_value` for details about conversion to number).
+    Mathematical operators (``+``, ``-``, ``*``, ``/`` and ``%``) only accept numeric operands and will try to cast other types to numbers (see :type:`Value` type for details about conversion to number).
 
 .. note::
 
@@ -236,7 +236,7 @@ Commands
 Conditionals ("if")
 ----------------------
 
-You can write conditional statements by using the ``if`` command which uses an expression as a predicate to check whether its body should be printed or not. Predicate is verified if value, once converted to a boolean type, is true (see section :ref:`api_value` for details about conversion to boolean).
+You can write conditional statements by using the ``if`` command which uses an expression as a predicate to check whether its body should be printed or not. Predicate is verified if value, once converted to a boolean type, is true (see :type:`Value` type for details about conversion to boolean).
 
 Predicate must be ended by a **:** (*body declaration*) separator character and followed by body of the ``if`` command, then **}** (*end of command*) delimiter. Command body is a Cottle template, meaning it can contain plain text and commands as well.
 

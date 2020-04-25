@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Evaluators
 {
@@ -10,7 +9,7 @@ namespace Cottle.Documents.Evaluated.Evaluators
 
         public Value Evaluate(Frame frame, TextWriter output)
         {
-            return VoidValue.Instance;
+            return Value.Undefined;
         }
     }
 }

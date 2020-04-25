@@ -8,6 +8,11 @@ namespace Cottle
     public static class Function
     {
         /// <summary>
+        /// Function always returning an empty result.
+        /// </summary>
+        internal static readonly IFunction Empty = Function.CreatePure((o, a) => Value.Undefined);
+
+        /// <summary>
         /// Create a function taking a number of input arguments enclosed within a given range.
         /// </summary>
         /// <param name="callback">Execution callback</param>

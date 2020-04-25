@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Emitted.StatementGenerators
 {
@@ -28,8 +27,8 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var program = Program.Create(_body);
 
             emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadConstant(new FunctionValue(new Function(_localCount, _arguments, program)));
-            emitter.StoreReferenceAtIndex();
+            emitter.LoadConstant(Value.FromFunction(new Function(_localCount, _arguments, program)));
+            emitter.StoreValueAtIndex<Value>();
 
             return false;
         }
@@ -78,7 +77,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
                 return _program.Executable(_program.Constants, functionFrame, output, out var result)
                     ? result
-                    : VoidValue.Instance;
+                    : Value.Undefined;
             }
         }
     }

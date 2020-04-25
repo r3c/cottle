@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Emitted
 {
@@ -47,18 +46,13 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo MapTryGet =
             typeof(IMap).GetMethod(nameof(IMap.TryGet)) ?? throw new InvalidOperationException();
 
-        private static readonly ConstructorInfo MapValueConstructor =
-            Resolver.Constructor<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f =>
-                new MapValue(f));
+        private static readonly MethodInfo ObjectToString = Resolver.Method<Func<object, string>>(o => o.ToString());
 
         private static readonly MethodInfo PairKey =
             Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetGetMethod();
 
         private static readonly MethodInfo PairValue =
             Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod();
-
-        private static readonly ConstructorInfo StringValueConstructor =
-            Resolver.Constructor<Func<string, Value>>(s => new StringValue(s));
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Resolver.Constructor<Func<StringWriter>>(() => new StringWriter());
@@ -84,9 +78,14 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo ValueFieldsGet =
             Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod();
 
-        private static readonly MethodInfo VoidValueInstance =
-            Resolver.Property<Func<Value>>(() => VoidValue.Instance).GetGetMethod();
+        private static readonly MethodInfo ValueFromDictionary =
+            Resolver.Method<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
 
+        private static readonly MethodInfo ValueFromString =
+            Resolver.Method<Func<string, Value>>(s => Value.FromString(s));
+
+        private static readonly FieldInfo ValueUndefined = Resolver.Field<Func<Value>>(() => Value.Undefined);
+        
         private readonly Dictionary<Value, int> _constants;
         private readonly ILGenerator _generator;
         private readonly Dictionary<Type, Stack<LocalBuilder>> _locals;
@@ -175,6 +174,12 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Callvirt, Emitter.MapTryGet);
         }
 
+        public void InvokeObjectToString()
+        {
+            _generator.Emit(OpCodes.Constrained, typeof(Value));
+            _generator.Emit(OpCodes.Callvirt, Emitter.ObjectToString);
+        }
+
         public void InvokePairKey()
         {
             _generator.Emit(OpCodes.Call, Emitter.PairKey);
@@ -202,22 +207,32 @@ namespace Cottle.Documents.Emitted
 
         public void InvokeValueAsBoolean()
         {
-            _generator.Emit(OpCodes.Callvirt, Emitter.ValueAsBooleanGet);
+            _generator.Emit(OpCodes.Call, Emitter.ValueAsBooleanGet);
         }
 
         public void InvokeValueAsFunction()
         {
-            _generator.Emit(OpCodes.Callvirt, Emitter.ValueAsFunctionGet);
+            _generator.Emit(OpCodes.Call, Emitter.ValueAsFunctionGet);
         }
 
         public void InvokeValueAsString()
         {
-            _generator.Emit(OpCodes.Callvirt, Emitter.ValueAsStringGet);
+            _generator.Emit(OpCodes.Call, Emitter.ValueAsStringGet);
         }
 
         public void InvokeValueFields()
         {
-            _generator.Emit(OpCodes.Callvirt, Emitter.ValueFieldsGet);
+            _generator.Emit(OpCodes.Call, Emitter.ValueFieldsGet);
+        }
+
+        public void InvokeValueFromDictionary()
+        {
+            _generator.Emit(OpCodes.Call, Emitter.ValueFromDictionary);
+        }
+
+        public void InvokeValueFromString()
+        {
+            _generator.Emit(OpCodes.Call, Emitter.ValueFromString);
         }
 
         public void LoadArray<TElement>(int count)
@@ -300,24 +315,24 @@ namespace Cottle.Documents.Emitted
                 _generator.Emit(OpCodes.Ldc_I4, value);
         }
 
-        public void LoadLocalReference<TValue>(Local<TValue> local)
-        {
-            _generator.Emit(OpCodes.Ldloc, local.Builder);
-        }
-
-        public void LoadLocalReferenceAndRelease<TValue>(Local<TValue> local)
-        {
-            LoadLocalAndRelease(OpCodes.Ldloc, local);
-        }
-
-        public void LoadLocalValue<TValue>(Local<TValue> local)
+        public void LoadLocalAddress<TValue>(Local<TValue> local) where TValue : struct
         {
             _generator.Emit(OpCodes.Ldloca, local.Builder);
         }
 
-        public void LoadLocalValueAndRelease<TValue>(Local<TValue> local)
+        public void LoadLocalAddressAndRelease<TValue>(Local<TValue> local) where TValue : struct
         {
             LoadLocalAndRelease(OpCodes.Ldloca, local);
+        }
+
+        public void LoadLocalValue<TValue>(Local<TValue> local)
+        {
+            _generator.Emit(OpCodes.Ldloc, local.Builder);
+        }
+
+        public void LoadLocalValueAndRelease<TValue>(Local<TValue> local)
+        {
+            LoadLocalAndRelease(OpCodes.Ldloc, local);
         }
 
         public void LoadOutput()
@@ -328,7 +343,7 @@ namespace Cottle.Documents.Emitted
                 _generator.Emit(OpCodes.Ldarg_2);
         }
 
-        public void LoadResultAddress()
+        public void LoadResult()
         {
             _generator.Emit(OpCodes.Ldarg_3);
         }
@@ -359,12 +374,12 @@ namespace Cottle.Documents.Emitted
             }
 
             _generator.Emit(OpCodes.Ldc_I4, symbol.Index);
-            _generator.Emit(OpCodes.Ldelem_Ref);
+            _generator.Emit(OpCodes.Ldelem, typeof(Value));
         }
 
-        public void LoadVoid()
+        public void LoadUndefined()
         {
-            _generator.Emit(OpCodes.Call, Emitter.VoidValueInstance);
+            _generator.Emit(OpCodes.Ldsfld, Emitter.ValueUndefined);
         }
 
         public void MarkLabel(Label label)
@@ -375,16 +390,6 @@ namespace Cottle.Documents.Emitted
         public void NewKeyValuePair()
         {
             _generator.Emit(OpCodes.Newobj, Emitter.KeyValueConstructor);
-        }
-
-        public void NewMapValue()
-        {
-            _generator.Emit(OpCodes.Newobj, Emitter.MapValueConstructor);
-        }
-
-        public void NewStringValue()
-        {
-            _generator.Emit(OpCodes.Newobj, Emitter.StringValueConstructor);
         }
 
         public void NewStringWriter()
@@ -407,24 +412,24 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ret);
         }
 
+        public void StoreElementAtIndex<TElement>()
+        {
+            _generator.Emit(OpCodes.Stelem, typeof(TElement));
+        }
+
         public void StoreLocal<TValue>(Local<TValue> local)
         {
             _generator.Emit(OpCodes.Stloc, local.Builder);
         }
 
-        public void StoreReferenceAtAddress()
-        {
-            _generator.Emit(OpCodes.Stind_Ref);
-        }
-
-        public void StoreReferenceAtIndex()
-        {
-            _generator.Emit(OpCodes.Stelem_Ref);
-        }
-
-        public void StoreValueAtAddress<TValue>()
+        public void StoreValueAtAddress<TValue>() where TValue : struct
         {
             _generator.Emit(OpCodes.Stobj, typeof(TValue));
+        }
+
+        public void StoreValueAtIndex<TValue>() where TValue : struct
+        {
+            _generator.Emit(OpCodes.Stelem, typeof(TValue));
         }
 
         private Local<TValue> DeclareLocalAndEmit<TValue>(OpCode opCode)

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cottle.Builtins;
-using Cottle.Values;
 
 namespace Cottle.Contexts
 {
@@ -13,14 +12,14 @@ namespace Cottle.Contexts
         public static readonly BuiltinContext Instance = new BuiltinContext();
 
         private static readonly IReadOnlyDictionary<Value, Value> Builtins =
-            BuiltinFunctions.Instances.ToDictionary(instance => (Value)instance.Key,
-                instance => new FunctionValue(instance.Value) as Value);
+            BuiltinFunctions.Instances.ToDictionary(instance => Value.FromString(instance.Key),
+                instance => Value.FromFunction(instance.Value));
 
         private BuiltinContext()
         {
         }
 
         public Value this[Value symbol] =>
-            BuiltinContext.Builtins.TryGetValue(symbol, out var value) ? value : VoidValue.Instance;
+            BuiltinContext.Builtins.TryGetValue(symbol, out var value) ? value : Value.Undefined;
     }
 }

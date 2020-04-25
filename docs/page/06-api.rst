@@ -30,7 +30,7 @@ Compiled documents
 
     .. method:: Value Render(IContext context, TextWriter writer)
 
-        Render document and write output to given ``TextWriter`` instance. Return value is the value passed to top-level ``return`` command if any, or a void value otherwise.
+        Render document and write output to given ``TextWriter`` instance. Return value is the value passed to top-level ``return`` command if any, or an undefined value otherwise.
 
     .. method:: string Render(IContext context)
 
@@ -52,7 +52,7 @@ Compiled documents
 
     .. method:: DocumentResult CreateNative(TextReader template, DocumentConfiguration configuration = default)
 
-        Create a new native :type:`IDocument` instance relying on IL code generation rather than opcode evaluation for slightly better rendering performance, but way more expensive compilation cost. Use this method if you need high rendering performance on long-lived documents. Template is read from any non-seekable ``TextReader`` instance.
+        Create a new native :type:`IDocument` instance for better rendering performance but higher compilation cost. Template is read from any non-seekable ``TextReader`` instance. See section :ref:`native_document` for details about native documents.
 
     .. method:: DocumentResult CreateNative(string template, DocumentConfiguration configuration = default)
 
@@ -64,7 +64,7 @@ Compiled documents
 
     .. inherits:: Cottle.IDocument
 
-    Deprecated implementation of native document, should be replaced by :meth:`Cottle.Document.CreateNative`.
+    Deprecated class, use :meth:`Cottle.Document.CreateNative` to create native documents.
 
 
 .. namespace:: Cottle.Documents
@@ -72,7 +72,7 @@ Compiled documents
 
     .. inherits:: Cottle.IDocument
 
-    Deprecated implementation of default document, should be replaced by :meth:`Cottle.Document.CreateDefault`.
+    Deprecated class, use :meth:`Cottle.Document.CreateDefault` to create documents.
 
 
 .. namespace:: Cottle
@@ -170,7 +170,7 @@ Rendering contexts
 
     .. indexer:: Value this[Value symbol] { get; }
 
-        Get variable by its symbol (usually its name), or a void value if no value was defined with this name.
+        Get variable by its symbol (usually its name), or an undefined value if no value was defined with this name.
 
 
 .. namespace:: Cottle
@@ -188,11 +188,11 @@ Rendering contexts
 
     .. method:: IContext CreateCascade(IContext primary, IContext fallback)
 
-        Create a rendering context by combining two existing contexts that will be searched in order when querying a variable. Primary context is searched first, then fallback context is searched second if the result from first one was a void value.
+        Create a rendering context by combining two existing contexts that will be searched in order when querying a variable. Primary context is searched first, then fallback context is searched second if the result from first one was an undefined value.
 
     .. method:: IContext CreateCustom(Func<Value,Value> callback)
 
-        Create a rendering context using given callback for resolving variables. Callback must always expected to return a non-null result, possibly a void value.
+        Create a rendering context using given callback for resolving variables. Callback must always expected to return a non-null result, possibly an undefined value.
 
     .. method:: IContext CreateCustom(IReadOnlyDictionary<Value,Value> symbols)
 
@@ -268,8 +268,6 @@ Function declaration
 
 
 
-.. _`api_value`:
-
 Value declaration
 =================
 
@@ -278,33 +276,57 @@ Value declaration
 
     Cottle values can hold instances of any of the supported types (see section :ref:`value_types`).
 
+    .. property:: Value EmptyMap { get; }
+
+        Static and read-only empty map value.
+
+    .. property:: Value EmptyString { get; }
+
+        Static and read-only empty string value.
+
+    .. property:: Value False { get; }
+
+        Static and read-only boolean "false" value.
+
+    .. property:: Value True { get; }
+
+        Static and read-only boolean "true" value.
+
+    .. property:: Value Undefined { get; }
+
+        Static and read-only undefined value.
+
+    .. property:: Value Zero { get; }
+
+        Static and read-only number "0" value.
+
     .. property:: bool AsBoolean { get; }
 
         Read value as a boolean after converting it if needed. Following conversion is applied depending on base type:
 
         * From numbers, return ``true`` for non-zero values and ``false`` otherwise.
         * From strings, return ``true`` for non-zero length values and ``false`` for empty strings.
-        * From void values, always return ``false``.
+        * From undefined values, always return ``false``.
 
     .. property:: IFunction AsFunction { get; }
 
         Read value as a function, only if base type was already a function. No conversion is applied on this property, and return value is undefined if value was not a function.
 
-    .. property:: decimal AsNumber { get; }
+    .. property:: double AsNumber { get; }
 
-        Read value as a decimal after converting it if needed. Following conversion is applied depending on base type:
+        Read value as a double precision floating point number after converting it if needed. Following conversion is applied depending on base type:
 
         * From booleans, return ``0`` for ``false`` or ``1`` for ``true``.
-        * From strings, parse decimal number if value matches regular expression ``[0-9]*(\\.[0-9]+)?``, or ``0`` otherwise.
-        * From void values, always return ``0``.
+        * From strings, parse double number if value matches regular expression ``[0-9]*(\\.[0-9]+)?``, or ``0`` otherwise.
+        * From undefined values, always return ``0``.
 
     .. property:: string AsString { get; }
 
         Read value as a string after converting it if needed. Following conversion is applied depending on base type:
 
         * From booleans, return string ``"true"`` for ``true`` and empty string otherwise.
-        * From numbers, return result of call to ``decimal.ToString()`` method with invariant culture.
-        * From void values, always return an empty string.
+        * From numbers, return result of call to ``double.ToString()`` method with invariant culture.
+        * From undefined values, always return an empty string.
 
     .. property:: IMap Fields { get; }
 
@@ -314,13 +336,61 @@ Value declaration
 
         Get base type of current value instance.
 
+    .. method:: FromBoolean(bool value)
+
+        Create value from given boolean instance.
+
+    .. method:: FromDictionary(IReadOnlyDictionary<Value,Value> dictionary)
+
+        Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is immutable and simply keeps a reference on it without duplicating the data structure.
+
+    .. method:: FromDictionary(IDictionary<Value,Value> dictionary)
+
+        Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is mutable and duplicates the data structure to avoid further modifications.
+
+    .. method:: FromEnumerable(IEnumerable<KeyValuePair<Value,Value>> pairs)
+
+        Create a map value from given ``elements``, preserving element ordering but also allowing O(1) access to values by key.
+
+    .. method:: FromEnumerable(IEnumerable<Value> elements)
+
+        Create a map value from given ``elements``. Numeric keys are generated for each element starting at index ``0``.
+
+    .. method:: FromFunction(IFunction function)
+
+        Create a function value by wrapping an executable :type:`IFunction` instance. See sections :ref:`declare_function` and :ref:`native_function` for details about functions in Cottle.
+
+    .. method:: FromGenerator(Func<int,Value> generator, int count)
+
+        Create map value from given generator. Generator function ``generator`` is used to create elements based on their index, and the map will contain ``count`` values associated to keys ``0`` to ``count - 1``. Values are created only when retrieved, so creating a generator value with 10000000 elements won't have any cost until you actually access these elements from your template.
+
+    .. method:: FromLazy(Func<Value> resolver)
+
+        Create a lazy value from given value resolver. See section :ref:`lazy_value` for details about lazy value resolution.
+
+    .. method:: FromMap(IMap value)
+
+        Create value from given :type:`IMap` instance.
+
+    .. method:: FromNumber(double value)
+
+        Create value from given double instance.
+
+    .. method:: FromReflection<TSource>(TSource source, BindingFlags bindingFlags)
+
+        Create a reflection-based value to read members from object ``source``. Source object fields and properties are resolved using :meth:`System.Type.GetFields` and :meth:`System.Type.GetProperties` methods and provided binding flags for resolution. See section :ref:`reflection_value` for details about reflection-based inspection.
+
+    .. method:: FromString(string value)
+
+        Create value from given string instance.
+
 
 .. namespace:: Cottle.Values
 .. class:: FunctionValue
 
     .. inherits:: Cottle.Value
 
-    Specialized value to wrap an executable :type:`IFunction`. See sections :ref:`declare_function` and :ref:`native_function` for details about functions in Cottle.
+    Deprecated class, use :meth:`Value.FromFunction` to create function values.
 
     .. method:: FunctionValue(IFunction function)
 
@@ -332,7 +402,7 @@ Value declaration
 
     .. inherits:: Cottle.Value
 
-    Specialized value to provide lazy value resolution feature. See section :ref:`lazy_value` for details about lazy value resolution.
+    Deprecated class, use :meth:`Value.FromLazy` to create lazy values.
 
     .. method:: LazyValue(Func<Value> resolver)
 
@@ -344,11 +414,11 @@ Value declaration
 
     .. inherits:: Cottle.Value
 
-    Specialized value to provide reflection-based value defintion feature. See section :ref:`reflection_value` for details about reflection-based inspection.
+    Deprecated class, use :meth:`Value.FromReflection` to create reflection values.
 
     .. method:: ReflectionValue(object source, BindingFlags binding)
 
-    Class constructor with explicit binding flags. Source object fields and properties are resolved using :method:`System.Type.GetFields` and :method:`System.Type.GetProperties` methods and provided binding flags for resolution.
+    Class constructor with explicit binding flags.
 
     .. method:: ReflectionValue(object source)
 
@@ -362,7 +432,7 @@ Value declaration
 
     .. indexer:: Value this[Value key] { get; }
 
-        Get field by its key (usually its name), or a void value if no field was defined with this name.
+        Get field by its key (usually its name), or an undefined value if no field was defined with this name.
 
     .. property:: int Count { get; }
 

@@ -1,12 +1,10 @@
-﻿using Cottle.Values;
-
-namespace Cottle.Stores
+﻿namespace Cottle.Stores
 {
     public abstract class AbstractStore : IStore
     {
         public Value this[Value symbol]
         {
-            get => TryGet(symbol, out var value) ? value : VoidValue.Instance;
+            get => TryGet(symbol, out var value) ? value : Value.Undefined;
             set => Set(symbol, value, StoreMode.Global);
         }
 

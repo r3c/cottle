@@ -1,5 +1,3 @@
-using Cottle.Values;
-
 namespace Cottle.Contexts
 {
     internal class EmptyContext : IContext
@@ -10,6 +8,6 @@ namespace Cottle.Contexts
         {
         }
 
-        public Value this[Value symbol] => VoidValue.Instance;
+        public Value this[Value symbol] => Value.Undefined;
     }
 }

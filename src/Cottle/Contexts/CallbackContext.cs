@@ -1,11 +1,10 @@
 using System;
-using Cottle.Values;
 
 namespace Cottle.Contexts
 {
     internal class CallbackContext : IContext
     {
-        public Value this[Value symbol] => _callback(symbol) ?? VoidValue.Instance;
+        public Value this[Value symbol] => _callback(symbol);
 
         private readonly Func<Value, Value> _callback;
 

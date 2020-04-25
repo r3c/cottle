@@ -10,7 +10,7 @@ Logical
 and(x, y, ...)
 --------------
 
-Perform logical "and" between given boolean values, i.e. return ``true`` if all arguments are equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean).
+Perform logical "and" between given boolean values, i.e. return ``true`` if all arguments are equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean).
 
 .. code-block:: plain
     :caption: Cottle template
@@ -52,7 +52,7 @@ Compare ``x`` against ``y``, and return -1 if ``x`` is lower than ``y``, 0 if th
 default(primary, fallback)
 --------------------------
 
-Return ``primary`` if ``primary`` is equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean) or ``fallback`` otherwise.
+Return ``primary`` if ``primary`` is equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean) or ``fallback`` otherwise.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -73,7 +73,7 @@ defined(x)
 
 Check whether value ``x`` is defined by checking it has a non-void type.
 
-This is different than checking whether a value is equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean), for example integer ``0`` is equivalent to ``false`` when used as a boolean expression but ``defined(0)`` is ``true``. This function is mostly useful for testing whether a variable has been assigned a value or not.
+This is different than checking whether a value is equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean), for example integer ``0`` is equivalent to ``false`` when used as a boolean expression but ``defined(0)`` is ``true``. This function is mostly useful for testing whether a variable has been assigned a value or not.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -180,7 +180,7 @@ Return ``true`` if given map has a value associated to given key or ``false`` ot
 
 .. note::
 
-    Result of this function is close to but not strictly equivalent to ``defined(map[key])`` as the former will return ``true`` if ``map`` contains a key ``key`` associated to a void value while the later will return ``false``.
+    Result of this function is close to but not strictly equivalent to ``defined(map[key])`` as the former will return ``true`` if ``map`` contains a key ``key`` associated to an undefined value while the later will return ``false``.
 
 
 le(x, y)
@@ -256,7 +256,7 @@ Return ``true`` if ``x`` equals ``y`` or ``false`` otherwise. It uses the same c
 not(x)
 ------
 
-Perform logical "not" on given boolean value, i.e return ``false`` if value was equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean) or ``false`` otherwise.
+Perform logical "not" on given boolean value, i.e return ``false`` if value was equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean) or ``false`` otherwise.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -276,7 +276,7 @@ Perform logical "not" on given boolean value, i.e return ``false`` if value was 
 or(x, y, ...)
 -------------
 
-Perform logical "or" between given boolean values, i.e. return ``true`` if at least one argument is equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean).
+Perform logical "or" between given boolean values, i.e. return ``true`` if at least one argument is equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean).
 
 .. code-block:: plain
     :caption: Cottle template
@@ -312,7 +312,7 @@ Perform logical "xor" between given boolean values, i.e. return ``true`` if exac
 when(condition[, truthy[, falsy]])
 ----------------------------------
 
-Return ``truthy`` if ``condition`` is equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean) or ``falsy`` otherwise (or a void value if ``falsy`` is missing). This function is intended to act as the ternary operator you can find in some programming languages.
+Return ``truthy`` if ``condition`` is equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean) or ``falsy`` otherwise (or an undefined value if ``falsy`` is missing). This function is intended to act as the ternary operator you can find in some programming languages.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -374,7 +374,7 @@ Return the sum of two numeric values.
 ceil(x)
 -------
 
-Returns the smallest integer greater than or equal to decimal value ``x``.
+Returns the smallest integer greater than or equal to number value ``x``.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -406,7 +406,7 @@ Get the cosine of angle ``x`` in radians.
 div(x, y)
 ---------
 
-Return the numeric value of ``x`` divided by the numeric value of ``y``, or a void value if ``y`` was equal to zero.
+Return the numeric value of ``x`` divided by the numeric value of ``y``, or an undefined value if ``y`` was equal to zero.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -426,7 +426,7 @@ Return the numeric value of ``x`` divided by the numeric value of ``y``, or a vo
 floor(x)
 --------
 
-Returns the largest integer less than or equal to decimal value ``x``.
+Returns the largest integer less than or equal to number value ``x``.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -486,7 +486,7 @@ Return the lowest numeric value among given ones.
 mod(x, y)
 ---------
 
-Return the value of ``x`` modulo ``y``, or a void value if ``y`` was equal to zero.
+Return the value of ``x`` modulo ``y``, or an undefined value if ``y`` was equal to zero.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -560,7 +560,7 @@ Get a pseudo-random numeric value between 0 and 2.147.483.647 inclusive. If nume
 round(x[, digits])
 -----------------------
 
-Rounds decimal value ``x`` to a specified number of fractional digits ``digits``, or to the nearest integral value if ``digits`` is not specified.
+Rounds number value ``x`` to a specified number of fractional digits ``digits``, or to the nearest integral value if ``digits`` is not specified.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -696,7 +696,7 @@ Find index of given ``search`` value in a map or sub-string in a string. Returns
 filter(map, predicate[, a, b, ...])
 -----------------------------------
 
-Return a map containing all pairs having a value that satisfies given predicate. Function ``predicate`` is invoked for each value from ``map`` with this value as its first argument, and pair is added to output map if predicate result is equivalent to ``true`` (see section :ref:`api_value` for details about conversion to boolean).
+Return a map containing all pairs having a value that satisfies given predicate. Function ``predicate`` is invoked for each value from ``map`` with this value as its first argument, and pair is added to output map if predicate result is equivalent to ``true`` (see :type:`Value` type for details about conversion to boolean).
 
 Optional arguments can be specified when calling ``filter`` and will be passed to each invocation of ``predicate`` as second, third, forth argument and so on.
 
@@ -918,6 +918,8 @@ Get a 1-character string from its Unicode code point integer value. See more abo
     Δ
 
 
+.. _`builtin_format`:
+
 format(value, format[, culture])
 --------------------------------
 
@@ -928,7 +930,7 @@ Convert any ``value`` to a string using given formatting from ``format`` string 
 -  ``d`` or ``du``: System.DateTime (UTC)
 -  ``dl``: System.DateTime (local)
 -  ``i``: System.Int64
--  ``n``: System.Decimal
+-  ``n``: System.Double
 -  ``s``: System.String
 
 Format string depends on the type of formatter selected, see help about `Format String Component <https://docs.microsoft.com/fr-fr/dotnet/standard/base-types/composite-formatting?view=netframework-4.8#format-string-component>`__ for more information about formats.
@@ -969,7 +971,7 @@ Return a lowercase conversion of given string value.
 match(subject, pattern)
 -----------------------
 
-Match ``subject`` against given regular expression pattern. If match is successful, a map containing full match followed by captured groups is returned, otherwise result is a void value. See `.NET Framework Regular Expressions <https://docs.microsoft.com/en-us/previous-versions/dotnet/netframework-1.1/hs600312(v=vs.71)?redirectedfrom=MSDN>`__ for more information.
+Match ``subject`` against given regular expression pattern. If match is successful, a map containing full match followed by captured groups is returned, otherwise result is an undefined value. See `.NET Framework Regular Expressions <https://docs.microsoft.com/en-us/previous-versions/dotnet/netframework-1.1/hs600312(v=vs.71)?redirectedfrom=MSDN>`__ for more information.
 
 .. code-block:: plain
     :caption: Cottle template

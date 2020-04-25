@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
@@ -17,7 +16,7 @@ namespace Cottle.Documents.Simple.Nodes
         {
             output.Write(_expression.Evaluate(store, output).AsString);
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

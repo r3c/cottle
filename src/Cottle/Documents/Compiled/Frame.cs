@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cottle.Values;
 
 namespace Cottle.Documents.Compiled
 {
@@ -24,7 +23,7 @@ namespace Cottle.Documents.Compiled
                 functionFrame.Locals[indices[i]] = values[i];
 
             for (var i = values.Count; i < indices.Count; ++i)
-                functionFrame.Locals[indices[i]] = VoidValue.Instance;
+                functionFrame.Locals[indices[i]] = Value.Undefined;
 
             return functionFrame;
         }

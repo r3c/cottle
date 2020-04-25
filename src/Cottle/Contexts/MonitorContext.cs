@@ -1,6 +1,6 @@
 using Cottle.Contexts.Monitor;
 using Cottle.Contexts.Monitor.SymbolUsages;
-using Cottle.Values;
+using Cottle.Evaluables;
 
 namespace Cottle.Contexts
 {
@@ -13,7 +13,7 @@ namespace Cottle.Contexts
         public MonitorContext(IContext context)
         {
             _context = context;
-            _usage = new MutableSymbolUsage(VoidValue.Instance);
+            _usage = new MutableSymbolUsage(Value.Undefined);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Cottle.Contexts
                 var original = _context[symbol];
                 var child = _usage.Declare(symbol, original);
 
-                return new MonitorValue(original, child);
+                return Value.FromEvaluable(new MonitorEvaluable(original, child));
             }
         }
     }

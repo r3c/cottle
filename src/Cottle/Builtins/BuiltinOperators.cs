@@ -1,6 +1,6 @@
-﻿using Cottle.Values;
+using System;
 
- namespace Cottle.Builtins
+namespace Cottle.Builtins
 {
     internal static class BuiltinOperators
     {
@@ -22,8 +22,8 @@
         {
             var denominator = rhs.AsNumber;
 
-            if (denominator == 0)
-                return VoidValue.Instance;
+            if (Math.Abs(denominator) < double.Epsilon)
+                return Value.Undefined;
 
             return lhs.AsNumber / denominator;
         });
@@ -57,8 +57,8 @@
         {
             var denominator = rhs.AsNumber;
 
-            if (denominator == 0)
-                return VoidValue.Instance;
+            if (Math.Abs(denominator) < double.Epsilon)
+                return Value.Undefined;
 
             return lhs.AsNumber % denominator;
         });

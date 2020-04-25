@@ -3,32 +3,29 @@ using Cottle.Maps;
 
 namespace Cottle.Values
 {
-    public abstract class ScalarValue<T> : Value where
+    public abstract class ScalarValue<T> : BaseValue where
         T : IComparable<T>
     {
         public override IFunction AsFunction => null;
 
         public override IMap Fields => EmptyMap.Instance;
 
-        protected readonly Converter<Value, T> Converter;
-
         protected readonly T Value;
+
+        private readonly Converter<Value, T> _converter;
 
         protected ScalarValue(T value, Converter<Value, T> converter)
         {
-            Converter = converter;
+            _converter = converter;
             Value = value;
         }
 
         public override int CompareTo(Value other)
         {
-            if (other == null)
-                return 1;
-
             if (Type != other.Type)
                 return ((int)Type).CompareTo((int)other.Type);
 
-            return Converter(this).CompareTo(Converter(other));
+            return _converter(this).CompareTo(_converter(other));
         }
 
         public override int GetHashCode()

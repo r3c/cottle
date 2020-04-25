@@ -26,8 +26,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
                 // Evaluate branch condition, jump to next branch if false
                 branch.Key.Generate(emitter);
 
+                var condition = emitter.DeclareLocalAndStore<Value>();
                 var next = emitter.DeclareLabel();
 
+                emitter.LoadLocalAddressAndRelease(condition);
                 emitter.InvokeValueAsBoolean();
                 emitter.BranchIfFalse(next);
 

@@ -31,10 +31,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             // Render output buffer and store as local
             emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadLocalReferenceAndRelease(buffer);
+            emitter.LoadLocalValueAndRelease(buffer);
             emitter.InvokeStringWriterToString();
-            emitter.NewStringValue();
-            emitter.StoreReferenceAtIndex();
+            emitter.InvokeValueFromString();
+            emitter.StoreValueAtIndex<Value>();
 
             // Forward return code to caller
             if (!mayReturn)

@@ -26,6 +26,9 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Evaluate operand fields and store as local
             _source.Generate(emitter);
 
+            var source = emitter.DeclareLocalAndStore<Value>();
+
+            emitter.LoadLocalAddressAndRelease(source);
             emitter.InvokeValueFields();
 
             var fields = emitter.DeclareLocalAndStore<IMap>();
@@ -33,12 +36,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Get number of fields and jump to empty statement if count is zero
             var empty = emitter.DeclareLabel();
 
-            emitter.LoadLocalReference(fields);
+            emitter.LoadLocalValue(fields);
             emitter.InvokeMapCount();
             emitter.BranchIfFalse(empty);
 
             // Get fields enumerator and store as local
-            emitter.LoadLocalReferenceAndRelease(fields);
+            emitter.LoadLocalValueAndRelease(fields);
             emitter.InvokeMapGetEnumerator();
 
             var enumerator = emitter.DeclareLocalAndStore<IEnumerator<KeyValuePair<Value, Value>>>();
@@ -48,12 +51,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var loop = emitter.DeclareLabel();
 
             emitter.MarkLabel(loop);
-            emitter.LoadLocalReference(enumerator);
+            emitter.LoadLocalValue(enumerator);
             emitter.InvokeMapEnumeratorMoveNext();
             emitter.BranchIfFalse(exitRegular);
 
             // Fetch current key/value pair and store as local
-            emitter.LoadLocalReferenceAndRelease(enumerator);
+            emitter.LoadLocalValueAndRelease(enumerator);
             emitter.InvokeMapEnumeratorCurrent();
 
             var pair = emitter.DeclareLocalAndStore<KeyValuePair<Value, Value>>();
@@ -62,16 +65,16 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             if (_key.HasValue)
             {
                 emitter.LoadFrameSymbol(new Symbol(_key.Value, StoreMode.Local));
-                emitter.LoadLocalValue(pair);
+                emitter.LoadLocalAddress(pair);
                 emitter.InvokePairKey();
-                emitter.StoreReferenceAtIndex();
+                emitter.StoreValueAtIndex<Value>();
             }
 
             // Set current element value
             emitter.LoadFrameSymbol(new Symbol(_value, StoreMode.Local));
-            emitter.LoadLocalValueAndRelease(pair);
+            emitter.LoadLocalAddressAndRelease(pair);
             emitter.InvokePairValue();
-            emitter.StoreReferenceAtIndex();
+            emitter.StoreValueAtIndex<Value>();
 
             // Evaluate body and restart cycle
             var exitReturn = emitter.DeclareLabel();

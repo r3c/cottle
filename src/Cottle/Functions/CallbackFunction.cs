@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Functions
 {
@@ -45,7 +44,7 @@ namespace Cottle.Functions
         public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
         {
             if (arguments.Count < _min || arguments.Count > _max)
-                return VoidValue.Instance;
+                return Value.Undefined;
 
             return _callback(state, arguments, output);
         }

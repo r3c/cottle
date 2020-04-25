@@ -5,15 +5,16 @@ using Cottle.Maps;
 
 namespace Cottle.Values
 {
-    public sealed class MapValue : Value
+    public sealed class MapValue : BaseValue
     {
+        [Obsolete("Use `Value.EmptyMap`")]
         public static MapValue Empty { get; } = new MapValue();
 
         public override bool AsBoolean => Fields.Count > 0;
 
         public override IFunction AsFunction => null;
 
-        public override decimal AsNumber => Fields.Count;
+        public override double AsNumber => Fields.Count;
 
         public override string AsString => string.Empty;
 
@@ -21,26 +22,31 @@ namespace Cottle.Values
 
         public override ValueContent Type => ValueContent.Map;
 
+        [Obsolete("Use `Value.FromGenerator()`")]
         public MapValue(Func<int, Value> generator, int count)
         {
             Fields = new GeneratorMap(generator, count);
         }
 
+        [Obsolete("Use `Value.FromDictionary()`")]
         public MapValue(IDictionary<Value, Value> hash)
         {
             Fields = new HashMap(hash);
         }
 
+        [Obsolete("Use `Value.FromEnumerable()`")]
         public MapValue(IEnumerable<KeyValuePair<Value, Value>> pairs)
         {
             Fields = new MixMap(pairs);
         }
 
+        [Obsolete("Use `Value.FromEnumerable`")]
         public MapValue(IEnumerable<Value> values)
         {
             Fields = new ArrayMap(values);
         }
 
+        [Obsolete("Use `Value.EmptyMap`")]
         public MapValue()
         {
             Fields = EmptyMap.Instance;
@@ -48,9 +54,6 @@ namespace Cottle.Values
 
         public override int CompareTo(Value other)
         {
-            if (other == null)
-                return 1;
-
             if (Type != other.Type)
                 return ((int)Type).CompareTo((int)other.Type);
 
@@ -77,7 +80,7 @@ namespace Cottle.Values
                 else
                     comma = true;
 
-                if (pair.Key.Type == ValueContent.Number && pair.Key.AsNumber == index)
+                if (pair.Key.Type == ValueContent.Number && Math.Abs(pair.Key.AsNumber - index) < double.Epsilon)
                     ++index;
                 else
                 {

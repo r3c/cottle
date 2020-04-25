@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Cottle.Contexts.Monitor.SymbolUsages;
-using Cottle.Values;
+using Cottle.Evaluables;
 
 namespace Cottle.Contexts.Monitor
 {
@@ -40,7 +40,7 @@ namespace Cottle.Contexts.Monitor
             foreach (var pair in _map)
             {
                 var child = _usage.Declare(pair.Key, pair.Value);
-                var value = new MonitorValue(pair.Value, child);
+                var value = Value.FromEvaluable(new MonitorEvaluable(pair.Value, child));
 
                 yield return new KeyValuePair<Value, Value>(pair.Key, value);
             }
@@ -66,11 +66,11 @@ namespace Cottle.Contexts.Monitor
             var result = _map.TryGet(key, out var original);
 
             if (!result)
-                original = VoidValue.Instance;
+                original = Value.Undefined;
 
             var child = _usage.Declare(key, original);
 
-            value = new MonitorValue(original, child);
+            value = Value.FromEvaluable(new MonitorEvaluable(original, child));
 
             return result;
         }

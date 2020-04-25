@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Executors
 {
@@ -17,7 +16,7 @@ namespace Cottle.Documents.Evaluated.Executors
         {
             output.Write(_expression.Evaluate(frame, output).AsString);
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

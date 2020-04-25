@@ -1,5 +1,4 @@
 using Cottle.Contexts;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test.Contexts
@@ -9,7 +8,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public void Miss()
         {
-            Assert.That(EmptyContext.Instance["a"], Is.EqualTo(VoidValue.Instance));
+            Assert.That(EmptyContext.Instance["a"], Is.EqualTo(Value.Undefined));
         }
     }
 }

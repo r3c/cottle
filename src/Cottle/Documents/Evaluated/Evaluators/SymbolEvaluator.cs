@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Cottle.Documents.Compiled;
-using Cottle.Values;
 
 namespace Cottle.Documents.Evaluated.Evaluators
 {
@@ -21,7 +20,7 @@ namespace Cottle.Documents.Evaluated.Evaluators
                     break;
 
                 case StoreMode.Local:
-                    _getter = (stack, index) => stack.Locals[index] ?? VoidValue.Instance;
+                    _getter = (stack, index) => stack.Locals[index];
 
                     break;
 

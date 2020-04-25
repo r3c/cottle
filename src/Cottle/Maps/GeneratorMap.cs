@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Cottle.Values;
 
 namespace Cottle.Maps
 {
@@ -20,7 +19,7 @@ namespace Cottle.Maps
             public GeneratorEnumerator(Func<int, Value> generator, int count)
             {
                 _count = count;
-                Current = new KeyValuePair<Value, Value>(VoidValue.Instance, VoidValue.Instance);
+                Current = new KeyValuePair<Value, Value>(Value.Undefined, Value.Undefined);
                 _generator = generator;
                 _index = 0;
             }

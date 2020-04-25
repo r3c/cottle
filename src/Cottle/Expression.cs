@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Cottle.Values;
 
 namespace Cottle
 {
@@ -30,7 +29,7 @@ namespace Cottle
             return new Expression(ExpressionType.Symbol, default, default, default, default, value);
         }
 
-        public static readonly Expression Void = Expression.CreateConstant(VoidValue.Instance);
+        public static readonly Expression Void = Expression.CreateConstant(Value.Undefined);
 
         public readonly IReadOnlyList<Expression> Arguments;
 

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using Cottle.Builtins;
 using Cottle.Parsers.Forward;
-using Cottle.Values;
 
 namespace Cottle.Parsers
 {
@@ -66,7 +65,7 @@ namespace Cottle.Parsers
 
         private static Expression BuildInvoke(IFunction function, params Expression[] arguments)
         {
-            var source = Expression.CreateConstant(new FunctionValue(function));
+            var source = Expression.CreateConstant(Value.FromFunction(function));
 
             return Expression.CreateInvoke(source, arguments);
         }
@@ -754,8 +753,10 @@ namespace Cottle.Parsers
                             }
 
                             if (element.Type == ExpressionType.Constant && element.Value.Type == ValueContent.Number &&
-                                element.Value.AsNumber == index)
+                                Math.Abs(element.Value.AsNumber - index) < double.Epsilon)
+                            {
                                 ++index;
+                            }
 
                             key = element;
                         }
@@ -795,7 +796,7 @@ namespace Cottle.Parsers
                     return true;
 
                 case LexemType.Number:
-                    if (!decimal.TryParse(_lexer.Current.Value, NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (!double.TryParse(_lexer.Current.Value, NumberStyles.Number, CultureInfo.InvariantCulture,
                         out var number))
                         number = 0;
 

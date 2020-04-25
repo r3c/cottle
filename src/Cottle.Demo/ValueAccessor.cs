@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Demo
 {
@@ -42,7 +42,7 @@ namespace Cottle.Demo
             switch (type)
             {
                 case ValueContent.Boolean:
-                    value = reader.ReadBoolean() ? BooleanValue.True : BooleanValue.False;
+                    value = reader.ReadBoolean() ? Value.True : Value.False;
 
                     break;
 
@@ -55,7 +55,7 @@ namespace Cottle.Demo
                         if (!ValueAccessor.Load(reader, out var arrayKey) ||
                             !ValueAccessor.Load(reader, out var arrayValue))
                         {
-                            value = null;
+                            value = default;
 
                             return false;
                         }
@@ -77,15 +77,14 @@ namespace Cottle.Demo
 
                     break;
 
+                case ValueContent.Function:
                 case ValueContent.Void:
-                    value = VoidValue.Instance;
+                    value = Value.Undefined;
 
                     break;
 
                 default:
-                    value = null;
-
-                    return false;
+                    throw new InvalidOperationException();
             }
 
             return true;

@@ -20,8 +20,33 @@ The main difference between this approach and SemVer is the distinction made bet
 
 
 
-Update from previous
-====================
+Migration guide
+===============
+
+From 1.6.\* to 2.0.\*
+---------------------
+
+* Cottle now uses :type:`System.Double` type for number values instead of :type:`System.Decimal` ; use builtin function :ref:`builtin_format` if you need to control decimal precision when printing decimal numbers.
+* Type :type:`Value` is now a value type to reduce runtime allocations ; API was upgraded to be source-compatible with previous Cottle versions.
+* Specialized value classes (e.g. :type:`Values.FunctionValue`) are deprecated, use ``Value.From*`` static construction methods instead (e.g. :meth:`Value.FromFunction`).
+
+.. code-block:: csharp
+    :caption: Example of migration from 1.6.* code to equivalent 2.0.* version
+
+    // Version 1.6.*
+    var context = Context.CreateBuiltin(new Dictionary<Value, Value>
+    {
+        ["f"] = new FunctionValue(myFunction),
+        ["n"] = new NumberValue(myNumber)
+    };
+
+    // Version 2.0.*
+    var context = Context.CreateBuiltin(new Dictionary<Value, Value>
+    {
+        ["f"] = Value.FromFunction(myFunction),
+        ["n"] = Value.FromNumber(myNumber) // Or just `myNumber` to use implicit conversion
+    };
+
 
 From 1.5.\* to 1.6.\*
 ---------------------
@@ -74,7 +99,7 @@ From 1.5.\* to 1.6.\*
 
     return document.Render(Context.CreateBuiltin(new Dictionary<Value, Value>
     {
-        ["f"] = Function.Create1((state, arg, output) => MyFunction(arg.AsNumber, output))
+        ["f"] = new FunctionValue(Function.Create1((state, arg, output) => MyFunction(arg.AsNumber, output)))
     });
 
 

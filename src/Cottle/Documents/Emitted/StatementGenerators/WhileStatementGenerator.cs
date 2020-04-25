@@ -21,8 +21,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             _condition.Generate(emitter);
 
             // Terminate loop if condition failed
+            var condition = emitter.DeclareLocalAndStore<Value>();
             var exitRegular = emitter.DeclareLabel();
 
+            emitter.LoadLocalAddressAndRelease(condition);
             emitter.InvokeValueAsBoolean();
             emitter.BranchIfFalse(exitRegular);
 

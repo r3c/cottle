@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cottle.Contexts.Monitor;
 using Cottle.Contexts.Monitor.SymbolUsages;
+using Cottle.Evaluables;
 using Cottle.Stores.Monitor;
-using Cottle.Values;
 
 namespace Cottle.Stores
 {
@@ -18,7 +17,7 @@ namespace Cottle.Stores
         public MonitorStore(IStore store)
         {
             _store = store;
-            _usage = new MutableSymbolUsage(VoidValue.Instance);
+            _usage = new MutableSymbolUsage(Value.Undefined);
         }
 
         /// <summary>
@@ -62,11 +61,11 @@ namespace Cottle.Stores
             var result = _store.TryGet(symbol, out var original);
 
             if (!result)
-                original = VoidValue.Instance;
+                original = Value.Undefined;
 
             var child = _usage.Declare(symbol, original);
 
-            value = new MonitorValue(original, child);
+            value = Value.FromEvaluable(new MonitorEvaluable(original, child));
 
             return result;
         }

@@ -1,14 +1,15 @@
-﻿using Cottle.Maps;
+﻿using System;
+using Cottle.Maps;
 
 namespace Cottle.Values
 {
-    public sealed class FunctionValue : Value
+    public sealed class FunctionValue : BaseValue
     {
         public override bool AsBoolean => false;
 
         public override IFunction AsFunction { get; }
 
-        public override decimal AsNumber => 0;
+        public override double AsNumber => 0;
 
         public override string AsString => string.Empty;
 
@@ -16,6 +17,7 @@ namespace Cottle.Values
 
         public override ValueContent Type => ValueContent.Function;
 
+        [Obsolete("Use `Value.FromFunction()`")]
         public FunctionValue(IFunction function)
         {
             AsFunction = function;
@@ -23,9 +25,6 @@ namespace Cottle.Values
 
         public override int CompareTo(Value other)
         {
-            if (other == null)
-                return 1;
-
             if (Type != other.Type)
                 return ((int)Type).CompareTo((int)other.Type);
 

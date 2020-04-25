@@ -1,7 +1,6 @@
 using System.IO;
 using Cottle.Documents.Compiled;
 using Cottle.Documents.Emitted;
-using Cottle.Values;
 
 namespace Cottle.Documents
 {
@@ -14,7 +13,7 @@ namespace Cottle.Documents
 
         protected override Value Execute(Program program, Frame frame, TextWriter writer)
         {
-            return program.Executable(program.Constants, frame, writer, out var result) ? result : VoidValue.Instance;
+            return program.Executable(program.Constants, frame, writer, out var result) ? result : Value.Undefined;
         }
     }
 }

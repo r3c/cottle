@@ -8,7 +8,7 @@ Advanced features
 Understanding value types
 =========================
 
-Every value has a type in Cottle, even if you usually don't have to worry about it (see section :ref:`api_value` for details). Functions that expect arguments of specific types will try to cast them silently and fallback to void values when they can't. However in some rare cases you may have to force a cast yourself to get desired result, for example when accessing values from a map:
+Every value has a type in Cottle, even if you usually don't have to worry about it (see :type:`Value` type for details). Functions that expect arguments of specific types will try to cast them silently and fallback to undefined values when they can't. However in some rare cases you may have to force a cast yourself to get desired result, for example when accessing values from a map:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -62,6 +62,7 @@ Here are a few examples about how to use them:
     "I can."
     [4, 8, 15, 16, 23, 42]
     ["let_me": "I shouldn't be touched", "append_me": "I'm here!"]
+
 
 
 .. _`declare_function`:
@@ -186,7 +187,7 @@ The same command can also be used to declare functions:
         {return n * n}
     }
 
-Note that the ``set`` command can also be used without argument, and assigns variable a void value (which is equivalent to reset it to an undefined state).
+Note that the ``set`` command can also be used without argument, and assigns variable an undefined value (which is equivalent to reset it to an undefined state).
 
 
 
@@ -197,7 +198,7 @@ Native .NET functions
 
 If you need new features or improved performance, you can assign your own .NET methods to template variables so they're available as Cottle functions. That's actually what Cottle does when you use :meth:`Context.CreateBuiltin` method: a set of Cottle methods is added to your context, and you can have a look at the source code to see how these methods work.
 
-To pass a function in a context, use one of the methods from :type:`Function` class, then wrap it within a ``FunctionValue`` instance you can add you a context:
+To pass a function in a context, use one of the methods from :type:`Function` class, then pass it to :meth:`Value.FromFunction` method to wrap it into a value you can add to a context:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -213,7 +214,7 @@ To pass a function in a context, use one of the methods from :type:`Function` cl
 
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
-        ["repeat"] = new FunctionValue(Function.CreatePure2((state, subject, count) =>
+        ["repeat"] = Value.CreateFunction(Function.CreatePure2((state, subject, count) =>
         {
             var builder = new StringBuilder();
 
@@ -240,15 +241,16 @@ Static class :type:`Function` supports multiple methods to create Cottle functio
     * Methods :meth:`Function.Create`, :meth:`Function.Create1` and :meth:`Function.Create2` are allowed to perform side effects but will be excluded from most optimizations. Their callbacks receive a ``TextWriter`` argument so they can write any text contents to it.
 * How many arguments they accept:
     * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with no integer argument will accept any number of arguments, it is the responsibility of provided callback to validate this number.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with a ``count`` integer will accept exactly this number of arguments or will return a void value otherwise.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with two ``min`` and ``max`` integers will accept a number of arguments contained between these two values or will return a void value otherwise.
-    * Methods :meth:`Function.Create1`, :meth:`Function.Create2`, :meth:`Function.CreatePure1` and :meth:`Function.CreatePure2` only accept a fixed number of argument or will return a void value otherwise.
+    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with a ``count`` integer will accept exactly this number of arguments or will return an undefined value otherwise.
+    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with two ``min`` and ``max`` integers will accept a number of arguments contained between these two values or will return an undefined value otherwise.
+    * Methods :meth:`Function.Create1`, :meth:`Function.Create2`, :meth:`Function.CreatePure1` and :meth:`Function.CreatePure2` only accept a fixed number of argument or will return an undefined value otherwise.
 
 The callback you'll pass to :type:`Function` takes multiple arguments:
 
 * First argument is always an opaque state that must be forwarded to any nested function call ;
 * Next arguments are either a list of values (for functions accepting variable number of arguments) or separate scalar values (for functions accepting a fixed number of arguments) which are the values passed when invoking the function ;
 * Last argument, for non-pure functions only, is a ``TextWriter`` instance open to current document output.
+
 
 
 .. _`lazy_value`:
@@ -258,7 +260,7 @@ Lazy value evaluation
 
 In some cases, you may want to inject to your template big and/or complex values that may or may not be needed at rendering, depending on other parameters. In such configurations, it may be better to avoid injecting the entire value in your context if there is chances it won't be used, and use lazy evaluation instead.
 
-Lazy evaluation allows you to inject a value with a resolver callback which will be called only the first time value is accessed, or not called at all if value is not used for rendering. This feature makes use of :type:`Values.LazyValue` which is another specialized version of the :type:`Value` class:
+Lazy evaluation allows you to inject a value with a resolver callback which will be called only the first time value is accessed, or not called at all if value is not used for rendering. Lazy values can be created through implicit conversion from any ``Func<Value>`` instance or by using :meth:`Value.FromLazy` construction method:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -274,7 +276,7 @@ Lazy evaluation allows you to inject a value with a resolver callback which will
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
         ["is_admin"] = user.IsAdmin,
-        ["log"] = () => log.BuildComplexLogValue() // Implicit conversion to LazyValue
+        ["log"] = () => log.BuildComplexLogValue() // Implicit conversion to lazy value
     });
 
     document.Render(context, Console.Out);
@@ -290,7 +292,7 @@ Reflection values
 
 Instead of converting complex object hierarchies to Cottle values, you can have the library do it for you by using .NET reflection. Keep in mind that reflection is significantly slower than creating Cottle values manually, but as it's a lazy mechanism it may be a good choice if you have complex objects and don't know in advance which fields might be used in your templates.
 
-To use reflection, create a new ``ReflectionValue`` instance from any .NET object instance and pass it to your context. Its fields and properties will be accessible like if it were a Cottle map:
+To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object instance and specify binding flags to indicate which members should be made visible to Cottle. Fields and properties resolved on the object will be accessible like if it were a Cottle map:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -309,7 +311,7 @@ To use reflection, create a new ``ReflectionValue`` instance from any .NET objec
 
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
-        ["image"] = new ReflectionValue(new Bitmap(50, 50))
+        ["image"] = Value.FromReflection(new Bitmap(50, 50), BindingFlags.Instance | BindingFlags.Public)
     });
 
 .. code-block:: plain
@@ -323,4 +325,22 @@ To use reflection, create a new ``ReflectionValue`` instance from any .NET objec
     VerticalResolution = 96
     Flags = 2
 
-By default a ``ReflectionValue`` will read all instance members, both public and private. If you want to change this behavior specify your BindingFlags as a second parameter to ``ReflectionValue`` constructor.
+.. warning::
+
+    Relying on reflection has a significant impact on execution performance. Use this feature only if performance is not important for your application, or you don't have other option like explicitly converting fields and properties to a Cottle value.
+
+
+
+.. _`native_document`:
+
+Native documents
+================
+
+You can use "native" documents instead of default ones to achieve better rendering performance at a higher compilation cost. Native documents rely on IL code generation instead of runtime evaluation, and can provide a rendering performance boost from 10% to 20% depending on templates and environment (see `benchmark <https://r3c.github.io/cottle/benchmark.html>`__). They're however two to three times most costly to build, so this feature should be used only when you need high rendering performances on long-lived documents.
+
+To create native documents, simply invoke :meth:`Document.CreateNative` instead of default method:
+
+.. code-block:: csharp
+    :caption: C# source
+
+    var document = Document.CreateNative(template).DocumentOrThrow;

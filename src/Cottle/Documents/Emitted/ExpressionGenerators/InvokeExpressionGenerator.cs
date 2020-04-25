@@ -18,24 +18,13 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             // Evaluate source expression as a function
             _caller.Generate(emitter);
 
+            var source = emitter.DeclareLocalAndStore<Value>();
+
+            emitter.LoadLocalAddressAndRelease(source);
             emitter.InvokeValueAsFunction();
 
             var function = emitter.DeclareLocalAndStore<IFunction>();
 
-            emitter.LoadLocalReference(function);
-
-            var invoke = emitter.DeclareLabel();
-
-            emitter.BranchIfTrue(invoke);
-
-            // Emit void value on error
-            var exit = emitter.DeclareLabel();
-
-            emitter.LoadVoid();
-            emitter.BranchAlways(exit);
-
-            // Create array to store evaluated values
-            emitter.MarkLabel(invoke);
             emitter.LoadArray<Value>(_arguments.Count);
 
             var arguments = emitter.DeclareLocalAndStore<Value[]>();
@@ -47,21 +36,18 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
                 var argument = emitter.DeclareLocalAndStore<Value>();
 
-                emitter.LoadLocalReference(arguments);
+                emitter.LoadLocalValue(arguments);
                 emitter.LoadInteger(i);
-                emitter.LoadLocalReferenceAndRelease(argument);
-                emitter.StoreReferenceAtIndex();
+                emitter.LoadLocalValueAndRelease(argument);
+                emitter.StoreElementAtIndex<Value>();
             }
 
             // Invoke function with frame, arguments and output
-            emitter.LoadLocalReferenceAndRelease(function);
+            emitter.LoadLocalValueAndRelease(function);
             emitter.LoadFrame();
-            emitter.LoadLocalReferenceAndRelease(arguments);
+            emitter.LoadLocalValueAndRelease(arguments);
             emitter.LoadOutput();
             emitter.InvokeFunction();
-
-            // Value is already available on stack
-            emitter.MarkLabel(exit);
         }
     }
 }

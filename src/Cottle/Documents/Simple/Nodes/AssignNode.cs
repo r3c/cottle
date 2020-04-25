@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Values;
 
 namespace Cottle.Documents.Simple.Nodes
 {
@@ -35,7 +34,7 @@ namespace Cottle.Documents.Simple.Nodes
         {
             store.Set(_name, Evaluate(store, output), _mode);
 
-            result = VoidValue.Instance;
+            result = Value.Undefined;
 
             return false;
         }

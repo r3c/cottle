@@ -16,6 +16,9 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             // Evaluate source expression and access fields
             _source.Generate(emitter);
 
+            var source = emitter.DeclareLocalAndStore<Value>();
+
+            emitter.LoadLocalAddressAndRelease(source);
             emitter.InvokeValueFields();
 
             var fields = emitter.DeclareLocalAndStore<IMap>();
@@ -26,8 +29,8 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             var subscript = emitter.DeclareLocalAndStore<Value>();
 
             // Use subscript to get value from fields
-            emitter.LoadLocalReferenceAndRelease(fields);
-            emitter.LoadLocalReferenceAndRelease(subscript);
+            emitter.LoadLocalValueAndRelease(fields);
+            emitter.LoadLocalValueAndRelease(subscript);
 
             var value = emitter.DeclareLocalAndLoadAddress<Value>();
 
@@ -37,13 +40,13 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
             emitter.BranchIfTrue(success);
 
-            // Emit void value on error
-            emitter.LoadVoid();
+            // Emit undefined value on error
+            emitter.LoadUndefined();
             emitter.StoreLocal(value);
 
             // Push value on stack
             emitter.MarkLabel(success);
-            emitter.LoadLocalReferenceAndRelease(value);
+            emitter.LoadLocalValueAndRelease(value);
         }
     }
 }

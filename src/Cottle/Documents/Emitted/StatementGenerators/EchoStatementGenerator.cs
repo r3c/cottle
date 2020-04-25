@@ -16,7 +16,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var operand = emitter.DeclareLocalAndStore<Value>();
 
             emitter.LoadOutput();
-            emitter.LoadLocalReferenceAndRelease(operand);
+            emitter.LoadLocalAddressAndRelease(operand);
             emitter.InvokeValueAsString();
             emitter.InvokeTextWriterWriteString();
 

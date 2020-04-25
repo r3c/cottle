@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Cottle.Contexts.Monitor;
 using Cottle.Documents;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test.Contexts
@@ -13,7 +12,7 @@ namespace Cottle.Test.Contexts
         {
             var backend = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["range"] = new MapValue(i => i * 2, 5)
+                ["range"] = Value.FromGenerator(i => i * 2, 5)
             });
 
             var usage = MonitorContextTester.MonitorAndRender("{for i in [0, 1, 2]:{range[i]}}", backend, "024");
@@ -42,7 +41,7 @@ namespace Cottle.Test.Contexts
 
             var parent = rootFields["parent"];
 
-            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(parent.Value, Is.EqualTo(Value.Undefined));
 
             var parentFields = parent.GroupFieldUsages();
 
@@ -50,7 +49,7 @@ namespace Cottle.Test.Contexts
 
             var child = parentFields["child"];
 
-            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(child.Value, Is.EqualTo(Value.Undefined));
 
             var childFields = child.GroupFieldUsages();
 
@@ -86,15 +85,15 @@ namespace Cottle.Test.Contexts
         {
             var usage = MonitorContextTester.MonitorAndRender("{parent.child}", Context.Empty, string.Empty);
 
-            Assert.That(usage.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(usage.Value, Is.EqualTo(Value.Undefined));
 
             var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(parent.Value, Is.EqualTo(Value.Undefined));
 
             var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(child.Value, Is.EqualTo(Value.Undefined));
             Assert.That(child.Fields.Count, Is.EqualTo(0));
         }
 
@@ -106,19 +105,19 @@ namespace Cottle.Test.Contexts
             var usage = MonitorContextTester.MonitorAndRender(template, Context.Empty, string.Empty);
             var parent0 = MonitorContextTester.GetChildField(usage, "parent", 2, 0);
 
-            Assert.That(parent0.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(parent0.Value, Is.EqualTo(Value.Undefined));
 
             var child0 = MonitorContextTester.GetChildField(parent0, "child", 1, 0);
 
-            Assert.That(child0.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(child0.Value, Is.EqualTo(Value.Undefined));
 
             var parent1 = MonitorContextTester.GetChildField(usage, "parent", 2, 0);
 
-            Assert.That(parent1.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(parent1.Value, Is.EqualTo(Value.Undefined));
 
             var child1 = MonitorContextTester.GetChildField(parent1, "child", 1, 0);
 
-            Assert.That(child1.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(child1.Value, Is.EqualTo(Value.Undefined));
         }
 
         [Test]
@@ -155,19 +154,19 @@ namespace Cottle.Test.Contexts
         {
             var usage = MonitorContextTester.MonitorAndRender("{parent.child.subchild}", Context.Empty, string.Empty);
 
-            Assert.That(usage.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(usage.Value, Is.EqualTo(Value.Undefined));
 
             var parent = MonitorContextTester.GetChildField(usage, "parent", 1, 0);
 
-            Assert.That(parent.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(parent.Value, Is.EqualTo(Value.Undefined));
 
             var child = MonitorContextTester.GetChildField(parent, "child", 1, 0);
 
-            Assert.That(child.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(child.Value, Is.EqualTo(Value.Undefined));
 
             var subchild = MonitorContextTester.GetChildField(child, "subchild", 1, 0);
 
-            Assert.That(subchild.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(subchild.Value, Is.EqualTo(Value.Undefined));
         }
 
         [Test]
@@ -179,7 +178,7 @@ namespace Cottle.Test.Contexts
             Assert.That(usage.Fields.Count, Is.EqualTo(1));
             Assert.That(usage.Fields["a"].Count, Is.EqualTo(1));
             Assert.That(usage.Fields["a"][0].Fields, Is.Empty);
-            Assert.That(usage.Fields["a"][0].Value, Is.EqualTo(new NumberValue(17)));
+            Assert.That(usage.Fields["a"][0].Value, Is.EqualTo(Value.FromNumber(17)));
         }
 
         [Test]
@@ -188,7 +187,7 @@ namespace Cottle.Test.Contexts
             var usage = MonitorContextTester.MonitorAndRender("{scalar}", Context.Empty, string.Empty);
             var scalar = MonitorContextTester.GetChildField(usage, "scalar", 1, 0);
 
-            Assert.That(scalar.Value, Is.EqualTo(VoidValue.Instance));
+            Assert.That(scalar.Value, Is.EqualTo(Value.Undefined));
             Assert.That(scalar.Fields.Count, Is.EqualTo(0));
         }
 

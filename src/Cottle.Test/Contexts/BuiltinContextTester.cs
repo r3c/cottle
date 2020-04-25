@@ -1,5 +1,4 @@
 using System.IO;
-using Cottle.Values;
 using NUnit.Framework;
 
 namespace Cottle.Test.Contexts
@@ -21,7 +20,7 @@ namespace Cottle.Test.Contexts
         {
             var context = Context.CreateBuiltin(Context.Empty);
 
-            Assert.That(context["dummy"], Is.EqualTo(VoidValue.Instance));
+            Assert.That(context["dummy"], Is.EqualTo(Value.Undefined));
         }
     }
 }

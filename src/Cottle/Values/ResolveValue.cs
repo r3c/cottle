@@ -1,54 +1,41 @@
-﻿using System.Threading;
-
-namespace Cottle.Values
+﻿namespace Cottle.Values
 {
-    public abstract class ResolveValue : Value
+    public abstract class ResolveValue : BaseValue
     {
-        public override bool AsBoolean => Acquire().AsBoolean;
+        public override bool AsBoolean => _lazy.AsBoolean;
 
-        public override IFunction AsFunction => Acquire().AsFunction;
+        public override IFunction AsFunction => _lazy.AsFunction;
 
-        public override decimal AsNumber => Acquire().AsNumber;
+        public override double AsNumber => _lazy.AsNumber;
 
-        public override string AsString => Acquire().AsString;
+        public override string AsString => _lazy.AsString;
 
-        public override IMap Fields => Acquire().Fields;
+        public override IMap Fields => _lazy.Fields;
 
-        public override ValueContent Type => Acquire().Type;
+        public override ValueContent Type => _lazy.Type;
 
-        private readonly object _mutex = new object();
-
-        private Value _value;
+        private readonly Value _lazy;
 
         protected abstract Value Resolve();
 
-        private Value Acquire()
+        protected ResolveValue()
         {
-            if (_value == null)
-            {
-                lock (_mutex)
-                {
-                    if (_value == null)
-                        Interlocked.Exchange(ref _value, Resolve());
-                }
-            }
-
-            return _value;
+            _lazy = Value.FromLazy(Resolve);
         }
 
         public override int CompareTo(Value other)
         {
-            return Acquire().CompareTo(other);
+            return _lazy.CompareTo(other);
         }
 
         public override int GetHashCode()
         {
-            return Acquire().GetHashCode();
+            return _lazy.GetHashCode();
         }
 
         public override string ToString()
         {
-            return Acquire().ToString();
+            return _lazy.ToString();
         }
     }
 }

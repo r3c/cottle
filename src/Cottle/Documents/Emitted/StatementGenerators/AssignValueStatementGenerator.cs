@@ -20,8 +20,8 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var value = emitter.DeclareLocalAndStore<Value>();
 
             emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadLocalReferenceAndRelease(value);
-            emitter.StoreReferenceAtIndex();
+            emitter.LoadLocalValueAndRelease(value);
+            emitter.StoreValueAtIndex<Value>();
 
             return false;
         }
