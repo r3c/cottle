@@ -67,9 +67,19 @@ namespace Cottle.Documents.Evaluated
             return new ReturnExecutor(expression);
         }
 
+        protected override IExecutor CreateStatementUnwrap(IExecutor body)
+        {
+            return new UnwrapExecutor(body);
+        }
+
         protected override IExecutor CreateStatementWhile(IEvaluator condition, IExecutor body)
         {
             return new WhileExecutor(condition, body);
+        }
+
+        protected override IExecutor CreateStatementWrap(IEvaluator modifier, IExecutor body)
+        {
+            return new WrapExecutor(modifier, body);
         }
 
         protected override IEvaluator CreateExpressionAccess(IEvaluator source, IEvaluator subscript)

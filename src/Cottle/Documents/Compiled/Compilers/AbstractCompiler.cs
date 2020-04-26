@@ -53,7 +53,11 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TAssembly CreateStatementReturn(TExpression expression);
 
+        protected abstract TAssembly CreateStatementUnwrap(TAssembly body);
+
         protected abstract TAssembly CreateStatementWhile(TExpression condition, TAssembly body);
+
+        protected abstract TAssembly CreateStatementWrap(TExpression modifier, TAssembly body);
 
         private TExpression CompileExpression(Expression expression, Scope scope)
         {
@@ -125,10 +129,10 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateStatementAssignRender(renderSymbol, renderBody);
 
                 case StatementType.AssignValue:
-                    var expression = CompileExpression(statement.Operand, scope);
-                    var valueSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
+                    var assignValueExpression = CompileExpression(statement.Operand, scope);
+                    var assignValueSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
-                    return CreateStatementAssignValue(valueSymbol, expression);
+                    return CreateStatementAssignValue(assignValueSymbol, assignValueExpression);
 
                 case StatementType.Composite:
                     var nodes = new List<TAssembly>();
@@ -205,6 +209,15 @@ namespace Cottle.Documents.Compiled.Compilers
                 case StatementType.Return:
                     return CreateStatementReturn(CompileExpression(statement.Operand, scope));
 
+                case StatementType.Unwrap:
+                    scope.Enter();
+
+                    var unwrapBody = CompileStatement(statement.Body, scope);
+
+                    scope.Leave();
+
+                    return CreateStatementUnwrap(unwrapBody);
+
                 case StatementType.While:
                     var whileCondition = CompileExpression(statement.Operand, scope);
 
@@ -215,6 +228,17 @@ namespace Cottle.Documents.Compiled.Compilers
                     scope.Leave();
 
                     return CreateStatementWhile(whileCondition, whileBody);
+
+                case StatementType.Wrap:
+                    var wrapModifier = CompileExpression(statement.Operand, scope);
+
+                    scope.Enter();
+
+                    var wrapBody = CompileStatement(statement.Body, scope);
+
+                    scope.Leave();
+
+                    return CreateStatementWrap(wrapModifier, wrapBody);
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statement));

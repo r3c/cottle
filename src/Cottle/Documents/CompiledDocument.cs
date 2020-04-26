@@ -31,7 +31,7 @@ namespace Cottle.Documents
             for (var i = 0; i < _globals.Count; ++i)
                 globals[i] = context[_globals[i]];
 
-            return Execute(_executable, new Frame(globals, _locals), writer);
+            return Execute(_executable, new Frame(globals, _locals, new Stack<IFunction>()), writer);
         }
 
         public string Render(IContext context)

@@ -256,8 +256,18 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
                     break;
 
+                case StatementType.Unwrap:
+                    statement = Statement.CreateUnwrap(Optimize(statement.Body));
+
+                    break;
+
                 case StatementType.While:
                     statement = Statement.CreateWhile(Optimize(statement.Operand), Optimize(statement.Body));
+
+                    break;
+
+                case StatementType.Wrap:
+                    statement = Statement.CreateWrap(Optimize(statement.Operand), Optimize(statement.Body));
 
                     break;
 

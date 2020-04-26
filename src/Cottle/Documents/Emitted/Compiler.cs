@@ -8,7 +8,8 @@ namespace Cottle.Documents.Emitted
 {
     internal class Compiler : AbstractCompiler<IStatementGenerator, IExpressionGenerator>
     {
-        protected override IExpressionGenerator CreateExpressionAccess(IExpressionGenerator source, IExpressionGenerator subscript)
+        protected override IExpressionGenerator CreateExpressionAccess(IExpressionGenerator source,
+            IExpressionGenerator subscript)
         {
             return new AccessExpressionGenerator(source, subscript);
         }
@@ -18,12 +19,14 @@ namespace Cottle.Documents.Emitted
             return new ConstantExpressionGenerator(value);
         }
 
-        protected override IExpressionGenerator CreateExpressionInvoke(IExpressionGenerator caller, IReadOnlyList<IExpressionGenerator> arguments)
+        protected override IExpressionGenerator CreateExpressionInvoke(IExpressionGenerator caller,
+            IReadOnlyList<IExpressionGenerator> arguments)
         {
             return new InvokeExpressionGenerator(caller, arguments);
         }
 
-        protected override IExpressionGenerator CreateExpressionMap(IReadOnlyList<KeyValuePair<IExpressionGenerator, IExpressionGenerator>> elements)
+        protected override IExpressionGenerator CreateExpressionMap(
+            IReadOnlyList<KeyValuePair<IExpressionGenerator, IExpressionGenerator>> elements)
         {
             return new MapExpressionGenerator(elements);
         }
@@ -49,7 +52,8 @@ namespace Cottle.Documents.Emitted
             return new AssignRenderStatementGenerator(symbol, body);
         }
 
-        protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol, IExpressionGenerator expression)
+        protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol,
+            IExpressionGenerator expression)
         {
             return new AssignValueStatementGenerator(symbol, expression);
         }
@@ -76,7 +80,8 @@ namespace Cottle.Documents.Emitted
         }
 
         protected override IStatementGenerator CreateStatementIf(
-            IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches, IStatementGenerator fallback)
+            IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches,
+            IStatementGenerator fallback)
         {
             return new IfStatementGenerator(branches, fallback);
         }
@@ -96,9 +101,21 @@ namespace Cottle.Documents.Emitted
             return new ReturnStatementGenerator(expression);
         }
 
-        protected override IStatementGenerator CreateStatementWhile(IExpressionGenerator condition, IStatementGenerator body)
+        protected override IStatementGenerator CreateStatementUnwrap(IStatementGenerator body)
+        {
+            return new UnwrapStatementGenerator(body);
+        }
+
+        protected override IStatementGenerator CreateStatementWhile(IExpressionGenerator condition,
+            IStatementGenerator body)
         {
             return new WhileStatementGenerator(condition, body);
+        }
+
+        protected override IStatementGenerator CreateStatementWrap(IExpressionGenerator modifier,
+            IStatementGenerator body)
+        {
+            return new WrapStatementGenerator(modifier, body);
         }
     }
 }

@@ -1,9 +1,9 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 =================
 Template language
 =================
-
-.. default-domain:: csharp
-.. namespace:: Cottle
 
 Language syntax
 ===============
@@ -231,14 +231,71 @@ Commands
 ========
 
 
+.. _`command_wrap`:
+
+Text escaping: wrap, unwrap
+---------------------------
+
+You'll most probably want to escape unsafe values (e.g. user input) before printing their contents from your templates, like making sure characters "<" and ">" are replaced by "&lt;" and "&gt;" when printing variables to an HTML document. While this can be done by injecting an escaping function and using it to wrap all the expressions you want to print with ``echo`` command, a nice alternative is using ``wrap`` command with a function such as :type:`System.Web.HttpUtility.HtmlEncode` to ensure nothing is left unescaped before printing:
+
+.. code-block:: html
+    :caption: Cottle template
+
+    {wrap html:
+        <p data-description="{op_description}">
+            {op_name}
+        </p>
+    }
+
+.. code-block:: csharp
+    :caption: C# source
+
+    var htmlEncode = Function.CreatePure1((s, v) => HttpUtility.HtmlEncode(v));
+    var context = Context.CreateBuiltin(new Dictionary<Value, Value>
+    {
+        ["html"] = Value.FromFunction(htmlEncode),
+        ["op_description"] = "Three-way comparison or \"spaceship operator\"",
+        ["op_name"] = "<=>"
+    });
+
+.. code-block:: html
+    :caption: Rendering output
+
+    <p data-description="Three-way comparison or &quot;spaceship operator&quot;">
+        &lt;=&gt;
+    </p>
+
+The ``wrap`` command expects a function parameter, then a **:** (*body declaration*) separator character and the body you want the escaping to be applied to. Use **}** (*end of command*) delimiter to close the ``wrap`` command and stop applying its effect. Command body is a Cottle template, meaning it can contain plain text and commands as well. Inside ``wrap`` command's body, the function you passed as a parameter will be invoked on every value printed by inner ``echo`` commands, and the result of this function will be printed instead of original value. This means our previous example will produce an output equivalent to this template:
+
+.. code-block:: html
+    :caption: Cottle template
+
+    <p data-description="{html(op_description)}">
+        {html(op_name)}
+    </p>
+
+You may occasionally want to cancel wrapping for printing a safe HTML snippet without wrapping it. This can be achieved with the ``unwrap`` command that cancels its parent ``wrap`` command:
+
+.. code-block:: html
+    :caption: Cottle template
+
+    {wrap html:
+        <p>This {variable} will be HTML-escaped.</p>
+        {unwrap:
+            <p>This {raw} one won't so make sure it doesn't contain unvalidated user input!</p>
+        }
+        <p>We're back in {safe} context here with HTML escaping enabled.</p>
+    }
+
+Multiple ``wrap`` commands can be nested, resulting in their functions being called from the innermost to outermost ``wrap`` command.
+
+
 .. _`command_if`:
 
-Conditionals ("if")
-----------------------
+Conditionals: if
+----------------
 
 You can write conditional statements by using the ``if`` command which uses an expression as a predicate to check whether its body should be printed or not. Predicate is verified if value, once converted to a boolean type, is true (see :type:`Value` type for details about conversion to boolean).
-
-Predicate must be ended by a **:** (*body declaration*) separator character and followed by body of the ``if`` command, then **}** (*end of command*) delimiter. Command body is a Cottle template, meaning it can contain plain text and commands as well.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -260,7 +317,7 @@ Predicate must be ended by a **:** (*body declaration*) separator character and 
 
     Commands can be nested.
 
-The ``if`` command also supports optional ``elif`` (else if) and ``else`` blocks that behave like in any other programming language. These can be specified using the **|** (*continue*) delimiter followed by either ``elif`` and a predicate or ``else``, then a **:** (*body declaration*) separator character, and a body similar to the ``if`` command. Last block must be ended by a **}** (*end of command*) delimiter:
+The ``if`` command uses a syntax similar to ``wrap`` command and expects a predicate expression ended by a **:** (*body declaration*) separator character and followed by body of the ``if`` command, then a **}** (*end of command*) delimiter. This command also supports optional ``elif`` (else if) and ``else`` blocks that behave like in any other programming language. These can be specified using the **|** (*continue*) delimiter followed by either ``elif`` and a predicate or ``else``, then a **:** (*body declaration*) separator character, and a body similar to the ``if`` command. Last block must be ended by a **}** (*end of command*) delimiter:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -308,8 +365,8 @@ The ``if`` command also supports optional ``elif`` (else if) and ``else`` blocks
     X is negative.
 
 
-Enumerations ("for")
---------------------
+Enumerations: for
+-----------------
 
 Keys and values within a map can be enumerated using the ``for`` command, which repeatedly evaluates its body for each key/value pair contained within the map. The ``for`` command also supports an optional ``empty`` block evaluated when the map you enumerated doesn't contain any key/value pair.
 
@@ -361,8 +418,8 @@ Syntax of the ``for`` keyword and its optional ``empty`` block is similar to the
 
 .. _`command_set`:
 
-Assignments ("set")
--------------------
+Assignments: set
+----------------
 
 You can assign variables during rendering with the ``set`` command. Variable assignment helps you improving performance by storing intermediate results (such as function calls) when using them multiple times.
 
@@ -412,8 +469,8 @@ You can assign variables during rendering with the ``set`` command. Variable ass
     Cottle variables have visibility scopes, which are described in section :ref:`variable_scope`.
 
 
-Loops ("while")
----------------
+Loops: while
+------------
 
 The ``while`` command evaluates a predicate expression and continues executing its body until predicate becomes false. Be sure to check for a condition that will become false after a finite number of iterations, otherwise rendering of your template may never complete.
 
@@ -442,8 +499,8 @@ The ``while`` command evaluates a predicate expression and continues executing i
 
 .. _`command_dump`:
 
-Debug ("dump")
---------------
+Debug: dump
+-----------
 
 When your template doesn't render as you would expect, the ``dump`` command can help you identify issues by showing value as an explicit human readable string. For example undefined values won't print anything when passed through the ``echo`` command, but the ``dump`` command will show them as ``<void>``.
 
@@ -468,8 +525,8 @@ When your template doesn't render as you would expect, the ``dump`` command can 
     Command ``dump`` is a debugging command. If you want to get type of a value in production code, see :ref:`builtin_type` method.
 
 
-Comments
---------
+Comments: _
+-----------
 
 You can use the ``_`` (underscore) command to add comments to your template. This command can be followed by an arbitrary plain text and will be stripped away when template is rendered.
 

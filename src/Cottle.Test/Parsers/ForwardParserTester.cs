@@ -34,7 +34,9 @@ namespace Cottle.Test.Parsers
         [TestCase("for")]
         [TestCase("if")]
         [TestCase("set")]
+        [TestCase("unwrap")]
         [TestCase("while")]
+        [TestCase("wrap")]
         public void Parse_Ambiguous_Echo(string name)
         {
             var statement = ForwardParserTester.Parse(ForwardParserTester.Create(), "{" + name + "}");
@@ -58,6 +60,29 @@ namespace Cottle.Test.Parsers
             Assert.That(statement.Operand.Type, Is.EqualTo((ExpressionType)expectedOperand));
             Assert.That(statement.Next.Type, Is.EqualTo((StatementType)expectedNext));
             Assert.That(statement.Type, Is.EqualTo(StatementType.For));
+        }
+
+        [Test]
+        [TestCase("{unwrap:test}", StatementType.Literal)]
+        [TestCase("{unwrap:{echo 5}}", StatementType.Echo)]
+        public void Parse_StatementUnwrap(string template, int expectedbody)
+        {
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(), template);
+
+            Assert.That(statement.Body.Type, Is.EqualTo((StatementType)expectedbody));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Unwrap));
+        }
+
+        [Test]
+        [TestCase("{wrap 42:test}", ExpressionType.Constant, StatementType.Literal)]
+        [TestCase("{wrap f:{echo 5}}", ExpressionType.Symbol, StatementType.Echo)]
+        public void Parse_StatementWrap(string template, int expectedOperand, int expectedbody)
+        {
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(), template);
+
+            Assert.That(statement.Body.Type, Is.EqualTo((StatementType)expectedbody));
+            Assert.That(statement.Operand.Type, Is.EqualTo((ExpressionType)expectedOperand));
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Wrap));
         }
 
         [Test]

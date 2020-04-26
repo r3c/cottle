@@ -414,7 +414,7 @@ namespace Cottle.Test
 
         protected abstract DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration);
 
-        private void AssertOutput(string source, DocumentConfiguration configuration, IContext context,
+        protected void AssertOutput(string source, DocumentConfiguration configuration, IContext context,
             string expected)
         {
             using (var template = new StringReader(source))
@@ -448,7 +448,7 @@ namespace Cottle.Test
             AssertReturn(source, default, Context.Empty, expected);
         }
 
-        private static IContext CreateContextWithBuiltins(params string[] names)
+        protected static IContext CreateContextWithBuiltins(params string[] names)
         {
             var symbols = new Dictionary<Value, Value>();
 

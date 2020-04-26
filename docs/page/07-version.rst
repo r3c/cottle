@@ -1,9 +1,9 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 ==========
 Versioning
 ==========
-
-.. default-domain:: csharp
-.. namespace:: Cottle
 
 .. _`versioning_convention`:
 

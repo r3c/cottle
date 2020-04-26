@@ -112,9 +112,17 @@ namespace Cottle.Documents.Simple
                 case StatementType.Return:
                     return new ReturnNode(Compiler.CompileExpression(statement.Operand));
 
+                case StatementType.Unwrap:
+                    throw new NotImplementedException(
+                        $"'unwrap' is not supported with {nameof(SimpleDocument)}, use {nameof(Document)}.{nameof(Document.CreateDefault)} instead");
+
                 case StatementType.While:
                     return new WhileNode(Compiler.CompileExpression(statement.Operand),
                         Compiler.CompileStatement(statement.Body));
+
+                case StatementType.Wrap:
+                    throw new NotImplementedException(
+                        $"'wrap' is not supported with {nameof(SimpleDocument)}, use {nameof(Document)}.{nameof(Document.CreateDefault)} instead");
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statement));

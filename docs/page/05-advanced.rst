@@ -1,9 +1,9 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 =================
 Advanced features
 =================
-
-.. default-domain:: csharp
-.. namespace:: Cottle
 
 Understanding value types
 =========================

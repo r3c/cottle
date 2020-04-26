@@ -55,9 +55,19 @@ namespace Cottle
             return new Statement(StatementType.Return, default, default, default, default, default, operand, default);
         }
 
+        public static Statement CreateUnwrap(Statement body)
+        {
+            return new Statement(StatementType.Unwrap, default, body, default, default, default, default, default);
+        }
+
         public static Statement CreateWhile(Expression operand, Statement body)
         {
             return new Statement(StatementType.While, default, body, default, default, default, operand, default);
+        }
+
+        public static Statement CreateWrap(Expression operand, Statement body)
+        {
+            return new Statement(StatementType.Wrap, default, body, default, default, default, operand, default);
         }
 
         public static readonly Statement NoOp = new Statement(StatementType.None, default, default, default, default,

@@ -29,8 +29,12 @@ namespace Cottle.Parsers
                 p.TryCreateReturn(out c, out f), false),
             ["set"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
                 p.TryCreateSet(out c, out f), true),
+            ["unwrap"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateUnwrap(out c, out f), true),
             ["while"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateWhile(out c, out f), true)
+                p.TryCreateWhile(out c, out f), true),
+            ["wrap"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateWrap(out c, out f), true)
         };
 
         private readonly Lexer _lexer;
@@ -240,6 +244,20 @@ namespace Cottle.Parsers
             return TryParseAssignment(StoreMode.Global, out statement, out reports);
         }
 
+        private bool TryCreateUnwrap(out Statement statement, out IEnumerable<DocumentReport> reports)
+        {
+            if (!TryParseStatementBody(out var body, out reports))
+            {
+                statement = default;
+
+                return false;
+            }
+
+            statement = Statement.CreateUnwrap(body);
+
+            return true;
+        }
+
         private bool TryCreateWhile(out Statement statement, out IEnumerable<DocumentReport> reports)
         {
             if (!TryParseExpression(out var condition, out reports) ||
@@ -255,6 +273,20 @@ namespace Cottle.Parsers
             return true;
         }
 
+        private bool TryCreateWrap(out Statement statement, out IEnumerable<DocumentReport> reports)
+        {
+            if (!TryParseExpression(out var wrapper, out reports) ||
+                !TryParseStatementBody(out var body, out reports))
+            {
+                statement = default;
+
+                return false;
+            }
+
+            statement = Statement.CreateWrap(wrapper, body);
+
+            return true;
+        }
 
         private bool TryParseAssignment(StoreMode mode, out Statement statement, out IEnumerable<DocumentReport> reports)
         {

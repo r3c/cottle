@@ -25,7 +25,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             emitter.OutputEnqueue(buffer);
 
             var mayReturn = _body.Generate(emitter);
-            var mayReturnCode = mayReturn ? (Local<bool>?)emitter.DeclareLocalAndStore<bool>() : null;
+            var mayReturnCode = mayReturn ? emitter.DeclareLocalAndStore<bool>() : default;
 
             emitter.OutputDequeue();
 
@@ -40,7 +40,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             if (!mayReturn)
                 return false;
 
-            emitter.LoadLocalValueAndRelease(mayReturnCode.Value);
+            emitter.LoadLocalValueAndRelease(mayReturnCode);
 
             return true;
         }

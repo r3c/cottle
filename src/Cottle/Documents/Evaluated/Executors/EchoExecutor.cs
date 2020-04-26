@@ -14,7 +14,10 @@ namespace Cottle.Documents.Evaluated.Executors
 
         public bool Execute(Frame frame, TextWriter output, out Value result)
         {
-            output.Write(_expression.Evaluate(frame, output).AsString);
+            var subject = _expression.Evaluate(frame, output);
+            var value = frame.Echo(subject, output);
+
+            output.Write(value);
 
             result = Value.Undefined;
 

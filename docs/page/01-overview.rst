@@ -1,9 +1,9 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 ========
 Overview
 ========
-
-.. default-domain:: csharp
-.. namespace:: Cottle
 
 What does it looks like?
 ========================
@@ -14,18 +14,16 @@ A simple Cottle template printing an HTML document showing how many messages are
 
 .. code-block:: html
 
-    <html>
-        <body>
-            <h1>Hello, {name}!</h1>
-            <p>
-                {if len(messages) > 0:
-                    You have {len(messages)} new message{if len(messages) > 1:s} in your mailbox!
-                |else:
-                    You have no new message.
-                }
-            </p>
-        </body>
-    </html>
+    {wrap html:
+        <h1>Hello, {name}!</h1>
+        <p>
+            {if len(messages) > 0:
+                You have {len(messages)} new message{if len(messages) > 1:s} in your mailbox!
+            |else:
+                You have no new message.
+            }
+        </p>
+    }
 
 As you can guess by looking at this code, a Cottle template contains both plain text printed as-is as well as commands used to output dynamic contents. Cottle supports most common template engine features, such as:
 
@@ -33,6 +31,7 @@ As you can guess by looking at this code, a Cottle template contains both plain 
 * Mathematical and boolean expressions,
 * Built-in and used-defined functions,
 * Variables & functions declaration and assignments,
+* Text escaping control (wrap, unwrap),
 * Conditional statements (if),
 * Loops (for, while).
 
@@ -56,8 +55,8 @@ Getting started
 
 To start using Cottle, first reference the package in your solution (using NuGet or manual install as detailed above). You'll then need two things:
 
--  An input template written with Cottle's template language, used to define how your data will be rendered. This template can be contained in a ``string`` or streamed from any source compatible with ``System.IO.TextReader`` class (text file, memory buffer, network socket...) as shown in the example below.
--  An executable code that reads your input template, create a :type:`IDocument` object from it then render it to an output string or ``System.IO.TextWriter`` instance.
+-  An input template written with Cottle's template language, used to define how your data will be rendered. This template can be contained in a ``string`` or streamed from any source compatible with :type:`System.IO.TextReader` class (text file, memory buffer, network socket...) as shown in the example below.
+-  An executable code that reads your input template, create a :type:`IDocument` object from it then render it to an output string or :type:`System.IO.TextWriter` instance.
 
 Here is a basic sample rendering a template with a single injected variable. Copy the **C# source** snippet somewhere in your program and get it executed. You should see the content of **Rendering output** snippet printed to standard output:
 

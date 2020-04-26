@@ -1,3 +1,6 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 .. _`builtin`:
 
 ==================

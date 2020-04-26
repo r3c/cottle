@@ -12,9 +12,16 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo ArgumentsIndex =
             Resolver.Method<Func<IReadOnlyList<Value>, int, Value>>((c, i) => c[i]);
 
+        private static readonly MethodInfo FrameEcho =
+            Resolver.Method<Func<Frame, Value, TextWriter, string>>((f, v, o) => f.Echo(v, o));
+
         private static readonly FieldInfo FrameGlobals = Resolver.Field<Func<Frame, Value[]>>(f => f.Globals);
 
         private static readonly FieldInfo FrameLocals = Resolver.Field<Func<Frame, Value[]>>(f => f.Locals);
+
+        private static readonly MethodInfo FrameUnwrap = Resolver.Method<Func<Frame, IFunction>>(f => f.Unwrap());
+
+        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame, IFunction>>((f, m) => f.Wrap(m));
 
         private static readonly MethodInfo FunctionInvoke =
             Resolver.Method<Func<IFunction, object, IReadOnlyList<Value>, TextWriter, Value>>((f, s, a, o) =>
@@ -71,9 +78,6 @@ namespace Cottle.Documents.Emitted
 
         private static readonly MethodInfo ValueAsFunctionGet =
             Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod();
-
-        private static readonly MethodInfo ValueAsStringGet =
-            Resolver.Property<Func<Value, string>>(v => v.AsString).GetGetMethod();
 
         private static readonly MethodInfo ValueFieldsGet =
             Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod();
@@ -142,6 +146,21 @@ namespace Cottle.Documents.Emitted
         public void Discard()
         {
             _generator.Emit(OpCodes.Pop);
+        }
+
+        public void InvokeFrameEcho()
+        {
+            _generator.Emit(OpCodes.Call, Emitter.FrameEcho);
+        }
+
+        public void InvokeFrameUnwrap()
+        {
+            _generator.Emit(OpCodes.Call, Emitter.FrameUnwrap);
+        }
+
+        public void InvokeFrameWrap()
+        {
+            _generator.Emit(OpCodes.Call, Emitter.FrameWrap);
         }
 
         public void InvokeFunction()
@@ -215,11 +234,6 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Call, Emitter.ValueAsFunctionGet);
         }
 
-        public void InvokeValueAsString()
-        {
-            _generator.Emit(OpCodes.Call, Emitter.ValueAsStringGet);
-        }
-
         public void InvokeValueFields()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueFieldsGet);
@@ -276,7 +290,6 @@ namespace Cottle.Documents.Emitted
         public void LoadFrame()
         {
             _generator.Emit(OpCodes.Ldarg_1);
-            _generator.Emit(OpCodes.Box, typeof(Frame));
         }
 
         public void LoadFrameSymbol(Symbol symbol)

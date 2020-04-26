@@ -1,9 +1,9 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 =============
 API reference
 =============
-
-.. default-domain:: csharp
-.. namespace:: Cottle
 
 Public API definition
 =====================

@@ -13,11 +13,19 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         {
             _expression.Generate(emitter);
 
-            var operand = emitter.DeclareLocalAndStore<Value>();
+            var subject = emitter.DeclareLocalAndStore<Value>();
 
+            // Convert subject to string
+            emitter.LoadFrame();
+            emitter.LoadLocalValueAndRelease(subject);
             emitter.LoadOutput();
-            emitter.LoadLocalAddressAndRelease(operand);
-            emitter.InvokeValueAsString();
+            emitter.InvokeFrameEcho();
+
+            var value = emitter.DeclareLocalAndStore<string>();
+
+            // Write string to output
+            emitter.LoadOutput();
+            emitter.LoadLocalValueAndRelease(value);
             emitter.InvokeTextWriterWriteString();
 
             return false;
