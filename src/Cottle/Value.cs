@@ -12,6 +12,8 @@ namespace Cottle
 {
     public readonly struct Value : IComparable<Value>, IEquatable<Value>
     {
+        private const ValueContent ContentEvaluable = (ValueContent)(-1);
+
         public static readonly Value EmptyMap = new Value(Maps.EmptyMap.Instance);
         public static readonly Value EmptyString = new Value(string.Empty);
         public static readonly Value False = new Value(false);
@@ -273,11 +275,11 @@ namespace Cottle
         {
             get
             {
-                if (_evaluable != null)
-                    return _evaluable.AsBoolean;
-
-                switch (Type)
+                switch (_type)
                 {
+                    case Value.ContentEvaluable:
+                        return _evaluable.AsBoolean;
+
                     case ValueContent.Boolean:
                         return _boolean;
 
@@ -304,10 +306,24 @@ namespace Cottle
         {
             get
             {
-                if (_evaluable != null)
-                    return _evaluable.AsFunction;
+                switch (_type)
+                {
+                    case Value.ContentEvaluable:
+                        return _evaluable.AsFunction;
 
-                return _type == ValueContent.Function ? _function : Function.Empty;
+                    case ValueContent.Boolean:
+                    case ValueContent.Map:
+                    case ValueContent.Number:
+                    case ValueContent.String:
+                    case ValueContent.Void:
+                        return Function.Empty;
+
+                    case ValueContent.Function:
+                        return _function;
+
+                    default:
+                        throw new InvalidOperationException();
+                }
             }
         }
 
@@ -315,11 +331,11 @@ namespace Cottle
         {
             get
             {
-                if (_evaluable != null)
-                    return _evaluable.AsNumber;
-
                 switch (_type)
                 {
+                    case Value.ContentEvaluable:
+                        return _evaluable.AsNumber;
+
                     case ValueContent.Boolean:
                         return _boolean ? 1 : 0;
 
@@ -349,11 +365,11 @@ namespace Cottle
         {
             get
             {
-                if (_evaluable != null)
-                    return _evaluable.AsString;
-
                 switch (_type)
                 {
+                    case Value.ContentEvaluable:
+                        return _evaluable.AsString;
+
                     case ValueContent.Boolean:
                         return _boolean ? "true" : string.Empty;
 
@@ -363,8 +379,13 @@ namespace Cottle
                     case ValueContent.String:
                         return _string;
 
-                    default:
+                    case ValueContent.Function:
+                    case ValueContent.Map:
+                    case ValueContent.Void:
                         return string.Empty;
+
+                    default:
+                        throw new InvalidOperationException();
                 }
             }
         }
@@ -373,14 +394,28 @@ namespace Cottle
         {
             get
             {
-                if (_evaluable != null)
-                    return _evaluable.Fields;
+                switch (_type)
+                {
+                    case Value.ContentEvaluable:
+                        return _evaluable.Fields;
 
-                return _type == ValueContent.Map ? _map : Maps.EmptyMap.Instance;
+                    case ValueContent.Map:
+                        return _map;
+
+                    case ValueContent.Boolean:
+                    case ValueContent.Function:
+                    case ValueContent.Number:
+                    case ValueContent.String:
+                    case ValueContent.Void:
+                        return Maps.EmptyMap.Instance;
+
+                    default:
+                        throw new InvalidOperationException();
+                }
             }
         }
 
-        public ValueContent Type => _evaluable?.Type ?? _type;
+        public ValueContent Type => _type == Value.ContentEvaluable ? _evaluable.Type : _type;
 
         private readonly bool _boolean;
 
@@ -402,7 +437,10 @@ namespace Cottle
             if (value == null)
                 _type = ValueContent.Void;
             else
+            {
                 _evaluable = value;
+                _type = Value.ContentEvaluable;
+            }
         }
 
         private Value(IFunction value) :
@@ -505,14 +543,16 @@ namespace Cottle
 
         public int CompareTo(Value other)
         {
-            if (_evaluable != null)
-                return _evaluable.CompareTo(other);
+            var type = Type;
 
-            if (_type != other.Type)
-                return _type.CompareTo(other.Type);
+            if (type != other.Type)
+                return type.CompareTo(other.Type);
 
             switch (_type)
             {
+                case Value.ContentEvaluable:
+                    return _evaluable.CompareTo(other);
+
                 case ValueContent.Boolean:
                     return _boolean.CompareTo(other.AsBoolean);
 
@@ -551,11 +591,11 @@ namespace Cottle
             const int shift = 4;
             const int mask = (1 << shift) - 1;
 
-            if (_evaluable != null)
-                return _evaluable.GetHashCode();
-
             switch (_type)
             {
+                case Value.ContentEvaluable:
+                    return _evaluable.GetHashCode();
+
                 case ValueContent.Boolean:
                     return (_boolean.GetHashCode() << shift) | ((int)ValueContent.Boolean & mask);
 
@@ -571,18 +611,21 @@ namespace Cottle
                 case ValueContent.String:
                     return (_string.GetHashCode() << shift) | ((int)ValueContent.String & mask);
 
-                default:
+                case ValueContent.Void:
                     return Type.GetHashCode();
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
         public override string ToString()
         {
-            if (_evaluable != null)
-                return _evaluable.ToString();
-
             switch (_type)
             {
+                case Value.ContentEvaluable:
+                    return _evaluable.ToString();
+
                 case ValueContent.Boolean:
                     return "<" + (_boolean ? "true" : "false") + ">";
 

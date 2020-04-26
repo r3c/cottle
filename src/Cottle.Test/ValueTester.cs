@@ -26,6 +26,52 @@ namespace Cottle.Test
         }
 
         [Test]
+        public static void CompareToBoolean()
+        {
+            ValueTester.AssertEquals(Value.False, Value.False, true);
+            ValueTester.AssertEquals(Value.False, Value.True, false);
+            ValueTester.AssertEquals(Value.True, Value.True, true);
+            ValueTester.AssertEquals(Value.False, Value.Zero, false);
+        }
+
+        [Test]
+        public static void EqualsMap()
+        {
+            var a = new KeyValuePair<Value, Value>("A", 1);
+            var b = new KeyValuePair<Value, Value>("B", 2);
+            var c = new KeyValuePair<Value, Value>("C", 3);
+            var d = new KeyValuePair<Value, Value>("D", 4);
+
+            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }),
+                Value.FromEnumerable(new[] { a, b, c }), true);
+            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }),
+                Value.FromEnumerable(new[] { a, b, d }), false);
+            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }), Value.False, false);
+        }
+
+        [Test]
+        public static void EqualsNumber()
+        {
+            ValueTester.AssertEquals(Value.Zero, Value.Zero, true);
+            ValueTester.AssertEquals(Value.Zero, Value.FromNumber(1), false);
+            ValueTester.AssertEquals(Value.Zero, Value.EmptyString, false);
+        }
+
+        [Test]
+        public static void EqualsString()
+        {
+            ValueTester.AssertEquals(Value.FromString("A"), Value.FromString("A"), true);
+            ValueTester.AssertEquals(Value.FromString("A"), Value.FromString("B"), false);
+            ValueTester.AssertEquals(Value.FromString("A"), Value.False, false);
+        }
+
+        [Test]
+        public static void EqualsVoid()
+        {
+            ValueTester.AssertEquals(Value.Undefined, Value.Undefined, true);
+            ValueTester.AssertEquals(Value.Undefined, Value.False, false);
+        }
+        [Test]
         [TestCase(false)]
         [TestCase(true)]
         public static void FromBoolean(bool input)
@@ -279,6 +325,18 @@ namespace Cottle.Test
         {
             Assert.That(Value.Zero.Type, Is.EqualTo(ValueContent.Number));
             Assert.That(Value.Zero.AsNumber, Is.EqualTo(0));
+        }
+
+        private static void AssertEquals(Value operand1, Value operand2, bool expected)
+        {
+            Assert.That(operand1 == operand2, Is.EqualTo(expected));            
+            Assert.That(Value.FromLazy(() => operand1) == operand2, Is.EqualTo(expected));
+            Assert.That(operand1 == Value.FromLazy(() => operand2), Is.EqualTo(expected));
+            Assert.That(Value.FromLazy(() => operand1) == Value.FromLazy(() => operand2), Is.EqualTo(expected));
+            Assert.That(operand2 == operand1, Is.EqualTo(expected));            
+            Assert.That(Value.FromLazy(() => operand2) == operand1, Is.EqualTo(expected));
+            Assert.That(operand2 == Value.FromLazy(() => operand1), Is.EqualTo(expected));
+            Assert.That(Value.FromLazy(() => operand2) == Value.FromLazy(() => operand1), Is.EqualTo(expected));
         }
 
         private static void AssertReadMember<T>(T reference, Value expected)
