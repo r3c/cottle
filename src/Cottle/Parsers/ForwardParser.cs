@@ -10,31 +10,28 @@ namespace Cottle.Parsers
 {
     internal class ForwardParser : IParser
     {
-        private delegate bool ParseKeyword(ForwardParser parser, out Statement statement,
-            out IEnumerable<DocumentReport> reports);
-
-        private static readonly Dictionary<string, ParseKeyword> Keywords = new Dictionary<string, ParseKeyword>
+        private static readonly Dictionary<string, Keyword> Keywords = new Dictionary<string, Keyword>
         {
-            ["_"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateComment(out c, out f),
-            ["declare"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateDeclare(out c, out f),
-            ["define"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateSet(out c, out f),
-            ["dump"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateDump(out c, out f),
-            ["echo"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateEcho(out c, out f),
-            ["for"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateFor(out c, out f),
-            ["if"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateIfThen(out c, out f),
-            ["return"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateReturn(out c, out f),
-            ["set"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateSet(out c, out f),
-            ["while"] = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
-                p.TryCreateWhile(out c, out f)
+            ["_"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateComment(out c, out f), false),
+            ["declare"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateDeclare(out c, out f), true),
+            ["define"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateSet(out c, out f), true),
+            ["dump"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateDump(out c, out f), true),
+            ["echo"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateEcho(out c, out f), true),
+            ["for"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateFor(out c, out f), true),
+            ["if"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateIfThen(out c, out f), true),
+            ["return"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateReturn(out c, out f), false),
+            ["set"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateSet(out c, out f), true),
+            ["while"] = new Keyword((ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                p.TryCreateWhile(out c, out f), true)
         };
 
         private readonly Lexer _lexer;
@@ -408,20 +405,24 @@ namespace Cottle.Parsers
 
         private bool TryParseExpression(out Expression expression, out IEnumerable<DocumentReport> reports)
         {
+            if (TryParseValue(out var operand, out reports))
+                return TryParseExpressionOperand(operand, out expression, out reports);
+
+            expression = default;
+
+            return false;
+        }
+
+        private bool TryParseExpressionOperand(Expression head, out Expression expression,
+            out IEnumerable<DocumentReport> reports)
+        {
             var operands = new Stack<Expression>();
             var operators = new Stack<Operator>();
 
+            operands.Push(head);
+
             while (true)
             {
-                if (!TryParseValue(out var operand, out reports))
-                {
-                    expression = default;
-
-                    return false;
-                }
-
-                operands.Push(operand);
-
                 Operator current;
 
                 switch (_lexer.Current.Type)
@@ -517,7 +518,31 @@ namespace Cottle.Parsers
                 }
 
                 operators.Push(current);
+
+                if (!TryParseValue(out var operand, out reports))
+                {
+                    expression = default;
+
+                    return false;
+                }
+
+                operands.Push(operand);
             }
+        }
+
+        private bool TryParseKeyword(out Keyword keyword)
+        {
+            if (_lexer.Current.Type == LexemType.Symbol &&
+                ForwardParser.Keywords.TryGetValue(_lexer.Current.Value, out keyword))
+            {
+                _lexer.NextBlock();
+
+                return true;
+            }
+
+            keyword = default;
+
+            return false;
         }
 
         private bool TryParseStatement(out Statement statement, out IEnumerable<DocumentReport> reports)
@@ -537,18 +562,45 @@ namespace Cottle.Parsers
                     case LexemType.BlockBegin:
                         _lexer.NextBlock();
 
-                        if (_lexer.Current.Type == LexemType.Symbol &&
-                            ForwardParser.Keywords.TryGetValue(_lexer.Current.Value, out var parse))
+                        var blockLexem = _lexer.Current;
+                        KeywordParser blockParse;
+
+                        // Case 1: first block lexem is not a keyword, consider it as an implicit "echo" command
+                        if (!TryParseKeyword(out var keyword))
                         {
-                            _lexer.NextBlock();
-                        }
-                        else
-                        {
-                            parse = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                            blockParse = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
                                 p.TryCreateEcho(out c, out f);
                         }
 
-                        if (!parse(this, out var blockStatement, out reports))
+                        // Case 2: first block lexem is a keyword but is missing mandatory operand, consider it as a
+                        // symbol and parse as an implicit "echo" command
+                        else if (keyword.HasMandatoryOperand && _lexer.Current.Type == LexemType.None)
+                        {
+                            var symbol = Expression.CreateSymbol(blockLexem.Value);
+
+                            blockParse = (ForwardParser p, out Statement c, out IEnumerable<DocumentReport> f) =>
+                            {
+                                if (!TryParseExpressionOperand(symbol, out var operand, out f))
+                                {
+                                    c = default;
+
+                                    return false;
+                                }
+
+                                _lexer.NextRaw();
+
+                                c = Statement.CreateEcho(operand);
+
+                                return true;
+                            };
+                        }
+
+                        // Case 3: first block lexem is a keyword with acceptable syntax, parse command accordingly
+                        else
+                            blockParse = keyword.Parse;
+
+                        // Use delegate defined above to parse recognized command
+                        if (!blockParse(this, out var blockStatement, out reports))
                         {
                             statement = default;
 
@@ -866,7 +918,7 @@ namespace Cottle.Parsers
             }
         }
 
-        private IReadOnlyList<DocumentReport> CreateReports(string expected)
+        private IEnumerable<DocumentReport> CreateReports(string expected)
         {
             var current = _lexer.Current;
             var message = $"expected {expected}, found {current.Value}";

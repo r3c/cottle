@@ -11,7 +11,7 @@ namespace Cottle.Test.Parsers
         [Test]
         [TestCase("<|", "|>", "1 || 0", "true")]
         [TestCase("<&", "&>", "1 && 0", "")]
-        public void Parse_Ambiguous(string blockBegin, string blockEnd, string expression, string expected)
+        public void Parse_Ambiguous_Block(string blockBegin, string blockEnd, string expression, string expected)
         {
             var configuration = new DocumentConfiguration
                 { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
@@ -25,6 +25,23 @@ namespace Cottle.Test.Parsers
             Assert.That(statement.Operand.Arguments[0].Value, Is.EqualTo((Value)1));
             Assert.That(statement.Operand.Arguments[1].Type, Is.EqualTo(ExpressionType.Constant));
             Assert.That(statement.Operand.Arguments[1].Value, Is.EqualTo((Value)0));
+        }
+
+        [Test]
+        [TestCase("declare")]
+        [TestCase("dump")]
+        [TestCase("echo")]
+        [TestCase("for")]
+        [TestCase("if")]
+        [TestCase("set")]
+        [TestCase("while")]
+        public void Parse_Ambiguous_Echo(string name)
+        {
+            var statement = ForwardParserTester.Parse(ForwardParserTester.Create(), "{" + name + "}");
+
+            Assert.That(statement.Type, Is.EqualTo(StatementType.Echo));
+            Assert.That(statement.Operand.Type, Is.EqualTo(ExpressionType.Symbol));
+            Assert.That(statement.Operand.Value, Is.EqualTo((Value)name));
         }
 
         [Test]
