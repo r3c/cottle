@@ -278,27 +278,27 @@ Value declaration
 
     .. property:: Value EmptyMap { get; }
 
-        Static and read-only empty map value.
+        Static and read-only empty map value, equal to ``Value.FromEnumerable(new Value[0])``.
 
     .. property:: Value EmptyString { get; }
 
-        Static and read-only empty string value.
+        Static and read-only empty string value, equal to ``Value.FromString(string.Empty)``.
 
     .. property:: Value False { get; }
 
-        Static and read-only boolean "false" value.
+        Static and read-only boolean "false" value, equal to ``Value.FromBoolean(false)``.
 
     .. property:: Value True { get; }
 
-        Static and read-only boolean "true" value.
+        Static and read-only boolean "true" value, equal to ``Value.FromBoolean(true)``.
 
     .. property:: Value Undefined { get; }
 
-        Static and read-only undefined value.
+        Static and read-only undefined value, equal to ``new Value()`` or ``default(Value)``.
 
     .. property:: Value Zero { get; }
 
-        Static and read-only number "0" value.
+        Static and read-only number "0" value, equal to ``Value.FromNumber(0)``.
 
     .. property:: bool AsBoolean { get; }
 
