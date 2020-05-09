@@ -5,11 +5,13 @@ namespace Cottle.Documents.Compiled
     internal class Scope
     {
         public int LocalCount => _unique;
+        public Symbol? ModifierTop => _modifiers.Count > 0 ? (Symbol?)_modifiers.Peek() : null;
 
         private readonly IDictionary<Value, int> _globals;
         private int _localDepth;
         private readonly Stack<HashSet<string>> _localLayers;
         private readonly IDictionary<string, Stack<int>> _localStacks;
+        private readonly Stack<Symbol> _modifiers;
         private int _unique;
 
         public Scope(IDictionary<Value, int> globals)
@@ -18,6 +20,7 @@ namespace Cottle.Documents.Compiled
             _localDepth = 0;
             _localLayers = new Stack<HashSet<string>>();
             _localStacks = new Dictionary<string, Stack<int>>();
+            _modifiers = new Stack<Symbol>();
             _unique = 0;
         }
 
@@ -34,6 +37,11 @@ namespace Cottle.Documents.Compiled
         public Scope CreateLocalScope()
         {
             return new Scope(_globals);
+        }
+
+        public Symbol DeclareLocal()
+        {
+            return new Symbol(_unique++, StoreMode.Local);
         }
 
         public Symbol GetOrDeclareClosest(string name, StoreMode mode)
@@ -97,6 +105,16 @@ namespace Cottle.Documents.Compiled
                 else
                     stack.Pop();
             }
+        }
+
+        public void PopModifier()
+        {
+            _modifiers.Pop();
+        }
+
+        public void PushModifier(Symbol modifier)
+        {
+            _modifiers.Push(modifier);
         }
 
         private void SetLocal(string symbol, int local)

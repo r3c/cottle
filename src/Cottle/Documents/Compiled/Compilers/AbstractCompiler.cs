@@ -53,11 +53,9 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TAssembly CreateStatementReturn(TExpression expression);
 
-        protected abstract TAssembly CreateStatementUnwrap(TAssembly body);
-
         protected abstract TAssembly CreateStatementWhile(TExpression condition, TAssembly body);
 
-        protected abstract TAssembly CreateStatementWrap(TExpression modifier, TAssembly body);
+        protected abstract TAssembly CreateStatementWrap(Symbol? modifier);
 
         private TExpression CompileExpression(Expression expression, Scope scope)
         {
@@ -210,13 +208,22 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateStatementReturn(CompileExpression(statement.Operand, scope));
 
                 case StatementType.Unwrap:
+                    var unwrapModifierRestore = scope.ModifierTop;
+
+                    if (!unwrapModifierRestore.HasValue)
+                        throw new InvalidOperationException("FIXME");
+
+                    scope.PopModifier();
                     scope.Enter();
 
+                    var unwrapEnter = CreateStatementWrap(scope.ModifierTop);
                     var unwrapBody = CompileStatement(statement.Body, scope);
+                    var unwrapLeave = CreateStatementWrap(unwrapModifierRestore);
 
                     scope.Leave();
+                    scope.PushModifier(unwrapModifierRestore.Value);
 
-                    return CreateStatementUnwrap(unwrapBody);
+                    return CreateStatementComposite(new[] { unwrapEnter, unwrapBody, unwrapLeave });
 
                 case StatementType.While:
                     var whileCondition = CompileExpression(statement.Operand, scope);
@@ -230,15 +237,31 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateStatementWhile(whileCondition, whileBody);
 
                 case StatementType.Wrap:
-                    var wrapModifier = CompileExpression(statement.Operand, scope);
+                    var wrapModifierCurrent = scope.DeclareLocal();
+                    var wrapModifierRestore = scope.ModifierTop;
 
+                    var wrapExpression = CompileExpression(statement.Operand, scope);
+                    var wrapPrevious = CreateExpressionModifier();
+                    var arg = new Symbol(0, StoreMode.Local);
+
+                    var compose = CreateExpressionInvoke(wrapExpression,
+                        new[] { CreateExpressionInvoke(wrapPrevious, new[] { CreateExpressionSymbol(arg) }) });
+                    var wrapAssign = CreateStatementAssignFunction(wrapModifierCurrent, 0 /* 1? */,
+                        new[] { arg }, CreateStatementReturn(compose));
+
+                    scope.PushModifier(wrapModifierCurrent);
                     scope.Enter();
 
+                    var wrapEnter = CreateStatementWrap(wrapModifierCurrent);
                     var wrapBody = CompileStatement(statement.Body, scope);
+                    var wrapLeave = CreateStatementWrap(wrapModifierRestore.HasValue
+                        ? CreateExpressionSymbol(wrapModifierRestore.Value)
+                        : null);
 
                     scope.Leave();
+                    scope.PopModifier();
 
-                    return CreateStatementWrap(wrapModifier, wrapBody);
+                    return CreateStatementComposite(new[] { wrapAssign, wrapEnter, wrapBody, wrapLeave });
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statement));
