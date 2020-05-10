@@ -11,13 +11,11 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
         public bool Generate(Emitter emitter)
         {
-            _expression.Generate(emitter);
-
-            var subject = emitter.DeclareLocalAndStore<Value>();
-
             // Convert subject to string
             emitter.LoadFrame();
-            emitter.LoadLocalValueAndRelease(subject);
+
+            _expression.Generate(emitter);
+
             emitter.LoadOutput();
             emitter.InvokeFrameEcho();
 

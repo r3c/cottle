@@ -32,13 +32,11 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             // Evaluate arguments one by one and store them into array
             for (var i = 0; i < _arguments.Count; ++i)
             {
-                _arguments[i].Generate(emitter);
-
-                var argument = emitter.DeclareLocalAndStore<Value>();
-
                 emitter.LoadLocalValue(arguments);
                 emitter.LoadInteger(i);
-                emitter.LoadLocalValueAndRelease(argument);
+
+                _arguments[i].Generate(emitter);
+
                 emitter.StoreElementAtIndex<Value>();
             }
 

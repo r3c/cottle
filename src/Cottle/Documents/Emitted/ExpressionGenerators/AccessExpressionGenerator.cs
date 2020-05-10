@@ -23,14 +23,10 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
             var fields = emitter.DeclareLocalAndStore<IMap>();
 
-            // Evaluate subscript expression
-            _subscript.Generate(emitter);
-
-            var subscript = emitter.DeclareLocalAndStore<Value>();
-
             // Use subscript to get value from fields
             emitter.LoadLocalValueAndRelease(fields);
-            emitter.LoadLocalValueAndRelease(subscript);
+
+            _subscript.Generate(emitter);
 
             var value = emitter.DeclareLocalAndLoadAddress<Value>();
 

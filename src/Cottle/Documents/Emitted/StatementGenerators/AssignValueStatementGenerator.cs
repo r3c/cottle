@@ -15,12 +15,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
         public bool Generate(Emitter emitter)
         {
+            emitter.LoadFrameSymbol(_symbol);
+
             _expression.Generate(emitter);
 
-            var value = emitter.DeclareLocalAndStore<Value>();
-
-            emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadLocalValueAndRelease(value);
             emitter.StoreValueAtIndex<Value>();
 
             return false;

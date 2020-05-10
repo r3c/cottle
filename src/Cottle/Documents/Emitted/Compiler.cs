@@ -88,6 +88,9 @@ namespace Cottle.Documents.Emitted
 
         protected override IStatementGenerator CreateStatementLiteral(string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return new NoneStatementGenerator();
+
             return new LiteralStatementGenerator(text);
         }
 
