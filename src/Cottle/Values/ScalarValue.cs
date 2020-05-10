@@ -6,7 +6,7 @@ namespace Cottle.Values
     public abstract class ScalarValue<T> : BaseValue where
         T : IComparable<T>
     {
-        public override IFunction AsFunction => null;
+        public override IFunction AsFunction => Function.Empty;
 
         public override IMap Fields => EmptyMap.Instance;
 

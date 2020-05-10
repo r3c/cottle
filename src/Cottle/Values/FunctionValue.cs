@@ -20,7 +20,7 @@ namespace Cottle.Values
         [Obsolete("Use `Value.FromFunction()`")]
         public FunctionValue(IFunction function)
         {
-            AsFunction = function;
+            AsFunction = function ?? throw new ArgumentNullException(nameof(function));
         }
 
         public override int CompareTo(Value other)

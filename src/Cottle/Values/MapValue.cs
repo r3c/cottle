@@ -12,7 +12,7 @@ namespace Cottle.Values
 
         public override bool AsBoolean => Fields.Count > 0;
 
-        public override IFunction AsFunction => null;
+        public override IFunction AsFunction => Function.Empty;
 
         public override double AsNumber => Fields.Count;
 

@@ -10,7 +10,7 @@ namespace Cottle.Values
 
         public override bool AsBoolean => false;
 
-        public override IFunction AsFunction => null;
+        public override IFunction AsFunction => Function.Empty;
 
         public override double AsNumber => 0;
 
