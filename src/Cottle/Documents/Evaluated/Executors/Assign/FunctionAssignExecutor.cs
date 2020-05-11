@@ -8,23 +8,17 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
 {
     internal class FunctionAssignExecutor : AssignExecutor
     {
-        private readonly IReadOnlyList<Symbol> _arguments;
-
-        private readonly IExecutor _body;
-
-        private readonly int _localCount;
+        private readonly Value _function;
 
         public FunctionAssignExecutor(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments, IExecutor body) :
             base(symbol)
         {
-            _arguments = arguments;
-            _body = body;
-            _localCount = localCount;
+            _function = Value.FromFunction(new Function(localCount, arguments, body));
         }
 
         protected override Value Evaluate(Frame frame, TextWriter output)
         {
-            return Value.FromFunction(new Function(_localCount, _arguments, _body));
+            return _function;
         }
 
         private class Function : IFunction
