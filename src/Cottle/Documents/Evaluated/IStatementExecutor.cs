@@ -3,8 +3,8 @@ using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated
 {
-    internal interface IEvaluator
+    internal interface IStatementExecutor
     {
-        Value Evaluate(Frame frame, TextWriter output);
+        Value? Execute(Frame frame, TextWriter output);
     }
 }

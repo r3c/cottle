@@ -4,19 +4,19 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Evaluated.Executors.Assign
+namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 {
-    internal class FunctionAssignExecutor : AssignExecutor
+    internal class FunctionAssignStatementExecutor : AssignStatementExecutor
     {
         private readonly Value _function;
 
-        public FunctionAssignExecutor(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments, IExecutor body) :
+        public FunctionAssignStatementExecutor(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments, IStatementExecutor body) :
             base(symbol)
         {
             _function = Value.FromFunction(new Function(localCount, arguments, body));
         }
 
-        protected override Value Evaluate(Frame frame, TextWriter output)
+        protected override Value EvaluateOperand(Frame frame, TextWriter output)
         {
             return _function;
         }
@@ -27,11 +27,11 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
 
             private readonly IReadOnlyList<Symbol> _arguments;
 
-            private readonly IExecutor _body;
+            private readonly IStatementExecutor _body;
 
             private readonly int _localCount;
 
-            public Function(int localCount, IReadOnlyList<Symbol> arguments, IExecutor body)
+            public Function(int localCount, IReadOnlyList<Symbol> arguments, IStatementExecutor body)
             {
                 _arguments = arguments;
                 _body = body;
@@ -65,9 +65,7 @@ namespace Cottle.Documents.Evaluated.Executors.Assign
 
                 var functionFrame = parentFrame.CreateForFunction(_arguments, arguments, _localCount);
 
-                _body.Execute(functionFrame, output, out var result);
-
-                return result;
+                return _body.Execute(functionFrame, output).GetValueOrDefault(Value.Undefined);
             }
         }
     }

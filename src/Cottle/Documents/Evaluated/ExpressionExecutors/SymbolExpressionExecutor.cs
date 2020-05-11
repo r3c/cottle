@@ -2,18 +2,18 @@
 using System.IO;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Evaluated.Evaluators
+namespace Cottle.Documents.Evaluated.ExpressionExecutors
 {
-    internal class SymbolEvaluator : IEvaluator
+    internal class SymbolExpressionExecutor : IExpressionExecutor
     {
         private readonly Func<Frame, Value> _getter;
 
-        public SymbolEvaluator(Symbol symbol)
+        public SymbolExpressionExecutor(Symbol symbol)
         {
             _getter = Frame.CreateGetter(symbol);
         }
 
-        public Value Evaluate(Frame frame, TextWriter output)
+        public Value Execute(Frame frame, TextWriter output)
         {
             return _getter(frame);
         }

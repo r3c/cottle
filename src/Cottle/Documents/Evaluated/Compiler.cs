@@ -1,115 +1,115 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
 using Cottle.Documents.Compiled.Compilers;
-using Cottle.Documents.Evaluated.Evaluators;
-using Cottle.Documents.Evaluated.Executors;
-using Cottle.Documents.Evaluated.Executors.Assign;
+using Cottle.Documents.Evaluated.ExpressionExecutors;
+using Cottle.Documents.Evaluated.StatementExecutors;
+using Cottle.Documents.Evaluated.StatementExecutors.Assign;
 
 namespace Cottle.Documents.Evaluated
 {
-    internal class Compiler : AbstractCompiler<IExecutor, IEvaluator>
+    internal class Compiler : AbstractCompiler<IStatementExecutor, IExpressionExecutor>
     {
-        protected override IExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
-            IReadOnlyList<Symbol> arguments, IExecutor body)
+        protected override IStatementExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
+            IReadOnlyList<Symbol> arguments, IStatementExecutor body)
         {
-            return new FunctionAssignExecutor(symbol, localCount, arguments, body);
+            return new FunctionAssignStatementExecutor(symbol, localCount, arguments, body);
         }
 
-        protected override IExecutor CreateStatementAssignRender(Symbol symbol, IExecutor body)
+        protected override IStatementExecutor CreateStatementAssignRender(Symbol symbol, IStatementExecutor body)
         {
-            return new RenderAssignExecutor(symbol, body);
+            return new RenderAssignStatementExecutor(symbol, body);
         }
 
-        protected override IExecutor CreateStatementAssignValue(Symbol symbol, IEvaluator expression)
+        protected override IStatementExecutor CreateStatementAssignValue(Symbol symbol, IExpressionExecutor expression)
         {
-            return new ValueAssignExecutor(symbol, expression);
+            return new ValueAssignStatementExecutor(symbol, expression);
         }
 
-        protected override IExecutor CreateStatementComposite(IReadOnlyList<IExecutor> statements)
+        protected override IStatementExecutor CreateStatementComposite(IReadOnlyList<IStatementExecutor> statements)
         {
-            return new CompositeExecutor(statements);
+            return new CompositeStatementExecutor(statements);
         }
 
-        protected override IExecutor CreateStatementDump(IEvaluator expression)
+        protected override IStatementExecutor CreateStatementDump(IExpressionExecutor expression)
         {
-            return new DumpExecutor(expression);
+            return new DumpStatementExecutor(expression);
         }
 
-        protected override IExecutor CreateStatementEcho(IEvaluator expression)
+        protected override IStatementExecutor CreateStatementEcho(IExpressionExecutor expression)
         {
-            return new EchoExecutor(expression);
+            return new EchoStatementExecutor(expression);
         }
 
-        protected override IExecutor CreateStatementFor(IEvaluator source, Symbol? key, Symbol value, IExecutor body,
-            IExecutor empty)
+        protected override IStatementExecutor CreateStatementFor(IExpressionExecutor source, Symbol? key, Symbol value, IStatementExecutor body,
+            IStatementExecutor empty)
         {
-            return new ForExecutor(source, key, value, body, empty);
+            return new ForStatementExecutor(source, key, value, body, empty);
         }
 
-        protected override IExecutor CreateStatementIf(IReadOnlyList<KeyValuePair<IEvaluator, IExecutor>> branches,
-            IExecutor fallback)
+        protected override IStatementExecutor CreateStatementIf(IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
+            IStatementExecutor fallback)
         {
-            return new IfExecutor(branches, fallback);
+            return new IfStatementExecutor(branches, fallback);
         }
 
-        protected override IExecutor CreateStatementLiteral(string text)
+        protected override IStatementExecutor CreateStatementLiteral(string text)
         {
-            return new LiteralExecutor(text);
+            return new LiteralStatementExecutor(text);
         }
 
-        protected override IExecutor CreateStatementNone()
+        protected override IStatementExecutor CreateStatementNone()
         {
-            return new LiteralExecutor(string.Empty);
+            return new LiteralStatementExecutor(string.Empty);
         }
 
-        protected override IExecutor CreateStatementReturn(IEvaluator expression)
+        protected override IStatementExecutor CreateStatementReturn(IExpressionExecutor expression)
         {
-            return new ReturnExecutor(expression);
+            return new ReturnStatementExecutor(expression);
         }
 
-        protected override IExecutor CreateStatementUnwrap(IExecutor body)
+        protected override IStatementExecutor CreateStatementUnwrap(IStatementExecutor body)
         {
-            return new UnwrapExecutor(body);
+            return new UnwrapStatementExecutor(body);
         }
 
-        protected override IExecutor CreateStatementWhile(IEvaluator condition, IExecutor body)
+        protected override IStatementExecutor CreateStatementWhile(IExpressionExecutor condition, IStatementExecutor body)
         {
-            return new WhileExecutor(condition, body);
+            return new WhileStatementExecutor(condition, body);
         }
 
-        protected override IExecutor CreateStatementWrap(IEvaluator modifier, IExecutor body)
+        protected override IStatementExecutor CreateStatementWrap(IExpressionExecutor modifier, IStatementExecutor body)
         {
-            return new WrapExecutor(modifier, body);
+            return new WrapStatementExecutor(modifier, body);
         }
 
-        protected override IEvaluator CreateExpressionAccess(IEvaluator source, IEvaluator subscript)
+        protected override IExpressionExecutor CreateExpressionAccess(IExpressionExecutor source, IExpressionExecutor subscript)
         {
-            return new AccessEvaluator(source, subscript);
+            return new AccessExpressionExecutor(source, subscript);
         }
 
-        protected override IEvaluator CreateExpressionConstant(Value value)
+        protected override IExpressionExecutor CreateExpressionConstant(Value value)
         {
-            return new ConstantEvaluator(value);
+            return new ConstantExpressionExecutor(value);
         }
 
-        protected override IEvaluator CreateExpressionInvoke(IEvaluator caller, IReadOnlyList<IEvaluator> arguments)
+        protected override IExpressionExecutor CreateExpressionInvoke(IExpressionExecutor caller, IReadOnlyList<IExpressionExecutor> arguments)
         {
-            return new InvokeEvaluator(caller, arguments);
+            return new InvokeExpressionExecutor(caller, arguments);
         }
 
-        protected override IEvaluator CreateExpressionMap(IReadOnlyList<KeyValuePair<IEvaluator, IEvaluator>> elements)
+        protected override IExpressionExecutor CreateExpressionMap(IReadOnlyList<KeyValuePair<IExpressionExecutor, IExpressionExecutor>> elements)
         {
-            return new MapEvaluator(elements);
+            return new MapExpressionExecutor(elements);
         }
 
-        protected override IEvaluator CreateExpressionSymbol(Symbol symbol)
+        protected override IExpressionExecutor CreateExpressionSymbol(Symbol symbol)
         {
-            return new SymbolEvaluator(symbol);
+            return new SymbolExpressionExecutor(symbol);
         }
 
-        protected override IEvaluator CreateExpressionVoid()
+        protected override IExpressionExecutor CreateExpressionVoid()
         {
-            return VoidEvaluator.Instance;
+            return VoidExpressionExecutor.Instance;
         }
     }
 }

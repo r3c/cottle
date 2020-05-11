@@ -4,18 +4,16 @@ using Cottle.Documents.Evaluated;
 
 namespace Cottle.Documents
 {
-    internal class EvaluatedDocument : CompiledDocument<IExecutor, IExecutor>
+    internal class EvaluatedDocument : CompiledDocument<IStatementExecutor, IStatementExecutor>
     {
         public EvaluatedDocument(Statement statement) :
             base(new Compiler(), e => e, statement)
         {
         }
 
-        protected override Value Execute(IExecutor executable, Frame frame, TextWriter writer)
+        protected override Value Execute(IStatementExecutor executable, Frame frame, TextWriter writer)
         {
-            executable.Execute(frame, writer, out var result);
-
-            return result;
+            return executable.Execute(frame, writer).GetValueOrDefault(Value.Undefined);
         }
     }
 }
