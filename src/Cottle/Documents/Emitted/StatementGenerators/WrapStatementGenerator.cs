@@ -16,31 +16,31 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             _modifier.Generate(emitter);
 
             // Store modifier result as function
-            var result = emitter.DeclareLocalAndStore<Value>();
+            var result = emitter.EmitDeclareLocalAndStore<Value>();
 
-            emitter.LoadLocalAddressAndRelease(result);
-            emitter.InvokeValueAsFunction();
+            emitter.EmitLoadLocalAddressAndRelease(result);
+            emitter.EmitCallValueAsFunction();
 
-            var modifier = emitter.DeclareLocalAndStore<IFunction>();
+            var modifier = emitter.EmitDeclareLocalAndStore<IFunction>();
 
             // Wrap with modifier
-            emitter.LoadFrame();
-            emitter.LoadLocalValueAndRelease(modifier);
-            emitter.InvokeFrameWrap();
+            emitter.EmitLoadFrame();
+            emitter.EmitLoadLocalValueAndRelease(modifier);
+            emitter.EmitCallFrameWrap();
 
             var mayReturn = _body.Generate(emitter);
-            var mayReturnCode = mayReturn ? emitter.DeclareLocalAndStore<bool>() : default;
+            var mayReturnCode = mayReturn ? emitter.EmitDeclareLocalAndStore<bool>() : default;
 
             // Unwrap by removing tail modifier
-            emitter.LoadFrame();
-            emitter.InvokeFrameUnwrap();
-            emitter.Discard();
+            emitter.EmitLoadFrame();
+            emitter.EmitCallFrameUnwrap();
+            emitter.EmitDiscard();
 
             // Forward return code to caller
             if (!mayReturn)
                 return false;
 
-            emitter.LoadLocalValueAndRelease(mayReturnCode);
+            emitter.EmitLoadLocalValueAndRelease(mayReturnCode);
 
             return true;
         }

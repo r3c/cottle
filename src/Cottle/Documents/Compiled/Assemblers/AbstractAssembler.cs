@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cottle.Documents.Compiled.Compilers
+namespace Cottle.Documents.Compiled.Assemblers
 {
-    internal abstract class AbstractCompiler<TAssembly, TExpression> : ICompiler<TAssembly>
+    internal abstract class AbstractAssembler<TAssembly, TExpression> : IAssembler<TAssembly>
         where TAssembly : class
         where TExpression : class
     {
-        public (TAssembly, IReadOnlyList<Value>, int) Compile(Statement statement)
+        public (TAssembly, IReadOnlyList<Value>, int) Assemble(Statement statement)
         {
             var scope = new Scope(new Dictionary<Value, int>());
-            var result = CompileStatement(statement, scope);
+            var result = AssembleStatement(statement, scope);
 
             return (result, scope.CreateGlobalNames(), scope.LocalCount);
         }
@@ -59,13 +59,13 @@ namespace Cottle.Documents.Compiled.Compilers
 
         protected abstract TAssembly CreateStatementWrap(TExpression modifier, TAssembly body);
 
-        private TExpression CompileExpression(Expression expression, Scope scope)
+        private TExpression AssembleExpression(Expression expression, Scope scope)
         {
             switch (expression.Type)
             {
                 case ExpressionType.Access:
-                    return CreateExpressionAccess(CompileExpression(expression.Source, scope),
-                        CompileExpression(expression.Subscript, scope));
+                    return CreateExpressionAccess(AssembleExpression(expression.Source, scope),
+                        AssembleExpression(expression.Subscript, scope));
 
                 case ExpressionType.Constant:
                     return CreateExpressionConstant(expression.Value);
@@ -74,17 +74,17 @@ namespace Cottle.Documents.Compiled.Compilers
                     var arguments = new TExpression[expression.Arguments.Count];
 
                     for (var i = 0; i < arguments.Length; ++i)
-                        arguments[i] = CompileExpression(expression.Arguments[i], scope);
+                        arguments[i] = AssembleExpression(expression.Arguments[i], scope);
 
-                    return CreateExpressionInvoke(CompileExpression(expression.Source, scope), arguments);
+                    return CreateExpressionInvoke(AssembleExpression(expression.Source, scope), arguments);
 
                 case ExpressionType.Map:
                     var elements = new KeyValuePair<TExpression, TExpression>[expression.Elements.Count];
 
                     for (var i = 0; i < elements.Length; ++i)
                     {
-                        var key = CompileExpression(expression.Elements[i].Key, scope);
-                        var value = CompileExpression(expression.Elements[i].Value, scope);
+                        var key = AssembleExpression(expression.Elements[i].Key, scope);
+                        var value = AssembleExpression(expression.Elements[i].Value, scope);
 
                         elements[i] = new KeyValuePair<TExpression, TExpression>(key, value);
                     }
@@ -99,7 +99,7 @@ namespace Cottle.Documents.Compiled.Compilers
             }
         }
 
-        private TAssembly CompileStatement(Statement statement, Scope scope)
+        private TAssembly AssembleStatement(Statement statement, Scope scope)
         {
             switch (statement.Type)
             {
@@ -110,7 +110,7 @@ namespace Cottle.Documents.Compiled.Compilers
                     for (var i = 0; i < statement.Arguments.Count; ++i)
                         functionArguments[i] = functionScope.GetOrDeclareLocal(statement.Arguments[i]);
 
-                    var functionBody = CompileStatement(statement.Body, functionScope);
+                    var functionBody = AssembleStatement(statement.Body, functionScope);
                     var localCount = functionScope.LocalCount;
 
                     var functionSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
@@ -120,7 +120,7 @@ namespace Cottle.Documents.Compiled.Compilers
                 case StatementType.AssignRender:
                     scope.Enter();
 
-                    var renderBody = CompileStatement(statement.Body, scope);
+                    var renderBody = AssembleStatement(statement.Body, scope);
 
                     scope.Leave();
 
@@ -129,7 +129,7 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateStatementAssignRender(renderSymbol, renderBody);
 
                 case StatementType.AssignValue:
-                    var assignValueExpression = CompileExpression(statement.Operand, scope);
+                    var assignValueExpression = AssembleExpression(statement.Operand, scope);
                     var assignValueSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
                     return CreateStatementAssignValue(assignValueSymbol, assignValueExpression);
@@ -138,20 +138,20 @@ namespace Cottle.Documents.Compiled.Compilers
                     var nodes = new List<TAssembly>();
 
                     for (; statement.Type == StatementType.Composite; statement = statement.Next)
-                        nodes.Add(CompileStatement(statement.Body, scope));
+                        nodes.Add(AssembleStatement(statement.Body, scope));
 
-                    nodes.Add(CompileStatement(statement, scope));
+                    nodes.Add(AssembleStatement(statement, scope));
 
                     return CreateStatementComposite(nodes);
 
                 case StatementType.Dump:
-                    return CreateStatementDump(CompileExpression(statement.Operand, scope));
+                    return CreateStatementDump(AssembleExpression(statement.Operand, scope));
 
                 case StatementType.Echo:
-                    return CreateStatementEcho(CompileExpression(statement.Operand, scope));
+                    return CreateStatementEcho(AssembleExpression(statement.Operand, scope));
 
                 case StatementType.For:
-                    var forSource = CompileExpression(statement.Operand, scope);
+                    var forSource = AssembleExpression(statement.Operand, scope);
 
                     scope.Enter();
 
@@ -160,9 +160,9 @@ namespace Cottle.Documents.Compiled.Compilers
                         : null;
                     var forValue = scope.GetOrDeclareLocal(statement.Value);
 
-                    var forBody = CompileStatement(statement.Body, scope);
+                    var forBody = AssembleStatement(statement.Body, scope);
                     var forEmpty = statement.Next.Type != StatementType.None
-                        ? CompileStatement(statement.Next, scope)
+                        ? AssembleStatement(statement.Next, scope)
                         : null;
 
                     scope.Leave();
@@ -174,11 +174,11 @@ namespace Cottle.Documents.Compiled.Compilers
 
                     for (; statement.Type == StatementType.If; statement = statement.Next)
                     {
-                        var condition = CompileExpression(statement.Operand, scope);
+                        var condition = AssembleExpression(statement.Operand, scope);
 
                         scope.Enter();
 
-                        var body = CompileStatement(statement.Body, scope);
+                        var body = AssembleStatement(statement.Body, scope);
 
                         scope.Leave();
 
@@ -191,7 +191,7 @@ namespace Cottle.Documents.Compiled.Compilers
                     {
                         scope.Enter();
 
-                        ifFallback = CompileStatement(statement, scope);
+                        ifFallback = AssembleStatement(statement, scope);
 
                         scope.Leave();
                     }
@@ -207,34 +207,34 @@ namespace Cottle.Documents.Compiled.Compilers
                     return CreateStatementNone();
 
                 case StatementType.Return:
-                    return CreateStatementReturn(CompileExpression(statement.Operand, scope));
+                    return CreateStatementReturn(AssembleExpression(statement.Operand, scope));
 
                 case StatementType.Unwrap:
                     scope.Enter();
 
-                    var unwrapBody = CompileStatement(statement.Body, scope);
+                    var unwrapBody = AssembleStatement(statement.Body, scope);
 
                     scope.Leave();
 
                     return CreateStatementUnwrap(unwrapBody);
 
                 case StatementType.While:
-                    var whileCondition = CompileExpression(statement.Operand, scope);
+                    var whileCondition = AssembleExpression(statement.Operand, scope);
 
                     scope.Enter();
 
-                    var whileBody = CompileStatement(statement.Body, scope);
+                    var whileBody = AssembleStatement(statement.Body, scope);
 
                     scope.Leave();
 
                     return CreateStatementWhile(whileCondition, whileBody);
 
                 case StatementType.Wrap:
-                    var wrapModifier = CompileExpression(statement.Operand, scope);
+                    var wrapModifier = AssembleExpression(statement.Operand, scope);
 
                     scope.Enter();
 
-                    var wrapBody = CompileStatement(statement.Body, scope);
+                    var wrapBody = AssembleStatement(statement.Body, scope);
 
                     scope.Leave();
 

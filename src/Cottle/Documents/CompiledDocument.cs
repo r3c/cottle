@@ -14,12 +14,12 @@ namespace Cottle.Documents
 
         private readonly int _locals;
 
-        protected CompiledDocument(ICompiler<TAssembly> compiler, Func<TAssembly, TExecutable> assemble,
+        protected CompiledDocument(IAssembler<TAssembly> assembler, Func<TAssembly, TExecutable> compile,
             Statement statement)
         {
-            var (program, globals, locals) = compiler.Compile(statement);
+            var (assembly, globals, locals) = assembler.Assemble(statement);
 
-            _executable = assemble(program);
+            _executable = compile(assembly);
             _globals = globals;
             _locals = locals;
         }

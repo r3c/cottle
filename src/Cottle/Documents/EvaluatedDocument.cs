@@ -7,7 +7,7 @@ namespace Cottle.Documents
     internal class EvaluatedDocument : CompiledDocument<IStatementExecutor, IStatementExecutor>
     {
         public EvaluatedDocument(Statement statement) :
-            base(new Compiler(), e => e, statement)
+            base(new Assembler(), e => e, statement)
         {
         }
 

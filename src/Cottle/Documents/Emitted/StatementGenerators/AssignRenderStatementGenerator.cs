@@ -17,30 +17,30 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         public bool Generate(Emitter emitter)
         {
             // Prepare new buffer to store sub-rendering
-            emitter.NewStringWriter();
+            emitter.EmitNewStringWriter();
 
-            var buffer = emitter.DeclareLocalAndStore<StringWriter>();
+            var buffer = emitter.EmitDeclareLocalAndStore<StringWriter>();
 
             // Override output buffer, render body and retore previous buffer
             emitter.OutputEnqueue(buffer);
 
             var mayReturn = _body.Generate(emitter);
-            var mayReturnCode = mayReturn ? emitter.DeclareLocalAndStore<bool>() : default;
+            var mayReturnCode = mayReturn ? emitter.EmitDeclareLocalAndStore<bool>() : default;
 
             emitter.OutputDequeue();
 
             // Render output buffer and store as local
-            emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadLocalValueAndRelease(buffer);
-            emitter.InvokeStringWriterToString();
-            emitter.InvokeValueFromString();
-            emitter.StoreValueAtIndex<Value>();
+            emitter.EmitLoadFrameSymbol(_symbol);
+            emitter.EmitLoadLocalValueAndRelease(buffer);
+            emitter.EmitCallStringWriterToString();
+            emitter.EmitCallValueFromString();
+            emitter.EmitStoreValueAtIndex<Value>();
 
             // Forward return code to caller
             if (!mayReturn)
                 return false;
 
-            emitter.LoadLocalValueAndRelease(mayReturnCode);
+            emitter.EmitLoadLocalValueAndRelease(mayReturnCode);
 
             return true;
         }

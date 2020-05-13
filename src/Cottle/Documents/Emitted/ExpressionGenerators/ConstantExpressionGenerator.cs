@@ -11,7 +11,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
         public void Generate(Emitter emitter)
         {
-            emitter.LoadConstant(_value);
+            emitter.EmitLoadConstant(_value);
         }
     }
 }

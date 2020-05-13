@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
-using Cottle.Documents.Compiled.Compilers;
+using Cottle.Documents.Compiled.Assemblers;
 using Cottle.Documents.Evaluated.ExpressionExecutors;
 using Cottle.Documents.Evaluated.StatementExecutors;
 using Cottle.Documents.Evaluated.StatementExecutors.Assign;
 
 namespace Cottle.Documents.Evaluated
 {
-    internal class Compiler : AbstractCompiler<IStatementExecutor, IExpressionExecutor>
+    internal class Assembler : AbstractAssembler<IStatementExecutor, IExpressionExecutor>
     {
         protected override IStatementExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
             IReadOnlyList<Symbol> arguments, IStatementExecutor body)

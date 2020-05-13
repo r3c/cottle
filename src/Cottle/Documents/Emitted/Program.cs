@@ -11,7 +11,7 @@ namespace Cottle.Documents.Emitted
     internal readonly struct Program
     {
         private static readonly MethodInfo ExecutableInvoke =
-            Resolver.Method<Func<Executable, bool>>(e => e.Invoke(default, default, default, out Program._outValue));
+            Resolver.Method<Func<Execute, bool>>(e => e.Invoke(default, default, default, out Program._outValue));
 
         private static readonly Type[] ExecutableInvokeArguments =
             Program.ExecutableInvoke.GetParameters().Select(p => p.ParameterType).ToArray();
@@ -32,7 +32,7 @@ namespace Cottle.Documents.Emitted
             Program.Save(generator, System.IO.Path.Combine(directory, "Cottle.GeneratedIL.dll"));
 #endif
 
-            var executable = (Executable)dynamicMethod.CreateDelegate(typeof(Executable));
+            var executable = (Execute)dynamicMethod.CreateDelegate(typeof(Execute));
 
             return new Program(executable, emitter.CreateConstants());
         }
@@ -40,9 +40,9 @@ namespace Cottle.Documents.Emitted
         private static void Emit(Emitter emitter, IStatementGenerator generator)
         {
             if (!generator.Generate(emitter))
-                emitter.LoadBoolean(false);
+                emitter.EmitLoadBoolean(false);
 
-            emitter.Return();
+            emitter.EmitReturn();
         }
 
 #if COTTLE_IL_SAVE && !NETSTANDARD
@@ -70,12 +70,12 @@ namespace Cottle.Documents.Emitted
 #endif
 
         public readonly IReadOnlyList<Value> Constants;
-        public readonly Executable Executable;
+        public readonly Execute Execute;
 
-        private Program(Executable executable, IReadOnlyList<Value> constants)
+        private Program(Execute execute, IReadOnlyList<Value> constants)
         {
             Constants = constants;
-            Executable = executable;
+            Execute = execute;
         }
     }
 }

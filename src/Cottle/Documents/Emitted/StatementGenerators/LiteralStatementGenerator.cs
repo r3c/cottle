@@ -11,9 +11,9 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
         public bool Generate(Emitter emitter)
         {
-            emitter.LoadOutput();
-            emitter.LoadString(_text);
-            emitter.InvokeTextWriterWriteString();
+            emitter.EmitLoadOutput();
+            emitter.EmitLoadString(_text);
+            emitter.EmitCallTextWriterWriteString();
 
             return false;
         }

@@ -12,19 +12,19 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         public bool Generate(Emitter emitter)
         {
             // Convert subject to string
-            emitter.LoadFrame();
+            emitter.EmitLoadFrame();
 
             _expression.Generate(emitter);
 
-            emitter.LoadOutput();
-            emitter.InvokeFrameEcho();
+            emitter.EmitLoadOutput();
+            emitter.EmitCallFrameEcho();
 
-            var value = emitter.DeclareLocalAndStore<string>();
+            var value = emitter.EmitDeclareLocalAndStore<string>();
 
             // Write string to output
-            emitter.LoadOutput();
-            emitter.LoadLocalValueAndRelease(value);
-            emitter.InvokeTextWriterWriteString();
+            emitter.EmitLoadOutput();
+            emitter.EmitLoadLocalValueAndRelease(value);
+            emitter.EmitCallTextWriterWriteString();
 
             return false;
         }

@@ -117,26 +117,6 @@ namespace Cottle.Documents.Emitted
             _outputs = new Queue<LocalBuilder>();
         }
 
-        public void BranchAlways(Label label)
-        {
-            _generator.Emit(OpCodes.Br, label);
-        }
-
-        public void BranchIfFalse(Label label)
-        {
-            _generator.Emit(OpCodes.Brfalse, label);
-        }
-
-        public void BranchIfTrue(Label label)
-        {
-            _generator.Emit(OpCodes.Brtrue, label);
-        }
-
-        public void CastAs<TValue>()
-        {
-            _generator.Emit(OpCodes.Isinst, typeof(TValue));
-        }
-
         public IReadOnlyList<Value> CreateConstants()
         {
             var constants = new Value[_constants.Count];
@@ -152,155 +132,175 @@ namespace Cottle.Documents.Emitted
             return _generator.DefineLabel();
         }
 
-        public Local<TValue> DeclareLocalAndLoadAddress<TValue>()
+        public void EmitBranchAlways(Label label)
         {
-            return DeclareLocalAndEmit<TValue>(OpCodes.Ldloca);
+            _generator.Emit(OpCodes.Br, label);
         }
 
-        public Local<TValue> DeclareLocalAndStore<TValue>()
+        public void EmitBranchWhenFalse(Label label)
         {
-            return DeclareLocalAndEmit<TValue>(OpCodes.Stloc);
+            _generator.Emit(OpCodes.Brfalse, label);
         }
 
-        public void Discard()
+        public void EmitBranchWhenTrue(Label label)
+        {
+            _generator.Emit(OpCodes.Brtrue, label);
+        }
+
+        public void EmitCastAs<TValue>()
+        {
+            _generator.Emit(OpCodes.Isinst, typeof(TValue));
+        }
+
+        public Local<TValue> EmitDeclareLocalAndLoadAddress<TValue>()
+        {
+            return EmitDeclareLocal<TValue>(OpCodes.Ldloca);
+        }
+
+        public Local<TValue> EmitDeclareLocalAndStore<TValue>()
+        {
+            return EmitDeclareLocal<TValue>(OpCodes.Stloc);
+        }
+
+        public void EmitDiscard()
         {
             _generator.Emit(OpCodes.Pop);
         }
 
-        public void InvokeFiniteFunctionInvoke0()
+        public void EmitCallFiniteFunctionInvoke0()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke0);
         }
 
-        public void InvokeFiniteFunctionInvoke1()
+        public void EmitCallFiniteFunctionInvoke1()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke1);
         }
 
-        public void InvokeFiniteFunctionInvoke2()
+        public void EmitCallFiniteFunctionInvoke2()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke2);
         }
 
-        public void InvokeFiniteFunctionInvoke3()
+        public void EmitCallFiniteFunctionInvoke3()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke3);
         }
 
-        public void InvokeFrameEcho()
+        public void EmitCallFrameEcho()
         {
             _generator.Emit(OpCodes.Call, Emitter.FrameEcho);
         }
 
-        public void InvokeFrameUnwrap()
+        public void EmitCallFrameUnwrap()
         {
             _generator.Emit(OpCodes.Call, Emitter.FrameUnwrap);
         }
 
-        public void InvokeFrameWrap()
+        public void EmitCallFrameWrap()
         {
             _generator.Emit(OpCodes.Call, Emitter.FrameWrap);
         }
 
-        public void InvokeFunctionInvoke()
+        public void EmitCallFunctionInvoke()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FunctionInvoke);
         }
 
-        public void InvokeMapCount()
+        public void EmitCallMapCount()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.MapCount);
         }
 
-        public void InvokeMapEnumeratorCurrent()
+        public void EmitCallMapEnumeratorCurrent()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.MapEnumeratorCurrent);
         }
 
-        public void InvokeMapEnumeratorMoveNext()
+        public void EmitCallMapEnumeratorMoveNext()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.MapEnumeratorMoveNext);
         }
 
-        public void InvokeMapGetEnumerator()
+        public void EmitCallMapGetEnumerator()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.MapGetEnumerator);
         }
 
-        public void InvokeMapTryGet()
+        public void EmitCallMapTryGet()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.MapTryGet);
         }
 
-        public void InvokeObjectToString()
+        public void EmitCallObjectToString()
         {
             _generator.Emit(OpCodes.Constrained, typeof(Value));
             _generator.Emit(OpCodes.Callvirt, Emitter.ObjectToString);
         }
 
-        public void InvokePairKey()
+        public void EmitCallPairKey()
         {
             _generator.Emit(OpCodes.Call, Emitter.PairKey);
         }
 
-        public void InvokePairValue()
+        public void EmitCallPairValue()
         {
             _generator.Emit(OpCodes.Call, Emitter.PairValue);
         }
 
-        public void InvokeStringWriterToString()
+        public void EmitCallStringWriterToString()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.StringWriterToString);
         }
 
-        public void InvokeTextWriterWriteObject()
+        public void EmitCallTextWriterWriteObject()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.TextWriterWriteObject);
         }
 
-        public void InvokeTextWriterWriteString()
+        public void EmitCallTextWriterWriteString()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.TextWriterWriteString);
         }
 
-        public void InvokeValueAsBoolean()
+        public void EmitCallValueAsBoolean()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueAsBooleanGet);
         }
 
-        public void InvokeValueAsFunction()
+        public void EmitCallValueAsFunction()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueAsFunctionGet);
         }
 
-        public void InvokeValueFields()
+        public void EmitCallValueFields()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueFieldsGet);
         }
 
-        public void InvokeValueFromDictionary()
+        public void EmitCallValueFromDictionary()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueFromDictionary);
         }
 
-        public void InvokeValueFromString()
+        public void EmitCallValueFromString()
         {
             _generator.Emit(OpCodes.Call, Emitter.ValueFromString);
         }
 
-        public void LoadArray<TElement>(int count)
+        public void EmitLoadArray<TElement>(int count)
         {
-            LoadInteger(count);
+            EmitLoadInteger(count);
 
             _generator.Emit(OpCodes.Newarr, typeof(TElement));
         }
 
-        public void LoadBoolean(bool value)
+        public void EmitLoadBoolean(bool value)
         {
-            _generator.Emit(value ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+            EmitLoadInteger(value ? 1 : 0);
         }
 
-        public void LoadConstant(Value constant)
+        public void EmitLoadConstant(Value constant)
         {
             if (!_constants.TryGetValue(constant, out var index))
             {
@@ -311,27 +311,27 @@ namespace Cottle.Documents.Emitted
 
             _generator.Emit(OpCodes.Ldarg_0);
 
-            LoadInteger(index);
+            EmitLoadInteger(index);
 
             _generator.Emit(OpCodes.Callvirt, Emitter.ArgumentsIndex);
         }
 
-        public void LoadDuplicate()
+        public void EmitLoadDuplicate()
         {
             _generator.Emit(OpCodes.Dup);
         }
 
-        public void LoadElementAddress<TElement>()
+        public void EmitLoadElementAddress<TElement>()
         {
             _generator.Emit(OpCodes.Ldelema, typeof(TElement));
         }
 
-        public void LoadFrame()
+        public void EmitLoadFrame()
         {
             _generator.Emit(OpCodes.Ldarg_1);
         }
 
-        public void LoadFrameSymbol(Symbol symbol)
+        public void EmitLoadFrameSymbol(Symbol symbol)
         {
             FieldInfo fieldInfo;
 
@@ -354,10 +354,10 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldarg_1);
             _generator.Emit(OpCodes.Ldfld, fieldInfo);
 
-            LoadInteger(symbol.Index);
+            EmitLoadInteger(symbol.Index);
         }
 
-        public void LoadInteger(int value)
+        public void EmitLoadInteger(int value)
         {
             if (value < Emitter.LoadIntegers.Count)
                 _generator.Emit(Emitter.LoadIntegers[value]);
@@ -367,27 +367,27 @@ namespace Cottle.Documents.Emitted
                 _generator.Emit(OpCodes.Ldc_I4, value);
         }
 
-        public void LoadLocalAddress<TValue>(Local<TValue> local) where TValue : struct
+        public void EmitLoadLocalAddress<TValue>(Local<TValue> local) where TValue : struct
         {
             _generator.Emit(OpCodes.Ldloca, local.Builder);
         }
 
-        public void LoadLocalAddressAndRelease<TValue>(Local<TValue> local) where TValue : struct
+        public void EmitLoadLocalAddressAndRelease<TValue>(Local<TValue> local) where TValue : struct
         {
-            LoadLocalAndRelease(OpCodes.Ldloca, local);
+            EmitLoadLocalAndRelease(OpCodes.Ldloca, local);
         }
 
-        public void LoadLocalValue<TValue>(Local<TValue> local)
+        public void EmitLoadLocalValue<TValue>(Local<TValue> local)
         {
             _generator.Emit(OpCodes.Ldloc, local.Builder);
         }
 
-        public void LoadLocalValueAndRelease<TValue>(Local<TValue> local)
+        public void EmitLoadLocalValueAndRelease<TValue>(Local<TValue> local)
         {
-            LoadLocalAndRelease(OpCodes.Ldloc, local);
+            EmitLoadLocalAndRelease(OpCodes.Ldloc, local);
         }
 
-        public void LoadOutput()
+        public void EmitLoadOutput()
         {
             if (_outputs.Count > 0)
                 _generator.Emit(OpCodes.Ldloc, _outputs.Peek());
@@ -395,17 +395,17 @@ namespace Cottle.Documents.Emitted
                 _generator.Emit(OpCodes.Ldarg_2);
         }
 
-        public void LoadResult()
+        public void EmitLoadResult()
         {
             _generator.Emit(OpCodes.Ldarg_3);
         }
 
-        public void LoadString(string value)
+        public void EmitLoadString(string value)
         {
             _generator.Emit(OpCodes.Ldstr, value);
         }
 
-        public void LoadSymbol(Symbol symbol)
+        public void EmitLoadSymbol(Symbol symbol)
         {
             _generator.Emit(OpCodes.Ldarg_1);
 
@@ -425,28 +425,54 @@ namespace Cottle.Documents.Emitted
                     throw new InvalidOperationException();
             }
 
-            _generator.Emit(OpCodes.Ldc_I4, symbol.Index);
+            EmitLoadInteger(symbol.Index);
+
             _generator.Emit(OpCodes.Ldelem, typeof(Value));
         }
 
-        public void LoadUndefined()
+        public void EmitLoadUndefined()
         {
             _generator.Emit(OpCodes.Ldsfld, Emitter.ValueUndefined);
+        }
+
+        public void EmitNewKeyValuePair()
+        {
+            _generator.Emit(OpCodes.Newobj, Emitter.KeyValueConstructor);
+        }
+
+        public void EmitNewStringWriter()
+        {
+            _generator.Emit(OpCodes.Newobj, Emitter.StringWriterConstructor);
+        }
+
+        public void EmitReturn()
+        {
+            _generator.Emit(OpCodes.Ret);
+        }
+
+        public void EmitStoreElementAtIndex<TElement>()
+        {
+            _generator.Emit(OpCodes.Stelem, typeof(TElement));
+        }
+
+        public void EmitStoreLocal<TValue>(Local<TValue> local)
+        {
+            _generator.Emit(OpCodes.Stloc, local.Builder);
+        }
+
+        public void EmitStoreValueAtAddress<TValue>() where TValue : struct
+        {
+            _generator.Emit(OpCodes.Stobj, typeof(TValue));
+        }
+
+        public void EmitStoreValueAtIndex<TValue>() where TValue : struct
+        {
+            _generator.Emit(OpCodes.Stelem, typeof(TValue));
         }
 
         public void MarkLabel(Label label)
         {
             _generator.MarkLabel(label);
-        }
-
-        public void NewKeyValuePair()
-        {
-            _generator.Emit(OpCodes.Newobj, Emitter.KeyValueConstructor);
-        }
-
-        public void NewStringWriter()
-        {
-            _generator.Emit(OpCodes.Newobj, Emitter.StringWriterConstructor);
         }
 
         public void OutputDequeue()
@@ -459,32 +485,7 @@ namespace Cottle.Documents.Emitted
             _outputs.Enqueue(output.Builder);
         }
 
-        public void Return()
-        {
-            _generator.Emit(OpCodes.Ret);
-        }
-
-        public void StoreElementAtIndex<TElement>()
-        {
-            _generator.Emit(OpCodes.Stelem, typeof(TElement));
-        }
-
-        public void StoreLocal<TValue>(Local<TValue> local)
-        {
-            _generator.Emit(OpCodes.Stloc, local.Builder);
-        }
-
-        public void StoreValueAtAddress<TValue>() where TValue : struct
-        {
-            _generator.Emit(OpCodes.Stobj, typeof(TValue));
-        }
-
-        public void StoreValueAtIndex<TValue>() where TValue : struct
-        {
-            _generator.Emit(OpCodes.Stelem, typeof(TValue));
-        }
-
-        private Local<TValue> DeclareLocalAndEmit<TValue>(OpCode opCode)
+        private Local<TValue> EmitDeclareLocal<TValue>(OpCode opCode)
         {
             var local = _locals.TryGetValue(typeof(TValue), out var queue) && queue.Count > 0
                 ? queue.Pop()
@@ -495,7 +496,7 @@ namespace Cottle.Documents.Emitted
             return new Local<TValue>(local);
         }
 
-        private void LoadLocalAndRelease<TValue>(OpCode opCode, Local<TValue> local)
+        private void EmitLoadLocalAndRelease<TValue>(OpCode opCode, Local<TValue> local)
         {
             _generator.Emit(opCode, local.Builder);
 

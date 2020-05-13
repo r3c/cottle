@@ -7,13 +7,13 @@ namespace Cottle.Documents
     internal class EmittedDocument : CompiledDocument<IStatementGenerator, Program>
     {
         public EmittedDocument(Statement statement) :
-            base(new Compiler(), Program.Create, statement)
+            base(new Assembler(), Program.Create, statement)
         {
         }
 
         protected override Value Execute(Program program, Frame frame, TextWriter writer)
         {
-            return program.Executable(program.Constants, frame, writer, out var result) ? result : Value.Undefined;
+            return program.Execute(program.Constants, frame, writer, out var result) ? result : Value.Undefined;
         }
     }
 }

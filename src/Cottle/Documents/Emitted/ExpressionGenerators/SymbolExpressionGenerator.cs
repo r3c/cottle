@@ -13,7 +13,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
         public void Generate(Emitter emitter)
         {
-            emitter.LoadSymbol(_symbol);
+            emitter.EmitLoadSymbol(_symbol);
         }
     }
 }

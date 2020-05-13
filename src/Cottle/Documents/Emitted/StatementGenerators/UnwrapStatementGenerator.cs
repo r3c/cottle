@@ -12,25 +12,25 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         public bool Generate(Emitter emitter)
         {
             // Unwrap and backup tail modifier
-            emitter.LoadFrame();
-            emitter.InvokeFrameUnwrap();
+            emitter.EmitLoadFrame();
+            emitter.EmitCallFrameUnwrap();
 
-            var modifier = emitter.DeclareLocalAndStore<IFunction>();
+            var modifier = emitter.EmitDeclareLocalAndStore<IFunction>();
 
             // Generate body
             var mayReturn = _body.Generate(emitter);
-            var mayReturnCode = mayReturn ? emitter.DeclareLocalAndStore<bool>() : default;
+            var mayReturnCode = mayReturn ? emitter.EmitDeclareLocalAndStore<bool>() : default;
 
             // Wrap with modifier backup
-            emitter.LoadFrame();
-            emitter.LoadLocalValueAndRelease(modifier);
-            emitter.InvokeFrameWrap();
+            emitter.EmitLoadFrame();
+            emitter.EmitLoadLocalValueAndRelease(modifier);
+            emitter.EmitCallFrameWrap();
 
             // Forward return code to caller
             if (!mayReturn)
                 return false;
 
-            emitter.LoadLocalValueAndRelease(mayReturnCode);
+            emitter.EmitLoadLocalValueAndRelease(mayReturnCode);
 
             return true;
         }

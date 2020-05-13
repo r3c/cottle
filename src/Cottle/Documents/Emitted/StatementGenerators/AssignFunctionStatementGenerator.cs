@@ -26,9 +26,9 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         {
             var program = Program.Create(_body);
 
-            emitter.LoadFrameSymbol(_symbol);
-            emitter.LoadConstant(Value.FromFunction(new Function(_localCount, _arguments, program)));
-            emitter.StoreValueAtIndex<Value>();
+            emitter.EmitLoadFrameSymbol(_symbol);
+            emitter.EmitLoadConstant(Value.FromFunction(new Function(_localCount, _arguments, program)));
+            emitter.EmitStoreValueAtIndex<Value>();
 
             return false;
         }
@@ -75,7 +75,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
                 var functionFrame = parentFrame.CreateForFunction(_arguments, arguments, _localCount);
 
-                return _program.Executable(_program.Constants, functionFrame, output, out var result)
+                return _program.Execute(_program.Constants, functionFrame, output, out var result)
                     ? result
                     : Value.Undefined;
             }

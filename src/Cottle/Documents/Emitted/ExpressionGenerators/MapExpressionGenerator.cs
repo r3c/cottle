@@ -14,38 +14,38 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
         public void Generate(Emitter emitter)
         {
             // Create array to store evaluated pairs
-            emitter.LoadArray<KeyValuePair<Value, Value>>(_elements.Count);
+            emitter.EmitLoadArray<KeyValuePair<Value, Value>>(_elements.Count);
 
-            var arguments = emitter.DeclareLocalAndStore<KeyValuePair<Value, Value>[]>();
+            var arguments = emitter.EmitDeclareLocalAndStore<KeyValuePair<Value, Value>[]>();
 
             // Evaluate elements and store into array
             for (var i = 0; i < _elements.Count; ++i)
             {
                 _elements[i].Key.Generate(emitter);
 
-                var key = emitter.DeclareLocalAndStore<Value>();
+                var key = emitter.EmitDeclareLocalAndStore<Value>();
 
                 _elements[i].Value.Generate(emitter);
 
-                var value = emitter.DeclareLocalAndStore<Value>();
+                var value = emitter.EmitDeclareLocalAndStore<Value>();
 
                 // Load address of arguments[i]
-                emitter.LoadLocalValue(arguments);
-                emitter.LoadInteger(i);
-                emitter.LoadElementAddress<KeyValuePair<Value, Value>>();
+                emitter.EmitLoadLocalValue(arguments);
+                emitter.EmitLoadInteger(i);
+                emitter.EmitLoadElementAddress<KeyValuePair<Value, Value>>();
 
                 // Build pair from key and value
-                emitter.LoadLocalValueAndRelease(key);
-                emitter.LoadLocalValueAndRelease(value);
-                emitter.NewKeyValuePair();
+                emitter.EmitLoadLocalValueAndRelease(key);
+                emitter.EmitLoadLocalValueAndRelease(value);
+                emitter.EmitNewKeyValuePair();
 
                 // Store pair in arguments[i]
-                emitter.StoreValueAtAddress<KeyValuePair<Value, Value>>();
+                emitter.EmitStoreValueAtAddress<KeyValuePair<Value, Value>>();
             }
 
             // Create value from array
-            emitter.LoadLocalValueAndRelease(arguments);
-            emitter.InvokeValueFromDictionary();
+            emitter.EmitLoadLocalValueAndRelease(arguments);
+            emitter.EmitCallValueFromDictionary();
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
         public bool Generate(Emitter emitter)
         {
-            emitter.LoadResult();
+            emitter.EmitLoadResult();
 
             _expression.Generate(emitter);
 
-            emitter.StoreValueAtAddress<Value>();
-            emitter.LoadBoolean(true);
+            emitter.EmitStoreValueAtAddress<Value>();
+            emitter.EmitLoadBoolean(true);
 
             return true;
         }

@@ -13,12 +13,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         {
             _expression.Generate(emitter);
 
-            var operand = emitter.DeclareLocalAndStore<Value>();
+            var operand = emitter.EmitDeclareLocalAndStore<Value>();
 
-            emitter.LoadOutput();
-            emitter.LoadLocalAddressAndRelease(operand);
-            emitter.InvokeObjectToString();
-            emitter.InvokeTextWriterWriteObject();
+            emitter.EmitLoadOutput();
+            emitter.EmitLoadLocalAddressAndRelease(operand);
+            emitter.EmitCallObjectToString();
+            emitter.EmitCallTextWriterWriteObject();
 
             return false;
         }

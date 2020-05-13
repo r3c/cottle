@@ -21,12 +21,12 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             _condition.Generate(emitter);
 
             // Terminate loop if condition failed
-            var condition = emitter.DeclareLocalAndStore<Value>();
+            var condition = emitter.EmitDeclareLocalAndStore<Value>();
             var exitRegular = emitter.DeclareLabel();
 
-            emitter.LoadLocalAddressAndRelease(condition);
-            emitter.InvokeValueAsBoolean();
-            emitter.BranchIfFalse(exitRegular);
+            emitter.EmitLoadLocalAddressAndRelease(condition);
+            emitter.EmitCallValueAsBoolean();
+            emitter.EmitBranchWhenFalse(exitRegular);
 
             // Execute loop statement
             var mayReturn = _body.Generate(emitter);
@@ -36,19 +36,19 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             if (mayReturn)
             {
-                emitter.LoadDuplicate();
-                emitter.BranchIfTrue(exitReturn);
-                emitter.Discard();
+                emitter.EmitLoadDuplicate();
+                emitter.EmitBranchWhenTrue(exitReturn);
+                emitter.EmitDiscard();
             }
 
             // Restart loop
-            emitter.BranchAlways(start);
+            emitter.EmitBranchAlways(start);
 
             // End of loop
             emitter.MarkLabel(exitRegular);
 
             if (mayReturn)
-                emitter.LoadBoolean(false);
+                emitter.EmitLoadBoolean(false);
 
             // Exit statement
             emitter.MarkLabel(exitReturn);

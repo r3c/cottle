@@ -26,33 +26,33 @@ namespace Cottle.Documents.Emitted.StatementGenerators
                 // Evaluate branch condition, jump to next branch if false
                 branch.Key.Generate(emitter);
 
-                var condition = emitter.DeclareLocalAndStore<Value>();
+                var condition = emitter.EmitDeclareLocalAndStore<Value>();
                 var next = emitter.DeclareLabel();
 
-                emitter.LoadLocalAddressAndRelease(condition);
-                emitter.InvokeValueAsBoolean();
-                emitter.BranchIfFalse(next);
+                emitter.EmitLoadLocalAddressAndRelease(condition);
+                emitter.EmitCallValueAsBoolean();
+                emitter.EmitBranchWhenFalse(next);
 
                 // Execute branch body and jump over next branches
                 if (branch.Value.Generate(emitter))
                 {
-                    emitter.LoadDuplicate();
-                    emitter.BranchIfTrue(exitReturn);
-                    emitter.Discard();
+                    emitter.EmitLoadDuplicate();
+                    emitter.EmitBranchWhenTrue(exitReturn);
+                    emitter.EmitDiscard();
 
                     mayReturn = true;
                 }
 
-                emitter.BranchAlways(exitRegular);
+                emitter.EmitBranchAlways(exitRegular);
                 emitter.MarkLabel(next);
             }
 
             // Emit fallback branch if any or null value otherwise
             if (_fallback != null && _fallback.Generate(emitter))
             {
-                emitter.LoadDuplicate();
-                emitter.BranchIfTrue(exitReturn);
-                emitter.Discard();
+                emitter.EmitLoadDuplicate();
+                emitter.EmitBranchWhenTrue(exitReturn);
+                emitter.EmitDiscard();
 
                 mayReturn = true;
             }
@@ -61,7 +61,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             emitter.MarkLabel(exitRegular);
 
             if (mayReturn)
-                emitter.LoadBoolean(false);
+                emitter.EmitLoadBoolean(false);
 
             // Exit statement
             emitter.MarkLabel(exitReturn);

@@ -21,15 +21,15 @@ namespace Cottle.Documents.Emitted.StatementGenerators
                 if (!statement.Generate(emitter))
                     continue;
 
-                emitter.LoadDuplicate();
-                emitter.BranchIfTrue(exitReturn);
-                emitter.Discard();
+                emitter.EmitLoadDuplicate();
+                emitter.EmitBranchWhenTrue(exitReturn);
+                emitter.EmitDiscard();
 
                 mayReturn = true;
             }
 
             if (mayReturn)
-                emitter.LoadBoolean(false);
+                emitter.EmitLoadBoolean(false);
 
             emitter.MarkLabel(exitReturn);
 

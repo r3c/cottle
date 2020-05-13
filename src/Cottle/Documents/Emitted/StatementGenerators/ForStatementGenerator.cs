@@ -26,55 +26,55 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Evaluate operand fields and store as local
             _source.Generate(emitter);
 
-            var source = emitter.DeclareLocalAndStore<Value>();
+            var source = emitter.EmitDeclareLocalAndStore<Value>();
 
-            emitter.LoadLocalAddressAndRelease(source);
-            emitter.InvokeValueFields();
+            emitter.EmitLoadLocalAddressAndRelease(source);
+            emitter.EmitCallValueFields();
 
-            var fields = emitter.DeclareLocalAndStore<IMap>();
+            var fields = emitter.EmitDeclareLocalAndStore<IMap>();
 
             // Get number of fields and jump to empty statement if count is zero
             var empty = emitter.DeclareLabel();
 
-            emitter.LoadLocalValue(fields);
-            emitter.InvokeMapCount();
-            emitter.BranchIfFalse(empty);
+            emitter.EmitLoadLocalValue(fields);
+            emitter.EmitCallMapCount();
+            emitter.EmitBranchWhenFalse(empty);
 
             // Get fields enumerator and store as local
-            emitter.LoadLocalValueAndRelease(fields);
-            emitter.InvokeMapGetEnumerator();
+            emitter.EmitLoadLocalValueAndRelease(fields);
+            emitter.EmitCallMapGetEnumerator();
 
-            var enumerator = emitter.DeclareLocalAndStore<IEnumerator<KeyValuePair<Value, Value>>>();
+            var enumerator = emitter.EmitDeclareLocalAndStore<IEnumerator<KeyValuePair<Value, Value>>>();
 
             // Try moving to next element if any or terminate loop otherwise
             var exitRegular = emitter.DeclareLabel();
             var loop = emitter.DeclareLabel();
 
             emitter.MarkLabel(loop);
-            emitter.LoadLocalValue(enumerator);
-            emitter.InvokeMapEnumeratorMoveNext();
-            emitter.BranchIfFalse(exitRegular);
+            emitter.EmitLoadLocalValue(enumerator);
+            emitter.EmitCallMapEnumeratorMoveNext();
+            emitter.EmitBranchWhenFalse(exitRegular);
 
             // Fetch current key/value pair and store as local
-            emitter.LoadLocalValueAndRelease(enumerator);
-            emitter.InvokeMapEnumeratorCurrent();
+            emitter.EmitLoadLocalValueAndRelease(enumerator);
+            emitter.EmitCallMapEnumeratorCurrent();
 
-            var pair = emitter.DeclareLocalAndStore<KeyValuePair<Value, Value>>();
+            var pair = emitter.EmitDeclareLocalAndStore<KeyValuePair<Value, Value>>();
 
             // Set current element key if defined
             if (_key.HasValue)
             {
-                emitter.LoadFrameSymbol(_key.Value);
-                emitter.LoadLocalAddress(pair);
-                emitter.InvokePairKey();
-                emitter.StoreValueAtIndex<Value>();
+                emitter.EmitLoadFrameSymbol(_key.Value);
+                emitter.EmitLoadLocalAddress(pair);
+                emitter.EmitCallPairKey();
+                emitter.EmitStoreValueAtIndex<Value>();
             }
 
             // Set current element value
-            emitter.LoadFrameSymbol(_value);
-            emitter.LoadLocalAddressAndRelease(pair);
-            emitter.InvokePairValue();
-            emitter.StoreValueAtIndex<Value>();
+            emitter.EmitLoadFrameSymbol(_value);
+            emitter.EmitLoadLocalAddressAndRelease(pair);
+            emitter.EmitCallPairValue();
+            emitter.EmitStoreValueAtIndex<Value>();
 
             // Evaluate body and restart cycle
             var exitReturn = emitter.DeclareLabel();
@@ -82,14 +82,14 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             if (_body.Generate(emitter))
             {
-                emitter.LoadDuplicate();
-                emitter.BranchIfTrue(exitReturn);
-                emitter.Discard();
+                emitter.EmitLoadDuplicate();
+                emitter.EmitBranchWhenTrue(exitReturn);
+                emitter.EmitDiscard();
 
                 mayReturn = true;
             }
 
-            emitter.BranchAlways(loop);
+            emitter.EmitBranchAlways(loop);
 
             // Evaluate statement for "empty" case
             emitter.MarkLabel(empty);
@@ -98,21 +98,21 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             {
                 if (_empty.Generate(emitter))
                 {
-                    emitter.LoadDuplicate();
-                    emitter.BranchIfTrue(exitReturn);
-                    emitter.Discard();
+                    emitter.EmitLoadDuplicate();
+                    emitter.EmitBranchWhenTrue(exitReturn);
+                    emitter.EmitDiscard();
 
                     mayReturn = true;
                 }
 
-                emitter.BranchAlways(exitRegular);
+                emitter.EmitBranchAlways(exitRegular);
             }
 
             // End of branch
             emitter.MarkLabel(exitRegular);
 
             if (mayReturn)
-                emitter.LoadBoolean(false);
+                emitter.EmitLoadBoolean(false);
 
             // Exit statement
             emitter.MarkLabel(exitReturn);

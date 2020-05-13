@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using Cottle.Documents.Compiled;
-using Cottle.Documents.Compiled.Compilers;
+using Cottle.Documents.Compiled.Assemblers;
 using Cottle.Documents.Emitted.ExpressionGenerators;
 using Cottle.Documents.Emitted.StatementGenerators;
 
 namespace Cottle.Documents.Emitted
 {
-    internal class Compiler : AbstractCompiler<IStatementGenerator, IExpressionGenerator>
+    internal class Assembler : AbstractAssembler<IStatementGenerator, IExpressionGenerator>
     {
         protected override IExpressionGenerator CreateExpressionAccess(IExpressionGenerator source,
             IExpressionGenerator subscript)
