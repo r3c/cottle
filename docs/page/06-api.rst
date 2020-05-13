@@ -238,13 +238,21 @@ Function declaration
 
         Create a non-pure function accepting any number of arguments.
 
+    .. method:: IFunction Create0(Func<object,TextWriter,Value> callback)
+
+        Create a non-pure function accepting zero argument.
+
     .. method:: IFunction Create1(Func<object,Value,TextWriter,Value> callback)
 
         Create a non-pure function accepting one argument.
 
-    .. method:: IFunction Create2(Func<object,Value,TextWriter,Value> callback)
+    .. method:: IFunction Create2(Func<object,Value,Value,TextWriter,Value> callback)
 
         Create a non-pure function accepting two arguments.
+
+    .. method:: IFunction Create3(Func<object,Value,Value,Value,TextWriter,Value> callback)
+
+        Create a non-pure function accepting three arguments.
 
     .. method:: IFunction CreatePure(Func<object,IReadOnlyList<Value>,Value> callback, int min, int max)
 
@@ -258,13 +266,21 @@ Function declaration
 
         Create a pure function accepting any number of arguments.
 
+    .. method:: IFunction CreatePure0(Func<object,Value> callback)
+
+        Create a pure function accepting zero argument.
+
     .. method:: IFunction CreatePure1(Func<object,Value,Value> callback)
 
         Create a pure function accepting one argument.
 
-    .. method:: IFunction CreatePure2(Func<object,Value,Value> callback)
+    .. method:: IFunction CreatePure2(Func<object,Value,Value,Value> callback)
 
         Create a pure function accepting two arguments.
+
+    .. method:: IFunction CreatePure3(Func<object,Value,Value,Value,Value> callback)
+
+        Create a pure function accepting three arguments.
 
 
 

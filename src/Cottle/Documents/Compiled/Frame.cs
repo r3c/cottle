@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Cottle.Functions;
 
 namespace Cottle.Documents.Compiled
 {
@@ -73,7 +74,12 @@ namespace Cottle.Documents.Compiled
             if (_modifiers != null)
             {
                 foreach (var modifier in _modifiers)
-                    value = modifier.Invoke(this, new[] { value }, output);
+                {
+                    if (modifier is FiniteFunction finiteModifier)
+                        value = finiteModifier.Invoke1(this, value, output);
+                    else
+                        value = modifier.Invoke(this, new[] { value }, output);
+                }
             }
 
             return value.AsString;

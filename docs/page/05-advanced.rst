@@ -240,15 +240,15 @@ Static class :type:`Function` supports multiple methods to create Cottle functio
     * Methods :meth:`Function.CreatePure`, :meth:`Function.CreatePure1` and :meth:`Function.CreatePure2` must be pure functions having no side effect and not relying on anything but their arguments. This assumption is used by Cottle to perform optimizations in your templates. For this reason their callbacks don't receive a ``TextWriter`` argument as pure methods are not allowed to write anything to output.
     * Methods :meth:`Function.Create`, :meth:`Function.Create1` and :meth:`Function.Create2` are allowed to perform side effects but will be excluded from most optimizations. Their callbacks receive a ``TextWriter`` argument so they can write any text contents to it.
 * How many arguments they accept:
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with no integer argument will accept any number of arguments, it is the responsibility of provided callback to validate this number.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with a ``count`` integer will accept exactly this number of arguments or will return an undefined value otherwise.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with two ``min`` and ``max`` integers will accept a number of arguments contained between these two values or will return an undefined value otherwise.
-    * Methods :meth:`Function.Create1`, :meth:`Function.Create2`, :meth:`Function.CreatePure1` and :meth:`Function.CreatePure2` only accept a fixed number of argument or will return an undefined value otherwise.
+    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with no integer argument accept any number of arguments, it is the responsibility of provided callback to validate this number.
+    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with a ``count`` integer accept exactly this number of arguments or return an undefined value otherwise.
+    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with two ``min`` and ``max`` integers accept a number of arguments contained between these two values or return an undefined value otherwise.
+    * Methods :meth:`Function.CreateN` and :meth:`Function.CreatePureN` only accept exactly ``N`` arguments or return an undefined value otherwise.
 
 The callback you'll pass to :type:`Function` takes multiple arguments:
 
-* First argument is always an opaque state that must be forwarded to any nested function call ;
-* Next arguments are either a list of values (for functions accepting variable number of arguments) or separate scalar values (for functions accepting a fixed number of arguments) which are the values passed when invoking the function ;
+* First argument is always an internal state that must be forwarded to any nested function call ;
+* Next arguments are either a list of values (for functions accepting variable number of arguments) or separate scalar values (for functions accepting a fixed number of arguments) received as arguments when invoking the function ;
 * Last argument, for non-pure functions only, is a ``TextWriter`` instance open to current document output.
 
 

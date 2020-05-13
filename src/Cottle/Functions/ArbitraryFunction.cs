@@ -7,10 +7,9 @@ namespace Cottle.Functions
     using Callback = Func<object, IReadOnlyList<Value>, TextWriter, Value>;
 
     /// <summary>
-    /// Generic function implementation relying on injected callback for evaluation. Also provide verification of
-    /// number of arguments.
+    /// Function implementation with support for arbitrary number of arguments.
     /// </summary>
-    internal class CallbackFunction : IFunction
+    internal class ArbitraryFunction : IFunction
     {
         public bool IsPure { get; }
 
@@ -18,7 +17,7 @@ namespace Cottle.Functions
         private readonly int _max;
         private readonly int _min;
 
-        public CallbackFunction(bool isPure, Callback callback, int min, int max)
+        public ArbitraryFunction(bool isPure, Callback callback, int min, int max)
         {
             IsPure = isPure;
             _callback = callback;

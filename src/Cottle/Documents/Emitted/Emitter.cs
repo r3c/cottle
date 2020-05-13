@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cottle.Documents.Compiled;
+using Cottle.Functions;
 
 namespace Cottle.Documents.Emitted
 {
@@ -11,6 +12,18 @@ namespace Cottle.Documents.Emitted
     {
         private static readonly MethodInfo ArgumentsIndex =
             Resolver.Method<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
+
+        private static readonly MethodInfo FiniteFunctionInvoke0 =
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke0(default, default));
+
+        private static readonly MethodInfo FiniteFunctionInvoke1 =
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke1(default, default, default));
+
+        private static readonly MethodInfo FiniteFunctionInvoke2 =
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke2(default, default, default, default));
+
+        private static readonly MethodInfo FiniteFunctionInvoke3 =
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke3(default, default, default, default, default));
 
         private static readonly MethodInfo FrameEcho =
             Resolver.Method<Func<Frame, string>>(f => f.Echo(default, default));
@@ -119,6 +132,11 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Brtrue, label);
         }
 
+        public void CastAs<TValue>()
+        {
+            _generator.Emit(OpCodes.Isinst, typeof(TValue));
+        }
+
         public IReadOnlyList<Value> CreateConstants()
         {
             var constants = new Value[_constants.Count];
@@ -149,6 +167,26 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Pop);
         }
 
+        public void InvokeFiniteFunctionInvoke0()
+        {
+            _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke0);
+        }
+
+        public void InvokeFiniteFunctionInvoke1()
+        {
+            _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke1);
+        }
+
+        public void InvokeFiniteFunctionInvoke2()
+        {
+            _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke2);
+        }
+
+        public void InvokeFiniteFunctionInvoke3()
+        {
+            _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke3);
+        }
+
         public void InvokeFrameEcho()
         {
             _generator.Emit(OpCodes.Call, Emitter.FrameEcho);
@@ -164,7 +202,7 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Call, Emitter.FrameWrap);
         }
 
-        public void InvokeFunction()
+        public void InvokeFunctionInvoke()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FunctionInvoke);
         }
