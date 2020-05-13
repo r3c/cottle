@@ -10,10 +10,10 @@ namespace Cottle.Documents.Emitted
     internal class Emitter
     {
         private static readonly MethodInfo ArgumentsIndex =
-            Resolver.Method<Func<IReadOnlyList<Value>, int, Value>>((c, i) => c[i]);
+            Resolver.Method<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
 
         private static readonly MethodInfo FrameEcho =
-            Resolver.Method<Func<Frame, Value, TextWriter, string>>((f, v, o) => f.Echo(v, o));
+            Resolver.Method<Func<Frame, string>>(f => f.Echo(default, default));
 
         private static readonly FieldInfo FrameGlobals = Resolver.Field<Func<Frame, Value[]>>(f => f.Globals);
 
@@ -21,15 +21,14 @@ namespace Cottle.Documents.Emitted
 
         private static readonly MethodInfo FrameUnwrap = Resolver.Method<Func<Frame, IFunction>>(f => f.Unwrap());
 
-        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame, IFunction>>((f, m) => f.Wrap(m));
+        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame>>(f => f.Wrap(default));
 
         private static readonly MethodInfo FunctionInvoke =
-            Resolver.Method<Func<IFunction, object, IReadOnlyList<Value>, TextWriter, Value>>((f, s, a, o) =>
-                f.Invoke(s, a, o));
+            Resolver.Method<Func<IFunction, Value>>(f => f.Invoke(default, default, default));
 
         private static readonly ConstructorInfo KeyValueConstructor =
-            Resolver.Constructor<Func<Value, Value, KeyValuePair<Value, Value>>>((k, v) =>
-                new KeyValuePair<Value, Value>(k, v));
+            Resolver.Constructor<Func<KeyValuePair<Value, Value>>>(() =>
+                new KeyValuePair<Value, Value>(default, default));
 
         private static readonly IReadOnlyList<OpCode> LoadIntegers = new[]
         {
@@ -51,7 +50,7 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator());
 
         private static readonly MethodInfo MapTryGet =
-            typeof(IMap).GetMethod(nameof(IMap.TryGet)) ?? throw new InvalidOperationException();
+            Resolver.Method<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
 
         private static readonly MethodInfo ObjectToString = Resolver.Method<Func<object, string>>(o => o.ToString());
 
@@ -68,10 +67,10 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Func<StringWriter, string>>(w => w.ToString());
 
         private static readonly MethodInfo TextWriterWriteObject =
-            Resolver.Method<Action<TextWriter, object>>((w, v) => w.Write(v));
+            Resolver.Method<Action<TextWriter>>(w => w.Write(default(object)));
 
         private static readonly MethodInfo TextWriterWriteString =
-            Resolver.Method<Action<TextWriter, string>>((w, v) => w.Write(v));
+            Resolver.Method<Action<TextWriter>>(w => w.Write(default(string)));
 
         private static readonly MethodInfo ValueAsBooleanGet =
             Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod();        
@@ -86,10 +85,12 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
 
         private static readonly MethodInfo ValueFromString =
-            Resolver.Method<Func<string, Value>>(s => Value.FromString(s));
+            Resolver.Method<Func<Value>>(() => Value.FromString(default));
 
         private static readonly FieldInfo ValueUndefined = Resolver.Field<Func<Value>>(() => Value.Undefined);
-        
+
+        private static Value _value;
+
         private readonly Dictionary<Value, int> _constants;
         private readonly ILGenerator _generator;
         private readonly Dictionary<Type, Stack<LocalBuilder>> _locals;
