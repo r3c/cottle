@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Emitted
 {
@@ -18,13 +19,13 @@ namespace Cottle.Documents.Emitted
 
         private static Value _outValue;
 
-        public static Program Create(IStatementGenerator generator)
+        public static Program Create(IStatementGenerator generator, IReadOnlyList<Symbol> arguments)
         {
             var dynamicMethod = new DynamicMethod(string.Empty, Program.ExecutableInvoke.ReturnType,
                 Program.ExecutableInvokeArguments, typeof(EmittedDocument));
             var emitter = new Emitter(dynamicMethod.GetILGenerator());
 
-            Program.Emit(emitter, generator);
+            Program.Emit(emitter, generator, arguments);
 
 #if COTTLE_IL_SAVE && !NETSTANDARD
             var directory = System.IO.Path.GetDirectoryName(typeof(Program).Assembly.Location);
@@ -37,8 +38,23 @@ namespace Cottle.Documents.Emitted
             return new Program(executable, emitter.CreateConstants());
         }
 
-        private static void Emit(Emitter emitter, IStatementGenerator generator)
+        private static void Emit(Emitter emitter, IStatementGenerator generator, IReadOnlyList<Symbol> arguments)
         {
+            var body = emitter.DeclareLabel();
+
+            // Load function arguments to locals
+            for (var i = 0; i < arguments.Count; ++i)
+            {
+                emitter.EmitLoadInteger(i);
+                emitter.EmitLoadFrameArgumentLength();
+                emitter.EmitBranchWhenGreaterOrEqual(body);
+                emitter.EmitLoadFrameArgument(i);
+                emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(arguments[i].Index));
+            }
+
+            // Execute function body and return
+            emitter.MarkLabel(body);
+
             if (!generator.Generate(emitter))
                 emitter.EmitLoadBoolean(false);
 

@@ -64,17 +64,15 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Set current element key if defined
             if (_key.HasValue)
             {
-                emitter.EmitLoadFrameSymbol(_key.Value);
                 emitter.EmitLoadLocalAddress(pair);
                 emitter.EmitCallPairKey();
-                emitter.EmitStoreValueAtIndex<Value>();
+                emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_key.Value.Index));
             }
 
             // Set current element value
-            emitter.EmitLoadFrameSymbol(_value);
             emitter.EmitLoadLocalAddressAndRelease(pair);
             emitter.EmitCallPairValue();
-            emitter.EmitStoreValueAtIndex<Value>();
+            emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_value.Index));
 
             // Evaluate body and restart cycle
             var exitReturn = emitter.DeclareLabel();

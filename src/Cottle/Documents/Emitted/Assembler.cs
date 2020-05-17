@@ -44,7 +44,7 @@ namespace Cottle.Documents.Emitted
         protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, int localCount,
             IReadOnlyList<Symbol> arguments, IStatementGenerator body)
         {
-            return new AssignFunctionStatementGenerator(symbol, localCount, arguments, body);
+            return new AssignFunctionStatementGenerator(symbol, arguments, body);
         }
 
         protected override IStatementGenerator CreateStatementAssignRender(Symbol symbol, IStatementGenerator body)

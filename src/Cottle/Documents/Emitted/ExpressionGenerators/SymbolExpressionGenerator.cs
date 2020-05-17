@@ -1,3 +1,4 @@
+using System;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Emitted.ExpressionGenerators
@@ -13,7 +14,23 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
         public void Generate(Emitter emitter)
         {
-            emitter.EmitLoadSymbol(_symbol);
+            switch (_symbol.Mode)
+            {
+                case StoreMode.Global:
+                    emitter.EmitLoadFrameGlobal();
+                    emitter.EmitLoadInteger(_symbol.Index);
+                    emitter.EmitLoadElementValueAtIndex<Value>();
+
+                    break;
+
+                case StoreMode.Local:
+                    emitter.EmitLoadLocalValue(emitter.GetOrDeclareSymbol(_symbol.Index));
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 }

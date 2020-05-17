@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
-namespace Cottle.Documents.Compiled
+namespace Cottle.Documents.Evaluated
 {
     internal class Frame
     {
@@ -14,10 +15,10 @@ namespace Cottle.Documents.Compiled
             switch (symbol.Mode)
             {
                 case StoreMode.Global:
-                    return frame => frame.Globals[index];
+                    return frame => frame._globals[index];
 
                 case StoreMode.Local:
-                    return frame => frame.Locals[index];
+                    return frame => frame._locals[index];
 
                 default:
                     throw new InvalidOperationException();
@@ -31,55 +32,52 @@ namespace Cottle.Documents.Compiled
             switch (symbol.Mode)
             {
                 case StoreMode.Global:
-                    return (frame, value) => frame.Globals[index] = value;
+                    return (frame, value) => frame._globals[index] = value;
 
                 case StoreMode.Local:
-                    return (frame, value) => frame.Locals[index] = value;
+                    return (frame, value) => frame._locals[index] = value;
 
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        public readonly Value[] Globals;
-        public readonly Value[] Locals;
-
+        private readonly Value[] _globals;
+        private readonly Value[] _locals;
         private Stack<IFunction> _modifiers;
 
         public Frame(Value[] globals, int localCount, Stack<IFunction> modifiers)
         {
-            Globals = globals;
-            Locals = localCount > 0 ? new Value[localCount] : null;
-
+            _globals = globals;
+            _locals = localCount > 0 ? new Value[localCount] : null;
             _modifiers = modifiers;
         }
 
-        public Frame CreateForFunction(IReadOnlyList<Symbol> arguments, IReadOnlyList<Value> values, int localCount)
+        public Frame CreateForFunction(IReadOnlyList<Action<Frame, Value>> argumentSetters, IReadOnlyList<Value> values, int localCount)
         {
-            var functionArguments = Math.Min(arguments.Count, values.Count);
-            var functionFrame = new Frame(Globals, localCount, _modifiers);
+            var functionArguments = Math.Min(argumentSetters.Count, values.Count);
+            var functionFrame = new Frame(_globals, localCount, _modifiers);
 
-            // Note: we assume all function arguments are local symbols here to avoid re-testing their mode
             for (var i = 0; i < functionArguments; ++i)
-                functionFrame.Locals[arguments[i].Index] = values[i];
+                argumentSetters[i](functionFrame, values[i]);
 
-            for (var i = values.Count; i < arguments.Count; ++i)
-                functionFrame.Locals[arguments[i].Index] = Value.Undefined;
+            for (var i = values.Count; i < argumentSetters.Count; ++i)
+                argumentSetters[i](functionFrame, Value.Undefined);
 
             return functionFrame;
         }
 
         public string Echo(Value value, TextWriter output)
         {
-            if (_modifiers != null)
+            if (_modifiers == null)
+                return value.AsString;
+
+            foreach (var modifier in _modifiers)
             {
-                foreach (var modifier in _modifiers)
-                {
-                    if (modifier is FiniteFunction finiteModifier)
-                        value = finiteModifier.Invoke1(this, value, output);
-                    else
-                        value = modifier.Invoke(this, new[] { value }, output);
-                }
+                if (modifier is FiniteFunction finiteModifier)
+                    value = finiteModifier.Invoke1(this, value, output);
+                else
+                    value = modifier.Invoke(this, new[] { value }, output);
             }
 
             return value.AsString;

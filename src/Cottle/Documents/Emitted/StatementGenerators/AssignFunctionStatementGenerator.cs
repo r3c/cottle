@@ -10,25 +10,40 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     {
         private readonly IReadOnlyList<Symbol> _arguments;
         private readonly IStatementGenerator _body;
-        private readonly int _localCount;
         private readonly Symbol _symbol;
 
-        public AssignFunctionStatementGenerator(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments,
+        public AssignFunctionStatementGenerator(Symbol symbol, IReadOnlyList<Symbol> arguments,
             IStatementGenerator body)
         {
             _arguments = arguments;
             _body = body;
-            _localCount = localCount;
             _symbol = symbol;
         }
 
         public bool Generate(Emitter emitter)
         {
-            var program = Program.Create(_body);
+            var program = Program.Create(_body, _arguments);
+            var function = Value.FromFunction(new Function(program));
 
-            emitter.EmitLoadFrameSymbol(_symbol);
-            emitter.EmitLoadConstant(Value.FromFunction(new Function(_localCount, _arguments, program)));
-            emitter.EmitStoreValueAtIndex<Value>();
+            switch (_symbol.Mode)
+            {
+                case StoreMode.Global:
+                    emitter.EmitLoadFrameGlobal();
+                    emitter.EmitLoadInteger(_symbol.Index);
+                    emitter.EmitLoadConstant(function);
+                    emitter.EmitStoreElementAtIndex<Value>();
+
+                    break;
+
+                case StoreMode.Local:
+                    emitter.EmitLoadConstant(function);
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
 
             return false;
         }
@@ -37,14 +52,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         {
             public bool IsPure => false;
 
-            private readonly IReadOnlyList<Symbol> _arguments;
-            private readonly int _localCount;
             private readonly Program _program;
 
-            public Function(int localCount, IReadOnlyList<Symbol> arguments, Program program)
+            public Function(Program program)
             {
-                _arguments = arguments;
-                _localCount = localCount;
                 _program = program;
             }
 
@@ -73,7 +84,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
                 if (!(state is Frame parentFrame))
                     throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(EmittedDocument)} from another type of document.");
 
-                var functionFrame = parentFrame.CreateForFunction(_arguments, arguments, _localCount);
+                var functionFrame = parentFrame.CreateForFunction(arguments);
 
                 return _program.Execute(_program.Constants, functionFrame, output, out var result)
                     ? result

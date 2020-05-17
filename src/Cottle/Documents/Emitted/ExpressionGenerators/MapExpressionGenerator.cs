@@ -32,7 +32,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                 // Load address of arguments[i]
                 emitter.EmitLoadLocalValue(arguments);
                 emitter.EmitLoadInteger(i);
-                emitter.EmitLoadElementAddress<KeyValuePair<Value, Value>>();
+                emitter.EmitLoadElementAddressAtIndex<KeyValuePair<Value, Value>>();
 
                 // Build pair from key and value
                 emitter.EmitLoadLocalValueAndRelease(key);

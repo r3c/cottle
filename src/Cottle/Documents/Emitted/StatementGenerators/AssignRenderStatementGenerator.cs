@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Cottle.Documents.Compiled;
 
@@ -29,12 +30,33 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             emitter.OutputDequeue();
 
-            // Render output buffer and store as local
-            emitter.EmitLoadFrameSymbol(_symbol);
+            // Convert buffer to value and save as local variable
             emitter.EmitLoadLocalValueAndRelease(buffer);
             emitter.EmitCallStringWriterToString();
             emitter.EmitCallValueFromString();
-            emitter.EmitStoreValueAtIndex<Value>();
+
+            var result = emitter.EmitDeclareLocalAndStore<Value>();
+
+            // Render output buffer and store as local
+            switch (_symbol.Mode)
+            {
+                case StoreMode.Global:
+                    emitter.EmitLoadFrameGlobal();
+                    emitter.EmitLoadInteger(_symbol.Index);
+                    emitter.EmitLoadLocalValueAndRelease(result);
+                    emitter.EmitStoreElementAtIndex<Value>();
+
+                    break;
+
+                case StoreMode.Local:
+                    emitter.EmitLoadLocalValueAndRelease(result);
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
 
             // Forward return code to caller
             if (!mayReturn)

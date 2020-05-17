@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
 
@@ -25,7 +26,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
         {
             public bool IsPure => false;
 
-            private readonly IReadOnlyList<Symbol> _arguments;
+            private readonly IReadOnlyList<Action<Frame, Value>> _argumentSetters;
 
             private readonly IStatementExecutor _body;
 
@@ -33,7 +34,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 
             public Function(int localCount, IReadOnlyList<Symbol> arguments, IStatementExecutor body)
             {
-                _arguments = arguments;
+                _argumentSetters = arguments.Select(Frame.CreateSetter).ToList();
                 _body = body;
                 _localCount = localCount;
             }
@@ -63,7 +64,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
                 if (!(state is Frame parentFrame))
                     throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
-                var functionFrame = parentFrame.CreateForFunction(_arguments, arguments, _localCount);
+                var functionFrame = parentFrame.CreateForFunction(_argumentSetters, arguments, _localCount);
 
                 return _body.Execute(functionFrame, output).GetValueOrDefault(Value.Undefined);
             }

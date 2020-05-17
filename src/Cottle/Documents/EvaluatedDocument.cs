@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using System.IO;
-using Cottle.Documents.Compiled;
 using Cottle.Documents.Evaluated;
 
 namespace Cottle.Documents
@@ -11,8 +11,10 @@ namespace Cottle.Documents
         {
         }
 
-        protected override Value Execute(IStatementExecutor executable, Frame frame, TextWriter writer)
+        protected override Value Execute(IStatementExecutor executable, Value[] globals, int locals, TextWriter writer)
         {
+            var frame = new Frame(globals, locals, new Stack<IFunction>());
+
             return executable.Execute(frame, writer).GetValueOrDefault(Value.Undefined);
         }
     }

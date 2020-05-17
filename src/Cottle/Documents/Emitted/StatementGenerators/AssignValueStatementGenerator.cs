@@ -1,3 +1,4 @@
+using System;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Emitted.StatementGenerators
@@ -15,11 +16,29 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
         public bool Generate(Emitter emitter)
         {
-            emitter.EmitLoadFrameSymbol(_symbol);
-
             _expression.Generate(emitter);
 
-            emitter.EmitStoreValueAtIndex<Value>();
+            var result = emitter.EmitDeclareLocalAndStore<Value>();
+
+            switch (_symbol.Mode)
+            {
+                case StoreMode.Global:
+                    emitter.EmitLoadFrameGlobal();
+                    emitter.EmitLoadInteger(_symbol.Index);
+                    emitter.EmitLoadLocalValueAndRelease(result);
+                    emitter.EmitStoreElementAtIndex<Value>();
+
+                    break;
+
+                case StoreMode.Local:
+                    emitter.EmitLoadLocalValueAndRelease(result);
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+
+                    break;
+
+                default:
+                    throw new InvalidOperationException();
+            }
 
             return false;
         }

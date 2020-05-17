@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
 namespace Cottle.Documents.Emitted
@@ -25,12 +24,13 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo FiniteFunctionInvoke3 =
             Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke3(default, default, default, default, default));
 
+        private static readonly FieldInfo FrameArguments =
+            Resolver.Field<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
+
         private static readonly MethodInfo FrameEcho =
             Resolver.Method<Func<Frame, string>>(f => f.Echo(default, default));
 
         private static readonly FieldInfo FrameGlobals = Resolver.Field<Func<Frame, Value[]>>(f => f.Globals);
-
-        private static readonly FieldInfo FrameLocals = Resolver.Field<Func<Frame, Value[]>>(f => f.Locals);
 
         private static readonly MethodInfo FrameUnwrap = Resolver.Method<Func<Frame, IFunction>>(f => f.Unwrap());
 
@@ -73,6 +73,9 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo PairValue =
             Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod();
 
+        private static readonly PropertyInfo ReadOnlyListCount =
+            Resolver.Property<Func<IReadOnlyList<object>, int>>(l => l.Count);
+
         private static readonly ConstructorInfo StringWriterConstructor =
             Resolver.Constructor<Func<StringWriter>>(() => new StringWriter());
 
@@ -108,6 +111,7 @@ namespace Cottle.Documents.Emitted
         private readonly ILGenerator _generator;
         private readonly Dictionary<Type, Stack<LocalBuilder>> _locals;
         private readonly Queue<LocalBuilder> _outputs;
+        private readonly Dictionary<int, LocalBuilder> _symbols;
 
         public Emitter(ILGenerator generator)
         {
@@ -115,6 +119,7 @@ namespace Cottle.Documents.Emitted
             _generator = generator;
             _locals = new Dictionary<Type, Stack<LocalBuilder>>();
             _outputs = new Queue<LocalBuilder>();
+            _symbols = new Dictionary<int, LocalBuilder>();
         }
 
         public IReadOnlyList<Value> CreateConstants()
@@ -140,6 +145,11 @@ namespace Cottle.Documents.Emitted
         public void EmitBranchWhenFalse(Label label)
         {
             _generator.Emit(OpCodes.Brfalse, label);
+        }
+
+        public void EmitBranchWhenGreaterOrEqual(Label label)
+        {
+            _generator.Emit(OpCodes.Bge, label);
         }
 
         public void EmitBranchWhenTrue(Label label)
@@ -321,9 +331,14 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Dup);
         }
 
-        public void EmitLoadElementAddress<TElement>()
+        public void EmitLoadElementAddressAtIndex<TElement>()
         {
             _generator.Emit(OpCodes.Ldelema, typeof(TElement));
+        }
+
+        public void EmitLoadElementValueAtIndex<TElement>()
+        {
+            _generator.Emit(OpCodes.Ldelem, typeof(TElement));
         }
 
         public void EmitLoadFrame()
@@ -331,30 +346,27 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldarg_1);
         }
 
-        public void EmitLoadFrameSymbol(Symbol symbol)
+        public void EmitLoadFrameArgument(int index)
         {
-            FieldInfo fieldInfo;
-
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    fieldInfo = Emitter.FrameGlobals;
-
-                    break;
-
-                case StoreMode.Local:
-                    fieldInfo = Emitter.FrameLocals;
-
-                    break;
-
-                default:
-                    throw new InvalidOperationException();
-            }
-
             _generator.Emit(OpCodes.Ldarg_1);
-            _generator.Emit(OpCodes.Ldfld, fieldInfo);
+            _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
 
-            EmitLoadInteger(symbol.Index);
+            EmitLoadInteger(index);
+
+            _generator.Emit(OpCodes.Ldelem, typeof(Value));
+        }
+
+        public void EmitLoadFrameArgumentLength()
+        {
+            _generator.Emit(OpCodes.Ldarg_1);
+            _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
+            _generator.Emit(OpCodes.Callvirt, Emitter.ReadOnlyListCount.GetMethod);
+        }
+
+        public void EmitLoadFrameGlobal()
+        {
+            _generator.Emit(OpCodes.Ldarg_1);
+            _generator.Emit(OpCodes.Ldfld, Emitter.FrameGlobals);
         }
 
         public void EmitLoadInteger(int value)
@@ -405,31 +417,6 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldstr, value);
         }
 
-        public void EmitLoadSymbol(Symbol symbol)
-        {
-            _generator.Emit(OpCodes.Ldarg_1);
-
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    _generator.Emit(OpCodes.Ldfld, Emitter.FrameGlobals);
-
-                    break;
-
-                case StoreMode.Local:
-                    _generator.Emit(OpCodes.Ldfld, Emitter.FrameLocals);
-
-                    break;
-
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            EmitLoadInteger(symbol.Index);
-
-            _generator.Emit(OpCodes.Ldelem, typeof(Value));
-        }
-
         public void EmitLoadUndefined()
         {
             _generator.Emit(OpCodes.Ldsfld, Emitter.ValueUndefined);
@@ -465,9 +452,16 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Stobj, typeof(TValue));
         }
 
-        public void EmitStoreValueAtIndex<TValue>() where TValue : struct
+        public Local<Value> GetOrDeclareSymbol(int index)
         {
-            _generator.Emit(OpCodes.Stelem, typeof(TValue));
+            if (_symbols.TryGetValue(index, out var symbol))
+                return new Local<Value>(symbol);
+
+            symbol = _generator.DeclareLocal(typeof(Value));
+
+            _symbols[index] = symbol;
+
+            return new Local<Value>(symbol);
         }
 
         public void MarkLabel(Label label)
