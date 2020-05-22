@@ -43,7 +43,7 @@ as the `products` variable. Full benchmark source code can be found
 Template engines
 ---
 
-- Cottle v1.6.0 (see discussion [about Cottle](#about-cottle))
+- Cottle v2.0.1 (see discussion [about Cottle](#about-cottle))
 - Fluid v1.0.0-beta9634
 - DotLiquid v2.0.314
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
