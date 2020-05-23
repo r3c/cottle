@@ -44,11 +44,11 @@ Template engines
 ---
 
 - Cottle v2.0.1 (see discussion [about Cottle](#about-cottle))
-- Fluid v1.0.0-beta9634
-- DotLiquid v2.0.314
+- Fluid v1.0.0-beta9651
+- DotLiquid v2.0.333
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
-- RazorLight v2.0.0-beta4
-- Scriban v2.1.1
+- RazorLight v2.0.0-beta7
+- Scriban v2.1.2
 
 
 Result
@@ -77,7 +77,7 @@ Benchmark scores
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle (default)":{"create":14760,"render":5570},"Cottle (native)":{"create":39778,"render":4140},"DotLiquid":{"create":66238,"render":211560},"Fluid":{"create":29890,"render":7457},"Mustachio":{"create":8833,"render":10187},"RazorLight":{"create":82282,"render":89039},"Scriban":{"create":10309,"render":18623}};
+        var benchmarks = {"Cottle":{"create":14330,"render":5482},"DotLiquid":{"create":63571,"render":203970},"Fluid":{"create":30240,"render":7010},"Mustachio":{"create":8763,"render":9900},"RazorLight":{"create":61448,"render":88517},"Scriban":{"create":10165,"render":18269}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
@@ -138,13 +138,14 @@ Discussion
 About Cottle
 ---
 
-Both "default" (using `Document.CreateDefault` method) and "native" (using
-`Document.CreateNative` method) were included in the benchmark as they offer
-quite different parsing/rendering performance tradeoffs. Parsing time can also
-be significantly improved for both implementations by
+Cottle performance was measured using default document compiler (method
+`Document.CreateDefault`). Rendering performance can be boosted by switching to
+[native](https://cottle.readthedocs.io/en/stable/page/05-advanced.html#native-documents)
+document compiler (method `Document.CreateNative`) instead, while compilation
+time can be significantly reduced by
 [disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
-at the cost of a higher rendering time, but this option wasn't used in the
-benchmark to avoid multiplying configurations.
+at the cost of a higher rendering time. Both these alternative configurations
+were not included in the benchmark to avoid multiplying comparison points.
 
 
 About Mustachio

@@ -50,16 +50,10 @@ namespace Cottle.Benchmark.Inputs
 
         public static IEnumerable<Input<Func<Func<Func<string>>>>> GetInputs()
         {
-            // Render template with Cottle, both default and native document implementations
-            foreach (var (name, constructor) in new (string, Func<string, DocumentResult>)[]
+            // Render template with Cottle
+            yield return new Input<Func<Func<Func<string>>>>(nameof(Cottle), () =>
             {
-                ($"{nameof(Cottle)} (default)", t => Document.CreateDefault(t)),
-                ($"{nameof(Cottle)} (native)", t => Document.CreateNative(t))
-            })
-            {
-                yield return new Input<Func<Func<Func<string>>>>(name, () =>
-                {
-                    const string template = @"
+                const string template = @"
 <ul id='products'>
   {for product in products:
     <li>
@@ -69,24 +63,23 @@ namespace Cottle.Benchmark.Inputs
   }
 </ul>";
 
-                    var context = Context.CreateBuiltin(new Dictionary<Value, Value>
+                var context = Context.CreateBuiltin(new Dictionary<Value, Value>
+                {
+                    ["products"] = CompareEngine.Products.Select(p => (Value)new Dictionary<Value, Value>
                     {
-                        ["products"] = CompareEngine.Products.Select(p => (Value)new Dictionary<Value, Value>
-                        {
-                            ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
-                        }).ToArray()
-                    });
-
-                    return () =>
-                    {
-                        var document = constructor(template).DocumentOrThrow;
-
-                        return () => document.Render(context);
-                    };
+                        ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
+                    }).ToArray()
                 });
-            }
 
-            // Render template with DotLiquid
+                return () =>
+                {
+                    var document = Document.CreateDefault(template).DocumentOrThrow;
+
+                    return () => document.Render(context);
+                };
+            });
+
+                // Render template with DotLiquid
             yield return new Input<Func<Func<Func<string>>>>(nameof(DotLiquid), () =>
             {
                 const string source = @"

@@ -15,7 +15,6 @@ dotnet run -c Release -f netcoreapp3.1 -p "$base"/Cottle.Benchmark -- --disableL
 
 # Locate benchmark results in file
 benchmark="$base/../benchmark.md"
-
 line="$(grep -Fn 'var benchmarks =' "$benchmark" | cut -d : -f 1)"
 
 if [ -z "$line" ]; then
