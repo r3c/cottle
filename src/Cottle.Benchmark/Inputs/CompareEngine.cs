@@ -10,6 +10,7 @@ using RazorLight;
 using RazorLight.Razor;
 using Scriban;
 using Scriban.Runtime;
+using Stubble.Compilation;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -257,6 +258,42 @@ namespace Cottle.Benchmark.Inputs
                     var template = Scriban.Template.Parse(source);
 
                     return () => template.Render(context);
+                };
+            });
+
+            // Render template with Stubble
+            yield return new Input<Func<Func<Func<string>>>>(nameof(Stubble), () =>
+            {
+                const string source = @"
+<ul id='products'>
+  {{#Products}}
+    <li>
+      <h2>{{Name}}</h2>
+      <p>{{Description}} - Only {{Price}}$</p>
+    </li>
+  {{/Products}}
+</ul>";
+
+                // Similar to Mustachio, Stubble doesn't provide efficient render-time function calls so input data are
+                // pre-rendered in model, introducing a bias in favor of Stubble in benchmark results.
+                var context = new
+                {
+                    Products = CompareEngine.Products.Select(p => new
+                    {
+                        Description = p.Description.Substring(0, Math.Min(p.Description.Length, 15)),
+                        Name = p.Name,
+                        Price = p.Price.ToString("f1", CultureInfo.GetCultureInfo("en-US"))
+                    }).ToArray()
+                };
+
+                // See: https://github.com/StubbleOrg/Stubble/blob/master/docs/compilation.md
+                var stubble = new StubbleCompilationRenderer();
+
+                return () =>
+                {
+                    var render = stubble.Compile(source, context);
+
+                    return () => render(context);
                 };
             });
         }
