@@ -2,28 +2,34 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Cottle.Demo
+namespace Cottle.Demo.Serialization
 {
-    public static class ValueAccessor
+    public static class ValueSerializer
     {
-        public static bool TryLoad(BinaryReader reader, int version, IDictionary<string, Value> values)
+        public static bool TryRead(BinaryReader reader, int version, out IReadOnlyDictionary<string, Value> values)
         {
-            int count;
+            var dictionary = new Dictionary<string, Value>();
 
-            for (count = reader.ReadInt32(); count-- > 0;)
+            for (var count = reader.ReadInt32(); count-- > 0;)
             {
                 var key = reader.ReadString();
 
-                if (!ValueAccessor.TryReadValue(reader, version, out var value))
-                    return false;
+                if (!ValueSerializer.TryReadValue(reader, version, out var value))
+                {
+                    values = default;
 
-                values[key] = value;
+                    return false;
+                }
+
+                dictionary[key] = value;
             }
+
+            values = dictionary;
 
             return true;
         }
 
-        public static void Save(BinaryWriter writer, IDictionary<string, Value> values)
+        public static bool TryWrite(BinaryWriter writer, IReadOnlyCollection<KeyValuePair<string, Value>> values)
         {
             writer.Write(values.Count);
 
@@ -31,8 +37,11 @@ namespace Cottle.Demo
             {
                 writer.Write(pair.Key);
 
-                ValueAccessor.WriteValue(writer, pair.Value);
+                if (!ValueSerializer.TryWriteValue(writer, pair.Value))
+                    return false;
             }
+
+            return true;
         }
 
         private static bool TryReadType(BinaryReader reader, int version, out ValueContent type)
@@ -87,7 +96,7 @@ namespace Cottle.Demo
 
         private static bool TryReadValue(BinaryReader reader, int version, out Value value)
         {
-            if (!ValueAccessor.TryReadType(reader, version, out var type))
+            if (!ValueSerializer.TryReadType(reader, version, out var type))
             {
                 value = default;
 
@@ -107,8 +116,8 @@ namespace Cottle.Demo
 
                     while (count-- > 0)
                     {
-                        if (!ValueAccessor.TryReadValue(reader, version, out var mapKey) ||
-                            !ValueAccessor.TryReadValue(reader, version, out var mapValue))
+                        if (!ValueSerializer.TryReadValue(reader, version, out var mapKey) ||
+                            !ValueSerializer.TryReadValue(reader, version, out var mapValue))
                         {
                             value = default;
 
@@ -145,7 +154,7 @@ namespace Cottle.Demo
             return true;
         }
 
-        private static void WriteValue(BinaryWriter writer, Value value)
+        private static bool TryWriteValue(BinaryWriter writer, Value value)
         {
             writer.Write((int)value.Type);
 
@@ -154,35 +163,35 @@ namespace Cottle.Demo
                 case ValueContent.Boolean:
                     writer.Write(value.AsBoolean);
 
-                    break;
+                    return true;
 
                 case ValueContent.Function:
                 case ValueContent.Void:
-                    break;
+                    return true;
 
                 case ValueContent.Map:
                     writer.Write(value.Fields.Count);
 
                     foreach (var pair in value.Fields)
                     {
-                        ValueAccessor.WriteValue(writer, pair.Key);
-                        ValueAccessor.WriteValue(writer, pair.Value);
+                        ValueSerializer.TryWriteValue(writer, pair.Key);
+                        ValueSerializer.TryWriteValue(writer, pair.Value);
                     }
 
-                    break;
+                    return true;
 
                 case ValueContent.Number:
                     writer.Write(value.AsNumber);
 
-                    break;
+                    return true;
 
                 case ValueContent.String:
                     writer.Write(value.AsString);
 
-                    break;
+                    return true;
 
                 default:
-                    throw new InvalidOperationException();
+                    return false;
             }
         }
     }

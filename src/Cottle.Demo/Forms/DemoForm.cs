@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
+using Cottle.Demo.Serialization;
 
 namespace Cottle.Demo.Forms
 {
@@ -49,7 +49,7 @@ namespace Cottle.Demo.Forms
 
             foreach (TreeNode root in treeViewContext.Nodes)
             {
-                foreach (var pair in ValuesBuild(root.Nodes))
+                foreach (var pair in DemoForm.ValuesBuild(root.Nodes))
                     symbols[pair.Key] = pair.Value;
             }
 
@@ -289,56 +289,29 @@ namespace Cottle.Demo.Forms
 
             root.Nodes.Clear();
 
-            try
+            using (var stream = new FileStream(path, FileMode.Open))
             {
-                using (var reader = new BinaryReader(new FileStream(path, FileMode.Open), Encoding.UTF8))
+                if (!StateSerializer.TryRead(stream, out var state))
                 {
-                    var values = new Dictionary<string, Value>();
-                    var version = reader.ReadInt32();
+                    MessageBox.Show(this, $@"Cannot open input file ""{path}""", @"File load error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                    if (version < 1 || version > 3)
-                    {
-                        MessageBox.Show(this, @"Incompatible file format");
-
-                        return;
-                    }
-
-                    if (ValueAccessor.TryLoad(reader, version, values))
-                    {
-                        foreach (var pair in values)
-                            root.Nodes.Add(DemoForm.NodeCreate(pair.Key, pair.Value));
-                    }
-
-                    var blockBegin = reader.ReadString();
-                    var blockContinue = reader.ReadString();
-                    var blockEnd = reader.ReadString();
-                    var trimmer = TrimmerCollection.GetTrimmerFunction(version > 1
-                        ? reader.ReadInt32()
-                        : TrimmerCollection.DefaultIndex);
-
-                    _configuration = new DocumentConfiguration
-                    {
-                        BlockBegin = blockBegin,
-                        BlockContinue = blockContinue,
-                        BlockEnd = blockEnd,
-                        Trimmer = trimmer
-                    };
-
-                    textBoxTemplate.Text = reader.ReadString();
+                    return;
                 }
 
-                root.ExpandAll();
+                foreach (var pair in state.Values)
+                    root.Nodes.Add(DemoForm.NodeCreate(pair.Key, pair.Value));
 
-                if (dialog)
-                {
-                    MessageBox.Show(this, $@"State successfully loaded from ""{path}"".", @"File save successful",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                _configuration = state.Configuration;
+                textBoxTemplate.Text = state.Template;
             }
-            catch (IOException exception)
+
+            root.ExpandAll();
+
+            if (dialog)
             {
-                MessageBox.Show(this, $@"Cannot open input file ""{path}"": " + exception.Message, @"File load error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, $@"State successfully loaded from ""{path}"".", @"File save successful",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -348,36 +321,26 @@ namespace Cottle.Demo.Forms
 
             foreach (TreeNode root in treeViewContext.Nodes)
             {
-                foreach (var pair in ValuesBuild(root.Nodes))
+                foreach (var pair in DemoForm.ValuesBuild(root.Nodes))
                     values[pair.Key.AsString] = pair.Value;
             }
 
-            try
+            using (var stream = new FileStream(path, FileMode.Create))
             {
-                using (var writer = new BinaryWriter(new FileStream(path, FileMode.Create), Encoding.UTF8))
+                if (StateSerializer.TryWrite(stream, new State(_configuration, values, textBoxTemplate.Text)))
                 {
-                    writer.Write(3);
-
-                    ValueAccessor.Save(writer, values);
-
-                    writer.Write(_configuration.BlockBegin);
-                    writer.Write(_configuration.BlockContinue);
-                    writer.Write(_configuration.BlockEnd);
-                    writer.Write(TrimmerCollection.GetTrimmerIndex(_configuration.Trimmer));
-                    writer.Write(textBoxTemplate.Text);
+                    MessageBox.Show(this, $@"State successfully saved to ""{path}"".", @"File save successful",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
-                MessageBox.Show(this, $@"State successfully saved to ""{path}"".", @"File save successful",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch
-            {
-                MessageBox.Show(this, $@"Cannot open output file ""{path}""", @"File save error", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                else
+                {
+                    MessageBox.Show(this, $@"Cannot open output file ""{path}""", @"File save error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        private List<KeyValuePair<Value, Value>> ValuesBuild(TreeNodeCollection nodes)
+        private static List<KeyValuePair<Value, Value>> ValuesBuild(TreeNodeCollection nodes)
         {
             var collection = new List<KeyValuePair<Value, Value>>(nodes.Count);
 
@@ -389,7 +352,7 @@ namespace Cottle.Demo.Forms
                 switch (data.Value.Type)
                 {
                     case ValueContent.Map:
-                        collection.Add(new KeyValuePair<Value, Value>(data.Key, ValuesBuild(node.Nodes)));
+                        collection.Add(new KeyValuePair<Value, Value>(data.Key, DemoForm.ValuesBuild(node.Nodes)));
 
                         break;
 

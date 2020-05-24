@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Cottle.Demo.Serialization;
 
 namespace Cottle.Demo.Forms
 {
@@ -11,10 +12,10 @@ namespace Cottle.Demo.Forms
         {
             InitializeComponent();
 
-            foreach (var name in TrimmerCollection.TrimmerNames)
+            foreach (var name in TrimmerSerializer.TrimmerNames)
                 comboBoxTrimmer.Items.Add(name);
 
-            comboBoxTrimmer.SelectedIndex = TrimmerCollection.GetTrimmerIndex(configuration.Trimmer);
+            comboBoxTrimmer.SelectedIndex = TrimmerSerializer.GetIndex(configuration.Trimmer);
             textBoxBlockBegin.Text = configuration.BlockBegin;
             textBoxBlockContinue.Text = configuration.BlockContinue;
             textBoxBlockEnd.Text = configuration.BlockEnd;
@@ -27,7 +28,7 @@ namespace Cottle.Demo.Forms
                 BlockBegin = textBoxBlockBegin.Text,
                 BlockContinue = textBoxBlockContinue.Text,
                 BlockEnd = textBoxBlockEnd.Text,
-                Trimmer = TrimmerCollection.GetTrimmerFunction(comboBoxTrimmer.SelectedIndex)
+                Trimmer = TrimmerSerializer.GetFunction(comboBoxTrimmer.SelectedIndex)
             };
 
             DialogResult = DialogResult.OK;
