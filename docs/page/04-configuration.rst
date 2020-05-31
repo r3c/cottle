@@ -64,10 +64,10 @@ TrimEnclosingWhitespaces
     whitespaces around plain    text    blocks will be collapsed.
 
 
-TrimIndentCharacters
---------------------
+TrimFirstAndLastBlankLines
+--------------------------
 
-``DocumentConfiguration.TrimIndentCharacters`` removes end of line followed by blank characters at beginning and end of plain text blocks, effectively removing indentation you may want to introduce when writing Cottle templates. You may have to introduce two line breaks instead of one when interleaving plain texts and commands so one of them is preserved:
+``DocumentConfiguration.TrimFirstAndLastBlankLines`` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain texts and commands so one of them is preserved:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -85,7 +85,7 @@ TrimIndentCharacters
 
     var configuration = new DocumentConfiguration
     {
-        Trimmer = DocumentConfiguration.TrimIndentCharacters
+        Trimmer = DocumentConfiguration.TrimFirstAndLastBlankLines
     };
 
 .. code-block:: plain

@@ -133,7 +133,7 @@ namespace Cottle.Test
                     }
                 }
                 {return factorial(" + value + ")}",
-                new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimIndentCharacters }, Context.Empty,
+                new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimFirstAndLastBlankLines }, Context.Empty,
                 expected);
         }
 
@@ -157,7 +157,7 @@ namespace Cottle.Test
                     {hanoi_rec(n, 'A', 'B', 'C')}
                 }
                 {hanoi(" + disks + ")}",
-                new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimIndentCharacters }, Context.Empty,
+                new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimFirstAndLastBlankLines }, Context.Empty,
                 expected);
         }
 
@@ -175,7 +175,7 @@ namespace Cottle.Test
                     {set b to b + b}
                 }
                 {return b}
-            ", new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimIndentCharacters }, Context.Empty,
+            ", new DocumentConfiguration { Trimmer = DocumentConfiguration.TrimFirstAndLastBlankLines }, Context.Empty,
                 expected);
         }
 

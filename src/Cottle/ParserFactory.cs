@@ -10,7 +10,7 @@ namespace Cottle
             var blockContinue = configuration.BlockContinue ?? DocumentConfiguration.DefaultBlockContinue;
             var blockEnd = configuration.BlockEnd ?? DocumentConfiguration.DefaultBlockEnd;
             var escape = configuration.Escape.GetValueOrDefault(DocumentConfiguration.DefaultEscape);
-            var trimmer = configuration.Trimmer ?? DocumentConfiguration.TrimIndentCharacters;
+            var trimmer = configuration.Trimmer ?? DocumentConfiguration.TrimFirstAndLastBlankLines;
 
             IParser parser = new ForwardParser(blockBegin, blockContinue, blockEnd, escape, trimmer);
 

@@ -10,7 +10,7 @@ namespace Cottle.Demo.Serialization
 
         private static readonly IReadOnlyList<(string, Func<string, string>)> Trimmers = new[]
         {
-            ("Remove indent characters (default)", DocumentConfiguration.TrimIndentCharacters),
+            ("Remove first and last blank lines (default)", DocumentConfiguration.TrimFirstAndLastBlankLines),
             ("Remove enclosing whitespaces", DocumentConfiguration.TrimEnclosingWhitespaces),
             ("Collapse blank characters", DocumentConfiguration.TrimRepeatedWhitespaces),
             ("Do not change plain text", DocumentConfiguration.TrimNothing)

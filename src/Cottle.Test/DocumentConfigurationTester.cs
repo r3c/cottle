@@ -21,9 +21,9 @@ namespace Cottle.Test
         [TestCase("A\n  B\n  ", "A\n  B")]
         [TestCase("\n  A\n  B\n  ", "A\n  B")]
         [TestCase("\r\n\t A\r\n  \n\rB\n\r\t ", "A\r\n  \n\rB")]
-        public void TrimIndentCharacters(string input, string expected)
+        public void TrimFirstAndLastBlankLines(string input, string expected)
         {
-            Assert.That(DocumentConfiguration.TrimIndentCharacters(input), Is.EqualTo(expected));
+            Assert.That(DocumentConfiguration.TrimFirstAndLastBlankLines(input), Is.EqualTo(expected));
         }
 
         [Test]
