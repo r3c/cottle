@@ -23,10 +23,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
                 if (!branch.Key.Execute(frame, output).AsBoolean)
                     continue;
 
-                var result = branch.Value.Execute(frame, output);
-
-                if (result.HasValue)
-                    return result.Value;
+                return branch.Value.Execute(frame, output);
             }
 
             if (_fallback != null)

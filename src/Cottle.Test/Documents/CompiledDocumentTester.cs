@@ -2,9 +2,13 @@ using NUnit.Framework;
 
 namespace Cottle.Test.Documents
 {
-    [TestFixture]
     public abstract class CompiledDocumentTester : DocumentTester
     {
+        protected CompiledDocumentTester(DocumentConfiguration configuration) :
+            base(configuration)
+        {
+        }
+
         [Test]
         [TestCase("declare", "as", "")]
         [TestCase("set", "to", "17")]

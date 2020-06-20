@@ -6,8 +6,14 @@ using NUnit.Framework;
 namespace Cottle.Test.Documents
 {
     [TestFixture]
+    [TestFixtureSource(typeof(DocumentConfigurationSource), nameof(DocumentConfigurationSource.Configurations))]
     public class SimpleDocumentTester : DocumentTester
     {
+        public SimpleDocumentTester(DocumentConfiguration configuration) :
+            base(configuration)
+        {
+        }
+
         [Test]
         [TestCase("Hello, World!")]
         [TestCase("{0}")]

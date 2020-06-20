@@ -6,8 +6,14 @@ using NUnit.Framework;
 namespace Cottle.Test.Documents
 {
     [TestFixture]
+    [TestFixtureSource(typeof(DocumentConfigurationSource), nameof(DocumentConfigurationSource.Configurations))]
     public class DynamicDocumentTester : DocumentTester
     {
+        public DynamicDocumentTester(DocumentConfiguration configuration) :
+            base(configuration)
+        {
+        }
+
         protected override DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration)
         {
             var trimmer = configuration.Trimmer ?? (s => s);

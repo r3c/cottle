@@ -6,9 +6,15 @@ using NUnit.Framework;
 
 namespace Cottle.Test
 {
-    [TestFixture]
     public abstract class DocumentTester
     {
+        private readonly DocumentConfiguration _configuration;
+
+        protected DocumentTester(DocumentConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [Test]
         [TestCase("Hello, World!")]
         [TestCase("This is some literal text")]
@@ -428,7 +434,7 @@ namespace Cottle.Test
 
         protected void AssertOutput(string source, string expected)
         {
-            AssertOutput(source, default, Context.Empty, expected);
+            AssertOutput(source, _configuration, Context.Empty, expected);
         }
 
         private void AssertReturn(string source, DocumentConfiguration configuration, IContext context,
@@ -445,7 +451,7 @@ namespace Cottle.Test
 
         private void AssertReturn(string source, string expected)
         {
-            AssertReturn(source, default, Context.Empty, expected);
+            AssertReturn(source, _configuration, Context.Empty, expected);
         }
 
         protected static IContext CreateContextWithBuiltins(params string[] names)
