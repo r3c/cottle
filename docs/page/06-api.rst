@@ -28,13 +28,13 @@ Compiled documents
 
     A document in Cottle is a compiled template, which means a template converted to an optimized in-memory representation.
 
-    .. method:: Value Render(IContext context, TextWriter writer)
+    .. method:: Value Render(IContext context, System.IO.TextWriter writer)
 
-        Render document and write output to given ``TextWriter`` instance. Return value is the value passed to top-level ``return`` command if any, or an undefined value otherwise.
+        Render document and write output to given :type:`System.IO.TextWriter` instance. Return value is the value passed to top-level ``return`` command if any, or an undefined value otherwise.
 
     .. method:: string Render(IContext context)
 
-        Render document and return outout as a ``string`` instance.
+        Render document and return outout as a :type:`System.String` instance.
 
 
 .. namespace:: Cottle
@@ -42,21 +42,21 @@ Compiled documents
 
     Methods from this static class must be used to create instances of :type:`DocumentResult`.
 
-    .. method:: DocumentResult CreateDefault(TextReader template, DocumentConfiguration configuration = default)
+    .. method:: DocumentResult CreateDefault(System.IO.TextReader template, DocumentConfiguration configuration = default)
 
-        Create a new default :type:`IDocument` instance suitable for most use cases. Template is read from any non-seekable ``TextReader`` instance.
+        Create a new default :type:`IDocument` instance suitable for most use cases. Template is read from any non-seekable :type:`System.IO.TextWriter` instance.
 
     .. method:: DocumentResult CreateDefault(string template, DocumentConfiguration configuration = default)
 
-        Create a new default :type:`IDocument` instance similar to previous method. Template is read from given ``string`` instance.
+        Create a new default :type:`IDocument` instance similar to previous method. Template is read from given :type:`System.String` instance.
 
-    .. method:: DocumentResult CreateNative(TextReader template, DocumentConfiguration configuration = default)
+    .. method:: DocumentResult CreateNative(System.IO.TextReader template, DocumentConfiguration configuration = default)
 
-        Create a new native :type:`IDocument` instance for better rendering performance but higher compilation cost. Template is read from any non-seekable ``TextReader`` instance. See section :ref:`native_document` for details about native documents.
+        Create a new native :type:`IDocument` instance for better rendering performance but higher compilation cost. Template is read from any non-seekable :type:`System.IO.TextWriter` instance. See section :ref:`native_document` for details about native documents.
 
     .. method:: DocumentResult CreateNative(string template, DocumentConfiguration configuration = default)
 
-        Create a new native :type:`IDocument` instance similar to previous method. Template is read from given ``string`` instance.
+        Create a new native :type:`IDocument` instance similar to previous method. Template is read from given :type:`System.String` instance.
 
 
 .. namespace:: Cottle.Documents
@@ -92,7 +92,7 @@ Compiled documents
 
         Delimiter for *end of command*, see section :ref:`delimiter_customization` for details.
 
-    .. property:: Nullable<char> Escape { get; set; }
+    .. property:: System.Nullable<char> Escape { get; set; }
 
         Delimiter for *escape*, see section :ref:`delimiter_customization` for details. Default escape character is **\\** when this property is null.
 
@@ -100,7 +100,7 @@ Compiled documents
 
         Disable code optimizations after compiling a document, see :ref:`optimizer_deactivation` for details.
 
-    .. property:: Func<string,string> Trimmer { get; set; }
+    .. property:: System.Func<string,string> Trimmer { get; set; }
 
         Function used to trim unwanted character out of plain text when parsing a document, see section :ref:`plain_text_trimming` for details.
 
@@ -108,13 +108,13 @@ Compiled documents
 .. namespace:: Cottle
 .. class:: DocumentResult
 
-    This structure holds result of a template compilation, which can either be successful and provide compiled :type:`IDocument` instance or failed and provide compilation error details as a list of ``DocumentReport`` elements:
+    This structure holds result of a template compilation, which can either be successful and provide compiled :type:`IDocument` instance or failed and provide compilation error details as a list of :type:`DocumentReport` elements:
 
     .. property:: IDocument Document { get; }
 
         Instance of compiled document, only if compilation was successful (see :prop:`DocumentResult.Success`).
 
-    .. property:: IReadOnlyList<DocumentReport> Reports { get; }
+    .. property:: System.Collections.Generic.IReadOnlyList<DocumentReport> Reports { get; }
 
         List of anomalies detected during compilation, as a read-only list of :type:`DocumentReport` items.
 
@@ -182,7 +182,7 @@ Rendering contexts
 
         Create a rendering context by combining a given existing context with all Cottle built-in functions (see section :ref:`builtin`). Variables from the input context always have priority over built-in functions in case of collision.
 
-    .. method:: IContext CreateBuiltin(IReadOnlyDictionary<Value,Value> symbols)
+    .. method:: IContext CreateBuiltin(System.Collections.Generic.IReadOnlyDictionary<Value,Value> symbols)
 
         Create a rendering context by combining variables from given dictionary with all Cottle built-in functions. This method is similar to previous one and only exists as a convenience helper.
 
@@ -190,11 +190,11 @@ Rendering contexts
 
         Create a rendering context by combining two existing contexts that will be searched in order when querying a variable. Primary context is searched first, then fallback context is searched second if the result from first one was an undefined value.
 
-    .. method:: IContext CreateCustom(Func<Value,Value> callback)
+    .. method:: IContext CreateCustom(System.Func<Value,Value> callback)
 
         Create a rendering context using given callback for resolving variables. Callback must always expected to return a non-null result, possibly an undefined value.
 
-    .. method:: IContext CreateCustom(IReadOnlyDictionary<Value,Value> symbols)
+    .. method:: IContext CreateCustom(System.Collections.Generic.IReadOnlyDictionary<Value,Value> symbols)
 
         Create a rendering context from given variables dictionary.
 
@@ -216,7 +216,7 @@ Function declaration
 
         Indicates whether function is pure or not. Pure functions have no side effects nor rely on any, and are eligible to various rendering optimizations.
 
-    .. method:: Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+    .. method:: Value Invoke(System.Object state, System.Collections.Generic.IReadOnlyList<Value> arguments, System.IO.TextWriter output)
 
         Invoke function with given arguments. Variable ``state`` is a opaque payload that needs to be passed to nested function calls if any, ``arguments`` contains the ordered list of values passed to function, and ``output`` is a text writer to document output result.
 
@@ -226,59 +226,59 @@ Function declaration
 
     Methods from this static class must be used to create instances of :type:`IFunction`.
 
-    .. method:: IFunction Create(Func<object,IReadOnlyList<Value>,TextWriter,Value> callback, int min, int max)
+    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int min, int max)
 
         Create a non-pure function accepting between ``min`` and ``max`` arguments (included).
 
-    .. method:: IFunction Create(Func<object,IReadOnlyList<Value>,TextWriter,Value> callback, int count)
+    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int count)
 
         Create a non-pure function accepting exactly ``count`` arguments.
 
-    .. method:: IFunction Create(Func<object,IReadOnlyList<Value>,TextWriter,Value> callback)
+    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting any number of arguments.
 
-    .. method:: IFunction Create0(Func<object,TextWriter,Value> callback)
+    .. method:: IFunction Create0(System.Func<System.Object,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting zero argument.
 
-    .. method:: IFunction Create1(Func<object,Value,TextWriter,Value> callback)
+    .. method:: IFunction Create1(System.Func<System.Object,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting one argument.
 
-    .. method:: IFunction Create2(Func<object,Value,Value,TextWriter,Value> callback)
+    .. method:: IFunction Create2(System.Func<System.Object,Value,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting two arguments.
 
-    .. method:: IFunction Create3(Func<object,Value,Value,Value,TextWriter,Value> callback)
+    .. method:: IFunction Create3(System.Func<System.Object,Value,Value,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting three arguments.
 
-    .. method:: IFunction CreatePure(Func<object,IReadOnlyList<Value>,Value> callback, int min, int max)
+    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int min, int max)
 
         Create a pure function accepting between ``min`` and ``max`` arguments (included).
 
-    .. method:: IFunction CreatePure(Func<object,IReadOnlyList<Value>,Value> callback, int count)
+    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int count)
 
         Create a pure function accepting exactly ``count`` arguments.
 
-    .. method:: IFunction CreatePure(Func<object,IReadOnlyList<Value>,Value> callback)
+    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback)
 
         Create a pure function accepting any number of arguments.
 
-    .. method:: IFunction CreatePure0(Func<object,Value> callback)
+    .. method:: IFunction CreatePure0(System.Func<System.Object,Value> callback)
 
         Create a pure function accepting zero argument.
 
-    .. method:: IFunction CreatePure1(Func<object,Value,Value> callback)
+    .. method:: IFunction CreatePure1(System.Func<System.Object,Value,Value> callback)
 
         Create a pure function accepting one argument.
 
-    .. method:: IFunction CreatePure2(Func<object,Value,Value,Value> callback)
+    .. method:: IFunction CreatePure2(System.Func<System.Object,Value,Value,Value> callback)
 
         Create a pure function accepting two arguments.
 
-    .. method:: IFunction CreatePure3(Func<object,Value,Value,Value,Value> callback)
+    .. method:: IFunction CreatePure3(System.Func<System.Object,Value,Value,Value,Value> callback)
 
         Create a pure function accepting three arguments.
 
@@ -356,19 +356,19 @@ Value declaration
 
         Create value from given boolean instance.
 
-    .. method:: FromDictionary(IReadOnlyDictionary<Value,Value> dictionary)
+    .. method:: FromDictionary(System.Collections.Generic.IReadOnlyDictionary<Value,Value> dictionary)
 
         Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is immutable and simply keeps a reference on it without duplicating the data structure.
 
-    .. method:: FromDictionary(IDictionary<Value,Value> dictionary)
+    .. method:: FromDictionary(System.Collections.Generic.IDictionary<Value,Value> dictionary)
 
         Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is mutable and duplicates the data structure to avoid further modifications.
 
-    .. method:: FromEnumerable(IEnumerable<KeyValuePair<Value,Value>> pairs)
+    .. method:: FromEnumerable(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Value,Value>> pairs)
 
         Create a map value from given ``elements``, preserving element ordering but also allowing O(1) access to values by key.
 
-    .. method:: FromEnumerable(IEnumerable<Value> elements)
+    .. method:: FromEnumerable(System.Collections.Generic.IEnumerable<Value> elements)
 
         Create a map value from given ``elements``. Numeric keys are generated for each element starting at index ``0``.
 
@@ -376,11 +376,11 @@ Value declaration
 
         Create a function value by wrapping an executable :type:`IFunction` instance. See sections :ref:`declare_function` and :ref:`native_function` for details about functions in Cottle.
 
-    .. method:: FromGenerator(Func<int,Value> generator, int count)
+    .. method:: FromGenerator(System.Func<int,Value> generator, int count)
 
         Create map value from given generator. Generator function ``generator`` is used to create elements based on their index, and the map will contain ``count`` values associated to keys ``0`` to ``count - 1``. Values are created only when retrieved, so creating a generator value with 10000000 elements won't have any cost until you actually access these elements from your template.
 
-    .. method:: FromLazy(Func<Value> resolver)
+    .. method:: FromLazy(System.Func<Value> resolver)
 
         Create a lazy value from given value resolver. See section :ref:`lazy_value` for details about lazy value resolution.
 
@@ -392,7 +392,7 @@ Value declaration
 
         Create value from given double instance.
 
-    .. method:: FromReflection<TSource>(TSource source, BindingFlags bindingFlags)
+    .. method:: FromReflection<TSource>(TSource source, System.Reflection.BindingFlags bindingFlags)
 
         Create a reflection-based value to read members from object ``source``. Source object fields and properties are resolved using :meth:`System.Type.GetFields` and :meth:`System.Type.GetProperties` methods and provided binding flags for resolution. See section :ref:`reflection_value` for details about reflection-based inspection.
 
@@ -420,7 +420,7 @@ Value declaration
 
     Deprecated class, use :meth:`Value.FromLazy` to create lazy values.
 
-    .. method:: LazyValue(Func<Value> resolver)
+    .. method:: LazyValue(System.Func<Value> resolver)
 
     Class constructor.
 
@@ -432,11 +432,11 @@ Value declaration
 
     Deprecated class, use :meth:`Value.FromReflection` to create reflection values.
 
-    .. method:: ReflectionValue(object source, BindingFlags binding)
+    .. method:: ReflectionValue(System.Object source, System.Reflection.BindingFlags binding)
 
     Class constructor with explicit binding flags.
 
-    .. method:: ReflectionValue(object source)
+    .. method:: ReflectionValue(System.Object source)
 
     Class constructor with default binding flags for resolution (public + private + instance).
 

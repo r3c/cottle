@@ -74,7 +74,7 @@ Expressions
 Passing variables
 -----------------
 
-To send variables so they can be used when a document is rendered you must provide them through a :type:`IContext` instance which is used as a render-time storage. This interface behaves quite like an immutable ``Dictionary<Cottle.Value, Cottle.Value>`` where :type:`Value` is a data structure able to store any value Cottle can handle. Key and value pairs within this dictionary are used as variable names and their associated values.
+To send variables so they can be used when a document is rendered you must provide them through a :type:`IContext` instance which is used as a render-time and read-only storage. This interface behaves quite like a ``IReadOnlyDictionary<Cottle.Value, Cottle.Value>`` where :type:`Value` is a data structure able to store any value Cottle can handle. Key and value pairs within this dictionary are used as variable names and their associated values.
 
 Implicit constructors from some native .NET types to :type:`Value` type are provided so you usually don't have to explicitly do the conversion yourself but you can also create values using ``Value.FromSomething()`` static construction methods (where "Something" is a known .NET type). See API documentation about :type:`Value` type for details.
 
@@ -90,7 +90,7 @@ Once you assigned variables to a context, pass it to your document's rendering m
 
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
-        ["name"] = "John" // Implicit conversion from string to Value
+        ["name"] = "John" // Implicit conversion from string on both key and value
     });
 
 .. code-block:: plain
@@ -98,7 +98,7 @@ Once you assigned variables to a context, pass it to your document's rendering m
 
     Hello John, you have no new message.
 
-Instances of :type:`IContext` are passed at document render time so they can be changed from one render to another, while instances of :type:`IDocument` can then be *rendered* as many time as you want. Compiling a template string into an :type:`IDocument` is a costly process implying parsing the string, validating its contents, applying code optimizations and storing it as an internal data structure. You should organize your code to avoid re-creating documents from the same template multiple time, as compiling a document is significantly more costly than rendering it.
+Instances of :type:`IContext` are passed at document render time so they can be changed from one render to another, while instances of :type:`IDocument` can then be rendered as many time as you want. Compiling a template string into an :type:`IDocument` is a costly process implying parsing the string, validating its contents, applying code optimizations and storing it as an internal data structure. You should organize your code to avoid re-creating documents from the same template multiple time, as compiling a document is significantly more costly than rendering it.
 
 
 .. _`value_types`:
@@ -194,7 +194,7 @@ You can also use ``(`` and ``)`` to group sub-expressions and change natural pre
 Calling functions
 -----------------
 
-Functions in Cottle are special values that can be invoked with arguments. They must be set in a context as any other value type, and a helper method is available so you can start with a predefined set of built-in functions when rendering your documents. Create a context using :meth:`Context.CreateBuiltin` method to have all built-in functions available in your document:
+Functions in Cottle are special values that can be invoked with arguments specified between a pair of parenthesis and separated by commas. Functions must be registered in a context as any other value type, and a helper method is available so you can start with a predefined set of built-in functions when rendering your documents. Create a context using :meth:`Context.CreateBuiltin` method to have all built-in functions available in your document:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -223,7 +223,7 @@ The list of all built-in functions as well as their behavior is available in sec
 
 .. note::
 
-    If you don't want any built-in function to be available in your template, you can create an blank context by calling :meth:`Context.CreateCustom` method.
+    If you don't want any built-in function to be available in your template, you can start off with a blank context by calling :meth:`Context.CreateCustom` method.
 
 
 
@@ -494,7 +494,7 @@ The ``while`` command evaluates a predicate expression and continues executing i
 
 .. warning::
 
-    Prefer the use of the ``for`` command over ``while`` command whenever possible.
+    Prefer the use of the ``for`` command over ``while`` command whenever possible, as the former won't cause infinite loops while the later can.
 
 
 .. _`command_dump`:

@@ -42,12 +42,12 @@ For this reason you can change the way plain text is transformed through the use
 TrimEnclosingWhitespaces
 ------------------------
 
-``DocumentConfiguration.TrimEnclosingWhitespaces`` removes all leading and trailing blank characters from plain text blocks. You may need to use expression ``{" "}`` to force insertion of whitespaces between blocks:
+``DocumentConfiguration.TrimEnclosingWhitespaces`` removes all leading and trailing blank characters from plain text blocks. You may need to use expression ``{' '}`` to force insertion of whitespaces between blocks:
 
 .. code-block:: plain
     :caption: Cottle template
 
-    {'white'}    {'spaces '} around plain    text    blocks will be coll    {'apsed'} .
+    {'white'}    {'spaces '} around plain    text    blocks {'will'}{' '}{'be'} coll    {'apsed'} .
 
 .. code-block:: csharp
     :caption: C# source
@@ -107,7 +107,8 @@ TrimNothing
 .. code-block:: plain
     :caption: Cottle template
 
-    {'no'} change {'will'} be applied
+    {'no'} change {'will'}
+        be applied
     {'on'} plain {'text'} blocks.
 
 .. code-block:: csharp
@@ -122,7 +123,8 @@ TrimNothing
 .. code-block:: plain
     :caption: Rendering output
 
-    no change will be applied
+    no change will
+        be applied
     on plain text blocks.
 
 

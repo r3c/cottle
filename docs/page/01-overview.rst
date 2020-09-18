@@ -27,7 +27,7 @@ A simple Cottle template printing an HTML document showing how many messages are
 
 As you can guess by looking at this code, a Cottle template contains both plain text printed as-is as well as commands used to output dynamic contents. Cottle supports most common template engine features, such as:
 
-* Text substitution through variables,
+* Text substitution with variables,
 * Mathematical and boolean expressions,
 * Built-in and used-defined functions,
 * Variables & functions declaration and assignments,
@@ -55,7 +55,7 @@ Getting started
 
 To start using Cottle, first reference the package in your solution (using NuGet or manual install as detailed above). You'll then need two things:
 
--  An input template written with Cottle's template language, used to define how your data will be rendered. This template can be contained in a ``string`` or streamed from any source compatible with :type:`System.IO.TextReader` class (text file, memory buffer, network socket...) as shown in the example below.
+-  An input template written with Cottle's template language, used to define how your data will be rendered. This template can be contained in a :type:`System.String` or streamed from any source compatible with :type:`System.IO.TextReader` class (text file, memory buffer, network socket...) as shown in the example below.
 -  An executable code that reads your input template, create a :type:`IDocument` object from it then render it to an output string or :type:`System.IO.TextWriter` instance.
 
 Here is a basic sample rendering a template with a single injected variable. Copy the **C# source** snippet somewhere in your program and get it executed. You should see the content of **Rendering output** snippet printed to standard output:
