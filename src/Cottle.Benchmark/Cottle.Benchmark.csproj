@@ -12,11 +12,11 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-      <PackageReference Include="DotLiquid" Version="2.0.333" />
-      <PackageReference Include="Fluid.Core" Version="1.0.0-beta-9651" />
+      <PackageReference Include="DotLiquid" Version="2.0.361" />
+      <PackageReference Include="Fluid.Core" Version="1.0.0-beta-9693" />
       <PackageReference Include="Mustachio" Version="2.1.0" />
-      <PackageReference Include="RazorLight" Version="2.0.0-beta7" />
-      <PackageReference Include="Scriban" Version="2.1.2" />
+      <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
+      <PackageReference Include="Scriban" Version="3.0.0-alpha.9" />
     </ItemGroup>
 
 </Project>
