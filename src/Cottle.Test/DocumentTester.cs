@@ -78,16 +78,69 @@ namespace Cottle.Test
         }
 
         [Test]
-        [TestCase("\"abc\"", "abcabc")]
-        [TestCase("17", "1717")]
-        public void Render_ExpressionInvoke(string input, string expected)
+        public void Render_ExpressionInvoke0()
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure1((state, value) => value.AsString + value.AsString))
+                ["f"] = Value.FromFunction(Function.CreatePure0(state => "test"))
             });
 
-            AssertOutput($"{{f({input})}}", default, context, expected);
+            AssertOutput("{f()}", default, context, "test");
+        }
+
+        [Test]
+        [TestCase("\"abc\"", "ABC")]
+        [TestCase("17", "17")]
+        public void Render_ExpressionInvoke1(string v, string expected)
+        {
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                ["f"] = Value.FromFunction(Function.CreatePure1((state, a) => a.AsString.ToUpperInvariant()))
+            });
+
+            AssertOutput($"{{f({v})}}", default, context, expected);
+        }
+
+        [Test]
+        [TestCase("\"abc\"", 2, "ab")]
+        [TestCase("17", 1, "1")]
+        public void Render_ExpressionInvoke2(string v1, int v2, string expected)
+        {
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                ["f"] = Value.FromFunction(Function.CreatePure2((state, a1, a2) =>
+                    a1.AsString.Substring(0, (int)a2.AsNumber)))
+            });
+
+            AssertOutput($"{{f({v1}, {v2})}}", default, context, expected);
+        }
+
+        [Test]
+        [TestCase("\"abc\"", 1, "\"xyz\"", "axyzbc")]
+        [TestCase("17", 2, "42", "1742")]
+        public void Render_ExpressionInvoke3(string v1, int v2, string v3, string expected)
+        {
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                ["f"] = Value.FromFunction(Function.CreatePure3((state, a1, a2, a3) =>
+                    a1.AsString.Insert((int)a2.AsNumber, a3.AsString)))
+            });
+
+            AssertOutput($"{{f({v1}, {v2}, {v3})}}", default, context, expected);
+        }
+
+        [Test]
+        [TestCase("\"a\"", "\"b\"", "\"c\"", "\"d\"", "abcd")]
+        [TestCase("17", "\"\"", "42", "\"\"", "1742")]
+        public void Render_ExpressionInvoke4(string v1, string v2, string v3, string v4, string expected)
+        {
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                ["f"] = Value.FromFunction(Function.CreatePure((state, args) =>
+                    string.Concat(args[0].AsString, args[1].AsString, args[2].AsString, args[3].AsString)))
+            });
+
+            AssertOutput($"{{f({v1}, {v2}, {v3}, {v4})}}", default, context, expected);
         }
 
         [Test]

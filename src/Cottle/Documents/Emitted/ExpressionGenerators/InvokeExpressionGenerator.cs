@@ -35,7 +35,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                     break;
 
                 default:
-                    _finiteFunctionInvoke = null;
+                    _finiteFunctionInvoke = e => e.EmitLoadUndefined();
 
                     break;
             }
@@ -66,37 +66,33 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                 argumentsLocals[i] = emitter.EmitDeclareLocalAndStore<Value>();
             }
 
-            // Emit code for calls with with fixed number of arguments if compatible
+            // Try to cast function as a finite function instance and call with fixed number of arguments
+            emitter.EmitLoadLocalValue(function);
+            emitter.EmitCastAs<FiniteFunction>();
+
+            var finiteFunction = emitter.EmitDeclareLocalAndStore<FiniteFunction>();
+            var arbitrary = emitter.DeclareLabel();
+
+            emitter.EmitLoadLocalValue(finiteFunction);
+            emitter.EmitBranchWhenFalse(arbitrary);
+
+            // Perform call with known number of arguments
+            emitter.EmitLoadLocalValueAndRelease(finiteFunction);
+            emitter.EmitLoadFrame();
+
+            for (var i = 0; i < _arguments.Count; ++i)
+                emitter.EmitLoadLocalValue(argumentsLocals[i]);
+
+            emitter.EmitLoadOutput();
+
+            _finiteFunctionInvoke(emitter);
+
             var exit = emitter.DeclareLabel();
 
-            if (_finiteFunctionInvoke != null)
-            {
-                // Try to cast function as a finite function instance
-                emitter.EmitLoadLocalValue(function);
-                emitter.EmitCastAs<FiniteFunction>();
-
-                var finiteFunction = emitter.EmitDeclareLocalAndStore<FiniteFunction>();
-                var arbitrary = emitter.DeclareLabel();
-
-                emitter.EmitLoadLocalValue(finiteFunction);
-                emitter.EmitBranchWhenFalse(arbitrary);
-
-                // Perform call with known number of arguments
-                emitter.EmitLoadLocalValueAndRelease(finiteFunction);
-                emitter.EmitLoadFrame();
-
-                for (var i = 0; i < _arguments.Count; ++i)
-                    emitter.EmitLoadLocalValue(argumentsLocals[i]);
-
-                emitter.EmitLoadOutput();
-
-                _finiteFunctionInvoke(emitter);
-
-                emitter.EmitBranchAlways(exit);
-                emitter.MarkLabel(arbitrary);
-            }
+            emitter.EmitBranchAlways(exit);
 
             // Fallback to arbitrary number of arguments
+            emitter.MarkLabel(arbitrary);
             emitter.EmitLoadArray<Value>(_arguments.Count);
 
             var argumentArray = emitter.EmitDeclareLocalAndStore<Value[]>();
