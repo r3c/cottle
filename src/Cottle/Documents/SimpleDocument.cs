@@ -22,9 +22,10 @@ namespace Cottle.Documents
         public SimpleDocument(TextReader reader, ISetting setting)
         {
             var parser = Parser.Create(AbstractDocument.CreateConfiguration(setting));
+            var state = new ParserState();
 
-            if (!parser.Parse(reader, out var statement, out var reports))
-                throw AbstractDocument.CreateException(reports);
+            if (!parser.Parse(reader, state, out var statement))
+                throw AbstractDocument.CreateException(state.Reports);
 
             _renderer = Compiler.Compile(statement);
             _setting = setting;

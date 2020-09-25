@@ -211,13 +211,12 @@ namespace Cottle.Test.Parsers
         private static Statement Optimize(Statement statement)
         {
             var parserMock = new Mock<IParser>();
-            var reports = Enumerable.Empty<DocumentReport>();
 
-            parserMock.Setup(p => p.Parse(It.IsAny<TextReader>(), out statement, out reports)).Returns(true);
+            parserMock.Setup(p => p.Parse(It.IsAny<TextReader>(), It.IsAny<ParserState>(), out statement)).Returns(true);
 
             var parser = new OptimizeParser(parserMock.Object);
 
-            Assert.That(parser.Parse(TextReader.Null, out var output, out _), Is.True);
+            Assert.That(parser.Parse(TextReader.Null, new ParserState(), out var output), Is.True);
 
             return output;
         }

@@ -23,15 +23,21 @@ namespace Cottle
             return new DocumentResult(EmptyDocument.Instance, reports, false);
         }
 
+        public static DocumentResult CreateSuccess(IDocument document, IEnumerable<DocumentReport> reports)
+        {
+            return new DocumentResult(document, reports, true);
+        }
+
+        [Obsolete("Add missing `reports` argument")]
         public static DocumentResult CreateSuccess(IDocument document)
         {
-            return new DocumentResult(document, Array.Empty<DocumentReport>(), true);
+            return DocumentResult.CreateSuccess(document, Array.Empty<DocumentReport>());
         }
 
         private DocumentResult(IDocument document, IEnumerable<DocumentReport> reports, bool success)
         {
             Document = document;
-            Reports = reports.ToArray();
+            Reports = reports.ToList();
             Success = success;
         }
     }
