@@ -1,3 +1,6 @@
+.. default-domain:: csharp
+.. namespace:: Cottle
+
 ======================
 Compiler configuration
 ======================
@@ -5,7 +8,7 @@ Compiler configuration
 Specifying configuration
 ========================
 
-You can specify configuration parameters by passing a ``Cottle.DocumentConfiguration`` instance when creating a new document. Here is how to specify configuration parameters:
+You can specify configuration parameters by passing a :type:`DocumentConfiguration` instance when creating a new document. Here is how to specify configuration parameters:
 
 .. code-block:: csharp
     :caption: C# source
@@ -25,7 +28,7 @@ You can specify configuration parameters by passing a ``Cottle.DocumentConfigura
         // TODO: render document
     }
 
-Options can be set by assigning a value to optional fields of structure ``Cottle.DocumentConfiguration``, as described below. Any undefined field will keep its default value.
+Options can be set by assigning a value to optional fields of structure :type:`DocumentConfiguration`, as described below. Any undefined field will keep its default value.
 
 
 
@@ -42,7 +45,7 @@ For this reason you can change the way plain text is transformed through the use
 TrimEnclosingWhitespaces
 ------------------------
 
-``DocumentConfiguration.TrimEnclosingWhitespaces`` removes all leading and trailing blank characters from plain text blocks. You may need to use expression ``{' '}`` to force insertion of whitespaces between blocks:
+:prop:`DocumentConfiguration.TrimEnclosingWhitespaces` removes all leading and trailing blank characters from plain text blocks. You may need to use expression ``{' '}`` to force insertion of whitespaces between blocks:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -67,7 +70,7 @@ TrimEnclosingWhitespaces
 TrimFirstAndLastBlankLines
 --------------------------
 
-``DocumentConfiguration.TrimFirstAndLastBlankLines`` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain texts and commands so one of them is preserved:
+:prop:`DocumentConfiguration.TrimFirstAndLastBlankLines` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain texts and commands so one of them is preserved:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -102,7 +105,7 @@ TrimFirstAndLastBlankLines
 TrimNothing
 -----------
 
-``DocumentConfiguration.TrimNothing`` doesn't changing anything on plain text blocks:
+:prop:`DocumentConfiguration.TrimNothing` doesn't changing anything on plain text blocks:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -131,7 +134,7 @@ TrimNothing
 TrimRepeatedWhitespaces
 -----------------------
 
-``DocumentConfiguration.TrimRepeatedWhitespaces`` replaces all sequences of white characters (spaces, line breaks, etc.) by a single space, similar to what HTML or XML languages do:
+:prop:`DocumentConfiguration.TrimRepeatedWhitespaces` replaces all sequences of white characters (spaces, line breaks, etc.) by a single space, similar to what HTML or XML languages do:
 
 .. code-block:: plain
     :caption: Cottle template
