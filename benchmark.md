@@ -44,11 +44,11 @@ Template engines
 ---
 
 - Cottle v2.0.1 (see discussion [about Cottle](#about-cottle))
-- Fluid v1.0.0-beta9651
-- DotLiquid v2.0.333
+- Fluid v1.0.0-beta-9693
+- DotLiquid v2.0.361
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
-- RazorLight v2.0.0-beta7
-- Scriban v2.1.2
+- RazorLight v2.0.0-beta9
+- Scriban v3.0.0-alpha.9
 
 
 Result
