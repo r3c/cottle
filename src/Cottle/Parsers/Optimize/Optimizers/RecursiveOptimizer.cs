@@ -31,7 +31,8 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
                         foreach (var element in source.Elements)
                         {
-                            if (element.Key.Type != ExpressionType.Constant || !RecursiveOptimizer.IsPure(element.Value))
+                            if (element.Key.Type != ExpressionType.Constant ||
+                                !RecursiveOptimizer.IsPure(element.Value))
                                 unsure = true;
                             else if (element.Key.Value == subscript)
                                 value = element.Value;

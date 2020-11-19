@@ -53,7 +53,8 @@ namespace Cottle.Documents.Evaluated
             _modifiers = modifiers;
         }
 
-        public Frame CreateForFunction(IReadOnlyList<Action<Frame, Value>> argumentSetters, IReadOnlyList<Value> values, int localCount)
+        public Frame CreateForFunction(IReadOnlyList<Action<Frame, Value>> argumentSetters, IReadOnlyList<Value> values,
+            int localCount)
         {
             var functionArguments = Math.Min(argumentSetters.Count, values.Count);
             var functionFrame = new Frame(_globals, localCount, _modifiers);

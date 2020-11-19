@@ -92,7 +92,8 @@ namespace Cottle.Documents.Compiled.Assemblers
                     return CreateExpressionMap(elements);
 
                 case ExpressionType.Symbol:
-                    return CreateExpressionSymbol(scope.GetOrDeclareClosest(expression.Value.AsString, StoreMode.Global));
+                    return CreateExpressionSymbol(
+                        scope.GetOrDeclareClosest(expression.Value.AsString, StoreMode.Global));
 
                 default:
                     return CreateExpressionVoid();

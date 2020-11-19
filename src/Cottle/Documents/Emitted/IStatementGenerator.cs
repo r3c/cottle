@@ -1,4 +1,3 @@
-
 namespace Cottle.Documents.Emitted
 {
     internal interface IStatementGenerator

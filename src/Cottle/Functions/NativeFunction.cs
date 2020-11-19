@@ -24,55 +24,64 @@ namespace Cottle.Functions
 
         private readonly int _min;
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int min, int max) :
             this(callback, min, max, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback, int exact) :
             this(callback, exact, exact, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreateImpureFirstOrder*` or `Function.CreateImpureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, TextWriter, Value> callback) :
             this(callback, 0, -1, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback, int min, int max) :
             this((v, s, o) => callback(v, s), min, max, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback, int exact) :
             this((v, s, o) => callback(v, s), exact, exact, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback) :
             this((v, s, o) => callback(v, s), 0, -1, false)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback, int min, int max) :
             this((v, s, o) => callback(v), min, max, true)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback, int exact) :
             this((v, s, o) => callback(v), exact, exact, true)
         {
         }
 
-        [Obsolete("Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
+        [Obsolete(
+            "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback) :
             this((v, s, o) => callback(v), 0, -1, true)
         {
@@ -96,7 +105,8 @@ namespace Cottle.Functions
         public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
         {
             if (!(state is IStore store))
-                throw new InvalidOperationException("You're calling an instance of `NativeFunction` from an incompatible document type. Please replace all usages of `NativeFunction` by calls to `Function.Create*` static methods.");
+                throw new InvalidOperationException(
+                    "You're calling an instance of `NativeFunction` from an incompatible document type. Please replace all usages of `NativeFunction` by calls to `Function.Create*` static methods.");
 
             if (_min > arguments.Count || _max >= 0 && _max < arguments.Count)
                 return Value.Undefined;

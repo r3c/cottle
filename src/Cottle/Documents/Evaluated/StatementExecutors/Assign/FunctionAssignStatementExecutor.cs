@@ -11,7 +11,8 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
     {
         private readonly Value _function;
 
-        public FunctionAssignStatementExecutor(Symbol symbol, int localCount, IReadOnlyList<Symbol> arguments, IStatementExecutor body) :
+        public FunctionAssignStatementExecutor(Symbol symbol, int localCount, IEnumerable<Symbol> arguments,
+            IStatementExecutor body) :
             base(symbol)
         {
             _function = Value.FromFunction(new Function(localCount, arguments, body));
@@ -32,7 +33,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 
             private readonly int _localCount;
 
-            public Function(int localCount, IReadOnlyList<Symbol> arguments, IStatementExecutor body)
+            public Function(int localCount, IEnumerable<Symbol> arguments, IStatementExecutor body)
             {
                 _argumentSetters = arguments.Select(Frame.CreateSetter).ToList();
                 _body = body;
@@ -62,7 +63,8 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
                 if (!(state is Frame parentFrame))
-                    throw new InvalidOperationException($"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
+                    throw new InvalidOperationException(
+                        $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
                 var functionFrame = parentFrame.CreateForFunction(_argumentSetters, arguments, _localCount);
 

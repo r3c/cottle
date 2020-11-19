@@ -4,11 +4,9 @@ namespace Cottle.Values
 {
     public sealed class BooleanValue : ScalarValue<bool>
     {
-        [Obsolete("Use `Value.False`")]
-        public static readonly BooleanValue False = new BooleanValue(false);
+        [Obsolete("Use `Value.False`")] public static readonly BooleanValue False = new BooleanValue(false);
 
-        [Obsolete("Use `Value.True`")]
-        public static readonly BooleanValue True = new BooleanValue(true);
+        [Obsolete("Use `Value.True`")] public static readonly BooleanValue True = new BooleanValue(true);
 
         public override bool AsBoolean => Value;
 

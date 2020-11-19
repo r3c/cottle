@@ -62,10 +62,12 @@ namespace Cottle.Documents.Simple
                         Compiler.CompileStatement(statement.Body), statement.Mode);
 
                 case StatementType.AssignRender:
-                    return new RenderAssignNode(statement.Key, Compiler.CompileStatement(statement.Body), statement.Mode);
+                    return new RenderAssignNode(statement.Key, Compiler.CompileStatement(statement.Body),
+                        statement.Mode);
 
                 case StatementType.AssignValue:
-                    return new ValueAssignNode(statement.Key, Compiler.CompileExpression(statement.Operand), statement.Mode);
+                    return new ValueAssignNode(statement.Key, Compiler.CompileExpression(statement.Operand),
+                        statement.Mode);
 
                 case StatementType.Composite:
                     var nodes = new List<INode>();

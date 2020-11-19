@@ -288,7 +288,8 @@ namespace Cottle.Parsers
             return true;
         }
 
-        private bool TryParseAssignment(StoreMode mode, out Statement statement, out IEnumerable<DocumentReport> reports)
+        private bool TryParseAssignment(StoreMode mode, out Statement statement,
+            out IEnumerable<DocumentReport> reports)
         {
             List<string> arguments;
 

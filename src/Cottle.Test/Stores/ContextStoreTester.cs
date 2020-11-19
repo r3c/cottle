@@ -9,8 +9,8 @@ namespace Cottle.Test.Stores
         [Test]
         public void AccessorOverwriteWithValue()
         {
-            var context = Context.CreateCustom(new Dictionary<Value, Value> {{"field", 42}});
-            var store = new ContextStore(context) {["field"] = 53};
+            var context = Context.CreateCustom(new Dictionary<Value, Value> { { "field", 42 } });
+            var store = new ContextStore(context) { ["field"] = 53 };
 
             Assert.That(store["field"], Is.EqualTo(Value.FromNumber(53)));
         }
@@ -18,8 +18,8 @@ namespace Cottle.Test.Stores
         [Test]
         public void AccessorOverwriteWithVoid()
         {
-            var context = Context.CreateCustom(new Dictionary<Value, Value> {{"field", 42}});
-            var store = new ContextStore(context) {["field"] = Value.Undefined};
+            var context = Context.CreateCustom(new Dictionary<Value, Value> { { "field", 42 } });
+            var store = new ContextStore(context) { ["field"] = Value.Undefined };
 
             Assert.That(store["field"], Is.EqualTo(Value.Undefined));
         }

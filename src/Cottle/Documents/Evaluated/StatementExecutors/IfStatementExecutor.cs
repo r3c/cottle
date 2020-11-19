@@ -10,7 +10,8 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
         private readonly IStatementExecutor _fallback;
 
-        public IfStatementExecutor(IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches, IStatementExecutor fallback)
+        public IfStatementExecutor(IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
+            IStatementExecutor fallback)
         {
             _branches = branches;
             _fallback = fallback;

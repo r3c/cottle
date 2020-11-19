@@ -10,7 +10,9 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
     {
         private readonly IReadOnlyList<IExpressionExecutor> _arguments;
         private readonly IExpressionExecutor _caller;
-        private readonly Func<Frame, FiniteFunction, IReadOnlyList<IExpressionExecutor>, TextWriter, Value> _evaluateFinite;
+
+        private readonly Func<Frame, FiniteFunction, IReadOnlyList<IExpressionExecutor>, TextWriter, Value>
+            _evaluateFinite;
 
         public InvokeExpressionExecutor(IExpressionExecutor caller, IReadOnlyList<IExpressionExecutor> arguments)
         {
@@ -63,13 +65,15 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             return function.Invoke(frame, values, output);
         }
 
-        private static Value EvaluateFinite0(Frame frame, FiniteFunction function, IReadOnlyList<IExpressionExecutor> arguments,
+        private static Value EvaluateFinite0(Frame frame, FiniteFunction function,
+            IReadOnlyList<IExpressionExecutor> arguments,
             TextWriter output)
         {
             return function.Invoke0(frame, output);
         }
 
-        private static Value EvaluateFinite1(Frame frame, FiniteFunction function, IReadOnlyList<IExpressionExecutor> arguments,
+        private static Value EvaluateFinite1(Frame frame, FiniteFunction function,
+            IReadOnlyList<IExpressionExecutor> arguments,
             TextWriter output)
         {
             var argument0 = arguments[0].Execute(frame, output);
@@ -77,7 +81,8 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             return function.Invoke1(frame, argument0, output);
         }
 
-        private static Value EvaluateFinite2(Frame frame, FiniteFunction function, IReadOnlyList<IExpressionExecutor> arguments,
+        private static Value EvaluateFinite2(Frame frame, FiniteFunction function,
+            IReadOnlyList<IExpressionExecutor> arguments,
             TextWriter output)
         {
             var argument0 = arguments[0].Execute(frame, output);
@@ -86,7 +91,8 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             return function.Invoke2(frame, argument0, argument1, output);
         }
 
-        private static Value EvaluateFinite3(Frame frame, FiniteFunction function, IReadOnlyList<IExpressionExecutor> arguments,
+        private static Value EvaluateFinite3(Frame frame, FiniteFunction function,
+            IReadOnlyList<IExpressionExecutor> arguments,
             TextWriter output)
         {
             var argument0 = arguments[0].Execute(frame, output);
@@ -96,7 +102,8 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             return function.Invoke3(frame, argument0, argument1, argument2, output);
         }
 
-        private static Value EvaluateNothing(Frame frame, FiniteFunction function, IReadOnlyList<IExpressionExecutor> arguments,
+        private static Value EvaluateNothing(Frame frame, FiniteFunction function,
+            IReadOnlyList<IExpressionExecutor> arguments,
             TextWriter output)
         {
             return Value.Undefined;

@@ -88,7 +88,6 @@ namespace Cottle.Builtins
 
                 default:
                     throw new InvalidOperationException();
-
             }
         }, 1, int.MaxValue);
 

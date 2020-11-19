@@ -48,7 +48,8 @@ namespace Cottle.Test.Parsers
 
         [Test]
         [TestCase("{for i in c:x}", "", "i", ExpressionType.Symbol, StatementType.Literal, StatementType.None)]
-        [TestCase("{for k, v in []:{echo i}|empty:x}", "k", "v", ExpressionType.Map, StatementType.Echo, StatementType.Literal)]
+        [TestCase("{for k, v in []:{echo i}|empty:x}", "k", "v", ExpressionType.Map, StatementType.Echo,
+            StatementType.Literal)]
         public void Parse_StatementFor(string template, string expectedKey, string expectedValue, int expectedOperand,
             int expectedBody, int expectedNext)
         {
@@ -124,7 +125,7 @@ namespace Cottle.Test.Parsers
             Assert.That(statement.Type, Is.EqualTo(StatementType.Literal));
             Assert.That(statement.Value, Is.EqualTo(expected));
         }
-        
+
         [TestCase("{1", 2, 0, "expected end of block, found end of stream")]
         [TestCase("{1.2.3", 5, 1, "expected field name, found 3")]
         [TestCase("{\"abc", 1, 4, "expected expression, found unfinished string")]

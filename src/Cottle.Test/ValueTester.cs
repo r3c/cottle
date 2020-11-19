@@ -71,6 +71,7 @@ namespace Cottle.Test
             ValueTester.AssertEquals(Value.Undefined, Value.Undefined, true);
             ValueTester.AssertEquals(Value.Undefined, Value.False, false);
         }
+
         [Test]
         [TestCase(false)]
         [TestCase(true)]
@@ -141,7 +142,7 @@ namespace Cottle.Test
 
             Assert.That(value.Type, Is.EqualTo(ValueContent.Number));
             Assert.That(value.AsNumber, Is.EqualTo(17d));
-            
+
             evaluable.Setup(e => e.Type).Returns(ValueContent.Function);
             evaluable.Setup(e => e.AsFunction).Returns(Function.CreatePure((s, a) => 42));
 
@@ -329,11 +330,11 @@ namespace Cottle.Test
 
         private static void AssertEquals(Value operand1, Value operand2, bool expected)
         {
-            Assert.That(operand1 == operand2, Is.EqualTo(expected));            
+            Assert.That(operand1 == operand2, Is.EqualTo(expected));
             Assert.That(Value.FromLazy(() => operand1) == operand2, Is.EqualTo(expected));
             Assert.That(operand1 == Value.FromLazy(() => operand2), Is.EqualTo(expected));
             Assert.That(Value.FromLazy(() => operand1) == Value.FromLazy(() => operand2), Is.EqualTo(expected));
-            Assert.That(operand2 == operand1, Is.EqualTo(expected));            
+            Assert.That(operand2 == operand1, Is.EqualTo(expected));
             Assert.That(Value.FromLazy(() => operand2) == operand1, Is.EqualTo(expected));
             Assert.That(operand2 == Value.FromLazy(() => operand1), Is.EqualTo(expected));
             Assert.That(Value.FromLazy(() => operand2) == Value.FromLazy(() => operand1), Is.EqualTo(expected));

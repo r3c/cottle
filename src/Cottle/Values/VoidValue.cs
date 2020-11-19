@@ -5,8 +5,7 @@ namespace Cottle.Values
 {
     public sealed class VoidValue : BaseValue
     {
-        [Obsolete("Use `Value.Undefined`")]
-        public static VoidValue Instance { get; } = new VoidValue();
+        [Obsolete("Use `Value.Undefined`")] public static VoidValue Instance { get; } = new VoidValue();
 
         public override bool AsBoolean => false;
 

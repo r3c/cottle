@@ -40,13 +40,15 @@ namespace Cottle.Documents.Evaluated
             return new EchoStatementExecutor(expression);
         }
 
-        protected override IStatementExecutor CreateStatementFor(IExpressionExecutor source, Symbol? key, Symbol value, IStatementExecutor body,
+        protected override IStatementExecutor CreateStatementFor(IExpressionExecutor source, Symbol? key, Symbol value,
+            IStatementExecutor body,
             IStatementExecutor empty)
         {
             return new ForStatementExecutor(source, key, value, body, empty);
         }
 
-        protected override IStatementExecutor CreateStatementIf(IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
+        protected override IStatementExecutor CreateStatementIf(
+            IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
             IStatementExecutor fallback)
         {
             return new IfStatementExecutor(branches, fallback);
@@ -72,7 +74,8 @@ namespace Cottle.Documents.Evaluated
             return new UnwrapStatementExecutor(body);
         }
 
-        protected override IStatementExecutor CreateStatementWhile(IExpressionExecutor condition, IStatementExecutor body)
+        protected override IStatementExecutor CreateStatementWhile(IExpressionExecutor condition,
+            IStatementExecutor body)
         {
             return new WhileStatementExecutor(condition, body);
         }
@@ -82,7 +85,8 @@ namespace Cottle.Documents.Evaluated
             return new WrapStatementExecutor(modifier, body);
         }
 
-        protected override IExpressionExecutor CreateExpressionAccess(IExpressionExecutor source, IExpressionExecutor subscript)
+        protected override IExpressionExecutor CreateExpressionAccess(IExpressionExecutor source,
+            IExpressionExecutor subscript)
         {
             return new AccessExpressionExecutor(source, subscript);
         }
@@ -92,12 +96,14 @@ namespace Cottle.Documents.Evaluated
             return new ConstantExpressionExecutor(value);
         }
 
-        protected override IExpressionExecutor CreateExpressionInvoke(IExpressionExecutor caller, IReadOnlyList<IExpressionExecutor> arguments)
+        protected override IExpressionExecutor CreateExpressionInvoke(IExpressionExecutor caller,
+            IReadOnlyList<IExpressionExecutor> arguments)
         {
             return new InvokeExpressionExecutor(caller, arguments);
         }
 
-        protected override IExpressionExecutor CreateExpressionMap(IReadOnlyList<KeyValuePair<IExpressionExecutor, IExpressionExecutor>> elements)
+        protected override IExpressionExecutor CreateExpressionMap(
+            IReadOnlyList<KeyValuePair<IExpressionExecutor, IExpressionExecutor>> elements)
         {
             return new MapExpressionExecutor(elements);
         }

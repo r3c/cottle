@@ -17,7 +17,8 @@ namespace Cottle.Documents
 
         private readonly ISetting _setting;
 
-        [Obsolete("Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
+        [Obsolete(
+            "Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(TextReader reader, ISetting setting)
         {
             var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
@@ -35,7 +36,8 @@ namespace Cottle.Documents
         {
         }
 
-        [Obsolete("Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
+        [Obsolete(
+            "Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(string template, ISetting setting) :
             this(new StringReader(template), setting)
         {

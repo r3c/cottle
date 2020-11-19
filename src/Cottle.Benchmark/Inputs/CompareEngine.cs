@@ -79,7 +79,7 @@ namespace Cottle.Benchmark.Inputs
                 };
             });
 
-                // Render template with DotLiquid
+            // Render template with DotLiquid
             yield return new Input<Func<Func<Func<string>>>>(nameof(DotLiquid), () =>
             {
                 const string source = @"

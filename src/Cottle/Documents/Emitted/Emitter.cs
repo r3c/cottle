@@ -89,7 +89,7 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Action<TextWriter>>(w => w.Write(default(string)));
 
         private static readonly MethodInfo ValueAsBooleanGet =
-            Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod();        
+            Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod();
 
         private static readonly MethodInfo ValueAsFunctionGet =
             Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod();

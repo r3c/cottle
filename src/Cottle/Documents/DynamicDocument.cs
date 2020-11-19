@@ -14,7 +14,8 @@ namespace Cottle.Documents
     {
         private readonly IDocument _document;
 
-        [Obsolete("Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
+        [Obsolete(
+            "Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(TextReader reader, ISetting setting)
         {
             _document = Document.CreateNative(reader, AbstractDocument.CreateConfiguration(setting)).DocumentOrThrow;
@@ -26,7 +27,8 @@ namespace Cottle.Documents
         {
         }
 
-        [Obsolete("Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
+        [Obsolete(
+            "Use `Document.CreateNative(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public DynamicDocument(string template, ISetting setting) :
             this(new StringReader(template), setting)
         {

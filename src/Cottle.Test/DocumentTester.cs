@@ -348,7 +348,9 @@ namespace Cottle.Test
         [TestCase("i, j", "[1, 5, 9]", "{i}{j}", null, "011529")]
         public void Render_StatementFor(string pairs, string source, string body, string empty, string expected)
         {
-            AssertOutput("{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) + "}", expected);
+            AssertOutput(
+                "{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) +
+                "}", expected);
         }
 
         [Test]

@@ -7,8 +7,7 @@ namespace Cottle.Values
 {
     public sealed class MapValue : BaseValue
     {
-        [Obsolete("Use `Value.EmptyMap`")]
-        public static MapValue Empty { get; } = new MapValue();
+        [Obsolete("Use `Value.EmptyMap`")] public static MapValue Empty { get; } = new MapValue();
 
         public override bool AsBoolean => Fields.Count > 0;
 

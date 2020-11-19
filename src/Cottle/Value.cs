@@ -419,27 +419,21 @@ namespace Cottle
         [StructLayout(LayoutKind.Explicit)]
         private struct UnionReference
         {
-            [FieldOffset(0)]
-            public IFunction Function;
+            [FieldOffset(0)] public IFunction Function;
 
-            [FieldOffset(0)]
-            public IEvaluable Evaluable;
+            [FieldOffset(0)] public IEvaluable Evaluable;
 
-            [FieldOffset(0)]
-            public IMap Map;
+            [FieldOffset(0)] public IMap Map;
 
-            [FieldOffset(0)]
-            public string String;
+            [FieldOffset(0)] public string String;
         }
 
         [StructLayout(LayoutKind.Explicit)]
         private struct UnionValue
         {
-            [FieldOffset(0)]
-            public bool Boolean;
+            [FieldOffset(0)] public bool Boolean;
 
-            [FieldOffset(0)]
-            public double Number;
+            [FieldOffset(0)] public double Number;
         }
 
         public ValueContent Type => _type == Value.ContentEvaluable ? _unionReference.Evaluable.Type : _type;
