@@ -4,8 +4,6 @@ TODO list
 TODO
 ----
 
-- Implement new "RemoveIndent" builtin trimmer to replace "TrimIndentCharacters"
-- Use fixed arguments instead of arguments array in `EmittedDocument`
 - Leverage `FiniteFunction` for defined functions with 4 arguments or less
 - New syntax with {{ }} default separators & multiple statements support
 - Provide sample `include` function in documentation
@@ -13,6 +11,8 @@ TODO
 DONE
 ----
 
+- Use fixed arguments instead of arguments array in `EmittedDocument`
+- Implement new "RemoveIndent" builtin trimmer to replace "TrimIndentCharacters"
 - Use pool for allocated locals (Cottle.Documents.Dynamic.Compiler)
 - Fix scope enter/leave issue with "return" keyword (Cottle.Documents.Dynamic.Compiler)
 - Optimize string and value storage lookup (Cottle.Documents.Dynamic.Compiler)
