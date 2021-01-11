@@ -250,7 +250,7 @@ You'll most probably want to escape unsafe values (e.g. user input) before print
 .. code-block:: csharp
     :caption: C# source
 
-    var htmlEncode = Function.CreatePure1((s, v) => HttpUtility.HtmlEncode(v));
+    var htmlEncode = Function.CreatePure1((s, v) => HttpUtility.HtmlEncode(v.AsString));
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
         ["html"] = Value.FromFunction(htmlEncode),
