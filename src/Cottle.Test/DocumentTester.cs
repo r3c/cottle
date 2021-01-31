@@ -440,7 +440,7 @@ namespace Cottle.Test
                 new Dictionary<Value, Value>
                 {
                     ["parent"] = new Dictionary<Value, Value>
-                        { ["child"] = new Dictionary<Value, Value> { ["value"] = "53" }, ["value"] = "42" }
+                    { ["child"] = new Dictionary<Value, Value> { ["value"] = "53" }, ["value"] = "42" }
                 }), "4253");
         }
 

@@ -30,7 +30,7 @@ namespace Cottle.Parsers.Forward
 
         public LexerNode MoveTo(char character, StringBuilder output)
         {
-            for (var current = this;; current = current.FallbackNode)
+            for (var current = this; ; current = current.FallbackNode)
             {
                 if (current.Children != null && current.Children.TryGetValue(character, out var next))
                     return next;
