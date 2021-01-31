@@ -67,7 +67,9 @@ namespace Cottle.Benchmark.Inputs
                 {
                     ["products"] = CompareEngine.Products.Select(p => (Value)new Dictionary<Value, Value>
                     {
-                        ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
+                        ["description"] = p.Description,
+                        ["name"] = p.Name,
+                        ["price"] = p.Price
                     }).ToArray()
                 });
 
@@ -94,11 +96,14 @@ namespace Cottle.Benchmark.Inputs
 
                 var renderParameters = new RenderParameters(CultureInfo.InvariantCulture)
                 {
-                    Filters = new[] { typeof(DotLiquidFilter) }, LocalVariables = Hash.FromAnonymousObject(new
+                    Filters = new[] { typeof(DotLiquidFilter) },
+                    LocalVariables = Hash.FromAnonymousObject(new
                     {
                         products = CompareEngine.Products.Select(p => new Dictionary<string, object>
                         {
-                            ["description"] = p.Description, ["name"] = p.Name, ["price"] = p.Price
+                            ["description"] = p.Description,
+                            ["name"] = p.Name,
+                            ["price"] = p.Price
                         }).ToArray()
                     })
                 };
@@ -180,7 +185,8 @@ namespace Cottle.Benchmark.Inputs
                     ["products"] = CompareEngine.Products.Select(p => new Dictionary<string, object>
                     {
                         ["description"] = p.Description.Substring(0, Math.Min(p.Description.Length, 15)),
-                        ["name"] = p.Name, ["price"] = p.Price.ToString("f1", CultureInfo.GetCultureInfo("en-US"))
+                        ["name"] = p.Name,
+                        ["price"] = p.Price.ToString("f1", CultureInfo.GetCultureInfo("en-US"))
                     }).ToArray()
                 };
 
@@ -251,7 +257,7 @@ namespace Cottle.Benchmark.Inputs
         }
 
         private static readonly IReadOnlyList<Product> Products = Enumerable.Range(0, 5).Select(i => new Product
-                { Description = "Description " + new string('#', i + 1), Name = $"Product {i}", Price = i * 0.3f })
+        { Description = "Description " + new string('#', i + 1), Name = $"Product {i}", Price = i * 0.3f })
             .ToList();
 
         public struct Product

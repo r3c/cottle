@@ -14,7 +14,7 @@ namespace Cottle.Test.Parsers
         public void Parse_Ambiguous_Block(string blockBegin, string blockEnd, string expression, string expected)
         {
             var configuration = new DocumentConfiguration
-                { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
+            { BlockBegin = blockBegin, BlockContinue = "<>", BlockEnd = blockEnd };
             var statement = ForwardParserTester.Parse(ForwardParserTester.Create(configuration),
                 blockBegin + expression + blockEnd);
 
