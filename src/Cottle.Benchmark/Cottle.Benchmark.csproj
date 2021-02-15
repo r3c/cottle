@@ -16,7 +16,7 @@
       <PackageReference Include="Fluid.Core" Version="1.0.0" />
       <PackageReference Include="Mustachio" Version="2.1.0" />
       <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
-      <PackageReference Include="Scriban" Version="3.4.1" />
+      <PackageReference Include="Scriban" Version="3.5.0" />
     </ItemGroup>
 
 </Project>
