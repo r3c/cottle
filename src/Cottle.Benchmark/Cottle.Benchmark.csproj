@@ -12,7 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-      <PackageReference Include="DotLiquid" Version="2.1.400" />
+      <PackageReference Include="DotLiquid" Version="2.1.405" />
       <PackageReference Include="Fluid.Core" Version="1.0.0" />
       <PackageReference Include="Mustachio" Version="2.1.0" />
       <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
