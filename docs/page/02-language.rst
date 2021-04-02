@@ -442,7 +442,7 @@ You can assign variables during rendering with the ``set`` command. Variable ass
         }
     }
 
-    {nb_long} message{if nb_long > 1:s is|else: are} more than 20 characters long.
+    {nb_long} message{if nb_long > 1:s are|else: is} more than 20 characters long.
 
 .. code-block:: csharp
     :caption: C# source
