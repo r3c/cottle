@@ -1,4 +1,4 @@
-name: validate
+name: Validation
 
 on:
   - pull_request
@@ -27,7 +27,7 @@ jobs:
       - run: dotnet-format --check src/Cottle.sln
 
   build:
-    name: Build and test code (.NET v${{ matrix.dotnet.version }})
+    name: Build and test (.NET v${{ matrix.dotnet.version }})
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -46,4 +46,6 @@ jobs:
           dotnet-version: ${{ matrix.dotnet.version }}
       - run: dotnet restore src/Cottle.sln
       - run: dotnet build src/Cottle -f ${{ matrix.dotnet.framework_dll }}
+      - run: dotnet build src/Cottle.Benchmark -f ${{ matrix.dotnet.framework_app }}
+      - run: dotnet build src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
       - run: dotnet test src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
