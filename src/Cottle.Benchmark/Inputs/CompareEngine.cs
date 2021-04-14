@@ -129,10 +129,10 @@ namespace Cottle.Benchmark.Inputs
   {% endfor %}
 </ul>";
 
-                var context = new Fluid.TemplateContext();
+                var options = new TemplateOptions();
 
                 // Copy of "slice" filter with added missing safety check on length and no support for negative start
-                context.Filters.AddFilter("safeslice", (input, arguments, _) =>
+                options.Filters.AddFilter("safeslice", (input, arguments, _) =>
                 {
                     var inputString = input.ToStringValue();
                     var rawStart = Convert.ToInt32(arguments.At(0).ToNumberValue());
@@ -145,7 +145,7 @@ namespace Cottle.Benchmark.Inputs
                 });
 
                 // Formatting filter from floating point value to string
-                context.Filters.AddFilter("tostring", (input, arguments, _) =>
+                options.Filters.AddFilter("tostring", (input, arguments, _) =>
                 {
                     var format = arguments.At(0).ToStringValue();
                     var culture = CultureInfo.GetCultureInfo(arguments.At(1).ToStringValue());
@@ -153,13 +153,18 @@ namespace Cottle.Benchmark.Inputs
                     return new StringValue(input.ToNumberValue().ToString(format, culture));
                 });
 
-                context.MemberAccessStrategy.Register<Product>();
+                options.MemberAccessStrategy.Register<Product>(nameof(Product.Description), nameof(Product.Name), nameof(Product.Price));
+
+                var context = new Fluid.TemplateContext(options);
+
                 context.SetValue("products", CompareEngine.Products);
 
                 return () =>
                 {
-                    if (!BaseFluidTemplate<FluidTemplate>.TryParse(source, out var template, out var messages))
-                        throw new ArgumentOutOfRangeException(nameof(source), string.Join(", ", messages));
+                    var parser = new FluidParser();
+
+                    if (!parser.TryParse(source, out var template, out var error))
+                        throw new ArgumentOutOfRangeException(nameof(source), error);
 
                     return () => template.Render(context);
                 };
