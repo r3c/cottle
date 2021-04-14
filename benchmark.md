@@ -77,7 +77,7 @@ Benchmark scores
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":14038,"render":5636},"DotLiquid":{"create":63789,"render":231372},"Fluid":{"create":29645,"render":6900},"Mustachio":{"create":9366,"render":10084},"RazorLight":{"create":65049,"render":90395},"Scriban":{"create":13004,"render":23572}};
+        var benchmarks = {"Cottle":{"create":14665,"render":5750},"DotLiquid":{"create":33345,"render":160614},"Fluid":{"create":17834,"render":7972},"Mustachio":{"create":9047,"render":10621},"RazorLight":{"create":65547,"render":111149},"Scriban":{"create":13466,"render":22924}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
