@@ -1,15 +1,8 @@
 version: 2
 updates:
-- package-ecosystem: nuget
-  directory: "/src"
-  schedule:
-    interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: NUnit
-    versions:
-    - 3.13.1
-  - dependency-name: Scriban
-    versions:
-    - 3.4.2
+  - package-ecosystem: nuget
+    directory: "/src"
+    schedule:
+      interval: daily
+      time: "04:00"
+    open-pull-requests-limit: 10
