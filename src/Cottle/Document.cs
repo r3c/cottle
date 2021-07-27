@@ -72,7 +72,7 @@ namespace Cottle
         private static DocumentResult Create(TextReader template, DocumentConfiguration configuration,
             Func<Statement, IDocument> constructor)
         {
-            var parser = ParserFactory.BuildParser(configuration);
+            var parser = Parser.Create(configuration);
 
             return parser.Parse(template, out var statement, out var reports)
                 ? DocumentResult.CreateSuccess(constructor(statement))
