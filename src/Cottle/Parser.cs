@@ -2,9 +2,9 @@
 
 namespace Cottle
 {
-    internal static class ParserFactory
+    internal static class Parser
     {
-        public static IParser BuildParser(DocumentConfiguration configuration)
+        public static IParser Create(DocumentConfiguration configuration)
         {
             var blockBegin = configuration.BlockBegin ?? DocumentConfiguration.DefaultBlockBegin;
             var blockContinue = configuration.BlockContinue ?? DocumentConfiguration.DefaultBlockContinue;

@@ -21,7 +21,7 @@ namespace Cottle.Documents
             "Use `Document.CreateDefault(template, configuration).DocumentOrThrow` to get an equivalent document instance")]
         public SimpleDocument(TextReader reader, ISetting setting)
         {
-            var parser = ParserFactory.BuildParser(AbstractDocument.CreateConfiguration(setting));
+            var parser = Parser.Create(AbstractDocument.CreateConfiguration(setting));
 
             if (!parser.Parse(reader, out var statement, out var reports))
                 throw AbstractDocument.CreateException(reports);
