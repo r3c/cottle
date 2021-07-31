@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Cottle.Maps
@@ -13,48 +12,6 @@ namespace Cottle.Maps
         }
 
         public override int Count => _count;
-
-        private class GeneratorEnumerator : IEnumerator<KeyValuePair<Value, Value>>
-        {
-            public GeneratorEnumerator(Func<int, Value> generator, int count)
-            {
-                _count = count;
-                Current = new KeyValuePair<Value, Value>(Value.Undefined, Value.Undefined);
-                _generator = generator;
-                _index = 0;
-            }
-
-            public KeyValuePair<Value, Value> Current { get; private set; }
-
-            object IEnumerator.Current => Current;
-
-            private readonly int _count;
-
-            private readonly Func<int, Value> _generator;
-
-            private int _index;
-
-            public void Dispose()
-            {
-            }
-
-            public bool MoveNext()
-            {
-                if (_index >= _count)
-                    return false;
-
-                Current = new KeyValuePair<Value, Value>(_index, _generator(_index));
-
-                ++_index;
-
-                return true;
-            }
-
-            public void Reset()
-            {
-                _index = 0;
-            }
-        }
 
         private readonly int _count;
 
@@ -72,7 +29,8 @@ namespace Cottle.Maps
 
         public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
         {
-            return new GeneratorEnumerator(_generator, _count);
+            for (var i = 0; i < _count; ++i)
+                yield return new KeyValuePair<Value, Value>(i, _generator(i));
         }
 
         public override bool TryGet(Value key, out Value value)

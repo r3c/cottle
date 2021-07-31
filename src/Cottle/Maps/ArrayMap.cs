@@ -1,19 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Cottle.Maps
 {
     internal class ArrayMap : AbstractMap
     {
-        private readonly List<KeyValuePair<Value, Value>> _array;
+        private readonly List<Value> _array;
 
         public ArrayMap(IEnumerable<Value> array)
         {
-            _array = new List<KeyValuePair<Value, Value>>();
-
-            var key = 0;
-
-            foreach (var value in array)
-                _array.Add(new KeyValuePair<Value, Value>(key++, value));
+            _array = array.ToList();
         }
 
         public override int Count => _array.Count;
@@ -30,7 +26,8 @@ namespace Cottle.Maps
 
         public override IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
         {
-            return _array.GetEnumerator();
+            for (var i = 0; i < _array.Count; ++i)
+                yield return new KeyValuePair<Value, Value>(i, _array[i]);
         }
 
         public override bool TryGet(Value key, out Value value)
@@ -51,7 +48,7 @@ namespace Cottle.Maps
                 return false;
             }
 
-            value = _array[index].Value;
+            value = _array[index];
 
             return true;
         }
