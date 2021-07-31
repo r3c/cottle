@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Cottle.Parsers.Optimize.Optimizers;
 
 namespace Cottle.Parsers
@@ -13,9 +12,9 @@ namespace Cottle.Parsers
             _parser = parser;
         }
 
-        public bool Parse(TextReader reader, out Statement statement, out IEnumerable<DocumentReport> reports)
+        public bool Parse(TextReader reader, ParserState state, out Statement statement)
         {
-            if (!_parser.Parse(reader, out var original, out reports))
+            if (!_parser.Parse(reader, state, out var original))
             {
                 statement = default;
 

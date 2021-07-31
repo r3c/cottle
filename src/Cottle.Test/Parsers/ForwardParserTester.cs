@@ -137,9 +137,11 @@ namespace Cottle.Test.Parsers
 
             using (var reader = new StringReader(template))
             {
-                Assert.That(parser.Parse(reader, out _, out var reports), Is.False);
+                var state = new ParserState();
 
-                var firstError = reports.FirstOrDefault(r => r.Severity == DocumentSeverity.Error);
+                Assert.That(parser.Parse(reader, state, out _), Is.False);
+
+                var firstError = state.Reports.FirstOrDefault(r => r.Severity == DocumentSeverity.Error);
 
                 Assert.That(firstError.Length, Is.EqualTo(expectedLength));
                 Assert.That(firstError.Message, Does.Contain(expectedMessage));
@@ -158,7 +160,9 @@ namespace Cottle.Test.Parsers
         {
             using (var reader = new StringReader(template))
             {
-                Assert.That(parser.Parse(reader, out var statement, out _), Is.True);
+                var state = new ParserState();
+
+                Assert.That(parser.Parse(reader, state, out var statement), Is.True);
 
                 return statement;
             }

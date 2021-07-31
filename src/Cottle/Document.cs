@@ -73,10 +73,11 @@ namespace Cottle
             Func<Statement, IDocument> constructor)
         {
             var parser = Parser.Create(configuration);
+            var state = new ParserState();
 
-            return parser.Parse(template, out var statement, out var reports)
-                ? DocumentResult.CreateSuccess(constructor(statement))
-                : DocumentResult.CreateFailure(reports);
+            return parser.Parse(template, state, out var statement)
+                ? DocumentResult.CreateSuccess(constructor(statement), state.Reports)
+                : DocumentResult.CreateFailure(state.Reports);
         }
     }
 }

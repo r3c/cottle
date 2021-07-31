@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle", "Cottle\Cottle.csproj", "{E470D87D-19CB-4B4D-8C64-30C8DCA97755}"
 EndProject
@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Demo", "Cottle.Demo\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Test", "Cottle.Test\Cottle.Test.csproj", "{2F987317-BC12-46DB-BFDE-E54932155AF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cottle.Benchmark", "Cottle.Benchmark\Cottle.Benchmark.csproj", "{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cottle.Benchmark", "Cottle.Benchmark\Cottle.Benchmark.csproj", "{1FB80F2A-5A0A-4D21-9B38-F2A5FCD8C20A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1825992E-6F7F-4FC6-AF10-1081DE347CCF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

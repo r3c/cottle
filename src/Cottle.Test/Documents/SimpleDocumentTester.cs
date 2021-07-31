@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Cottle.Documents;
 using Cottle.Settings;
@@ -49,7 +50,7 @@ namespace Cottle.Test.Documents
             };
 
 #pragma warning disable 618
-            return DocumentResult.CreateSuccess(new SimpleDocument(template, settings));
+            return DocumentResult.CreateSuccess(new SimpleDocument(template, settings), Array.Empty<DocumentReport>());
 #pragma warning restore 618
         }
     }

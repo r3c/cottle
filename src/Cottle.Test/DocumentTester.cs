@@ -475,7 +475,7 @@ namespace Cottle.Test
 
         protected abstract DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration);
 
-        protected void AssertOutput(string source, DocumentConfiguration configuration, IContext context,
+        protected DocumentResult AssertOutput(string source, DocumentConfiguration configuration, IContext context,
             string expected)
         {
             using (var template = new StringReader(source))
@@ -484,12 +484,14 @@ namespace Cottle.Test
                 var output = result.DocumentOrThrow.Render(context);
 
                 Assert.That(output, Is.EqualTo(expected), "Invalid rendered output");
+
+                return result;
             }
         }
 
-        protected void AssertOutput(string source, string expected)
+        protected DocumentResult AssertOutput(string source, string expected)
         {
-            AssertOutput(source, _configuration, Context.Empty, expected);
+            return AssertOutput(source, _configuration, Context.Empty, expected);
         }
 
         private void AssertReturn(string source, DocumentConfiguration configuration, IContext context,
