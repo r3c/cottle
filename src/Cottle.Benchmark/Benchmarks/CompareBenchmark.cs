@@ -17,8 +17,8 @@ namespace Cottle.Benchmark.Benchmarks
 
         public static IEnumerable<Input<Func<Func<Func<string>>>>> Engines => CompareEngine.GetInputs();
 
-        private Func<Func<string>> _constructor;
-        private Func<string> _renderer;
+        private Func<Func<string>>? _constructor;
+        private Func<string>? _renderer;
 
         [GlobalCleanup]
         public void Cleanup()
@@ -28,15 +28,15 @@ namespace Cottle.Benchmark.Benchmarks
         }
 
         [Benchmark]
-        public object Create()
+        public object? Create()
         {
-            return _constructor();
+            return _constructor is not null ? _constructor() : null;
         }
 
         [Benchmark]
-        public object Render()
+        public object? Render()
         {
-            return _renderer();
+            return _renderer is not null ? _renderer() : null;
         }
 
         [GlobalSetup]

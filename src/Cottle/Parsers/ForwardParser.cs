@@ -79,7 +79,7 @@ namespace Cottle.Parsers
                 _lexer.NextRaw();
             } while (_lexer.Current.Type == LexemType.Text);
 
-            statement = null;
+            statement = Statement.NoOp;
 
             return true;
         }
@@ -110,7 +110,7 @@ namespace Cottle.Parsers
         {
             if (!TryParseSymbol(state, out var element))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -124,7 +124,7 @@ namespace Cottle.Parsers
 
                 if (!TryParseSymbol(state, out value))
                 {
-                    statement = default;
+                    statement = Statement.NoOp;
 
                     return false;
                 }
@@ -141,7 +141,7 @@ namespace Cottle.Parsers
                 !TryParseExpression(state, out var source) ||
                 !TryParseStatementBody(state, out var body))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -155,7 +155,7 @@ namespace Cottle.Parsers
                 if (!TryParseExpected(state, LexemType.Symbol, "empty", "'empty' keyword") ||
                     !TryParseStatementBody(state, out empty))
                 {
-                    statement = default;
+                    statement = Statement.NoOp;
 
                     return false;
                 }
@@ -173,7 +173,7 @@ namespace Cottle.Parsers
             if (!TryParseExpression(state, out var ifCondition) ||
                 !TryParseStatementBody(state, out var ifBody))
             {
-                statement = null;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -196,7 +196,7 @@ namespace Cottle.Parsers
                         if (!TryParseExpression(state, out var elifCondition) ||
                             !TryParseStatementBody(state, out var elifBody))
                         {
-                            statement = default;
+                            statement = Statement.NoOp;
 
                             return false;
                         }
@@ -210,7 +210,7 @@ namespace Cottle.Parsers
 
                         if (!TryParseStatementBody(state, out var elseBody))
                         {
-                            statement = default;
+                            statement = Statement.NoOp;
 
                             return false;
                         }
@@ -223,7 +223,7 @@ namespace Cottle.Parsers
                     default:
                         state.AddReport(CreateReportExpected("'elif' or 'else' keyword"));
 
-                        statement = default;
+                        statement = Statement.NoOp;
 
                         return false;
                 }
@@ -251,7 +251,7 @@ namespace Cottle.Parsers
         {
             if (!TryParseStatementBody(state, out var body))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -266,7 +266,7 @@ namespace Cottle.Parsers
             if (!TryParseExpression(state, out var condition) ||
                 !TryParseStatementBody(state, out var body))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -281,7 +281,7 @@ namespace Cottle.Parsers
             if (!TryParseExpression(state, out var wrapper) ||
                 !TryParseStatementBody(state, out var body))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -293,11 +293,11 @@ namespace Cottle.Parsers
 
         private bool TryParseAssignment(ParserState state, StoreMode mode, out Statement statement)
         {
-            List<string> arguments;
+            List<string>? arguments;
 
             if (!TryParseSymbol(state, out var name))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -311,7 +311,7 @@ namespace Cottle.Parsers
                 {
                     if (!TryParseSymbol(state, out var symbol))
                     {
-                        statement = default;
+                        statement = Statement.NoOp;
 
                         return false;
                     }
@@ -360,7 +360,7 @@ namespace Cottle.Parsers
                 {
                     if (!TryParseExpected(state, LexemType.Symbol, "to", "'to' keyword"))
                     {
-                        statement = default;
+                        statement = Statement.NoOp;
 
                         return false;
                     }
@@ -368,7 +368,7 @@ namespace Cottle.Parsers
             }
             else if (!TryParseExpected(state, LexemType.Symbol, "as", "'as' keyword"))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -378,7 +378,7 @@ namespace Cottle.Parsers
             {
                 if (!TryParseStatementBody(state, out var body))
                 {
-                    statement = default;
+                    statement = Statement.NoOp;
 
                     return false;
                 }
@@ -393,7 +393,7 @@ namespace Cottle.Parsers
             {
                 if (!TryParseStatementBody(state, out var body))
                 {
-                    statement = default;
+                    statement = Statement.NoOp;
 
                     return false;
                 }
@@ -406,7 +406,7 @@ namespace Cottle.Parsers
             // No arguments and no literal body, build value assignment
             if (!TryParseExpression(state, out var operand))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -437,7 +437,7 @@ namespace Cottle.Parsers
             if (TryParseValue(state, out var operand))
                 return TryParseExpressionOperand(state, operand, out expression);
 
-            expression = default;
+            expression = Expression.Void;
 
             return false;
         }
@@ -548,7 +548,7 @@ namespace Cottle.Parsers
 
                 if (!TryParseValue(state, out var operand))
                 {
-                    expression = default;
+                    expression = Expression.Void;
 
                     return false;
                 }
@@ -606,7 +606,7 @@ namespace Cottle.Parsers
                             {
                                 if (!TryParseExpressionOperand(state, symbol, out var operand))
                                 {
-                                    c = default;
+                                    c = Statement.NoOp;
 
                                     return false;
                                 }
@@ -626,7 +626,7 @@ namespace Cottle.Parsers
                         // Use delegate defined above to parse recognized command
                         if (!blockParse(this, state, out var blockStatement))
                         {
-                            statement = default;
+                            statement = Statement.NoOp;
 
                             return false;
                         }
@@ -635,7 +635,7 @@ namespace Cottle.Parsers
                         {
                             state.AddReport(CreateReportExpected("end of block"));
 
-                            statement = default;
+                            statement = Statement.NoOp;
 
                             return false;
                         }
@@ -658,7 +658,7 @@ namespace Cottle.Parsers
                     default:
                         state.AddReport(CreateReportExpected("text or block begin ('{')"));
 
-                        statement = default;
+                        statement = Statement.NoOp;
 
                         return false;
                 }
@@ -687,7 +687,7 @@ namespace Cottle.Parsers
             {
                 state.AddReport(CreateReportExpected("body separator (':')"));
 
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -701,7 +701,7 @@ namespace Cottle.Parsers
         {
             if (!TryParseExpression(state, out var operand))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }
@@ -719,7 +719,7 @@ namespace Cottle.Parsers
             {
                 state.AddReport(CreateReportExpected("symbol (variable name)"));
 
-                name = default;
+                name = string.Empty;
 
                 return false;
             }
@@ -740,7 +740,7 @@ namespace Cottle.Parsers
 
                     if (!TryParseValue(state, out var notExpression))
                     {
-                        expression = default;
+                        expression = Expression.Void;
 
                         return false;
                     }
@@ -757,7 +757,7 @@ namespace Cottle.Parsers
                     {
                         if (!TryParseExpression(state, out var element))
                         {
-                            expression = default;
+                            expression = Expression.Void;
 
                             return false;
                         }
@@ -771,7 +771,7 @@ namespace Cottle.Parsers
 
                             if (!TryParseExpression(state, out value))
                             {
-                                expression = default;
+                                expression = Expression.Void;
 
                                 return false;
                             }
@@ -807,7 +807,7 @@ namespace Cottle.Parsers
 
                     if (!TryParseValue(state, out var minusRhs))
                     {
-                        expression = default;
+                        expression = Expression.Void;
 
                         return false;
                     }
@@ -868,7 +868,7 @@ namespace Cottle.Parsers
                 default:
                     state.AddReport(CreateReportExpected("expression"));
 
-                    expression = default;
+                    expression = Expression.Void;
 
                     return false;
             }

@@ -124,7 +124,7 @@ namespace Cottle.Demo.Forms
 
         private void toolStripMenuItemNodeCreate_Click(object sender, EventArgs e)
         {
-            if (!(contextMenuStripTree.Tag is TreeNode node))
+            if (contextMenuStripTree.Tag is not TreeNode node)
                 return;
 
             new NodeForm(null, (key, value) =>
@@ -144,7 +144,7 @@ namespace Cottle.Demo.Forms
 
         private void toolStripMenuItemNodeUpdate_Click(object sender, EventArgs e)
         {
-            if (!(contextMenuStripTree.Tag is TreeNode node))
+            if (contextMenuStripTree.Tag is not TreeNode node)
                 return;
 
             new NodeForm(node.Tag as NodeData, (key, value) => DemoForm.NodeAssign(node, key, value)).ShowDialog(this);
@@ -171,8 +171,8 @@ namespace Cottle.Demo.Forms
             toolStripMenuItemNodeCreate.Enabled = isRoot || isMapValue;
             toolStripMenuItemNodeDelete.Enabled = !isRoot;
             toolStripMenuItemNodeUpdate.Enabled = !isRoot;
-            toolStripMenuItemMoveDown.Enabled = !isRoot && node.NextNode != null;
-            toolStripMenuItemMoveUp.Enabled = !isRoot && node.PrevNode != null;
+            toolStripMenuItemMoveDown.Enabled = !isRoot && node?.NextNode != null;
+            toolStripMenuItemMoveUp.Enabled = !isRoot && node?.PrevNode != null;
         }
 
         private void DisplayOutput(string text)

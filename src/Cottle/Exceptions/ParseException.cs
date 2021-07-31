@@ -18,6 +18,7 @@ namespace Cottle.Exceptions
         public ParseException(int locationStart, int locationLength, string message) :
             base(message)
         {
+            Lexem = string.Empty;
             LocationLength = locationLength;
             LocationStart = locationStart;
         }

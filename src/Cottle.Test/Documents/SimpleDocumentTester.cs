@@ -26,7 +26,7 @@ namespace Cottle.Test.Documents
         [TestCase("{return [1, 2]}", "{return [0: 1, 1: 2]}")]
         [TestCase("{set b to 2}")]
         [TestCase("{while c:something}")]
-        public void Source(string template, string expected = null)
+        public void Source(string template, string? expected = null)
         {
 #pragma warning disable 618
             var document = new SimpleDocument(template, new CustomSetting { Optimize = false });

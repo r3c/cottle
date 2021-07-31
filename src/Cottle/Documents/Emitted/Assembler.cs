@@ -74,14 +74,14 @@ namespace Cottle.Documents.Emitted
         }
 
         protected override IStatementGenerator CreateStatementFor(IExpressionGenerator source, Symbol? key,
-            Symbol value, IStatementGenerator body, IStatementGenerator empty)
+            Symbol value, IStatementGenerator body, IStatementGenerator? empty)
         {
             return new ForStatementGenerator(source, key, value, body, empty);
         }
 
         protected override IStatementGenerator CreateStatementIf(
             IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches,
-            IStatementGenerator fallback)
+            IStatementGenerator? fallback)
         {
             return new IfStatementGenerator(branches, fallback);
         }

@@ -1,22 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <PreserveCompilationContext>True</PreserveCompilationContext>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PreserveCompilationContext>True</PreserveCompilationContext>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Cottle\Cottle.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cottle\Cottle.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
-      <PackageReference Include="DotLiquid" Version="2.2.508" />
-      <PackageReference Include="Fluid.Core" Version="2.0.13" />
-      <PackageReference Include="Mustachio" Version="2.1.0" />
-      <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
-      <PackageReference Include="Scriban" Version="4.0.1" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
+    <PackageReference Include="DotLiquid" Version="2.2.508" />
+    <PackageReference Include="Fluid.Core" Version="2.0.13" />
+    <PackageReference Include="Mustachio" Version="2.1.0" />
+    <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
+    <PackageReference Include="Scriban" Version="4.0.1" />
+  </ItemGroup>
 
 </Project>

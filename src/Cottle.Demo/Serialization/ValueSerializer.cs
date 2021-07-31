@@ -16,7 +16,7 @@ namespace Cottle.Demo.Serialization
 
                 if (!ValueSerializer.TryReadValue(reader, version, out var value))
                 {
-                    values = default;
+                    values = dictionary;
 
                     return false;
                 }

@@ -172,42 +172,42 @@ namespace Cottle
             return new Value(new string(value, 1));
         }
 
-        public static Value FromDictionary(IReadOnlyDictionary<Value, Value> dictionary)
+        public static Value FromDictionary(IReadOnlyDictionary<Value, Value>? dictionary)
         {
             return new Value(dictionary);
         }
 
-        public static Value FromEnumerable(IEnumerable<KeyValuePair<Value, Value>> pairs)
+        public static Value FromEnumerable(IEnumerable<KeyValuePair<Value, Value>>? pairs)
         {
             return new Value(pairs);
         }
 
-        public static Value FromEnumerable(IEnumerable<Value> elements)
+        public static Value FromEnumerable(IEnumerable<Value>? elements)
         {
             return new Value(elements);
         }
 
-        public static Value FromEvaluable(IEvaluable evaluable)
+        public static Value FromEvaluable(IEvaluable? evaluable)
         {
             return new Value(evaluable);
         }
 
-        public static Value FromFunction(IFunction function)
+        public static Value FromFunction(IFunction? function)
         {
             return new Value(function);
         }
 
-        public static Value FromGenerator(Func<int, Value> generator, int count)
+        public static Value FromGenerator(Func<int, Value>? generator, int count)
         {
             return new Value(generator, count);
         }
 
-        public static Value FromLazy(Func<Value> resolver)
+        public static Value FromLazy(Func<Value>? resolver)
         {
-            return new Value(new LazyEvaluable(resolver));
+            return resolver is not null ? new Value(new LazyEvaluable(resolver)) : Value.Undefined;
         }
 
-        public static Value FromMap(IMap map)
+        public static Value FromMap(IMap? map)
         {
             return new Value(map);
         }
@@ -267,7 +267,7 @@ namespace Cottle
             return ReflectionEvaluable.CreateValue(source, bindingFlags);
         }
 
-        public static Value FromString(string value)
+        public static Value FromString(string? value)
         {
             return new Value(value);
         }
@@ -444,7 +444,7 @@ namespace Cottle
 
         private readonly UnionValue _unionValue;
 
-        private Value(IEvaluable value)
+        private Value(IEvaluable? value)
         {
             if (value == null)
             {
@@ -460,7 +460,7 @@ namespace Cottle
             }
         }
 
-        private Value(IFunction value)
+        private Value(IFunction? value)
         {
             if (value == null)
             {
@@ -476,7 +476,7 @@ namespace Cottle
             }
         }
 
-        private Value(IReadOnlyDictionary<Value, Value> value)
+        private Value(IReadOnlyDictionary<Value, Value>? value)
         {
             if (value == null)
             {
@@ -492,7 +492,7 @@ namespace Cottle
             }
         }
 
-        private Value(IEnumerable<KeyValuePair<Value, Value>> value)
+        private Value(IEnumerable<KeyValuePair<Value, Value>>? value)
         {
             if (value == null)
             {
@@ -508,7 +508,7 @@ namespace Cottle
             }
         }
 
-        private Value(IEnumerable<Value> value)
+        private Value(IEnumerable<Value>? value)
         {
             if (value == null)
             {
@@ -524,7 +524,7 @@ namespace Cottle
             }
         }
 
-        private Value(IMap value)
+        private Value(IMap? value)
         {
             if (value == null)
             {
@@ -540,7 +540,7 @@ namespace Cottle
             }
         }
 
-        private Value(Func<int, Value> generator, int count)
+        private Value(Func<int, Value>? generator, int count)
         {
             if (generator == null)
             {
@@ -570,7 +570,7 @@ namespace Cottle
             _unionValue = new UnionValue { Number = value };
         }
 
-        private Value(string value)
+        private Value(string? value)
         {
             if (value == null)
             {

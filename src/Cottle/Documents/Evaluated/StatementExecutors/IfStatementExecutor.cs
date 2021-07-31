@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -8,10 +7,10 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
     {
         private readonly IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> _branches;
 
-        private readonly IStatementExecutor _fallback;
+        private readonly IStatementExecutor? _fallback;
 
         public IfStatementExecutor(IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
-            IStatementExecutor fallback)
+            IStatementExecutor? fallback)
         {
             _branches = branches;
             _fallback = fallback;

@@ -6,7 +6,7 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class IfNode : INode
     {
-        public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode fallback)
+        public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode? fallback)
         {
             _branches = branches.ToArray();
             _fallback = fallback;
@@ -14,7 +14,7 @@ namespace Cottle.Documents.Simple.Nodes
 
         private readonly KeyValuePair<IEvaluator, INode>[] _branches;
 
-        private readonly INode _fallback;
+        private readonly INode? _fallback;
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {

@@ -13,31 +13,31 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
 
         private static readonly MethodInfo FiniteFunctionInvoke0 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke0(default, default));
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke1 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke1(default, default, default));
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke2 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke2(default, default, default, default));
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke3 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke3(default, default, default, default, default));
+            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
 
         private static readonly FieldInfo FrameArguments =
             Resolver.Field<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
 
         private static readonly MethodInfo FrameEcho =
-            Resolver.Method<Func<Frame, string>>(f => f.Echo(default, default));
+            Resolver.Method<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
 
         private static readonly FieldInfo FrameGlobals = Resolver.Field<Func<Frame, Value[]>>(f => f.Globals);
 
         private static readonly MethodInfo FrameUnwrap = Resolver.Method<Func<Frame, IFunction>>(f => f.Unwrap());
 
-        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame>>(f => f.Wrap(default));
+        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame>>(f => f.Wrap(Function.Empty));
 
         private static readonly MethodInfo FunctionInvoke =
-            Resolver.Method<Func<IFunction, Value>>(f => f.Invoke(default, default, default));
+            Resolver.Method<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
 
         private static readonly ConstructorInfo KeyValueConstructor =
             Resolver.Constructor<Func<KeyValuePair<Value, Value>>>(() =>
@@ -101,7 +101,7 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
 
         private static readonly MethodInfo ValueFromString =
-            Resolver.Method<Func<Value>>(() => Value.FromString(default));
+            Resolver.Method<Func<Value>>(() => Value.FromString(string.Empty));
 
         private static readonly FieldInfo ValueUndefined = Resolver.Field<Func<Value>>(() => Value.Undefined);
 

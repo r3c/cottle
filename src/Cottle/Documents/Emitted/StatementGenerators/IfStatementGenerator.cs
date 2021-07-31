@@ -5,10 +5,10 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     internal class IfStatementGenerator : IStatementGenerator
     {
         private readonly IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> _branches;
-        private readonly IStatementGenerator _fallback;
+        private readonly IStatementGenerator? _fallback;
 
         public IfStatementGenerator(IReadOnlyList<KeyValuePair<IExpressionGenerator, IStatementGenerator>> branches,
-            IStatementGenerator fallback)
+            IStatementGenerator? fallback)
         {
             _branches = branches;
             _fallback = fallback;

@@ -49,7 +49,7 @@ namespace Cottle.Documents.Evaluated
         public Frame(Value[] globals, int localCount, Stack<IFunction> modifiers)
         {
             _globals = globals;
-            _locals = localCount > 0 ? new Value[localCount] : null;
+            _locals = localCount > 0 ? new Value[localCount] : Array.Empty<Value>();
             _modifiers = modifiers;
         }
 

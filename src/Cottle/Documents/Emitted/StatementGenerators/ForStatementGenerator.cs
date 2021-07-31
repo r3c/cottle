@@ -6,13 +6,13 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     internal class ForStatementGenerator : IStatementGenerator
     {
         private readonly IStatementGenerator _body;
-        private readonly IStatementGenerator _empty;
+        private readonly IStatementGenerator? _empty;
         private readonly Symbol? _key;
         private readonly IExpressionGenerator _source;
         private readonly Symbol _value;
 
         public ForStatementGenerator(IExpressionGenerator source, Symbol? key, Symbol value, IStatementGenerator body,
-            IStatementGenerator empty)
+            IStatementGenerator? empty)
         {
             _body = body;
             _empty = empty;

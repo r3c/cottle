@@ -41,15 +41,14 @@ namespace Cottle.Documents.Evaluated
         }
 
         protected override IStatementExecutor CreateStatementFor(IExpressionExecutor source, Symbol? key, Symbol value,
-            IStatementExecutor body,
-            IStatementExecutor empty)
+            IStatementExecutor body, IStatementExecutor? empty)
         {
             return new ForStatementExecutor(source, key, value, body, empty);
         }
 
         protected override IStatementExecutor CreateStatementIf(
             IReadOnlyList<KeyValuePair<IExpressionExecutor, IStatementExecutor>> branches,
-            IStatementExecutor fallback)
+            IStatementExecutor? fallback)
         {
             return new IfStatementExecutor(branches, fallback);
         }

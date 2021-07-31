@@ -19,6 +19,8 @@ namespace Cottle.Builtins
             return BuiltinFunctions.InstanceDictionary.TryGetValue(name, out function);
         }
 
+        private static readonly Random RandomGenerator = new Random();
+
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private static readonly IFunction Absolute = Function.CreatePure1((state, value) => Math.Abs(value.AsNumber));
@@ -224,7 +226,7 @@ namespace Cottle.Builtins
 
         private static Value FormatCallback(Value subject, string format, IFormatProvider formatProvider)
         {
-            object target;
+            object? target;
 
             var index = format.IndexOf(':');
 
@@ -693,7 +695,5 @@ namespace Cottle.Builtins
             { "xor", BuiltinFunctions.Xor },
             { "zip", BuiltinFunctions.Zip }
         };
-
-        private static readonly Random RandomGenerator = new Random();
     }
 }

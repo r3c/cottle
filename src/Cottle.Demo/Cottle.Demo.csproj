@@ -4,7 +4,8 @@
     <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
     <StartupObject />
     <TargetFrameworks>net472</TargetFrameworks>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
     <AssemblyName>Cottle.Demo</AssemblyName>
     <PackageId>Cottle.Demo</PackageId>
     <OutputType>WinExe</OutputType>

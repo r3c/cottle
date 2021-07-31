@@ -55,12 +55,14 @@ namespace Cottle.Parsers.Forward
             var current = Root;
 
             foreach (var character in sequence)
+            {
                 if (current.Children == null || !current.Children.TryGetValue(character, out current))
                 {
-                    node = default;
+                    node = current;
 
                     return false;
                 }
+            }
 
             node = current;
 
