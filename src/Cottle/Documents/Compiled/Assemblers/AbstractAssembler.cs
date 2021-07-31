@@ -42,10 +42,10 @@ namespace Cottle.Documents.Compiled.Assemblers
         protected abstract TAssembly CreateStatementEcho(TExpression expression);
 
         protected abstract TAssembly CreateStatementFor(TExpression source, Symbol? key, Symbol value, TAssembly body,
-            TAssembly empty);
+            TAssembly? empty);
 
         protected abstract TAssembly CreateStatementIf(IReadOnlyList<KeyValuePair<TExpression, TAssembly>> branches,
-            TAssembly fallback);
+            TAssembly? fallback);
 
         protected abstract TAssembly CreateStatementLiteral(string text);
 
@@ -186,7 +186,7 @@ namespace Cottle.Documents.Compiled.Assemblers
                         ifBranches.Add(new KeyValuePair<TExpression, TAssembly>(condition, body));
                     }
 
-                    TAssembly ifFallback;
+                    TAssembly? ifFallback;
 
                     if (statement.Type != StatementType.None)
                     {

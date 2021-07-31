@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cottle
 {
@@ -31,27 +32,38 @@ namespace Cottle
 
         public static readonly Expression Void = Expression.CreateConstant(Value.Undefined);
 
-        public readonly IReadOnlyList<Expression> Arguments;
+        public IReadOnlyList<Expression> Arguments => _arguments ?? Array.Empty<Expression>();
 
-        public readonly IReadOnlyList<ExpressionElement> Elements;
+        public IReadOnlyList<ExpressionElement> Elements => _elements ?? Array.Empty<ExpressionElement>();
 
-        public readonly Expression Source;
+        public Expression Source => _source ?? Expression.Void;
 
-        public readonly Expression Subscript;
+        public Expression Subscript => _subscript ?? Expression.Void;
 
         public readonly ExpressionType Type;
 
-        public readonly Value Value;
+        public Value Value => _value ?? Value.Undefined;
 
-        private Expression(ExpressionType type, IReadOnlyList<Expression> arguments,
-            IReadOnlyList<ExpressionElement> elements, Expression source, Expression subscript, Value value)
+        private readonly IReadOnlyList<Expression>? _arguments;
+
+        private readonly IReadOnlyList<ExpressionElement>? _elements;
+
+        private readonly Expression? _source;
+
+        private readonly Expression? _subscript;
+
+        private readonly Value? _value;
+
+        private Expression(ExpressionType type, IReadOnlyList<Expression>? arguments,
+            IReadOnlyList<ExpressionElement>? elements, Expression? source, Expression? subscript, Value? value)
         {
-            Arguments = arguments;
-            Elements = elements;
-            Source = source;
-            Subscript = subscript;
             Type = type;
-            Value = value;
+
+            _arguments = arguments;
+            _elements = elements;
+            _source = source;
+            _subscript = subscript;
+            _value = value;
         }
     }
 }

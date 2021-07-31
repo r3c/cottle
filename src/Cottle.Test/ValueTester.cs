@@ -147,7 +147,7 @@ namespace Cottle.Test
             evaluable.Setup(e => e.AsFunction).Returns(Function.CreatePure((s, a) => 42));
 
             Assert.That(value.Type, Is.EqualTo(ValueContent.Function));
-            Assert.That(value.AsFunction.Invoke(null, Array.Empty<Value>(), TextWriter.Null),
+            Assert.That(value.AsFunction.Invoke(new(), Array.Empty<Value>(), TextWriter.Null),
                 Is.EqualTo(Value.FromNumber(42)));
 
             evaluable.Setup(e => e.Type).Returns(ValueContent.String);
@@ -178,7 +178,7 @@ namespace Cottle.Test
 
             Assert.That(value.Type, Is.EqualTo(ValueContent.Function));
             Assert.That(value.AsFunction.IsPure, Is.True);
-            Assert.That(value.AsFunction.Invoke(null, Array.Empty<Value>(), TextWriter.Null), Is.EqualTo(expected));
+            Assert.That(value.AsFunction.Invoke(new(), Array.Empty<Value>(), TextWriter.Null), Is.EqualTo(expected));
         }
 
         [Test]
@@ -364,13 +364,13 @@ namespace Cottle.Test
         private class FieldContainer<T>
         {
             // ReSharper disable once NotAccessedField.Local
-            public T Field;
+            public T Field = default!;
         }
 
         private class PropertyContainer<T>
         {
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
-            public T Property { get; set; }
+            public T Property { get; set; } = default!;
         }
     }
 }

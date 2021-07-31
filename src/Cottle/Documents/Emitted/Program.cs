@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -12,7 +13,7 @@ namespace Cottle.Documents.Emitted
     internal readonly struct Program
     {
         private static readonly MethodInfo ExecutableInvoke =
-            Resolver.Method<Func<Execute, bool>>(e => e.Invoke(default, default, default, out Program._outValue));
+            Resolver.Method<Func<Execute, bool>>(e => e.Invoke(Array.Empty<Value>(), new Frame(Array.Empty<Value>(), Array.Empty<Value>(), new Stack<IFunction>()), TextWriter.Null, out Program._outValue));
 
         private static readonly Type[] ExecutableInvokeArguments =
             Program.ExecutableInvoke.GetParameters().Select(p => p.ParameterType).ToArray();

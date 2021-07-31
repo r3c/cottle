@@ -8,7 +8,7 @@ namespace Cottle.Demo.Forms
     {
         private readonly NodeAssignDelegate _assign;
 
-        public NodeForm(NodeData data, NodeAssignDelegate assign)
+        public NodeForm(NodeData? data, NodeAssignDelegate assign)
         {
             _assign = assign;
 

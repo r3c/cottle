@@ -8,16 +8,16 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
     {
         private readonly IStatementExecutor _body;
 
-        private readonly IStatementExecutor _empty;
+        private readonly IStatementExecutor? _empty;
 
         private readonly IExpressionExecutor _from;
 
-        private readonly Action<Frame, Value> _key;
+        private readonly Action<Frame, Value>? _key;
 
         private readonly Action<Frame, Value> _value;
 
         public ForStatementExecutor(IExpressionExecutor from, Symbol? key, Symbol value, IStatementExecutor body,
-            IStatementExecutor empty)
+            IStatementExecutor? empty)
         {
             _body = body;
             _empty = empty;

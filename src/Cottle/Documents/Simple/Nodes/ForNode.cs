@@ -4,7 +4,7 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class ForNode : INode
     {
-        public ForNode(IEvaluator from, string key, string value, INode body, INode empty)
+        public ForNode(IEvaluator from, string key, string value, INode body, INode? empty)
         {
             _body = body;
             _empty = empty;
@@ -15,7 +15,7 @@ namespace Cottle.Documents.Simple.Nodes
 
         private readonly INode _body;
 
-        private readonly INode _empty;
+        private readonly INode? _empty;
 
         private readonly IEvaluator _from;
 

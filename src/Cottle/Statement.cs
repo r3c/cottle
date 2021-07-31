@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cottle
 {
     internal class Statement
     {
-        public static Statement CreateAssignFunction(string key, IReadOnlyList<string> arguments, StoreMode mode,
-            Statement body)
+        public static Statement CreateAssignFunction(string key, IReadOnlyList<string> arguments, StoreMode mode, Statement body)
         {
             return new Statement(StatementType.AssignFunction, arguments, body, key, mode, default, default, default);
         }
@@ -70,35 +70,47 @@ namespace Cottle
             return new Statement(StatementType.Wrap, default, body, default, default, default, operand, default);
         }
 
-        public static readonly Statement NoOp = new Statement(StatementType.None, default, default, default, default,
-            default, default, default);
+        public static readonly Statement NoOp = new Statement(StatementType.None, default, default, default, default, default, default, default);
 
-        public readonly IReadOnlyList<string> Arguments;
+        public IReadOnlyList<string> Arguments => _arguments ?? Array.Empty<string>();
 
-        public readonly Statement Body;
+        public Statement Body => _body ?? Statement.NoOp;
 
-        public readonly string Key;
+        public string Key => _key ?? string.Empty;
 
         public readonly StoreMode Mode;
 
-        public readonly Statement Next;
+        public Statement Next => _next ?? Statement.NoOp;
 
-        public readonly Expression Operand;
+        public Expression Operand => _operand ?? Expression.Void;
 
         public readonly StatementType Type;
 
-        public readonly string Value;
+        public string Value => _value ?? string.Empty;
 
-        private Statement(StatementType type, IReadOnlyList<string> arguments, Statement body, string key,
-            StoreMode mode, Statement next, Expression operand, string value)
+        private readonly IReadOnlyList<string>? _arguments;
+
+        private readonly Statement? _body;
+
+        private readonly string? _key;
+
+        private readonly Statement? _next;
+
+        private readonly Expression? _operand;
+
+        private readonly string? _value;
+
+        private Statement(StatementType type, IReadOnlyList<string>? arguments, Statement? body, string? key,
+            StoreMode mode, Statement? next, Expression? operand, string? value)
         {
-            Arguments = arguments;
-            Body = body;
-            Key = key;
+            _arguments = arguments;
+            _body = body;
+            _key = key;
+            _next = next;
+            _operand = operand;
+            _value = value;
+
             Mode = mode;
-            Value = value;
-            Next = next;
-            Operand = operand;
             Type = type;
         }
     }

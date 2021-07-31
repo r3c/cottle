@@ -21,7 +21,7 @@ namespace Cottle.Benchmark.Benchmarks
 
         public static IEnumerable<Input<string>> Templates => CottleTemplate.GetInputs();
 
-        private IDocument _document;
+        private IDocument? _document;
 
         private static readonly IContext Context = Cottle.Context.CreateBuiltin(new Dictionary<Value, Value>
         {
@@ -42,9 +42,9 @@ namespace Cottle.Benchmark.Benchmarks
         }
 
         [Benchmark]
-        public object Render()
+        public object? Render()
         {
-            return _document.Render(CottleBenchmark.Context);
+            return _document is not null ? _document.Render(CottleBenchmark.Context) : null;
         }
 
         [GlobalSetup]

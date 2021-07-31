@@ -28,6 +28,7 @@ namespace Cottle.Parsers.Forward
 
             _escape = escape;
             _pending = null;
+            _reader = TextReader.Null;
             _root = graph.Root;
         }
 

@@ -16,7 +16,7 @@ namespace Cottle.Parsers
         {
             if (!_parser.Parse(reader, state, out var original))
             {
-                statement = default;
+                statement = Statement.NoOp;
 
                 return false;
             }

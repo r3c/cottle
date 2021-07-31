@@ -27,8 +27,8 @@ namespace Cottle.Functions
         private readonly Callback2 _callback2;
         private readonly Callback3 _callback3;
 
-        public FiniteFunction(bool isPure, Callback0 callback0, Callback1 callback1, Callback2 callback2,
-            Callback3 callback3)
+        public FiniteFunction(bool isPure, Callback0? callback0, Callback1? callback1, Callback2? callback2,
+            Callback3? callback3)
         {
             IsPure = isPure;
             _callback0 = callback0 ?? FiniteFunction.NoCallback0;

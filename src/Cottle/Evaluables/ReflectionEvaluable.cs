@@ -29,14 +29,17 @@ namespace Cottle.Evaluables
         private static readonly Dictionary<Type, IReadOnlyList<MemberReader>> Readers =
             new Dictionary<Type, IReadOnlyList<MemberReader>>();
 
-        public static Value CreateValue(object source, BindingFlags bindingFlags)
+        public static Value CreateValue(object? source, BindingFlags bindingFlags)
         {
             return Value.FromEvaluable(new LazyEvaluable(() => ReflectionEvaluable.Resolve(source, bindingFlags)));
         }
 
-        private static Value Resolve(object source, BindingFlags bindingFlags)
+        private static Value Resolve(object? source, BindingFlags bindingFlags)
         {
             IReadOnlyList<MemberReader> readers;
+
+            if (source is null)
+                return Value.Undefined;
 
             var type = source.GetType();
 
