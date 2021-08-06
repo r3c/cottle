@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cottle.Maps;
 using Cottle.Parsers;
 using Moq;
 using NUnit.Framework;
@@ -107,10 +109,10 @@ namespace Cottle.Test.Parsers
         }
 
         [Test]
-        public void Parse_ExpressionMap_FoldConstant()
+        public void Parse_ExpressionMap_FoldConstantArray()
         {
-            // Expression: [0: "X", 1: "Y", x: "Z"]
-            // Result: <map>
+            // Expression: [0: "X", 1: "Y", 2: "Z"]
+            // Result: <array map>
             var expression = OptimizeParserTester.Optimize(Expression.CreateMap(new[]
             {
                 new ExpressionElement(Expression.CreateConstant(0), Expression.CreateConstant("X")),
@@ -119,7 +121,30 @@ namespace Cottle.Test.Parsers
             }));
 
             Assert.That(expression.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(expression.Value.Fields, Is.TypeOf(typeof(ArrayMap)));
             Assert.That(expression.Value, Is.EqualTo((Value)new Value[] { "X", "Y", "Z" }));
+        }
+
+        [Test]
+        public void Parse_ExpressionMap_FoldConstantMix()
+        {
+            // Expression: [0: "X", 2: "Y", 1: "Z"]
+            // Result: <mix map>
+            var expression = OptimizeParserTester.Optimize(Expression.CreateMap(new[]
+            {
+                new ExpressionElement(Expression.CreateConstant(0), Expression.CreateConstant("X")),
+                new ExpressionElement(Expression.CreateConstant(2), Expression.CreateConstant("Y")),
+                new ExpressionElement(Expression.CreateConstant(1), Expression.CreateConstant("Z"))
+            }));
+
+            Assert.That(expression.Type, Is.EqualTo(ExpressionType.Constant));
+            Assert.That(expression.Value.Fields, Is.TypeOf(typeof(MixMap)));
+            Assert.That(expression.Value, Is.EqualTo((Value)new[]
+            {
+                new KeyValuePair<Value, Value>(0, "X"),
+                new KeyValuePair<Value, Value>(2, "Y"),
+                new KeyValuePair<Value, Value>(1, "Z")
+            }));
         }
 
         [Test]
