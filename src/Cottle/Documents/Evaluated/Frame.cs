@@ -44,9 +44,10 @@ namespace Cottle.Documents.Evaluated
 
         private readonly Value[] _globals;
         private readonly Value[] _locals;
-        private readonly Stack<IFunction> _modifiers;
 
-        public Frame(Value[] globals, int localCount, Stack<IFunction> modifiers)
+        private Stack<IFunction>? _modifiers;
+
+        public Frame(Value[] globals, int localCount, Stack<IFunction>? modifiers)
         {
             _globals = globals;
             _locals = localCount > 0 ? new Value[localCount] : Array.Empty<Value>();
@@ -70,6 +71,9 @@ namespace Cottle.Documents.Evaluated
 
         public string Echo(Value value, TextWriter output)
         {
+            if (_modifiers == null)
+                return value.AsString;
+
             foreach (var modifier in _modifiers)
             {
                 if (modifier is FiniteFunction finiteModifier)
@@ -83,11 +87,17 @@ namespace Cottle.Documents.Evaluated
 
         public IFunction Unwrap()
         {
-            return _modifiers.Count > 0 ? _modifiers.Pop() : Function.Empty;
+            if (_modifiers != null && _modifiers.Count > 0)
+                return _modifiers.Pop();
+
+            return Function.Empty;
         }
 
         public void Wrap(IFunction modifier)
         {
+            if (_modifiers == null)
+                _modifiers = new Stack<IFunction>();
+
             _modifiers.Push(modifier);
         }
     }

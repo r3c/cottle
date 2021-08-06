@@ -9,9 +9,9 @@ namespace Cottle.Documents.Emitted
         public readonly IReadOnlyList<Value> Arguments;
         public readonly Value[] Globals;
 
-        private Stack<IFunction> _modifiers;
+        private Stack<IFunction>? _modifiers;
 
-        public Frame(Value[] globals, IReadOnlyList<Value> arguments, Stack<IFunction> modifiers)
+        public Frame(Value[] globals, IReadOnlyList<Value> arguments, Stack<IFunction>? modifiers)
         {
             Arguments = arguments;
             Globals = globals;
