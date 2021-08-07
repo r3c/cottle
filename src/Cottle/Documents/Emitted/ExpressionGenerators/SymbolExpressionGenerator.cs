@@ -5,16 +5,18 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 {
     internal class SymbolExpressionGenerator : IExpressionGenerator
     {
+        private readonly StoreMode _mode;
         private readonly Symbol _symbol;
 
-        public SymbolExpressionGenerator(Symbol symbol)
+        public SymbolExpressionGenerator(Symbol symbol, StoreMode mode)
         {
+            _mode = mode;
             _symbol = symbol;
         }
 
         public void Generate(Emitter emitter)
         {
-            switch (_symbol.Mode)
+            switch (_mode)
             {
                 case StoreMode.Global:
                     emitter.EmitLoadFrameGlobal();
@@ -24,7 +26,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                     break;
 
                 case StoreMode.Local:
-                    emitter.EmitLoadLocalValue(emitter.GetOrDeclareSymbol(_symbol.Index));
+                    emitter.EmitLoadLocalValue(emitter.GetOrDeclareLocal(_symbol));
 
                     break;
 

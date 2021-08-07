@@ -8,24 +8,25 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 {
     internal class AssignFunctionStatementGenerator : IStatementGenerator
     {
-        private readonly IReadOnlyList<Symbol> _arguments;
         private readonly IStatementGenerator _body;
+        private readonly StoreMode _mode;
+        private readonly IReadOnlyList<Symbol> _slots;
         private readonly Symbol _symbol;
 
-        public AssignFunctionStatementGenerator(Symbol symbol, IReadOnlyList<Symbol> arguments,
-            IStatementGenerator body)
+        public AssignFunctionStatementGenerator(Symbol symbol, StoreMode mode, IReadOnlyList<Symbol> slots, IStatementGenerator body)
         {
-            _arguments = arguments;
             _body = body;
+            _mode = mode;
+            _slots = slots;
             _symbol = symbol;
         }
 
         public bool Generate(Emitter emitter)
         {
-            var program = Program.Create(_body, _arguments);
+            var program = Program.Create(_body, _slots);
             var function = Value.FromFunction(new Function(program));
 
-            switch (_symbol.Mode)
+            switch (_mode)
             {
                 case StoreMode.Global:
                     emitter.EmitLoadFrameGlobal();
@@ -37,7 +38,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
                 case StoreMode.Local:
                     emitter.EmitLoadConstant(function);
-                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_symbol));
 
                     break;
 
@@ -81,7 +82,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (!(state is Frame parentFrame))
+                if (state is not Frame parentFrame)
                     throw new InvalidOperationException(
                         $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EmittedDocument)} from another type of document.");
 

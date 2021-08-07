@@ -6,11 +6,13 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     internal class AssignValueStatementGenerator : IStatementGenerator
     {
         private readonly IExpressionGenerator _expression;
+        private readonly StoreMode _mode;
         private readonly Symbol _symbol;
 
-        public AssignValueStatementGenerator(Symbol symbol, IExpressionGenerator expression)
+        public AssignValueStatementGenerator(Symbol symbol, StoreMode mode, IExpressionGenerator expression)
         {
             _expression = expression;
+            _mode = mode;
             _symbol = symbol;
         }
 
@@ -20,7 +22,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             var result = emitter.EmitDeclareLocalAndStore<Value>();
 
-            switch (_symbol.Mode)
+            switch (_mode)
             {
                 case StoreMode.Global:
                     emitter.EmitLoadFrameGlobal();
@@ -32,7 +34,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
                 case StoreMode.Local:
                     emitter.EmitLoadLocalValueAndRelease(result);
-                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_symbol));
 
                     break;
 

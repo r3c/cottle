@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Cottle.Documents.Compiled;
-using Cottle.Documents.Evaluated;
 
 namespace Cottle.Documents.Emitted
 {

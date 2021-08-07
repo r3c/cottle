@@ -66,13 +66,13 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             {
                 emitter.EmitLoadLocalAddress(pair);
                 emitter.EmitCallPairKey();
-                emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_key.Value.Index));
+                emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_key.Value));
             }
 
             // Set current element value
             emitter.EmitLoadLocalAddressAndRelease(pair);
             emitter.EmitCallPairValue();
-            emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_value.Index));
+            emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_value));
 
             // Evaluate body and restart cycle
             var exitReturn = emitter.DeclareLabel();

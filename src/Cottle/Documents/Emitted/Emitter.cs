@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
 namespace Cottle.Documents.Emitted
@@ -109,17 +110,17 @@ namespace Cottle.Documents.Emitted
 
         private readonly Dictionary<Value, int> _constants;
         private readonly ILGenerator _generator;
-        private readonly Dictionary<Type, Stack<LocalBuilder>> _locals;
+        private readonly Dictionary<Type, Stack<LocalBuilder>> _internalLocals;
         private readonly Queue<LocalBuilder> _outputs;
-        private readonly Dictionary<int, LocalBuilder> _symbols;
+        private readonly Dictionary<int, LocalBuilder> _symbolLocals;
 
         public Emitter(ILGenerator generator)
         {
             _constants = new Dictionary<Value, int>();
             _generator = generator;
-            _locals = new Dictionary<Type, Stack<LocalBuilder>>();
+            _internalLocals = new Dictionary<Type, Stack<LocalBuilder>>();
             _outputs = new Queue<LocalBuilder>();
-            _symbols = new Dictionary<int, LocalBuilder>();
+            _symbolLocals = new Dictionary<int, LocalBuilder>();
         }
 
         public IReadOnlyList<Value> CreateConstants()
@@ -452,16 +453,16 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Stobj, typeof(TValue));
         }
 
-        public Local<Value> GetOrDeclareSymbol(int index)
+        public Local<Value> GetOrDeclareLocal(Symbol symbol)
         {
-            if (_symbols.TryGetValue(index, out var symbol))
-                return new Local<Value>(symbol);
+            if (_symbolLocals.TryGetValue(symbol.Index, out var local))
+                return new Local<Value>(local);
 
-            symbol = _generator.DeclareLocal(typeof(Value));
+            local = _generator.DeclareLocal(typeof(Value));
 
-            _symbols[index] = symbol;
+            _symbolLocals[symbol.Index] = local;
 
-            return new Local<Value>(symbol);
+            return new Local<Value>(local);
         }
 
         public void MarkLabel(Label label)
@@ -481,7 +482,7 @@ namespace Cottle.Documents.Emitted
 
         private Local<TValue> EmitDeclareLocal<TValue>(OpCode opCode)
         {
-            var local = _locals.TryGetValue(typeof(TValue), out var queue) && queue.Count > 0
+            var local = _internalLocals.TryGetValue(typeof(TValue), out var queue) && queue.Count > 0
                 ? queue.Pop()
                 : _generator.DeclareLocal(typeof(TValue));
 
@@ -494,11 +495,11 @@ namespace Cottle.Documents.Emitted
         {
             _generator.Emit(opCode, local.Builder);
 
-            if (!_locals.TryGetValue(typeof(TValue), out var stack))
+            if (!_internalLocals.TryGetValue(typeof(TValue), out var stack))
             {
                 stack = new Stack<LocalBuilder>();
 
-                _locals[typeof(TValue)] = stack;
+                _internalLocals[typeof(TValue)] = stack;
             }
 
             stack.Push(local.Builder);

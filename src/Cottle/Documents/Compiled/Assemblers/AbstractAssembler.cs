@@ -24,16 +24,16 @@ namespace Cottle.Documents.Compiled.Assemblers
         protected abstract TExpression CreateExpressionMap(
             IReadOnlyList<KeyValuePair<TExpression, TExpression>> elements);
 
-        protected abstract TExpression CreateExpressionSymbol(Symbol symbol);
+        protected abstract TExpression CreateExpressionSymbol(Symbol symbol, StoreMode mode);
 
         protected abstract TExpression CreateExpressionVoid();
 
-        protected abstract TAssembly CreateStatementAssignFunction(Symbol symbol, int localCount,
+        protected abstract TAssembly CreateStatementAssignFunction(Symbol symbol, StoreMode mode, int localCount,
             IReadOnlyList<Symbol> arguments, TAssembly body);
 
-        protected abstract TAssembly CreateStatementAssignRender(Symbol symbol, TAssembly body);
+        protected abstract TAssembly CreateStatementAssignRender(Symbol symbol, StoreMode mode, TAssembly body);
 
-        protected abstract TAssembly CreateStatementAssignValue(Symbol symbol, TExpression expression);
+        protected abstract TAssembly CreateStatementAssignValue(Symbol symbol, StoreMode mode, TExpression expression);
 
         protected abstract TAssembly CreateStatementComposite(IReadOnlyList<TAssembly> statements);
 
@@ -92,8 +92,9 @@ namespace Cottle.Documents.Compiled.Assemblers
                     return CreateExpressionMap(elements);
 
                 case ExpressionType.Symbol:
-                    return CreateExpressionSymbol(
-                        scope.GetOrDeclareClosest(expression.Value.AsString, StoreMode.Global));
+                    var (symbol, mode) = scope.GetOrDeclareClosest(expression.Value.AsString, StoreMode.Global);
+
+                    return CreateExpressionSymbol(symbol, mode);
 
                 default:
                     return CreateExpressionVoid();
@@ -114,9 +115,9 @@ namespace Cottle.Documents.Compiled.Assemblers
                     var functionBody = AssembleStatement(statement.Body, functionScope);
                     var localCount = functionScope.LocalCount;
 
-                    var functionSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
+                    var (functionSymbol, functionMode) = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
-                    return CreateStatementAssignFunction(functionSymbol, localCount, functionArguments, functionBody);
+                    return CreateStatementAssignFunction(functionSymbol, functionMode, localCount, functionArguments, functionBody);
 
                 case StatementType.AssignRender:
                     scope.Enter();
@@ -125,15 +126,16 @@ namespace Cottle.Documents.Compiled.Assemblers
 
                     scope.Leave();
 
-                    var renderSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
+                    var (renderSymbol, renderMode) = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
 
-                    return CreateStatementAssignRender(renderSymbol, renderBody);
+                    return CreateStatementAssignRender(renderSymbol, renderMode, renderBody);
 
                 case StatementType.AssignValue:
-                    var assignValueExpression = AssembleExpression(statement.Operand, scope);
-                    var assignValueSymbol = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
+                    var valueExpression = AssembleExpression(statement.Operand, scope);
 
-                    return CreateStatementAssignValue(assignValueSymbol, assignValueExpression);
+                    var (valueSymbol, valueMode) = scope.GetOrDeclareClosest(statement.Key, statement.Mode);
+
+                    return CreateStatementAssignValue(valueSymbol, valueMode, valueExpression);
 
                 case StatementType.Composite:
                     var nodes = new List<TAssembly>();

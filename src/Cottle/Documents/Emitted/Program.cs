@@ -50,7 +50,7 @@ namespace Cottle.Documents.Emitted
                 emitter.EmitLoadFrameArgumentLength();
                 emitter.EmitBranchWhenGreaterOrEqual(body);
                 emitter.EmitLoadFrameArgument(i);
-                emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(arguments[i].Index));
+                emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(arguments[i]));
             }
 
             // Execute function body and return

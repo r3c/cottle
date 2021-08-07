@@ -31,9 +31,9 @@ namespace Cottle.Documents.Emitted
             return new MapExpressionGenerator(elements);
         }
 
-        protected override IExpressionGenerator CreateExpressionSymbol(Symbol symbol)
+        protected override IExpressionGenerator CreateExpressionSymbol(Symbol symbol, StoreMode mode)
         {
-            return new SymbolExpressionGenerator(symbol);
+            return new SymbolExpressionGenerator(symbol, mode);
         }
 
         protected override IExpressionGenerator CreateExpressionVoid()
@@ -41,21 +41,20 @@ namespace Cottle.Documents.Emitted
             return new ConstantExpressionGenerator(Value.Undefined);
         }
 
-        protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, int localCount,
+        protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, StoreMode mode, int localCount,
             IReadOnlyList<Symbol> arguments, IStatementGenerator body)
         {
-            return new AssignFunctionStatementGenerator(symbol, arguments, body);
+            return new AssignFunctionStatementGenerator(symbol, mode, arguments, body);
         }
 
-        protected override IStatementGenerator CreateStatementAssignRender(Symbol symbol, IStatementGenerator body)
+        protected override IStatementGenerator CreateStatementAssignRender(Symbol symbol, StoreMode mode, IStatementGenerator body)
         {
-            return new AssignRenderStatementGenerator(symbol, body);
+            return new AssignRenderStatementGenerator(symbol, mode, body);
         }
 
-        protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol,
-            IExpressionGenerator expression)
+        protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol, StoreMode mode, IExpressionGenerator expression)
         {
-            return new AssignValueStatementGenerator(symbol, expression);
+            return new AssignValueStatementGenerator(symbol, mode, expression);
         }
 
         protected override IStatementGenerator CreateStatementComposite(IReadOnlyList<IStatementGenerator> statements)

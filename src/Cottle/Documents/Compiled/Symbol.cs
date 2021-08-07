@@ -1,14 +1,12 @@
-namespace Cottle.Documents.Compiled
+﻿namespace Cottle.Documents.Compiled
 {
-    public readonly struct Symbol
+    internal readonly struct Symbol
     {
         public readonly int Index;
-        public readonly StoreMode Mode;
 
-        public Symbol(int index, StoreMode mode)
+        public Symbol(int index)
         {
             Index = index;
-            Mode = mode;
         }
     }
 }
