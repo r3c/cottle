@@ -26,50 +26,48 @@ namespace Cottle.Test
         }
 
         [Test]
-        public static void CompareToBoolean()
+        public static void Equals_ShouldCompareBooleans()
         {
-            ValueTester.AssertEquals(Value.False, Value.False, true);
-            ValueTester.AssertEquals(Value.False, Value.True, false);
-            ValueTester.AssertEquals(Value.True, Value.True, true);
-            ValueTester.AssertEquals(Value.False, Value.Zero, false);
+            Assert.That(Value.False, Is.EqualTo(Value.False));
+            Assert.That(Value.False, Is.Not.EqualTo(Value.True));
+            Assert.That(Value.True, Is.EqualTo(Value.True));
+            Assert.That(Value.False, Is.Not.EqualTo(Value.Zero));
         }
 
         [Test]
-        public static void EqualsMap()
+        public static void Equals_ShouldCompareMaps()
         {
             var a = new KeyValuePair<Value, Value>("A", 1);
             var b = new KeyValuePair<Value, Value>("B", 2);
             var c = new KeyValuePair<Value, Value>("C", 3);
             var d = new KeyValuePair<Value, Value>("D", 4);
 
-            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }),
-                Value.FromEnumerable(new[] { a, b, c }), true);
-            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }),
-                Value.FromEnumerable(new[] { a, b, d }), false);
-            ValueTester.AssertEquals(Value.FromEnumerable(new[] { a, b, c }), Value.False, false);
+            Assert.That(Value.FromEnumerable(new[] { a, b, c }), Is.EqualTo(Value.FromEnumerable(new[] { a, b, c })));
+            Assert.That(Value.FromEnumerable(new[] { a, b, c }), Is.Not.EqualTo(Value.FromEnumerable(new[] { a, b, d })));
+            Assert.That(Value.FromEnumerable(new[] { a, b, c }), Is.Not.EqualTo(Value.False));
         }
 
         [Test]
-        public static void EqualsNumber()
+        public static void Equals_ShouldCompareNumbers()
         {
-            ValueTester.AssertEquals(Value.Zero, Value.Zero, true);
-            ValueTester.AssertEquals(Value.Zero, Value.FromNumber(1), false);
-            ValueTester.AssertEquals(Value.Zero, Value.EmptyString, false);
+            Assert.That(Value.Zero, Is.EqualTo(Value.Zero));
+            Assert.That(Value.Zero, Is.Not.EqualTo(Value.FromNumber(1)));
+            Assert.That(Value.Zero, Is.Not.EqualTo(Value.EmptyString));
         }
 
         [Test]
-        public static void EqualsString()
+        public static void Equals_ShouldCompareStrings()
         {
-            ValueTester.AssertEquals(Value.FromString("A"), Value.FromString("A"), true);
-            ValueTester.AssertEquals(Value.FromString("A"), Value.FromString("B"), false);
-            ValueTester.AssertEquals(Value.FromString("A"), Value.False, false);
+            Assert.That(Value.FromString("A"), Is.EqualTo(Value.FromString("A")));
+            Assert.That(Value.FromString("A"), Is.Not.EqualTo(Value.FromString("B")));
+            Assert.That(Value.FromString("A"), Is.Not.EqualTo(Value.False));
         }
 
         [Test]
-        public static void EqualsVoid()
+        public static void Equals_ShouldCompareVoid()
         {
-            ValueTester.AssertEquals(Value.Undefined, Value.Undefined, true);
-            ValueTester.AssertEquals(Value.Undefined, Value.False, false);
+            Assert.That(Value.Undefined, Is.EqualTo(Value.Undefined));
+            Assert.That(Value.Undefined, Is.Not.EqualTo(Value.False));
         }
 
         [Test]
@@ -194,7 +192,15 @@ namespace Cottle.Test
         }
 
         [Test]
-        public static void FromLazy()
+        [TestCaseSource(nameof(Values))]
+        public static void FromLazy_ShouldCompare(Value resolved)
+        {
+            Assert.That(Value.FromLazy(() => resolved), Is.EqualTo(resolved));
+            Assert.That(Value.FromLazy(() => Value.FromLazy(() => resolved)), Is.EqualTo(resolved));
+        }
+
+        [Test]
+        public static void FromLazy_ShouldResolve()
         {
             var resolved = false;
             var resolver = new Func<Value>(() =>
@@ -226,59 +232,70 @@ namespace Cottle.Test
             Assert.That(value.Fields[index], Is.EqualTo(expected));
         }
 
-        [Test]
-        [TestCase(double.NaN)]
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(5.3)]
-        public static void FromNumber_Double(double input)
+        private static readonly IReadOnlyList<TestCaseData> FromNumber_Input = new[]
         {
-            var value = Value.FromNumber(input);
+            new TestCaseData(Value.FromNumber(double.NaN), double.NaN),
+            new TestCaseData(Value.FromNumber(0d), 0),
+            new TestCaseData(Value.FromNumber(1d), 1),
+            new TestCaseData(Value.FromNumber(5.3d), 5.3),
+            new TestCaseData(Value.FromNumber((byte)17), 17),
+            new TestCaseData(Value.FromNumber(17d), 17),
+            new TestCaseData(Value.FromNumber(17f), 17),
+            new TestCaseData(Value.FromNumber(17), 17),
+            new TestCaseData(Value.FromNumber(17L), 17),
+            new TestCaseData(Value.FromNumber((sbyte)17), 17),
+            new TestCaseData(Value.FromNumber((short)17), 17),
+            new TestCaseData(Value.FromNumber((ushort)17), 17),
+            new TestCaseData(Value.FromNumber((uint)17), 17),
+            new TestCaseData(Value.FromNumber(17UL), 17)
+        };
 
+        [Test]
+        [TestCaseSource(nameof(FromNumber_Input))]
+        public static void FromNumber(Value value, double expected)
+        {
             Assert.That(value.Type, Is.EqualTo(ValueContent.Number));
-            Assert.That(value.AsNumber, Is.EqualTo(input));
+            Assert.That(value.AsNumber, Is.EqualTo(expected));
         }
 
-        [Test]
-        public static void FromNumber_Other()
+        private static readonly IReadOnlyList<TestCaseData> FromReflection_Input = new[]
         {
-            var values = new[]
-            {
-                Value.FromNumber((byte)17),
-                Value.FromNumber((double)17),
-                Value.FromNumber((float)17),
-                Value.FromNumber(17),
-                Value.FromNumber((long)17),
-                Value.FromNumber((sbyte)17),
-                Value.FromNumber((short)17),
-                Value.FromNumber((ushort)17),
-                Value.FromNumber((uint)17),
-                Value.FromNumber((ulong)17)
-            };
-
-            foreach (var value in values)
-            {
-                Assert.That(value.Type, Is.EqualTo(ValueContent.Number));
-                Assert.That(value.AsNumber, Is.EqualTo(17));
-            }
-        }
+            new TestCaseData(true, Value.True),
+            new TestCaseData((byte)4, Value.FromNumber(4)),
+            new TestCaseData((sbyte)-5, Value.FromNumber(-5)),
+            new TestCaseData((short)-9, Value.FromNumber(-9)),
+            new TestCaseData((ushort)8, Value.FromNumber(8)),
+            new TestCaseData(42, Value.FromNumber(42)),
+            new TestCaseData(42u, Value.FromNumber(42u)),
+            new TestCaseData(17L, Value.FromNumber(17L)),
+            new TestCaseData(24LU, Value.FromNumber(24L)),
+            new TestCaseData(1f, Value.FromNumber(1f)),
+            new TestCaseData(3d, Value.FromNumber(3d)),
+            new TestCaseData('x', Value.FromString("x")),
+            new TestCaseData("abc", Value.FromString("abc"))
+        };
 
         [Test]
-        public static void FromReflection()
+        [TestCaseSource(nameof(FromReflection_Input))]
+        public static void FromReflection<T>(T reference, Value expected)
         {
-            ValueTester.AssertReadMember(true, Value.True);
-            ValueTester.AssertReadMember((byte)4, Value.FromNumber(4));
-            ValueTester.AssertReadMember((sbyte)-5, Value.FromNumber(-5));
-            ValueTester.AssertReadMember((short)-9, Value.FromNumber(-9));
-            ValueTester.AssertReadMember((ushort)8, Value.FromNumber(8));
-            ValueTester.AssertReadMember(42, Value.FromNumber(42));
-            ValueTester.AssertReadMember(42u, Value.FromNumber(42u));
-            ValueTester.AssertReadMember(17L, Value.FromNumber(17L));
-            ValueTester.AssertReadMember(24LU, Value.FromNumber(24L));
-            ValueTester.AssertReadMember(1f, Value.FromNumber(1f));
-            ValueTester.AssertReadMember(3d, Value.FromNumber(3d));
-            ValueTester.AssertReadMember('x', Value.FromString("x"));
-            ValueTester.AssertReadMember("abc", Value.FromString("abc"));
+            // Read from field member
+            var fieldContainer = new FieldContainer<T>();
+            var fieldValue = Value.FromReflection(fieldContainer, BindingFlags.Instance | BindingFlags.Public);
+
+            fieldContainer.Field = reference;
+
+            Assert.That(fieldValue.Fields.TryGet("Field", out var result), Is.True, "value has no 'Field' key");
+            Assert.That(result, Is.EqualTo(expected), "value should be able to read field of type {0}", typeof(T));
+
+            // Read from property member
+            var propertyContainer = new PropertyContainer<T>();
+            var propertyValue = Value.FromReflection(propertyContainer, BindingFlags.Instance | BindingFlags.Public);
+
+            propertyContainer.Property = reference;
+
+            Assert.That(propertyValue.Fields.TryGet("Property", out result), Is.True, "value has no 'Property' key");
+            Assert.That(result, Is.EqualTo(expected), "value should be able to read property of type {0}", typeof(T));
         }
 
         [Test]
@@ -328,39 +345,6 @@ namespace Cottle.Test
             Assert.That(Value.Zero.AsNumber, Is.EqualTo(0));
         }
 
-        private static void AssertEquals(Value operand1, Value operand2, bool expected)
-        {
-            Assert.That(operand1 == operand2, Is.EqualTo(expected));
-            Assert.That(Value.FromLazy(() => operand1) == operand2, Is.EqualTo(expected));
-            Assert.That(operand1 == Value.FromLazy(() => operand2), Is.EqualTo(expected));
-            Assert.That(Value.FromLazy(() => operand1) == Value.FromLazy(() => operand2), Is.EqualTo(expected));
-            Assert.That(operand2 == operand1, Is.EqualTo(expected));
-            Assert.That(Value.FromLazy(() => operand2) == operand1, Is.EqualTo(expected));
-            Assert.That(operand2 == Value.FromLazy(() => operand1), Is.EqualTo(expected));
-            Assert.That(Value.FromLazy(() => operand2) == Value.FromLazy(() => operand1), Is.EqualTo(expected));
-        }
-
-        private static void AssertReadMember<T>(T reference, Value expected)
-        {
-            // Read from field member
-            var fieldContainer = new FieldContainer<T>();
-            var fieldValue = Value.FromReflection(fieldContainer, BindingFlags.Instance | BindingFlags.Public);
-
-            fieldContainer.Field = reference;
-
-            Assert.That(fieldValue.Fields.TryGet("Field", out var result), Is.True, "value has no 'Field' key");
-            Assert.That(result, Is.EqualTo(expected), "value should be able to read field of type {0}", typeof(T));
-
-            // Read from property member
-            var propertyContainer = new PropertyContainer<T>();
-            var propertyValue = Value.FromReflection(propertyContainer, BindingFlags.Instance | BindingFlags.Public);
-
-            propertyContainer.Property = reference;
-
-            Assert.That(propertyValue.Fields.TryGet("Property", out result), Is.True, "value has no 'Property' key");
-            Assert.That(result, Is.EqualTo(expected), "value should be able to read property of type {0}", typeof(T));
-        }
-
         private class FieldContainer<T>
         {
             // ReSharper disable once NotAccessedField.Local
@@ -372,5 +356,20 @@ namespace Cottle.Test
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public T Property { get; set; } = default!;
         }
+
+        private static readonly IReadOnlyList<TestCaseData> Values = new[]
+        {
+            new TestCaseData(Value.EmptyMap),
+            new TestCaseData(Value.EmptyString),
+            new TestCaseData(Value.False),
+            new TestCaseData(Value.True),
+            new TestCaseData(Value.Undefined),
+            new TestCaseData(Value.Zero),
+            new TestCaseData(Value.FromCharacter('a')),
+            new TestCaseData(Value.FromDictionary(new Dictionary<Value, Value> { ["A"] = 1, ["B"] = 2 })),
+            new TestCaseData(Value.FromEnumerable(new Value[] {1, "A", true})),
+            new TestCaseData(Value.FromNumber(42)),
+            new TestCaseData(Value.FromString("abc"))
+        };
     }
 }
