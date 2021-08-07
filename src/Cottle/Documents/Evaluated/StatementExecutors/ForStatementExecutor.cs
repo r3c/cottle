@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
@@ -12,18 +11,17 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
         private readonly IExpressionExecutor _from;
 
-        private readonly Action<Frame, Value>? _key;
+        private readonly Symbol? _key;
 
-        private readonly Action<Frame, Value> _value;
+        private readonly Symbol _value;
 
-        public ForStatementExecutor(IExpressionExecutor from, Symbol? key, Symbol value, IStatementExecutor body,
-            IStatementExecutor? empty)
+        public ForStatementExecutor(IExpressionExecutor from, Symbol? key, Symbol value, IStatementExecutor body, IStatementExecutor? empty)
         {
             _body = body;
             _empty = empty;
             _from = from;
-            _key = key.HasValue ? Frame.CreateSetter(key.Value) : null;
-            _value = Frame.CreateSetter(value);
+            _key = key;
+            _value = value;
         }
 
         public Value? Execute(Frame frame, TextWriter output)
@@ -34,10 +32,10 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             {
                 foreach (var pair in fields)
                 {
-                    if (_key != null)
-                        _key(frame, pair.Key);
+                    if (_key.HasValue)
+                        frame.Locals[_key.Value.Index] = pair.Key;
 
-                    _value(frame, pair.Value);
+                    frame.Locals[_value.Index] = pair.Value;
 
                     var result = _body.Execute(frame, output);
 

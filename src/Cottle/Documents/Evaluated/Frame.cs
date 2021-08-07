@@ -1,72 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
 namespace Cottle.Documents.Evaluated
 {
     internal class Frame
     {
-        public static Func<Frame, Value> CreateGetter(Symbol symbol)
-        {
-            var index = symbol.Index;
-
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    return frame => frame._globals[index];
-
-                case StoreMode.Local:
-                    return frame => frame._locals[index];
-
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-        public static Action<Frame, Value> CreateSetter(Symbol symbol)
-        {
-            var index = symbol.Index;
-
-            switch (symbol.Mode)
-            {
-                case StoreMode.Global:
-                    return (frame, value) => frame._globals[index] = value;
-
-                case StoreMode.Local:
-                    return (frame, value) => frame._locals[index] = value;
-
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-        private readonly Value[] _globals;
-        private readonly Value[] _locals;
+        public readonly Value[] Globals;
+        public readonly Value[] Locals;
 
         private Stack<IFunction>? _modifiers;
 
         public Frame(Value[] globals, int localCount, Stack<IFunction>? modifiers)
         {
-            _globals = globals;
-            _locals = localCount > 0 ? new Value[localCount] : Array.Empty<Value>();
             _modifiers = modifiers;
+
+            Globals = globals;
+            Locals = localCount > 0 ? new Value[localCount] : Array.Empty<Value>();
         }
 
-        public Frame CreateForFunction(IReadOnlyList<Action<Frame, Value>> argumentSetters, IReadOnlyList<Value> values,
-            int localCount)
+        public Frame CreateForFunction(int localCount)
         {
-            var functionArguments = Math.Min(argumentSetters.Count, values.Count);
-            var functionFrame = new Frame(_globals, localCount, _modifiers);
-
-            for (var i = 0; i < functionArguments; ++i)
-                argumentSetters[i](functionFrame, values[i]);
-
-            for (var i = values.Count; i < argumentSetters.Count; ++i)
-                argumentSetters[i](functionFrame, Value.Undefined);
-
-            return functionFrame;
+            return new Frame(Globals, localCount, _modifiers);
         }
 
         public string Echo(Value value, TextWriter output)

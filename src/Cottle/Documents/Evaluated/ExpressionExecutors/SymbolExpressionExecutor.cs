@@ -8,9 +8,16 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
     {
         private readonly Func<Frame, Value> _getter;
 
-        public SymbolExpressionExecutor(Symbol symbol)
+        public SymbolExpressionExecutor(Symbol symbol, StoreMode mode)
         {
-            _getter = Frame.CreateGetter(symbol);
+            var index = symbol.Index;
+
+            _getter = mode switch
+            {
+                StoreMode.Global => frame => frame.Globals[index],
+                StoreMode.Local => frame => frame.Locals[index],
+                _ => throw new ArgumentOutOfRangeException(nameof(symbol))
+            };
         }
 
         public Value Execute(Frame frame, TextWriter output)

@@ -36,12 +36,10 @@ namespace Cottle.Documents.Compiled
             return new Scope(_globals);
         }
 
-        public Symbol GetOrDeclareClosest(string name, StoreMode mode)
+        public (Symbol, StoreMode) GetOrDeclareClosest(string name, StoreMode mode)
         {
-            if (TryGetLocal(name, out var local))
-                return new Symbol(local, StoreMode.Local);
-
-            int index;
+            if (TryGetLocal(name, out var index))
+                return (new Symbol(index), StoreMode.Local);
 
             if (mode == StoreMode.Local)
             {
@@ -56,19 +54,19 @@ namespace Cottle.Documents.Compiled
                 _globals[name] = index;
             }
 
-            return new Symbol(index, mode);
+            return (new Symbol(index), mode);
         }
 
         public Symbol GetOrDeclareLocal(string name)
         {
             if (TryGetLocal(name, out var local))
-                return new Symbol(local, StoreMode.Local);
+                return new Symbol(local);
 
             var index = _unique++;
 
             SetLocal(name, index);
 
-            return new Symbol(index, StoreMode.Local);
+            return new Symbol(index);
         }
 
         public void Enter()

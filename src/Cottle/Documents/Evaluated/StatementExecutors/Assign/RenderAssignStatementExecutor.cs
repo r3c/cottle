@@ -7,8 +7,8 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
     {
         private readonly IStatementExecutor _body;
 
-        public RenderAssignStatementExecutor(Symbol symbol, IStatementExecutor body) :
-            base(symbol)
+        public RenderAssignStatementExecutor(Symbol symbol, StoreMode mode, IStatementExecutor body) :
+            base(symbol, mode)
         {
             _body = body;
         }

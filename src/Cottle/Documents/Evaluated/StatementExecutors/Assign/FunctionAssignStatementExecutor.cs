@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
 
@@ -11,11 +10,10 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
     {
         private readonly Value _function;
 
-        public FunctionAssignStatementExecutor(Symbol symbol, int localCount, IEnumerable<Symbol> arguments,
-            IStatementExecutor body) :
-            base(symbol)
+        public FunctionAssignStatementExecutor(Symbol symbol, StoreMode mode, int localCount, IReadOnlyList<Symbol> slots, IStatementExecutor body) :
+            base(symbol, mode)
         {
-            _function = Value.FromFunction(new Function(localCount, arguments, body));
+            _function = Value.FromFunction(new Function(localCount, slots, body));
         }
 
         protected override Value EvaluateOperand(Frame frame, TextWriter output)
@@ -27,17 +25,17 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
         {
             public bool IsPure => false;
 
-            private readonly IReadOnlyList<Action<Frame, Value>> _argumentSetters;
-
             private readonly IStatementExecutor _body;
 
             private readonly int _localCount;
 
-            public Function(int localCount, IEnumerable<Symbol> arguments, IStatementExecutor body)
+            private readonly IReadOnlyList<Symbol> _slots;
+
+            public Function(int localCount, IReadOnlyList<Symbol> slots, IStatementExecutor body)
             {
-                _argumentSetters = arguments.Select(Frame.CreateSetter).ToList();
                 _body = body;
                 _localCount = localCount;
+                _slots = slots;
             }
 
             public int CompareTo(IFunction other)
@@ -62,11 +60,18 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (!(state is Frame parentFrame))
+                if (state is not Frame parentFrame)
                     throw new InvalidOperationException(
                         $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
-                var functionFrame = parentFrame.CreateForFunction(_argumentSetters, arguments, _localCount);
+                var functionArguments = Math.Min(_slots.Count, arguments.Count);
+                var functionFrame = parentFrame.CreateForFunction(_localCount);
+
+                for (var i = 0; i < functionArguments; ++i)
+                    functionFrame.Locals[_slots[i].Index] = arguments[i];
+
+                for (var i = arguments.Count; i < _slots.Count; ++i)
+                    functionFrame.Locals[_slots[i].Index] = Value.Undefined;
 
                 return _body.Execute(functionFrame, output).GetValueOrDefault(Value.Undefined);
             }

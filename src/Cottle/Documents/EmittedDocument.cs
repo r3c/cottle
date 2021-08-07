@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Cottle.Documents.Compiled;
 using Cottle.Documents.Emitted;

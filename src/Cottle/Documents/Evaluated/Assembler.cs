@@ -9,20 +9,20 @@ namespace Cottle.Documents.Evaluated
 {
     internal class Assembler : AbstractAssembler<IStatementExecutor, IExpressionExecutor>
     {
-        protected override IStatementExecutor CreateStatementAssignFunction(Symbol symbol, int localCount,
+        protected override IStatementExecutor CreateStatementAssignFunction(Symbol symbol, StoreMode mode, int localCount,
             IReadOnlyList<Symbol> arguments, IStatementExecutor body)
         {
-            return new FunctionAssignStatementExecutor(symbol, localCount, arguments, body);
+            return new FunctionAssignStatementExecutor(symbol, mode, localCount, arguments, body);
         }
 
-        protected override IStatementExecutor CreateStatementAssignRender(Symbol symbol, IStatementExecutor body)
+        protected override IStatementExecutor CreateStatementAssignRender(Symbol symbol, StoreMode mode, IStatementExecutor body)
         {
-            return new RenderAssignStatementExecutor(symbol, body);
+            return new RenderAssignStatementExecutor(symbol, mode, body);
         }
 
-        protected override IStatementExecutor CreateStatementAssignValue(Symbol symbol, IExpressionExecutor expression)
+        protected override IStatementExecutor CreateStatementAssignValue(Symbol symbol, StoreMode mode, IExpressionExecutor expression)
         {
-            return new ValueAssignStatementExecutor(symbol, expression);
+            return new ValueAssignStatementExecutor(symbol, mode, expression);
         }
 
         protected override IStatementExecutor CreateStatementComposite(IReadOnlyList<IStatementExecutor> statements)
@@ -107,9 +107,9 @@ namespace Cottle.Documents.Evaluated
             return new MapExpressionExecutor(elements);
         }
 
-        protected override IExpressionExecutor CreateExpressionSymbol(Symbol symbol)
+        protected override IExpressionExecutor CreateExpressionSymbol(Symbol symbol, StoreMode mode)
         {
-            return new SymbolExpressionExecutor(symbol);
+            return new SymbolExpressionExecutor(symbol, mode);
         }
 
         protected override IExpressionExecutor CreateExpressionVoid()

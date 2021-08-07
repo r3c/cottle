@@ -7,8 +7,8 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
     {
         private readonly IExpressionExecutor _expression;
 
-        public ValueAssignStatementExecutor(Symbol symbol, IExpressionExecutor expression) :
-            base(symbol)
+        public ValueAssignStatementExecutor(Symbol symbol, StoreMode mode, IExpressionExecutor expression) :
+            base(symbol, mode)
         {
             _expression = expression;
         }

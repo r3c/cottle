@@ -7,11 +7,13 @@ namespace Cottle.Documents.Emitted.StatementGenerators
     internal class AssignRenderStatementGenerator : IStatementGenerator
     {
         private readonly IStatementGenerator _body;
+        private readonly StoreMode _mode;
         private readonly Symbol _symbol;
 
-        public AssignRenderStatementGenerator(Symbol symbol, IStatementGenerator body)
+        public AssignRenderStatementGenerator(Symbol symbol, StoreMode mode, IStatementGenerator body)
         {
             _body = body;
+            _mode = mode;
             _symbol = symbol;
         }
 
@@ -38,7 +40,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var result = emitter.EmitDeclareLocalAndStore<Value>();
 
             // Render output buffer and store as local
-            switch (_symbol.Mode)
+            switch (_mode)
             {
                 case StoreMode.Global:
                     emitter.EmitLoadFrameGlobal();
@@ -50,7 +52,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
                 case StoreMode.Local:
                     emitter.EmitLoadLocalValueAndRelease(result);
-                    emitter.EmitStoreLocal(emitter.GetOrDeclareSymbol(_symbol.Index));
+                    emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_symbol));
 
                     break;
 

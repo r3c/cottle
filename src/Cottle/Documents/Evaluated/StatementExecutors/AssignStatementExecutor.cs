@@ -8,9 +8,16 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
     {
         private readonly Action<Frame, Value> _setter;
 
-        protected AssignStatementExecutor(Symbol symbol)
+        protected AssignStatementExecutor(Symbol symbol, StoreMode mode)
         {
-            _setter = Frame.CreateSetter(symbol);
+            var index = symbol.Index;
+
+            _setter = mode switch
+            {
+                StoreMode.Global => (frame, value) => frame.Globals[index] = value,
+                StoreMode.Local => (frame, value) => frame.Locals[index] = value,
+                _ => throw new ArgumentOutOfRangeException(nameof(symbol)),
+            };
         }
 
         public Value? Execute(Frame frame, TextWriter output)
