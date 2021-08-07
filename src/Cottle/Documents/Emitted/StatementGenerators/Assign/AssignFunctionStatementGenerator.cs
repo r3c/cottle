@@ -4,47 +4,27 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Cottle.Documents.Compiled;
 
-namespace Cottle.Documents.Emitted.StatementGenerators
+namespace Cottle.Documents.Emitted.StatementGenerators.Assign
 {
-    internal class AssignFunctionStatementGenerator : IStatementGenerator
+    internal class FunctionAssignStatementGenerator : AssignStatementGenerator
     {
         private readonly IStatementGenerator _body;
-        private readonly StoreMode _mode;
         private readonly IReadOnlyList<Symbol> _slots;
-        private readonly Symbol _symbol;
 
-        public AssignFunctionStatementGenerator(Symbol symbol, StoreMode mode, IReadOnlyList<Symbol> slots, IStatementGenerator body)
+        public FunctionAssignStatementGenerator(Symbol symbol, StoreMode mode, IReadOnlyList<Symbol> slots, IStatementGenerator body) :
+            base(symbol, mode)
         {
             _body = body;
-            _mode = mode;
             _slots = slots;
-            _symbol = symbol;
         }
 
-        public bool Generate(Emitter emitter)
+        public override bool Generate(Emitter emitter)
         {
             var program = Program.Create(_body, _slots);
-            var function = Value.FromFunction(new Function(program));
 
-            switch (_mode)
-            {
-                case StoreMode.Global:
-                    emitter.EmitLoadFrameGlobal();
-                    emitter.EmitLoadInteger(_symbol.Index);
-                    emitter.EmitLoadConstant(function);
-                    emitter.EmitStoreElementAtIndex<Value>();
+            emitter.EmitLoadConstant(Value.FromFunction(new Function(program)));
 
-                    break;
-
-                case StoreMode.Local:
-                    emitter.EmitLoadConstant(function);
-                    emitter.EmitStoreLocal(emitter.GetOrDeclareLocal(_symbol));
-
-                    break;
-
-                default:
-                    throw new InvalidOperationException();
-            }
+            GenerateAssignment(emitter);
 
             return false;
         }

@@ -3,6 +3,7 @@ using Cottle.Documents.Compiled;
 using Cottle.Documents.Compiled.Assemblers;
 using Cottle.Documents.Emitted.ExpressionGenerators;
 using Cottle.Documents.Emitted.StatementGenerators;
+using Cottle.Documents.Emitted.StatementGenerators.Assign;
 
 namespace Cottle.Documents.Emitted
 {
@@ -44,17 +45,17 @@ namespace Cottle.Documents.Emitted
         protected override IStatementGenerator CreateStatementAssignFunction(Symbol symbol, StoreMode mode, int localCount,
             IReadOnlyList<Symbol> arguments, IStatementGenerator body)
         {
-            return new AssignFunctionStatementGenerator(symbol, mode, arguments, body);
+            return new FunctionAssignStatementGenerator(symbol, mode, arguments, body);
         }
 
         protected override IStatementGenerator CreateStatementAssignRender(Symbol symbol, StoreMode mode, IStatementGenerator body)
         {
-            return new AssignRenderStatementGenerator(symbol, mode, body);
+            return new RenderAssignStatementGenerator(symbol, mode, body);
         }
 
         protected override IStatementGenerator CreateStatementAssignValue(Symbol symbol, StoreMode mode, IExpressionGenerator expression)
         {
-            return new AssignValueStatementGenerator(symbol, mode, expression);
+            return new ValueAssignStatementGenerator(symbol, mode, expression);
         }
 
         protected override IStatementGenerator CreateStatementComposite(IReadOnlyList<IStatementGenerator> statements)
