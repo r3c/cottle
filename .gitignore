@@ -1,4 +1,5 @@
 /BenchmarkDotNet.Artifacts/
+/src/.vs/
 /src/packages/
 /src/tests/
 /src/Cottle.*.nupkg
