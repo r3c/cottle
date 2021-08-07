@@ -15,7 +15,7 @@ namespace Cottle.Documents
 
         protected override Value Execute(Program program, Value[] globals, int locals, TextWriter writer)
         {
-            var frame = new Frame(globals, Array.Empty<Value>(), new Stack<IFunction>());
+            var frame = new Frame(globals, Array.Empty<Value>(), null);
 
             return program.Execute(program.Constants, frame, writer, out var result) ? result : Value.Undefined;
         }
