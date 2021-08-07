@@ -1,25 +1,23 @@
-using System;
+﻿using System;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Emitted.StatementGenerators
 {
-    internal class AssignValueStatementGenerator : IStatementGenerator
+    internal abstract class AssignStatementGenerator : IStatementGenerator
     {
-        private readonly IExpressionGenerator _expression;
         private readonly StoreMode _mode;
         private readonly Symbol _symbol;
 
-        public AssignValueStatementGenerator(Symbol symbol, StoreMode mode, IExpressionGenerator expression)
+        protected AssignStatementGenerator(Symbol symbol, StoreMode mode)
         {
-            _expression = expression;
             _mode = mode;
             _symbol = symbol;
         }
 
-        public bool Generate(Emitter emitter)
-        {
-            _expression.Generate(emitter);
+        public abstract bool Generate(Emitter emitter);
 
+        protected void GenerateAssignment(Emitter emitter)
+        {
             var result = emitter.EmitDeclareLocalAndStore<Value>();
 
             switch (_mode)
@@ -41,8 +39,6 @@ namespace Cottle.Documents.Emitted.StatementGenerators
                 default:
                     throw new InvalidOperationException();
             }
-
-            return false;
         }
     }
 }
