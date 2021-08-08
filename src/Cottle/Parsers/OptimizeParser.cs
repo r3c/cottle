@@ -7,10 +7,10 @@ namespace Cottle.Parsers
 {
     internal class OptimizeParser : IParser
     {
-        private static readonly IOptimizer Optimizer = new RecursiveOptimizer(new DelegateOptimizer(
+        private static readonly IOptimizer Optimizer = new RecursiveOptimizer(
             statement => Modifier.StatementModifiers.Aggregate(statement, (current, transform) => transform(current)),
             expression => Modifier.ExpressionModifiers.Aggregate(expression, (current, transform) => transform(current))
-        ));
+        );
 
         private readonly IParser _parser;
 
