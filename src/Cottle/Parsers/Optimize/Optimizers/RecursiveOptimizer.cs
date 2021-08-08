@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Cottle.Parsers.Optimize.Optimizers
 {
     internal class RecursiveOptimizer : IOptimizer
     {
-        private readonly IReadOnlyList<IOptimizer> _optimizers;
+        private readonly IOptimizer _optimizer;
 
-        public RecursiveOptimizer(IEnumerable<IOptimizer> optimizers)
+        public RecursiveOptimizer(IOptimizer optimizer)
         {
-            _optimizers = optimizers.ToList();
+            _optimizer = optimizer;
         }
 
         public Expression Optimize(Expression expression)
@@ -61,8 +59,8 @@ namespace Cottle.Parsers.Optimize.Optimizers
                     throw new ArgumentOutOfRangeException(nameof(expression));
             }
 
-            // Apply optimizations to expression itself
-            return _optimizers.Aggregate(expression, (current, optimizer) => optimizer.Optimize(current));
+            // Apply child optimization to expression itself
+            return _optimizer.Optimize(expression);
         }
 
         public Statement Optimize(Statement statement)
@@ -141,8 +139,8 @@ namespace Cottle.Parsers.Optimize.Optimizers
                     throw new ArgumentOutOfRangeException(nameof(statement));
             }
 
-            // Apply optimizations to statement itself
-            return _optimizers.Aggregate(statement, (current, optimizer) => optimizer.Optimize(current));
+            // Apply child optimization to statement itself
+            return _optimizer.Optimize(statement);
         }
     }
 }
