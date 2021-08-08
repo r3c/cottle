@@ -4,11 +4,13 @@ namespace Cottle.Parsers.Optimize.Optimizers
 {
     internal class RecursiveOptimizer : IOptimizer
     {
-        private readonly IOptimizer _optimizer;
+        private readonly Func<Expression, Expression> _optimizeExpression;
+        private readonly Func<Statement, Statement> _optimizeStatement;
 
-        public RecursiveOptimizer(IOptimizer optimizer)
+        public RecursiveOptimizer(Func<Statement, Statement> optimizeStatement, Func<Expression, Expression> optimizeExpression)
         {
-            _optimizer = optimizer;
+            _optimizeExpression = optimizeExpression;
+            _optimizeStatement = optimizeStatement;
         }
 
         public Expression Optimize(Expression expression)
@@ -60,7 +62,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
             }
 
             // Apply child optimization to expression itself
-            return _optimizer.Optimize(expression);
+            return _optimizeExpression(expression);
         }
 
         public Statement Optimize(Statement statement)
@@ -140,7 +142,7 @@ namespace Cottle.Parsers.Optimize.Optimizers
             }
 
             // Apply child optimization to statement itself
-            return _optimizer.Optimize(statement);
+            return _optimizeStatement(statement);
         }
     }
 }
