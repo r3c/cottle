@@ -58,7 +58,7 @@ namespace Cottle.Parsers.Forward
             {
                 if (current.Children == null || !current.Children.TryGetValue(character, out current))
                 {
-                    node = current;
+                    node = Root;
 
                     return false;
                 }

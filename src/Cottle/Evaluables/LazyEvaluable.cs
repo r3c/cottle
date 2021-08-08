@@ -24,7 +24,7 @@ namespace Cottle.Evaluables
             return _lazy.Value.CompareTo(other);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return _lazy.Value.Equals(obj);
         }
@@ -39,7 +39,7 @@ namespace Cottle.Evaluables
             return _lazy.Value.GetHashCode();
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return _lazy.Value.ToString();
         }

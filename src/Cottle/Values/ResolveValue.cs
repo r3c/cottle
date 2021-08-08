@@ -33,7 +33,7 @@
             return _lazy.GetHashCode();
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return _lazy.ToString();
         }

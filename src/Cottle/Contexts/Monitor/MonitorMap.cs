@@ -30,9 +30,9 @@ namespace Cottle.Contexts.Monitor
 
         public int Count => _map.Count;
 
-        public int CompareTo(IMap other)
+        public int CompareTo(IMap? other)
         {
-            return _map.CompareTo(other);
+            return other != null ? _map.CompareTo(other) : 1;
         }
 
         public IEnumerator<KeyValuePair<Value, Value>> GetEnumerator()
@@ -51,9 +51,9 @@ namespace Cottle.Contexts.Monitor
             return GetEnumerator();
         }
 
-        public bool Equals(IMap other)
+        public bool Equals(IMap? other)
         {
-            return _map.Equals(other);
+            return other != null && _map.Equals(other);
         }
 
         public bool Contains(Value key)

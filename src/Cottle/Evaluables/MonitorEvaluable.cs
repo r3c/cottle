@@ -26,7 +26,7 @@ namespace Cottle.Evaluables
             return _value.CompareTo(other);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return _value.Equals(obj);
         }
@@ -44,7 +44,7 @@ namespace Cottle.Evaluables
             }
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return _value.ToString();
         }

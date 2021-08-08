@@ -11,7 +11,7 @@ namespace Cottle.Documents.Simple.Evaluators
             return Value.Undefined;
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return Value.Undefined.ToString();
         }

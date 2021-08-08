@@ -16,7 +16,7 @@ namespace Cottle.Documents.Simple.Evaluators
             return _value;
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return _value.ToString();
         }

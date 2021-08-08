@@ -626,7 +626,7 @@ namespace Cottle
             return CompareTo(other) == 0;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Value other && CompareTo(other) == 0;
         }
@@ -664,7 +664,7 @@ namespace Cottle
             }
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             switch (_type)
             {

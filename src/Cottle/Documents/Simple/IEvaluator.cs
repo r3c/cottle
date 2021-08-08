@@ -6,6 +6,6 @@ namespace Cottle.Documents.Simple
     {
         Value Evaluate(IStore store, TextWriter output);
 
-        string ToString();
+        string? ToString();
     }
 }

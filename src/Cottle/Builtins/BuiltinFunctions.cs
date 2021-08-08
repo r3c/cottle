@@ -16,7 +16,16 @@ namespace Cottle.Builtins
 
         public static bool TryGet(string name, out IFunction function)
         {
-            return BuiltinFunctions.InstanceDictionary.TryGetValue(name, out function);
+            if (BuiltinFunctions.InstanceDictionary.TryGetValue(name, out var result))
+            {
+                function = result;
+
+                return true;
+            }
+
+            function = Function.Empty;
+
+            return false;
         }
 
         private static readonly Random RandomGenerator = new Random();

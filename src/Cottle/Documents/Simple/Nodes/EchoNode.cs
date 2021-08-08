@@ -27,7 +27,7 @@ namespace Cottle.Documents.Simple.Nodes
 
             output.Write(setting.BlockBegin);
 
-            if (source.StartsWith("echo", StringComparison.Ordinal))
+            if (source != null && source.StartsWith("echo", StringComparison.Ordinal))
                 output.Write("echo ");
 
             output.Write(source);

@@ -20,17 +20,17 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             _body = body;
         }
 
-        public int CompareTo(IFunction other)
+        public int CompareTo(IFunction? other)
         {
             return object.ReferenceEquals(this, other) ? 0 : 1;
         }
 
-        public bool Equals(IFunction other)
+        public bool Equals(IFunction? other)
         {
             return CompareTo(other) == 0;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is IFunction other && Equals(other);
         }

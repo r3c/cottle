@@ -34,10 +34,29 @@ namespace Cottle.Evaluables
             return Value.FromEvaluable(new LazyEvaluable(() => ReflectionEvaluable.Resolve(source, bindingFlags)));
         }
 
+        private static IReadOnlyList<MemberReader> GetReaders(Type type, BindingFlags bindingFlags)
+        {
+            lock (ReflectionEvaluable.Readers)
+            {
+                if (ReflectionEvaluable.Readers.TryGetValue(type, out var readers))
+                    return readers;
+
+                var memberReaders = new List<MemberReader>();
+
+                foreach (var field in type.GetFields(bindingFlags))
+                    memberReaders.Add(new MemberReader(field, bindingFlags));
+
+                foreach (var property in type.GetProperties(bindingFlags))
+                    memberReaders.Add(new MemberReader(property, bindingFlags));
+
+                ReflectionEvaluable.Readers[type] = memberReaders;
+
+                return memberReaders;
+            }
+        }
+
         private static Value Resolve(object? source, BindingFlags bindingFlags)
         {
-            IReadOnlyList<MemberReader> readers;
-
             if (source is null)
                 return Value.Undefined;
 
@@ -64,24 +83,7 @@ namespace Cottle.Evaluables
 
             // Otherwise, browse object fields and properties
             var fields = new Dictionary<Value, Value>();
-
-            lock (ReflectionEvaluable.Readers)
-            {
-                if (!ReflectionEvaluable.Readers.TryGetValue(type, out readers))
-                {
-                    var memberReaders = new List<MemberReader>();
-
-                    foreach (var field in type.GetFields(bindingFlags))
-                        memberReaders.Add(new MemberReader(field, bindingFlags));
-
-                    foreach (var property in type.GetProperties(bindingFlags))
-                        memberReaders.Add(new MemberReader(property, bindingFlags));
-
-                    ReflectionEvaluable.Readers[type] = memberReaders;
-
-                    readers = memberReaders;
-                }
-            }
+            var readers = GetReaders(type, bindingFlags);
 
             foreach (var extractor in readers)
                 fields.Add(extractor.Name, extractor.Extract(source));
@@ -95,7 +97,7 @@ namespace Cottle.Evaluables
 
             private readonly BindingFlags _binding;
 
-            private readonly Func<object, object> _extractor;
+            private readonly Func<object?, object?> _extractor;
 
             public MemberReader(FieldInfo field, BindingFlags binding)
             {
@@ -107,10 +109,10 @@ namespace Cottle.Evaluables
 
             public MemberReader(PropertyInfo property, BindingFlags binding)
             {
-                var method = property.GetGetMethod(true);
+                var method = property.GetMethod;
 
                 _binding = binding;
-                _extractor = s => method.Invoke(s, null);
+                _extractor = s => method?.Invoke(s, null);
 
                 Name = property.Name;
             }

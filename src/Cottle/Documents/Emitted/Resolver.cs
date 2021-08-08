@@ -8,7 +8,7 @@ namespace Cottle.Documents.Emitted
     {
         public static ConstructorInfo Constructor<T>(Expression<T> lambda)
         {
-            if (!(lambda.Body is NewExpression expression))
+            if (lambda.Body is not NewExpression expression || expression.Constructor == null)
                 throw new ArgumentException("can't get constructor information from expression", nameof(lambda));
 
             return expression.Constructor;
@@ -16,15 +16,15 @@ namespace Cottle.Documents.Emitted
 
         public static FieldInfo Field<T>(Expression<T> lambda)
         {
-            if (!(lambda.Body is MemberExpression expression) || expression.Member.MemberType != MemberTypes.Field)
+            if (lambda.Body is not MemberExpression expression || expression.Member is not FieldInfo fieldInfo)
                 throw new ArgumentException("can't get field information from expression", nameof(lambda));
 
-            return (FieldInfo)expression.Member;
+            return fieldInfo;
         }
 
         public static MethodInfo Method<T>(Expression<T> lambda)
         {
-            if (!(lambda.Body is MethodCallExpression expression))
+            if (lambda.Body is not MethodCallExpression expression)
                 throw new ArgumentException("can't get method information from expression", nameof(lambda));
 
             return expression.Method;
@@ -32,10 +32,10 @@ namespace Cottle.Documents.Emitted
 
         public static PropertyInfo Property<T>(Expression<T> lambda)
         {
-            if (!(lambda.Body is MemberExpression expression) || expression.Member.MemberType != MemberTypes.Property)
+            if (lambda.Body is not MemberExpression expression || expression.Member is not PropertyInfo propertyInfo)
                 throw new ArgumentException("can't get property information from expression", nameof(lambda));
 
-            return (PropertyInfo)expression.Member;
+            return propertyInfo;
         }
     }
 }
