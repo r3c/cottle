@@ -8,16 +8,10 @@ namespace Cottle.Parsers.Optimize.Optimizers
 
         private readonly Func<Statement, Statement> _statementOptimizer;
 
-        public DelegateOptimizer(Func<Statement, Statement> statementOptimizer)
-        {
-            _expressionOptimizer = e => e;
-            _statementOptimizer = statementOptimizer;
-        }
-
-        public DelegateOptimizer(Func<Expression, Expression> expressionOptimizer)
+        public DelegateOptimizer(Func<Statement, Statement> statementOptimizer, Func<Expression, Expression> expressionOptimizer)
         {
             _expressionOptimizer = expressionOptimizer;
-            _statementOptimizer = c => c;
+            _statementOptimizer = statementOptimizer;
         }
 
         public Expression Optimize(Expression expression)
