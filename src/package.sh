@@ -2,12 +2,11 @@
 
 base="$(dirname "$0")"
 
-# Retreive latest version from current HEAD
+# Retrieve latest version from current HEAD
 version="$(git --work-tree "$base" tag --points-at HEAD)"
 
 if [ -z "$version" ]; then
-	echo >&2 "error: current HEAD doesn't point to a tag"
-	exit 1
+	echo >&2 "warning: current HEAD doesn't point to a tag"
 fi
 
 dotnet pack -c Release "$base"/Cottle
