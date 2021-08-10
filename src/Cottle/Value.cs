@@ -446,7 +446,7 @@ namespace Cottle
 
         private Value(IEvaluable? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -462,7 +462,7 @@ namespace Cottle
 
         private Value(IFunction? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -478,7 +478,7 @@ namespace Cottle
 
         private Value(IReadOnlyDictionary<Value, Value>? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -494,7 +494,7 @@ namespace Cottle
 
         private Value(IEnumerable<KeyValuePair<Value, Value>>? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -510,7 +510,7 @@ namespace Cottle
 
         private Value(IEnumerable<Value>? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -526,7 +526,7 @@ namespace Cottle
 
         private Value(IMap? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -542,7 +542,7 @@ namespace Cottle
 
         private Value(Func<int, Value>? generator, int count)
         {
-            if (generator == null)
+            if (generator is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;
@@ -572,7 +572,7 @@ namespace Cottle
 
         private Value(string? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 _type = ValueContent.Void;
                 _unionReference = default;

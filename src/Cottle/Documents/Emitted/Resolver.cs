@@ -8,7 +8,7 @@ namespace Cottle.Documents.Emitted
     {
         public static ConstructorInfo Constructor<T>(Expression<T> lambda)
         {
-            if (lambda.Body is not NewExpression expression || expression.Constructor == null)
+            if (lambda.Body is not NewExpression expression || expression.Constructor is null)
                 throw new ArgumentException("can't get constructor information from expression", nameof(lambda));
 
             return expression.Constructor;

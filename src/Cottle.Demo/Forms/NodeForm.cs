@@ -14,7 +14,7 @@ namespace Cottle.Demo.Forms
 
             InitializeComponent();
 
-            if (data != null)
+            if (data is not null)
             {
                 textBoxName.Text = data.Key;
 

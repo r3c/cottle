@@ -349,7 +349,7 @@ namespace Cottle.Test
         public void Render_StatementFor(string pairs, string source, string body, string empty, string expected)
         {
             AssertOutput(
-                "{for " + pairs + " in " + source + ":" + body + (empty != null ? "|empty:" + empty : string.Empty) +
+                "{for " + pairs + " in " + source + ":" + body + (empty is not null ? "|empty:" + empty : string.Empty) +
                 "}", expected);
         }
 

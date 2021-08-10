@@ -22,7 +22,7 @@ namespace Cottle.Documents.Simple.Evaluators
             var source = _caller.Evaluate(store, output);
             var function = source.AsFunction;
 
-            if (function != null)
+            if (function is not null)
             {
                 var values = new Value[_arguments.Length];
 

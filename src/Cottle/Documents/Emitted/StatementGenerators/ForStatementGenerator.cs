@@ -92,7 +92,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             // Evaluate statement for "empty" case
             emitter.MarkLabel(empty);
 
-            if (_empty != null)
+            if (_empty is not null)
             {
                 if (_empty.Generate(emitter))
                 {

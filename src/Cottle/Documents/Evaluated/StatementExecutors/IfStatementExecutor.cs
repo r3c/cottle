@@ -26,7 +26,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
                 return branch.Value.Execute(frame, output);
             }
 
-            if (_fallback != null)
+            if (_fallback is not null)
                 return _fallback.Execute(frame, output);
 
             return null;

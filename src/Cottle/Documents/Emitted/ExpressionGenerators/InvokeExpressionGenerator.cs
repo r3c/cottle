@@ -77,7 +77,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             emitter.EmitBranchWhenFalse(arbitrary);
 
             // Perform call with known number of arguments if possible
-            if (_finiteFunctionInvoke != null)
+            if (_finiteFunctionInvoke is not null)
             {
                 emitter.EmitLoadLocalValueAndRelease(finiteFunction);
                 emitter.EmitLoadFrame();

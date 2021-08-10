@@ -80,7 +80,7 @@ namespace Cottle.Demo.Forms
 
         private void toolStripMenuItemMoveDown_Click(object sender, EventArgs e)
         {
-            if (!(contextMenuStripTree.Tag is TreeNode node1) || node1.Parent == null || node1.NextNode == null)
+            if (!(contextMenuStripTree.Tag is TreeNode node1) || node1.Parent is null || node1.NextNode is null)
                 return;
 
             var collection = node1.Parent.Nodes;
@@ -99,7 +99,7 @@ namespace Cottle.Demo.Forms
 
         private void toolStripMenuItemMoveUp_Click(object sender, EventArgs e)
         {
-            if (!(contextMenuStripTree.Tag is TreeNode node1) || node1.Parent == null || node1.PrevNode == null)
+            if (!(contextMenuStripTree.Tag is TreeNode node1) || node1.Parent is null || node1.PrevNode is null)
                 return;
 
             var collection = node1.Parent.Nodes;
@@ -138,7 +138,7 @@ namespace Cottle.Demo.Forms
 
         private void toolStripMenuItemNodeDelete_Click(object sender, EventArgs e)
         {
-            if (contextMenuStripTree.Tag is TreeNode node && node.Parent != null)
+            if (contextMenuStripTree.Tag is TreeNode node && node.Parent is not null)
                 node.Remove();
         }
 
@@ -164,15 +164,15 @@ namespace Cottle.Demo.Forms
         {
             var node = treeViewContext.SelectedNode;
             var isMapValue = node?.Tag is NodeData data && data.Value.Type == ValueContent.Map;
-            var isRoot = node?.Parent == null;
+            var isRoot = node?.Parent is null;
 
             contextMenuStripTree.Tag = node;
             toolStripMenuItemNodeClone.Enabled = !isRoot;
             toolStripMenuItemNodeCreate.Enabled = isRoot || isMapValue;
             toolStripMenuItemNodeDelete.Enabled = !isRoot;
             toolStripMenuItemNodeUpdate.Enabled = !isRoot;
-            toolStripMenuItemMoveDown.Enabled = !isRoot && node?.NextNode != null;
-            toolStripMenuItemMoveUp.Enabled = !isRoot && node?.PrevNode != null;
+            toolStripMenuItemMoveDown.Enabled = !isRoot && node?.NextNode is not null;
+            toolStripMenuItemMoveUp.Enabled = !isRoot && node?.PrevNode is not null;
         }
 
         private void DisplayOutput(string text)

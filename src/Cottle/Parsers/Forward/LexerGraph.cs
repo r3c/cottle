@@ -26,7 +26,7 @@ namespace Cottle.Parsers.Forward
 
         private void BuildFallbacksForNode(LexerNode current, string prefix)
         {
-            if (current.Children == null)
+            if (current.Children is null)
                 return;
 
             foreach (var pair in current.Children)
@@ -56,7 +56,7 @@ namespace Cottle.Parsers.Forward
 
             foreach (var character in sequence)
             {
-                if (current.Children == null || !current.Children.TryGetValue(character, out current))
+                if (current.Children is null || !current.Children.TryGetValue(character, out current))
                 {
                     node = Root;
 
