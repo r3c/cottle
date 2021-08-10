@@ -8,7 +8,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
     {
         private readonly IReadOnlyList<IExpressionGenerator> _arguments;
         private readonly IExpressionGenerator _caller;
-        private readonly Action<Emitter> _finiteFunctionInvoke;
+        private readonly Action<Emitter>? _finiteFunctionInvoke;
 
         public InvokeExpressionGenerator(IExpressionGenerator caller, IReadOnlyList<IExpressionGenerator> arguments)
         {
@@ -35,7 +35,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                     break;
 
                 default:
-                    _finiteFunctionInvoke = e => e.EmitLoadUndefined();
+                    _finiteFunctionInvoke = null;
 
                     break;
             }
@@ -76,16 +76,21 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             emitter.EmitLoadLocalValue(finiteFunction);
             emitter.EmitBranchWhenFalse(arbitrary);
 
-            // Perform call with known number of arguments
-            emitter.EmitLoadLocalValueAndRelease(finiteFunction);
-            emitter.EmitLoadFrame();
+            // Perform call with known number of arguments if possible
+            if (_finiteFunctionInvoke != null)
+            {
+                emitter.EmitLoadLocalValueAndRelease(finiteFunction);
+                emitter.EmitLoadFrame();
 
-            for (var i = 0; i < _arguments.Count; ++i)
-                emitter.EmitLoadLocalValue(argumentsLocals[i]);
+                for (var i = 0; i < _arguments.Count; ++i)
+                    emitter.EmitLoadLocalValue(argumentsLocals[i]);
 
-            emitter.EmitLoadOutput();
+                emitter.EmitLoadOutput();
 
-            _finiteFunctionInvoke(emitter);
+                _finiteFunctionInvoke(emitter);
+            }
+            else
+                emitter.EmitLoadUndefined();
 
             var exit = emitter.DeclareLabel();
 
