@@ -68,9 +68,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators.Assign
 
                 var functionFrame = parentFrame.CreateForFunction(arguments);
 
-                return _program.Execute(_program.Constants, functionFrame, output, out var result)
-                    ? result
-                    : Value.Undefined;
+                return _program.Execute(functionFrame, output);
             }
         }
     }

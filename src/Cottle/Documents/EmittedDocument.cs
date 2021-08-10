@@ -16,7 +16,7 @@ namespace Cottle.Documents
         {
             var frame = new Frame(globals, Array.Empty<Value>(), null);
 
-            return program.Execute(program.Constants, frame, writer, out var result) ? result : Value.Undefined;
+            return program.Execute(frame, writer);
         }
     }
 }
