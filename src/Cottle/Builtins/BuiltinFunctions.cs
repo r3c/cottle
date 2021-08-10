@@ -40,7 +40,7 @@ namespace Cottle.Builtins
             var function = caller.AsFunction;
             var i = 0;
 
-            if (function == null)
+            if (function is null)
                 return Value.Undefined;
 
             foreach (var pair in arguments.Fields)
@@ -183,7 +183,7 @@ namespace Cottle.Builtins
             var function = arguments[1].AsFunction;
             var result = new List<KeyValuePair<Value, Value>>(arguments[0].Fields.Count);
 
-            if (function == null)
+            if (function is null)
                 return Value.Undefined;
 
             foreach (var pair in arguments[0].Fields)
@@ -380,7 +380,7 @@ namespace Cottle.Builtins
             var function = arguments[1].AsFunction;
             var result = new KeyValuePair<Value, Value>[arguments[0].Fields.Count];
 
-            if (function == null)
+            if (function is null)
                 return Value.Undefined;
 
             var i = 0;

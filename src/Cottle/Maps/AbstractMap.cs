@@ -17,7 +17,7 @@ namespace Cottle.Maps
 
         public int CompareTo(IMap? other)
         {
-            if (other == null)
+            if (other is null)
                 return 1;
 
             if (Count < other.Count)

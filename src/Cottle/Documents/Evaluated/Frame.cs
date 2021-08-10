@@ -27,7 +27,7 @@ namespace Cottle.Documents.Evaluated
 
         public string Echo(Value value, TextWriter output)
         {
-            if (_modifiers == null)
+            if (_modifiers is null)
                 return value.AsString;
 
             foreach (var modifier in _modifiers)
@@ -43,7 +43,7 @@ namespace Cottle.Documents.Evaluated
 
         public IFunction Unwrap()
         {
-            if (_modifiers != null && _modifiers.Count > 0)
+            if (_modifiers is not null && _modifiers.Count > 0)
                 return _modifiers.Pop();
 
             return Function.Empty;
@@ -51,7 +51,7 @@ namespace Cottle.Documents.Evaluated
 
         public void Wrap(IFunction modifier)
         {
-            if (_modifiers == null)
+            if (_modifiers is null)
                 _modifiers = new Stack<IFunction>();
 
             _modifiers.Push(modifier);

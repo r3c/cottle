@@ -48,7 +48,7 @@ namespace Cottle.Documents.Simple.Nodes
                     store.Leave();
                 }
             }
-            else if (_empty != null)
+            else if (_empty is not null)
             {
                 store.Enter();
 
@@ -85,7 +85,7 @@ namespace Cottle.Documents.Simple.Nodes
 
             _body.Source(setting, output);
 
-            if (_empty != null)
+            if (_empty is not null)
             {
                 output.Write(setting.BlockContinue);
                 output.Write("empty:");

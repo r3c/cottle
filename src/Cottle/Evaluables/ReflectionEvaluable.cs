@@ -121,7 +121,7 @@ namespace Cottle.Evaluables
             {
                 var value = _extractor(source);
 
-                return value != null ? ReflectionEvaluable.CreateValue(value, _binding) : Value.Undefined;
+                return value is not null ? ReflectionEvaluable.CreateValue(value, _binding) : Value.Undefined;
             }
         }
     }

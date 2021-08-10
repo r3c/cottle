@@ -15,7 +15,7 @@ namespace Cottle.Parsers.Forward
 
         public LexerNode FollowBy(char character)
         {
-            if (Children == null)
+            if (Children is null)
                 Children = new Dictionary<char, LexerNode>();
 
             if (Children.TryGetValue(character, out var child))
@@ -32,10 +32,10 @@ namespace Cottle.Parsers.Forward
         {
             for (var current = this; ; current = current.FallbackNode)
             {
-                if (current.Children != null && current.Children.TryGetValue(character, out var next))
+                if (current.Children is not null && current.Children.TryGetValue(character, out var next))
                     return next;
 
-                if (current.FallbackNode == null)
+                if (current.FallbackNode is null)
                 {
                     output.Append(character);
 

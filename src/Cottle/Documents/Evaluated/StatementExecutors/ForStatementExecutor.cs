@@ -43,7 +43,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
                         return result.Value;
                 }
             }
-            else if (_empty != null)
+            else if (_empty is not null)
             {
                 var result = _empty.Execute(frame, output);
 

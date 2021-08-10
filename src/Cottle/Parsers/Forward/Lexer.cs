@@ -342,7 +342,7 @@ namespace Cottle.Parsers.Forward
 
                     // Stop appending to buffer if we're about to reach LOH
                     // size and we are not in the middle of a match candidate
-                    if (buffer.Length > Lexer.MaxBufferSize && node.FallbackNode == null)
+                    if (buffer.Length > Lexer.MaxBufferSize && node.FallbackNode is null)
                         return new Lexem(LexemType.Text, offset, buffer.Length, buffer.ToString());
                 }
             }

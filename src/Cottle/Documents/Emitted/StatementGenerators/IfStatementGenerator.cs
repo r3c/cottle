@@ -48,7 +48,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             }
 
             // Emit fallback branch if any or null value otherwise
-            if (_fallback != null && _fallback.Generate(emitter))
+            if (_fallback is not null && _fallback.Generate(emitter))
             {
                 emitter.EmitLoadDuplicate();
                 emitter.EmitBranchWhenTrue(exitReturn);

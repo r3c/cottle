@@ -40,7 +40,7 @@ namespace Cottle.Evaluables
         {
             unchecked
             {
-                return (_value.GetHashCode() * 397) ^ (Fields != null ? Fields.GetHashCode() : 0);
+                return (_value.GetHashCode() * 397) ^ (Fields is not null ? Fields.GetHashCode() : 0);
             }
         }
 

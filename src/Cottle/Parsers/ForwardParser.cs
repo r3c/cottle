@@ -333,7 +333,7 @@ namespace Cottle.Parsers
                 _lexer.NextRaw();
 
                 // Arguments were defined, build function assignment
-                if (arguments != null)
+                if (arguments is not null)
                 {
                     statement = Statement.CreateAssignFunction(name, arguments, mode, Statement.NoOp);
 
@@ -374,7 +374,7 @@ namespace Cottle.Parsers
             }
 
             // Arguments were defined, build function assignment
-            if (arguments != null)
+            if (arguments is not null)
             {
                 if (!TryParseStatementBody(state, out var body))
                 {
@@ -641,7 +641,7 @@ namespace Cottle.Parsers
                         }
 
                         // Ignore empty statements
-                        if (blockStatement != null)
+                        if (blockStatement is not null)
                             statements.Add(blockStatement);
 
                         _lexer.NextRaw();

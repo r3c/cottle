@@ -32,7 +32,7 @@ namespace Cottle.Documents.Simple.Nodes
                     return halt;
                 }
 
-            if (_fallback != null)
+            if (_fallback is not null)
             {
                 store.Enter();
 
@@ -73,7 +73,7 @@ namespace Cottle.Documents.Simple.Nodes
                 branch.Value.Source(setting, output);
             }
 
-            if (_fallback != null)
+            if (_fallback is not null)
             {
                 output.Write(setting.BlockContinue);
                 output.Write("else:");
