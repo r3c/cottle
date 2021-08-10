@@ -51,11 +51,11 @@ namespace Cottle.Documents.Emitted
         };
 
         private static readonly MethodInfo MapCount =
-            Resolver.Property<Func<IMap, int>>(m => m.Count).GetGetMethod();
+            Resolver.Property<Func<IMap, int>>(m => m.Count).GetMethod!;
 
         private static readonly MethodInfo MapEnumeratorCurrent = Resolver
             .Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e => e.Current)
-            .GetGetMethod();
+            .GetMethod!;
 
         private static readonly MethodInfo MapEnumeratorMoveNext =
             Resolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext());
@@ -66,16 +66,16 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo MapTryGet =
             Resolver.Method<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
 
-        private static readonly MethodInfo ObjectToString = Resolver.Method<Func<object, string>>(o => o.ToString());
+        private static readonly MethodInfo ObjectToString = Resolver.Method<Func<object, string?>>(o => o.ToString());
 
         private static readonly MethodInfo PairKey =
-            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetGetMethod();
+            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetMethod!;
 
         private static readonly MethodInfo PairValue =
-            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetGetMethod();
+            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetMethod!;
 
-        private static readonly PropertyInfo ReadOnlyListCount =
-            Resolver.Property<Func<IReadOnlyList<object>, int>>(l => l.Count);
+        private static readonly MethodInfo ReadOnlyListCount =
+            Resolver.Property<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Resolver.Constructor<Func<StringWriter>>(() => new StringWriter());
@@ -90,13 +90,13 @@ namespace Cottle.Documents.Emitted
             Resolver.Method<Action<TextWriter>>(w => w.Write(default(string)));
 
         private static readonly MethodInfo ValueAsBooleanGet =
-            Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetGetMethod();
+            Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetMethod!;
 
         private static readonly MethodInfo ValueAsFunctionGet =
-            Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetGetMethod();
+            Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetMethod!;
 
         private static readonly MethodInfo ValueFieldsGet =
-            Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetGetMethod();
+            Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetMethod!;
 
         private static readonly MethodInfo ValueFromDictionary =
             Resolver.Method<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
@@ -361,7 +361,7 @@ namespace Cottle.Documents.Emitted
         {
             _generator.Emit(OpCodes.Ldarg_1);
             _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
-            _generator.Emit(OpCodes.Callvirt, Emitter.ReadOnlyListCount.GetMethod);
+            _generator.Emit(OpCodes.Callvirt, Emitter.ReadOnlyListCount);
         }
 
         public void EmitLoadFrameGlobal()

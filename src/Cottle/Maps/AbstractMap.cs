@@ -15,7 +15,7 @@ namespace Cottle.Maps
 
         public abstract bool TryGet(Value key, out Value value);
 
-        public int CompareTo(IMap other)
+        public int CompareTo(IMap? other)
         {
             if (other == null)
                 return 1;
@@ -47,12 +47,12 @@ namespace Cottle.Maps
             return 0;
         }
 
-        public bool Equals(IMap other)
+        public bool Equals(IMap? other)
         {
             return CompareTo(other) == 0;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is IMap other && Equals(other);
         }

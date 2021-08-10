@@ -6,7 +6,7 @@
     <Description>High performance, light &amp; extensible template engine library for .NET 4.7.2 and above.</Description>
     <Version>2.0.3</Version>
     <Authors>Remi Caput</Authors>
-    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
+    <TargetFrameworks>net5.0;netstandard2.0;net472</TargetFrameworks>
     <Title>Cottle: High performance template engine</Title>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
