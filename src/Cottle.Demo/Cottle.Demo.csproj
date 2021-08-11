@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
     <StartupObject />
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
-    <AssemblyName>Cottle.Demo</AssemblyName>
-    <PackageId>Cottle.Demo</PackageId>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
@@ -17,12 +17,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
   <ItemGroup>
