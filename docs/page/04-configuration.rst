@@ -220,3 +220,27 @@ Cottle performs various code optimizations on documents after parsing them from 
 .. warning::
 
     Disabling optimizations is not recommended for production usage.
+
+
+
+Compilation reports
+===================
+
+The :type:`DocumentResult` structure returned after compiling a document contains information about any issue detected from input template along with their criticity level (see :type:`DocumentSeverity`), even though only `Error` ones prevent the document from being built. These issues can be accessed like this:
+
+.. code-block:: csharp
+    :caption: C# source
+    :emphasize-lines: 3,4,5,6
+
+    var documentResult = Document.CreateDefault(template, configuration);
+
+    for (var report in documentResult.Reports)
+    {
+        Console.WriteLine($"[{report.Severity}] {report.Message}");
+    }
+
+Reports can be logged somewhere so you receive notifications whenever an issue is detected in your templates or a migration is suggested.
+
+.. note::
+
+    The `DocumentOrThrow` helper from :type:`DocumentResult` will throw if reports contains one or more item with `Error` criticity level, and use the message from this item as the exception message.
