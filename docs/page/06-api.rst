@@ -158,6 +158,14 @@ Compiled documents
 
         Template issue that prevents document from being constructed.
 
+   .. value:: Warning
+
+        Template issue that doesn't prevent document from being constructed nor rendered, but may impact rendered result or performance and require your attention.
+
+   .. value:: Notice
+
+        Template issue with no visible impact, mostly used for code suggestions or deprecation messages.
+
 
 
 Rendering contexts
