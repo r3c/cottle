@@ -1,4 +1,4 @@
-name: Validation
+name: Validate
 
 on:
   - push
@@ -21,8 +21,7 @@ jobs:
             framework_dll: net5.0
     steps:
       - uses: actions/checkout@v2
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet.version }}
       - run: dotnet tool install --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json -g dotnet-format
@@ -45,11 +44,9 @@ jobs:
             framework_dll: net5.0
     steps:
       - uses: actions/checkout@v2
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet.version }}
-      - run: dotnet restore src/Cottle.sln
       - run: dotnet build src/Cottle -f ${{ matrix.dotnet.framework_dll }}
       - run: dotnet build src/Cottle.Benchmark -f ${{ matrix.dotnet.framework_app }}
       - run: dotnet build src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
