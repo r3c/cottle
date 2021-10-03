@@ -16,8 +16,8 @@ namespace Cottle
         public static IContext Empty => EmptyContext.Instance;
 
         /// <summary>
-        /// Create a new context with custom symbols and Cottle builtins used as a fallback. Any symbol sharing the same
-        /// name than a Cottle builtin will get precedence and hide it.
+        /// Create a new context with custom variables and Cottle builtins used as a fallback. Any variable sharing the
+        /// same name than a Cottle builtin will get precedence and hide it.
         /// </summary>
         /// <param name="custom">Custom symbols</param>
         /// <returns>Cottle context</returns>
@@ -27,7 +27,7 @@ namespace Cottle
         }
 
         /// <summary>
-        /// Create a new context with given symbols dictionary and Cottle builtins used as a fallback. Any symbol
+        /// Create a new context with given variables dictionary and Cottle builtins used as a fallback. Any variable
         /// sharing the same name than a Cottle builtin will get precedence and hide it.
         /// </summary>
         /// <param name="symbols">Symbols dictionary</param>
@@ -38,8 +38,8 @@ namespace Cottle
         }
 
         /// <summary>
-        /// Create a new context using two underlying instances for retrieving values. Value is first searched by key
-        /// within primary instance, then fallback instance if value was void in primary one.
+        /// Create a new context using two underlying instances for retrieving variables. Variable is first searched by
+        /// key within primary instance, then fallback instance if value was void in primary one.
         /// </summary>
         /// <param name="primary">Primary context</param>
         /// <param name="fallback">Fallback context</param>
@@ -50,9 +50,9 @@ namespace Cottle
         }
 
         /// <summary>
-        /// Create a new context using given callback function as a symbol getter.
+        /// Create a new context using given callback function as a variable getter.
         /// </summary>
-        /// <param name="callback">Symbol getter function</param>
+        /// <param name="callback">Variable getter function</param>
         /// <returns>Cottle context</returns>
         public static IContext CreateCustom(Func<Value, Value> callback)
         {
@@ -60,13 +60,23 @@ namespace Cottle
         }
 
         /// <summary>
-        /// Create a new context filled with given dictionary of symbols.
+        /// Create a new context filled with given dictionary of variables.
         /// </summary>
         /// <param name="symbols">Symbols dictionary</param>
         /// <returns>Cottle context</returns>
         public static IContext CreateCustom(IReadOnlyDictionary<Value, Value> symbols)
         {
             return new DictionaryContext(symbols);
+        }
+
+        /// <summary>
+        /// Create a new spying context to keep track of accessed variables and fields.
+        /// </summary>
+        /// <param name="source">Source context to spy on</param>
+        /// <returns>Cottle context</returns>
+        public static ISpyContext CreateSpy(IContext source)
+        {
+            return new SpyContext(source);
         }
 
         /// <summary>
