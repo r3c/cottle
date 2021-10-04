@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet.version }}
-      - run: dotnet tool install --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools/nuget/v3/index.json -g dotnet-format
+      - run: dotnet tool install -g dotnet-format
       - run: dotnet-format --check src/Cottle.sln
 
   build:
