@@ -203,8 +203,8 @@ namespace Cottle.Test.Contexts
         {
 #pragma warning disable 618
             var document = new SimpleDocument(template);
-#pragma warning restore 618
             var (context, usage) = Context.CreateMonitor(backend);
+#pragma warning restore 618
 
             Assert.That(document.Render(context), Is.EqualTo(expected));
 

@@ -84,6 +84,7 @@ namespace Cottle
         /// </summary>
         /// <param name="context">Context to be monitored</param>
         /// <returns>Cottle context</returns>
+        [Obsolete("Use `Context.CreateSpy` as a replacement for monitoring contexts.")]
         public static (IContext, ISymbolUsage) CreateMonitor(IContext context)
         {
             var monitor = new MonitorContext(context);
@@ -95,7 +96,7 @@ namespace Cottle
         /// Create a new empty context.
         /// </summary>
         /// <returns>Cottle context</returns>
-        [Obsolete("Use `Context.Empty`.")]
+        [Obsolete("Use `Context.Empty` to avoid creating a new empty context.")]
         public static IContext CreateEmpty()
         {
             return EmptyContext.Instance;
