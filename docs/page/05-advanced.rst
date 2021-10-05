@@ -344,3 +344,29 @@ To create native documents, simply invoke :meth:`Document.CreateNative` instead 
     :caption: C# source
 
     var document = Document.CreateNative(template).DocumentOrThrow;
+
+
+
+.. _`spy_context`:
+
+Spying values
+=============
+
+If you're working with many templates you may lose track of what variables are used and how. This is where the spying feature can come handy: it allows gathering information on each variable referenced in a template and their associated values. To use this feature, start by wrapping a context within a spying context using the :meth:`Context.CreateSpy` method and use it for rendering your documents:
+
+.. code-block:: csharp
+    :caption: C# source
+
+    var spyContext = Context.CreateSpy(regularContext);
+    var output = document.Render(spyContext);
+
+    var someVariable = spyContext.SpyVariable("one"); // Access information about variable "one"
+    var someVariableField = someVariable.SpyField("field"); // Access map value field information
+
+    var allVariables = spyContext.SpyVariables(); // Access information about all template variables
+
+Read about interface :type:`ISpyContext` for more information about how to use spying context methods.
+
+.. warning::
+
+    Spying context has a negative impact on both performance and memory usage. You may want to apply some sampling strategy if you need to enable this feature in production.

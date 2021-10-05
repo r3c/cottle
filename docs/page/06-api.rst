@@ -206,9 +206,13 @@ Rendering contexts
 
         Create a rendering context from given variables dictionary.
 
+    .. method:: ISpyContext CreateSpy(IContext source)
+
+        Wrap given context inside a spying context to get information about variables referenced in a template, along with their last known value and accessed fields. See section :ref:`spy_context` for details about lazy value resolution.
+
     .. method:: (IContext,ISymbolUsage) CreateMonitor(IContext context)
 
-        Wrap given context inside a monitoring context to get statistics on which variables are read from it. Output :type:`IContext` is the monitored one that should be passed to document, while the ``ISymbolUsage`` usage is the structure you can query after rendering the document to get information about which variables were read.
+        Obsolete alternative to :meth:`Context.CreateSpy`.
 
 
 
@@ -494,6 +498,44 @@ Value declaration
    .. value:: Void
 
         Undefined value.
+
+
+
+Spying context
+==============
+
+.. namespace:: Cottle
+.. class:: ISpyContext
+
+    .. inherits:: Cottle.IContext
+
+    Rendering context able to spy on variables and fields used during document rendering.
+
+    .. method:: ISpyRecord SpyVariable(Value key)
+
+        Spy variable matching given key from underlying context. This method can be called either before or after rendering a document, as returned record is updated on each rendering.
+
+    .. method:: System.Collections.Generic.IReadOnlyDictionary<Value,ISpyRecord> SpyVariables()
+
+        Spy all variables used in rendered document from underlying context and return them as a dictionary indexed by variable key. Note that every variable referenced in a document will have an entry in returned dictionary, even if they were not accessed at rendering.
+
+
+.. namespace:: Cottle
+.. class:: ISpyRecord
+
+    Spying information about variable or field value.
+
+    .. property:: Value Value { get; }
+
+        Last value observed at render time for the variable or field being spied on.
+
+    .. method:: ISpyRecord SpyField(Value key)
+
+        Spy field matching given key from current variable or field. This method is similar to :meth:`ISpyContext.SpyVariable` but works on variable fields instead of context variables.
+
+    .. method:: System.Collections.Generic.IReadOnlyDictionary<Value,ISpyRecord> SpyFields()
+
+        Spy all fields from current variable or field and return then as a dictionary indexed by field key.
 
 
 
