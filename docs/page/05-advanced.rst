@@ -31,7 +31,7 @@ In this example, you can explicitly change the type of ``key`` to a number by us
 Variables immutability
 ======================
 
-All variables in Cottle are immutable, meaning it's not possible to replace a section within a string or change the value associated to some key in a map. If you want to append, replace or erase a value in a map you'll have to rebuild a new one where you inject, filter out or replace desired value. There are a few built-in functions you may find handly to achieve such tasks:
+All variables in Cottle are immutable, meaning it's not possible to replace a section within a string or change the value associated to some key in a map. If you want to append, replace or erase a value in a map you'll have to rebuild a new one where you inject, filter out or replace desired value. There are a few built-in functions you may find handy to achieve such tasks:
 
 * :ref:`builtin_cat` and :ref:`builtin_union` can merge strings (``cat`` only) or maps ;
 * :ref:`builtin_slice` can extract part of a string or a map ;

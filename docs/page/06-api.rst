@@ -222,11 +222,11 @@ Function declaration
 
     .. property:: bool IsPure { get; }
 
-        Indicates whether function is pure or not. Pure functions have no side effects nor rely on any, and are eligible to various rendering optimizations.
+        Indicates whether function is pure or not. Pure functions have no side effects nor rely on them, and may offer better rendering performance as they're eligible to more compilation optimizations.
 
     .. method:: Value Invoke(System.Object state, System.Collections.Generic.IReadOnlyList<Value> arguments, System.IO.TextWriter output)
 
-        Invoke function with given arguments. Variable ``state`` is a opaque payload that needs to be passed to nested function calls if any, ``arguments`` contains the ordered list of values passed to function, and ``output`` is a text writer to document output result.
+        Invoke function with given arguments. Variable ``state`` is an opaque payload that needs to be passed to nested function calls if any, ``arguments`` contains the ordered list of values passed to function, and ``output`` is a text writer to document output result.
 
 
 .. namespace:: Cottle
@@ -302,7 +302,7 @@ Value declaration
 
     .. property:: Value EmptyMap { get; }
 
-        Static and read-only empty map value, equal to ``Value.FromEnumerable(new Value[0])``.
+        Static and read-only empty map value, equal to ``Value.FromEnumerable(Array.Empty<Value>()))``.
 
     .. property:: Value EmptyString { get; }
 
@@ -341,7 +341,7 @@ Value declaration
         Read value as a double precision floating point number after converting it if needed. Following conversion is applied depending on base type:
 
         * From booleans, return ``0`` for ``false`` or ``1`` for ``true``.
-        * From strings, parse double number if value matches regular expression ``[0-9]*(\\.[0-9]+)?``, or ``0`` otherwise.
+        * From strings, convert to double number if value can be parsed as one using ``double.TryParse()`` on invariant culture, or return ``0`` otherwise.
         * From undefined values, always return ``0``.
 
     .. property:: string AsString { get; }
@@ -367,10 +367,6 @@ Value declaration
     .. method:: FromDictionary(System.Collections.Generic.IReadOnlyDictionary<Value,Value> dictionary)
 
         Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is immutable and simply keeps a reference on it without duplicating the data structure.
-
-    .. method:: FromDictionary(System.Collections.Generic.IDictionary<Value,Value> dictionary)
-
-        Create a map value from given keys and associated value in given ``dictionary``, without preserving any ordering. This override assumes input dictionary is mutable and duplicates the data structure to avoid further modifications.
 
     .. method:: FromEnumerable(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Value,Value>> pairs)
 
