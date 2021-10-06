@@ -331,22 +331,6 @@ To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object
 
 
 
-.. _`native_document`:
-
-Native documents
-================
-
-You can use "native" documents instead of default ones to achieve better rendering performance at a higher compilation cost. Native documents rely on IL code generation instead of runtime evaluation, and can provide a rendering performance boost from 10% to 20% depending on templates and environment (see `benchmark <https://r3c.github.io/cottle/benchmark.html>`__). They're however two to three times most costly to build, so this feature should be used only when you need high rendering performances on long-lived documents.
-
-To create native documents, simply invoke :meth:`Document.CreateNative` instead of default method:
-
-.. code-block:: csharp
-    :caption: C# source
-
-    var document = Document.CreateNative(template).DocumentOrThrow;
-
-
-
 .. _`spy_context`:
 
 Spying values
