@@ -59,12 +59,12 @@ namespace Cottle.Documents.Compiled
 
         public Symbol GetOrDeclareLocal(string name)
         {
-            if (TryGetLocal(name, out var local))
-                return new Symbol(local);
+            if (!TryGetLocal(name, out var index))
+            {
+                index = _unique++;
 
-            var index = _unique++;
-
-            SetLocal(name, index);
+                SetLocal(name, index);
+            }
 
             return new Symbol(index);
         }
