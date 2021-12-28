@@ -3,32 +3,26 @@ name: Validate
 on:
   - push
 
+env:
+  DOTNET_VERSION: 5.0.x
+
 jobs:
   check:
-    name: Check code style / .NET v${{ matrix.dotnet.version }}
+    name: Check code style
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
-    strategy:
-      matrix:
-        dotnet: # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
-          - version: 3.1.x
-            framework_app: netcoreapp3.1
-            framework_dll: netstandard2.0
-          - version: 5.0.x
-            framework_app: net5.0
-            framework_dll: net5.0
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet.version }}
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet tool install -g dotnet-format
       - run: dotnet-format --check src/Cottle.sln
 
   build:
-    name: Build and test / .NET v${{ matrix.dotnet.version }}
+    name: Build and test on .NET v${{ matrix.dotnet.version }}
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -51,3 +45,18 @@ jobs:
       - run: dotnet build src/Cottle.Benchmark -f ${{ matrix.dotnet.framework_app }}
       - run: dotnet build src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
       - run: dotnet test src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
+
+  publish:
+    name: Publish NuGet package
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - uses: rohith/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: src/Cottle/Cottle.csproj
