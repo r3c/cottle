@@ -36,12 +36,11 @@ namespace Cottle.Documents
 
         public string Render(IContext context)
         {
-            using (var writer = new StringWriter(CultureInfo.InvariantCulture))
-            {
-                Render(context, writer);
+            using var writer = new StringWriter(CultureInfo.InvariantCulture);
 
-                return writer.ToString();
-            }
+            Render(context, writer);
+
+            return writer.ToString();
         }
 
         protected abstract Value Execute(TExecutable executable, Value[] globals, int locals, TextWriter writer);
