@@ -59,4 +59,5 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - uses: rohith/publish-nuget@v2
         with:
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           PROJECT_FILE_PATH: src/Cottle/Cottle.csproj
