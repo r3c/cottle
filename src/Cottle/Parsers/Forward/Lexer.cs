@@ -6,6 +6,7 @@ namespace Cottle.Parsers.Forward
 {
     internal class Lexer
     {
+        private const string DelimiterDuplicate = "block delimiter used twice";
         private const string EndOfStream = "end of stream";
         private const string UnexpectedCharacter = "unexpected character";
         private const string UnfinishedString = "unfinished string";
@@ -16,13 +17,13 @@ namespace Cottle.Parsers.Forward
             var graph = new LexerGraph();
 
             if (!graph.Register(blockBegin, LexemType.BlockBegin))
-                throw new ConfigException("blockBegin", blockBegin, "block delimiter used twice");
+                throw new ConfigException(nameof(blockBegin), blockBegin, DelimiterDuplicate);
 
             if (!graph.Register(blockContinue, LexemType.BlockContinue))
-                throw new ConfigException("blockContinue", blockContinue, "block delimiter used twice");
+                throw new ConfigException(nameof(blockContinue), blockContinue, DelimiterDuplicate);
 
             if (!graph.Register(blockEnd, LexemType.BlockEnd))
-                throw new ConfigException("blockEnd", blockEnd, "block delimiter used twice");
+                throw new ConfigException(nameof(blockEnd), blockEnd, DelimiterDuplicate);
 
             graph.BuildFallbacks();
 
