@@ -52,7 +52,7 @@ Implicit form of ``echo`` command can be used everywhere as long as you're not p
 Command delimiters
 ------------------
 
-All commands must be specified between **{** (*start of command*) and **}** (*end of command*) delimiters, which can be redefined in configuration if needed (read section :ref:`delimiter_customization` to learn how). Some commands having a plain text body also use **|** (*continue*) delimiter as we'll see later. Delimiters must be escaped if you want to use them in plain text, otherwise they would be misinterpreted as commands. This can be achieved by using **\\** (*escape*) delimiter as shown below:
+All commands must be specified between ``{`` (*start of command*) and ``}`` (*end of command*) delimiters, which can be redefined in configuration if needed (read section :ref:`delimiter_customization` to learn how). Some commands having a plain text body also use ``|`` (*continue*) delimiter as we'll see later. Delimiters must be escaped if you want to use them in plain text, otherwise they would be misinterpreted as commands. This can be achieved by using ``\\`` (*escape*) delimiter as shown below:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -64,7 +64,7 @@ All commands must be specified between **{** (*start of command*) and **}** (*en
 
     Characters {, }, | and \ must be escaped when used in plain text.
 
-As visible in this example, backslash character **\\** must also be used to escape itself when you want to output a backslash. Similar to other delimiters, the *escape* delimiter can be redefined through configuration.
+As visible in this example, backslash character ``\\`` must also be used to escape itself when you want to output a backslash. Similar to other delimiters, the *escape* delimiter can be redefined through configuration.
 
 
 
@@ -153,7 +153,7 @@ You can also declare constant values in your templates with following constructs
     {["key1": "value1", "key2": "value2"]}
     {["map", "with", "numeric", "keys"]}
 
-When declaring a constant map without keys, numeric increasing keys (starting at index 0) are implied. Also remember that both keys and values can be of any value type (numbers, strings, other nested maps...).
+When declaring a constant map without keys, numeric increasing keys (starting at index 0) are implied. Also remember that both keys and values can be of any value type (numbers, strings, other nested maps, etc.).
 
 .. note::
 
@@ -233,10 +233,12 @@ Commands
 
 .. _`command_wrap`:
 
-Text escaping: wrap, unwrap
----------------------------
+Text escaping: wrap & unwrap
+----------------------------
 
-You'll most probably want to escape unsafe values (e.g. user input) before printing their contents from your templates, like making sure characters "<" and ">" are replaced by "&lt;" and "&gt;" when printing variables to an HTML document. While this can be done by injecting an escaping function and using it to wrap all the expressions you want to print with ``echo`` command, a nice alternative is using ``wrap`` command with a function such as :type:`System.Web.HttpUtility.HtmlEncode` to ensure nothing is left unescaped before printing:
+You'll most probably want to escape unsafe values (e.g. user input) before printing their contents from your templates, like making sure characters "<" and ">" are replaced by "&lt;" and "&gt;" when printing variables to an HTML document.
+
+While this can be achieved by injecting an escaping function (e.g. :type:`System.Web.HttpUtility.HtmlEncode`) and call it on every expression you pass to ``echo`` command, a nice alternative is using ``wrap`` command to ensure nothing is left unescaped before printing:
 
 .. code-block:: html
     :caption: Cottle template
@@ -265,7 +267,7 @@ You'll most probably want to escape unsafe values (e.g. user input) before print
         &lt;=&gt;
     </p>
 
-The ``wrap`` command expects a function parameter, then a **:** (*body declaration*) separator character and the body you want the escaping to be applied to. Use **}** (*end of command*) delimiter to close the ``wrap`` command and stop applying its effect. Command body is a Cottle template, meaning it can contain plain text and commands as well. Inside ``wrap`` command's body, the function you passed as a parameter will be invoked on every value printed by inner ``echo`` commands, and the result of this function will be printed instead of original value. This means our previous example will produce an output equivalent to this template:
+The ``wrap`` command syntax is ``{wrap function:some {body} here}`` where ``function`` is a function expression and the part between ``:`` (*body declaration*) and ``}`` (*end of command*) delimiters is template code. The template code enclosed by ``wrap`` command will have ``function`` invoked on the expression of every ``echo`` command it contains to modify its value before it gets printed. This means our previous example will produce an output equivalent to this template:
 
 .. code-block:: html
     :caption: Cottle template
@@ -317,19 +319,19 @@ You can write conditional statements by using the ``if`` command which uses an e
 
     Commands can be nested.
 
-The ``if`` command uses a syntax similar to ``wrap`` command and expects a predicate expression ended by a **:** (*body declaration*) separator character and followed by body of the ``if`` command, then a **}** (*end of command*) delimiter. This command also supports optional ``elif`` (else if) and ``else`` blocks that behave like in any other programming language. These can be specified using the **|** (*continue*) delimiter followed by either ``elif`` and a predicate or ``else``, then a **:** (*body declaration*) separator character, and a body similar to the ``if`` command. Last block must be ended by a **}** (*end of command*) delimiter:
+The ``if`` command syntax, similarly to ``wrap`` command, is ``{if condition:when {condition} is true}`` where ``condition`` is a predicate expression and the part between ``:`` (*body declaration*) and ``}`` (*end of command*) delimiters is template code. It also supports optional ``elif`` (else if) and ``else`` blocks that behave like in most programming languages, using syntax ``{if first:X|elif second:Y|else:Z}``. Both ``elif`` and ``else`` commands must be preceeded by a ``|`` (*continue*) delimiter.
 
 .. code-block:: plain
     :caption: Cottle template
+
+    {if len(items) > 2:
+        There are more than two items in map ({len(items)}, actually).
+    }
 
     {if test:
         Variable "test" is true!
     |else:
         Variable "test" is false!
-    }
-
-    {if len(items) > 2:
-        There are more than two items in map ({len(items)}, actually).
     }
 
     {if x < 0:
@@ -358,9 +360,9 @@ The ``if`` command uses a syntax similar to ``wrap`` command and expects a predi
 .. code-block:: plain
     :caption: Rendering output
 
-    Variable "test" is true!
-
     There are more than two items in map (3, actually).
+
+    Variable "test" is true!
 
     X is negative.
 
@@ -370,18 +372,21 @@ Enumerations: for
 
 Keys and values within a map can be enumerated using the ``for`` command, which repeatedly evaluates its body for each key/value pair contained within the map. The ``for`` command also supports an optional ``empty`` block evaluated when the map you enumerated doesn't contain any key/value pair.
 
-Syntax of the ``for`` keyword and its optional ``empty`` block is similar to the ``else`` block of the ``if`` command (see section :ref:`command_if`):
+The ``for`` command syntax and the one of its optional ``empty`` block are similar to ``if`` and ``else`` commands (see section :ref:`command_if`):
 
 .. code-block:: plain
     :caption: Cottle template
+
+    Tags for this album:
+    {for tag in tags:
+        {tag}
+    }
 
     {for index, text in messages:
         Message #{index + 1}: {text}
     |empty:
         No messages to display.
     }
-
-    Tags: {for tag in tags:{tag} }
 
 .. code-block:: csharp
     :caption: C# source
@@ -405,11 +410,11 @@ Syntax of the ``for`` keyword and its optional ``empty`` block is similar to the
 .. code-block:: plain
     :caption: Rendering output
 
+    Tags for this album: action horror fantastic
+
     Message #1: Hi, this is a sample message!
     Message #2: Hi, me again!
     Message #3: Hi, guess what?
-
-    Tags: action horror fantastic
 
 .. note::
 
@@ -494,7 +499,7 @@ The ``while`` command evaluates a predicate expression and continues executing i
 
 .. warning::
 
-    Prefer the use of the ``for`` command over ``while`` command whenever possible, as the former won't cause infinite loops while the later can.
+    Prefer the use of the ``for`` command over ``while`` command whenever possible, as the former provides better protection against infinite loops.
 
 
 .. _`command_dump`:
