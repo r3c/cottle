@@ -72,6 +72,42 @@ namespace Cottle.Parsers
             return Expression.CreateInvoke(source, arguments);
         }
 
+        private KeywordParser InferKeywordParser()
+        {
+            var lexem = _lexer.Current;
+
+            // Case 1: first block lexem is not a keyword, consider it as an implicit "echo" command
+            if (!TryParseKeyword(out var keyword))
+                return (ForwardParser parser, ParserState state, out Statement statement) => parser.TryCreateEcho(state, out statement);
+
+            // Case 2: first block lexem is a keyword but is missing mandatory operand, consider it as a
+            // symbol and parse as an implicit "echo" command
+            else if (keyword.HasMandatoryOperand && _lexer.Current.Type == LexemType.None)
+            {
+                return (ForwardParser _, ParserState state, out Statement statement) =>
+                {
+                    var symbol = Expression.CreateSymbol(lexem.Value);
+
+                    if (!TryParseExpressionOperand(state, symbol, out var operand))
+                    {
+                        statement = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    _lexer.NextRaw();
+
+                    statement = Statement.CreateEcho(operand);
+
+                    return true;
+                };
+            }
+
+            // Case 3: first block lexem is a keyword with acceptable syntax, parse command accordingly
+            else
+                return keyword.Parse;
+        }
+
         private bool TryCreateComment(out Statement statement)
         {
             do
@@ -589,42 +625,10 @@ namespace Cottle.Parsers
                     case LexemType.BlockBegin:
                         _lexer.NextBlock();
 
-                        var blockLexem = _lexer.Current;
-                        KeywordParser blockParse;
-
-                        // Case 1: first block lexem is not a keyword, consider it as an implicit "echo" command
-                        if (!TryParseKeyword(out var keyword))
-                            blockParse = (ForwardParser p, ParserState s, out Statement c) => p.TryCreateEcho(s, out c);
-
-                        // Case 2: first block lexem is a keyword but is missing mandatory operand, consider it as a
-                        // symbol and parse as an implicit "echo" command
-                        else if (keyword.HasMandatoryOperand && _lexer.Current.Type == LexemType.None)
-                        {
-                            var symbol = Expression.CreateSymbol(blockLexem.Value);
-
-                            blockParse = (ForwardParser p, ParserState s, out Statement c) =>
-                            {
-                                if (!TryParseExpressionOperand(state, symbol, out var operand))
-                                {
-                                    c = Statement.NoOp;
-
-                                    return false;
-                                }
-
-                                _lexer.NextRaw();
-
-                                c = Statement.CreateEcho(operand);
-
-                                return true;
-                            };
-                        }
-
-                        // Case 3: first block lexem is a keyword with acceptable syntax, parse command accordingly
-                        else
-                            blockParse = keyword.Parse;
+                        var parser = InferKeywordParser();
 
                         // Use delegate defined above to parse recognized command
-                        if (!blockParse(this, state, out var blockStatement))
+                        if (!parser(this, state, out var blockStatement))
                         {
                             statement = Statement.NoOp;
 
