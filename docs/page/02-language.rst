@@ -236,6 +236,8 @@ Commands
 Text escaping: wrap & unwrap
 ----------------------------
 
+*Added in version 2.0.0*
+
 You'll most probably want to escape unsafe values (e.g. user input) before printing their contents from your templates, like making sure characters "<" and ">" are replaced by "&lt;" and "&gt;" when printing variables to an HTML document.
 
 While this can be achieved by injecting an escaping function (e.g. :type:`System.Web.HttpUtility.HtmlEncode`) and call it on every expression you pass to ``echo`` command, a nice alternative is using ``wrap`` command to ensure nothing is left unescaped before printing:
@@ -545,3 +547,38 @@ You can use the ``_`` (underscore) command to add comments to your template. Thi
     :caption: Rendering output
 
     Hello, World!
+
+
+Chaining
+--------
+
+*Added in version 2.0.6*
+
+Multiple commands can be chained using to the ``|`` (*block continue*) delimiter. This delimiter can replace the ``}`` (*end of command*) delimiter of any command to issue multiple commands without having to close and open new code blocks. In other words this allow writing ``{set x to 5 | echo x}`` instead of ``{set x to 5}{echo x}``, which helps keeping your code easier to read by letting you indent it as you like without producing unwanted whitespace characters in output result (since whitespaces inside a code block are ignored).
+
+.. code-block:: plain
+    :caption: Cottle template
+
+    {
+        _ Compute x to the power n using exponentiation by squaring |
+        declare power(x, n) as:{
+            declare m as 1 |
+            while n > 1:{
+                if n % 2 = 0:{
+                    set x to x * x |
+                    set n to n / 2
+                } |
+                else:{
+                    set m to m * x |
+                    set n to n - 1
+                }
+            } |
+            return m * x
+        } |
+        power(2, 5)
+    }
+
+.. code-block:: plain
+    :caption: Rendering output
+
+    32
