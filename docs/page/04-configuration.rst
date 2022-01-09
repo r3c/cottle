@@ -70,17 +70,22 @@ TrimEnclosingWhitespaces
 TrimFirstAndLastBlankLines
 --------------------------
 
-:prop:`DocumentConfiguration.TrimFirstAndLastBlankLines` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain texts and commands so one of them is preserved:
+:prop:`DocumentConfiguration.TrimFirstAndLastBlankLines` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain text and code blocks so one of them is preserved, or use ``{" "}`` to force some whitespaces at the beginning or end of plain text blocks.
 
 .. code-block:: plain
     :caption: Cottle template
 
-    You have {len(messages)}
+    You have {len(messages)} message
     {if len(messages) > 1:
         s
     }
+    {" "}in your inbox.
 
-    in your inbox
+    I can force
+
+    {"line breaks"}
+
+    to appear.
 
 .. code-block:: csharp
     :caption: C# source
@@ -94,8 +99,11 @@ TrimFirstAndLastBlankLines
 .. code-block:: plain
     :caption: Rendering output
 
-    You have 4 messages
-    in your inbox
+    You have 4 messages in your inbox.
+
+    I can force
+    line breaks
+    to appear.
 
 .. note::
 
