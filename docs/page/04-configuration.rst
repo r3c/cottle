@@ -162,7 +162,7 @@ TrimRepeatedWhitespaces
 Delimiters customization
 ========================
 
-Default Cottle configuration uses **{** character as *start of command* delimiter, **|** as *continue* delimiter and **}** as *end of command* delimiter. These characters may not be a good choice if you want to write a template that would often use them in plain text context, for example if you're writing a JavaScript template, because you would have to escape every **{**, **}** and **|** to avoid Cottle seeing them as delimiters.
+Default Cottle configuration uses **{** character as *block begin* delimiter, **|** as *continue* delimiter and **}** as *block end* delimiter. These characters may not be a good choice if you want to write a template that would often use them in plain text context, for example if you're writing a JavaScript template, because you would have to escape every **{**, **}** and **|** to avoid Cottle seeing them as delimiters.
 
 A good solution to this problem is changing default delimiters to replace them by more convenient sequences for your needs. Any string can be used as a delimiter as long as it doesn't conflict with a valid Cottle expression (e.g. **[**, **+** or **<**). Make sure at least the first character of your custom delimiters won't cause any ambiguity when choosing them, as the compilation error messages you may have would be confusing.
 

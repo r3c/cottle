@@ -11,7 +11,7 @@ Language syntax
 Plain text and commands
 -----------------------
 
-A Cottle template can contain plain text printed as-is as well as commands that will be executed when document is rendered. These commands can either print dynamic content or have side-effects such as defining variables or controlling the rendering flow.
+A Cottle template can contain plain text printed as-is as well as code blocks containing commands that will be executed when document is rendered. These commands can either print dynamic content or have side-effects such as defining variables or controlling the rendering flow.
 
 The most important command you'll need is the ``echo`` command that takes an argument and outputs its contents. Here is how it works:
 
@@ -33,26 +33,13 @@ The most important command you'll need is the ``echo`` command that takes an arg
 
     Value of x is 53.
 
-In this example we're creating a *variable* named ``x`` with value 53 and pass it when rendering our template. Then we're using the ``echo`` command to output the value of this variable after some constant plain text.
+In this example we're creating a *variable* named ``x`` with value 53 and pass it when rendering our template, then we're using the ``echo`` command to print the value of this variable. As you can tell the part between ``{`` and ``}`` is a code block containing executable commands, while everything else is plain text that is copied to document output.
 
 
-Implicit echo command
----------------------
+Block delimiters
+----------------
 
-Since ``echo`` is the most commonly used command it supports a shorter implicit form: you can omit the "echo" keyword as long as the name of the variable you're printing doesn't conflict with another command. This means the following example will produce the same output:
-
-.. code-block:: plain
-    :caption: Cottle template
-
-    Value of x is {x}.
-
-Implicit form of ``echo`` command can be used everywhere as long as you're not printing a variable having the same name than a Cottle command such as ``for``. While technically possible, using Cottle command names as variables should be avoided for readability reasons anyway.
-
-
-Command delimiters
-------------------
-
-All commands must be specified between ``{`` (*start of command*) and ``}`` (*end of command*) delimiters, which can be redefined in configuration if needed (read section :ref:`delimiter_customization` to learn how). Some commands having a plain text body also use ``|`` (*continue*) delimiter as we'll see later. Delimiters must be escaped if you want to use them in plain text, otherwise they would be misinterpreted as commands. This can be achieved by using ``\\`` (*escape*) delimiter as shown below:
+All commands must be wrapped in a code block between ``{`` (*block begin*) and ``}`` (*block end*) delimiters, which can be redefined in configuration if needed (read section :ref:`delimiter_customization` to learn how). Delimiters must be escaped if you want to use them in plain text, otherwise they would be misinterpreted as delimiters. This can be achieved by using ``\\`` (*escape*) delimiter as shown below:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -65,6 +52,19 @@ All commands must be specified between ``{`` (*start of command*) and ``}`` (*en
     Characters {, }, | and \ must be escaped when used in plain text.
 
 As visible in this example, backslash character ``\\`` must also be used to escape itself when you want to output a backslash. Similar to other delimiters, the *escape* delimiter can be redefined through configuration.
+
+
+Implicit echo
+-------------
+
+Since ``echo`` is the most frequent command it supports a shorter implicit form where the "echo" keyword can be omitted:
+
+.. code-block:: plain
+    :caption: Cottle template
+
+    Value of x is {x}.
+
+Implicit form of ``echo`` command can be used everywhere as long as you're not printing a variable having the same name than a Cottle command such as ``for``. While technically possible, using Cottle command names as variables should be avoided for readability reasons anyway.
 
 
 
@@ -267,7 +267,7 @@ While this can be achieved by injecting an escaping function (e.g. :type:`System
         &lt;=&gt;
     </p>
 
-The ``wrap`` command syntax is ``{wrap function:some {body} here}`` where ``function`` is a function expression and the part between ``:`` (*body declaration*) and ``}`` (*end of command*) delimiters is template code. The template code enclosed by ``wrap`` command will have ``function`` invoked on the expression of every ``echo`` command it contains to modify its value before it gets printed. This means our previous example will produce an output equivalent to this template:
+The ``wrap`` command syntax is ``{wrap function:some {body} here}`` where ``function`` is a function expression and the part between ``:`` (*body declaration*) and ``}`` (*block end*) delimiters is template code. The template code enclosed by ``wrap`` command will have ``function`` invoked on the expression of every ``echo`` command it contains to modify its value before it gets printed. This means our previous example will produce an output equivalent to this template:
 
 .. code-block:: html
     :caption: Cottle template
@@ -319,7 +319,7 @@ You can write conditional statements by using the ``if`` command which uses an e
 
     Commands can be nested.
 
-The ``if`` command syntax, similarly to ``wrap`` command, is ``{if condition:when {condition} is true}`` where ``condition`` is a predicate expression and the part between ``:`` (*body declaration*) and ``}`` (*end of command*) delimiters is template code. It also supports optional ``elif`` (else if) and ``else`` blocks that behave like in most programming languages, using syntax ``{if first:X|elif second:Y|else:Z}``. Both ``elif`` and ``else`` commands must be preceeded by a ``|`` (*continue*) delimiter.
+The ``if`` command syntax, similarly to ``wrap`` command, is ``{if condition:when {condition} is true}`` where ``condition`` is a predicate expression and the part between ``:`` (*body declaration*) and ``}`` (*block end*) delimiters is template code. It also supports optional ``elif`` (else if) and ``else`` blocks that behave like in most programming languages, using syntax ``{if first:X|elif second:Y|else:Z}``. Both ``elif`` and ``else`` commands must be preceeded by a ``|`` (*continue*) delimiter.
 
 .. code-block:: plain
     :caption: Cottle template

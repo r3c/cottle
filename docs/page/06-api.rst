@@ -82,7 +82,7 @@ Compiled documents
 
     .. property:: string BlockBegin { get; set; }
 
-        Delimiter for *start of command*, see section :ref:`delimiter_customization` for details.
+        Delimiter for *block begin*, see section :ref:`delimiter_customization` for details.
 
     .. property:: string BlockContinue { get; set; }
 
@@ -90,7 +90,7 @@ Compiled documents
 
     .. property:: string BlockEnd { get; set; }
 
-        Delimiter for *end of command*, see section :ref:`delimiter_customization` for details.
+        Delimiter for *block end*, see section :ref:`delimiter_customization` for details.
 
     .. property:: System.Nullable<char> Escape { get; set; }
 
