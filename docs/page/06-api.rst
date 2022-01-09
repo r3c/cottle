@@ -86,7 +86,7 @@ Compiled documents
 
     .. property:: string BlockContinue { get; set; }
 
-        Delimiter for *continue command*, see section :ref:`delimiter_customization` for details.
+        Delimiter for *block continue*, see section :ref:`delimiter_customization` for details.
 
     .. property:: string BlockEnd { get; set; }
 

@@ -319,7 +319,7 @@ You can write conditional statements by using the ``if`` command which uses an e
 
     Commands can be nested.
 
-The ``if`` command syntax, similarly to ``wrap`` command, is ``{if condition:when {condition} is true}`` where ``condition`` is a predicate expression and the part between ``:`` (*body declaration*) and ``}`` (*block end*) delimiters is template code. It also supports optional ``elif`` (else if) and ``else`` blocks that behave like in most programming languages, using syntax ``{if first:X|elif second:Y|else:Z}``. Both ``elif`` and ``else`` commands must be preceeded by a ``|`` (*continue*) delimiter.
+The ``if`` command syntax, similarly to ``wrap`` command, is ``{if condition:when {condition} is true}`` where ``condition`` is a predicate expression and the part between ``:`` (*body declaration*) and ``}`` (*block end*) delimiters is template code. It also supports optional ``elif`` (else if) and ``else`` blocks that behave like in most programming languages, using syntax ``{if first:X|elif second:Y|else:Z}``. Both ``elif`` and ``else`` commands must be preceeded by a ``|`` (*block continue*) delimiter.
 
 .. code-block:: plain
     :caption: Cottle template
@@ -539,7 +539,6 @@ You can use the ``_`` (underscore) command to add comments to your template. Thi
     :caption: Cottle template
 
     {_ This is a comment that will be ignored when rendering the template}
-
     Hello, World!
 
 .. code-block:: plain
