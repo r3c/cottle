@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Cottle.Test
@@ -16,11 +17,23 @@ namespace Cottle.Test
             Assert.That(DocumentConfiguration.TrimEnclosingWhitespaces(input), Is.EqualTo(expected));
         }
 
+        public static IEnumerable<TestCaseData> TrimFirstAndLastBlankLinesData_GetData()
+        {
+            foreach (var eol in new[] { "\n", "\r", "\r\n" })
+            {
+                foreach (var ws in new[] { " ", "\t", " \t\t " })
+                {
+                    yield return new TestCaseData($"A{eol}{eol}{ws}", $"A{eol}");
+                    yield return new TestCaseData($"A{eol}{ws}B{eol}{ws}", $"A{eol}{ws}B");
+                    yield return new TestCaseData($"{eol}{ws}A{eol}{ws}B", $"A{eol}{ws}B");
+                    yield return new TestCaseData($"{eol}{ws}A{eol}{ws}B{eol}{ws}", $"A{eol}{ws}B");
+                    yield return new TestCaseData($"{eol}{eol}{ws}A", $"{eol}{ws}A");
+                }
+            }
+        }
+
         [Test]
-        [TestCase("\n  A\n  B", "A\n  B")]
-        [TestCase("A\n  B\n  ", "A\n  B")]
-        [TestCase("\n  A\n  B\n  ", "A\n  B")]
-        [TestCase("\r\n\t A\r\n  \n\rB\n\r\t ", "A\r\n  \n\rB")]
+        [TestCaseSource(nameof(TrimFirstAndLastBlankLinesData_GetData))]
         public void TrimFirstAndLastBlankLines(string input, string expected)
         {
             Assert.That(DocumentConfiguration.TrimFirstAndLastBlankLines(input), Is.EqualTo(expected));

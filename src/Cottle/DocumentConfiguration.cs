@@ -11,13 +11,13 @@ namespace Cottle
         public const char DefaultEscape = '\\';
 
         private static readonly Regex TrimEnclosingWhitespacesRegex =
-            new Regex("^\\s*(.*(?<!\\s))\\s*$", RegexOptions.Compiled | RegexOptions.Singleline);
+            new Regex(@"^\s*(.*(?<!\s))\s*$", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private static readonly Regex TrimFirstAndLastBlankLinesRegex =
-            new Regex("^(?:\\n|\\r)(?:\\n|\\r)?[\\t ]*|(?:\\n|\\r)(?:\\n|\\r)?[\\t ]*$", RegexOptions.Compiled);
+            new Regex(@"^(?:\n|\r(?!\n)|\r\n)[\t ]*|(?:\n|\r(?!\n)|\r\n)[\t ]*$", RegexOptions.Compiled);
 
         private static readonly Regex TrimRepeatedWhitespacesRegex =
-            new Regex("\\s{2,}", RegexOptions.Compiled);
+            new Regex(@"\s{2,}", RegexOptions.Compiled);
 
         public static readonly Func<string, string> TrimEnclosingWhitespaces =
             s => DocumentConfiguration.TrimEnclosingWhitespacesRegex.Replace(s, m => m.Groups[1].Value);
