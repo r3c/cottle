@@ -183,23 +183,44 @@ namespace Cottle.Parsers
             }
 
             Statement empty;
+            Statement next;
 
             if (_lexer.Current.Type == LexemType.BlockContinue)
             {
                 _lexer.NextBlock();
 
-                if (!TryParseExpected(state, LexemType.Symbol, "empty", "'empty' keyword") ||
-                    !TryParseStatementBody(state, out empty))
+                if (_lexer.Current.Type == LexemType.Symbol && _lexer.Current.Value == "empty")
                 {
-                    statement = Statement.NoOp;
+                    _lexer.NextBlock();
 
-                    return false;
+                    if (!TryParseStatementBody(state, out empty))
+                    {
+                        statement = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    next = Statement.NoOp;
+                }
+                else
+                {
+                    if (!TryParseCommand(state, out next))
+                    {
+                        statement = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    empty = Statement.NoOp;
                 }
             }
             else
+            {
                 empty = Statement.NoOp;
+                next = Statement.NoOp;
+            }
 
-            statement = Statement.CreateFor(key, value, source, body, empty);
+            statement = Statement.CreateComposite(Statement.CreateFor(key, value, source, body, empty), next);
 
             return true;
         }
@@ -214,61 +235,60 @@ namespace Cottle.Parsers
                 return false;
             }
 
+            var body = Statement.NoOp;
             var branches = new List<(Expression, Statement)>();
-            var final = Statement.NoOp;
-            var next = true;
+            var next = Statement.NoOp;
 
             branches.Add((ifCondition, ifBody));
 
-            while (next && _lexer.Current.Type == LexemType.BlockContinue)
+            while (_lexer.Current.Type == LexemType.BlockContinue)
             {
                 _lexer.NextBlock();
 
-                switch (_lexer.Current.Type == LexemType.Symbol ? _lexer.Current.Value : string.Empty)
+                if (_lexer.Current.Type == LexemType.Symbol && _lexer.Current.Value == "elif")
                 {
-                    case "elif":
-                        _lexer.NextBlock();
+                    _lexer.NextBlock();
 
-                        if (!TryParseExpression(state, out var elifCondition) ||
-                            !TryParseStatementBody(state, out var elifBody))
-                        {
-                            statement = Statement.NoOp;
-
-                            return false;
-                        }
-
-                        branches.Add((elifCondition, elifBody));
-
-                        break;
-
-                    case "else":
-                        _lexer.NextBlock();
-
-                        if (!TryParseStatementBody(state, out var elseBody))
-                        {
-                            statement = Statement.NoOp;
-
-                            return false;
-                        }
-
-                        final = elseBody;
-                        next = false;
-
-                        break;
-
-                    default:
-                        state.AddReport(CreateReportExpected("'elif' or 'else' keyword"));
-
+                    if (!TryParseExpression(state, out var elifCondition) ||
+                        !TryParseStatementBody(state, out var elifBody))
+                    {
                         statement = Statement.NoOp;
 
                         return false;
+                    }
+
+                    branches.Add((elifCondition, elifBody));
+                }
+                else if (_lexer.Current.Type == LexemType.Symbol && _lexer.Current.Value == "else")
+                {
+                    _lexer.NextBlock();
+
+                    if (!TryParseStatementBody(state, out body))
+                    {
+                        statement = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    break;
+                }
+                else
+                {
+                    if (!TryParseCommand(state, out next))
+                    {
+                        statement = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    break;
                 }
             }
 
             for (var i = branches.Count - 1; i >= 0; --i)
-                final = Statement.CreateIf(branches[i].Item1, branches[i].Item2, final);
+                body = Statement.CreateIf(branches[i].Item1, branches[i].Item2, body);
 
-            statement = final;
+            statement = Statement.CreateComposite(body, next);
 
             return true;
         }
@@ -454,6 +474,49 @@ namespace Cottle.Parsers
             return true;
         }
 
+        private bool TryParseCommand(ParserState state, out Statement command)
+        {
+            // Read or infer parser from command keyword if any
+            var parser = InferKeywordParser();
+
+            if (!parser(this, state, out var firstCommand))
+            {
+                command = Statement.NoOp;
+
+                return false;
+            }
+
+            // Parse next command on block continue or return on block end
+            switch (_lexer.Current.Type)
+            {
+                case LexemType.BlockContinue:
+                    _lexer.NextBlock();
+
+                    if (!TryParseCommand(state, out var nextCommand))
+                    {
+                        command = Statement.NoOp;
+
+                        return false;
+                    }
+
+                    command = Statement.CreateComposite(firstCommand, nextCommand);
+
+                    return true;
+
+                case LexemType.BlockEnd:
+                    command = firstCommand;
+
+                    return true;
+
+                default:
+                    state.AddReport(CreateReportExpected("block continue or block end"));
+
+                    command = Statement.NoOp;
+
+                    return false;
+            }
+        }
+
         private bool TryParseExpected(ParserState state, LexemType type, string value, string message)
         {
             if (_lexer.Current.Type != type || _lexer.Current.Value != value)
@@ -610,6 +673,7 @@ namespace Cottle.Parsers
 
         private bool TryParseStatement(ParserState state, out Statement statement)
         {
+            // Parse block or text statements until end of current context or end of file
             var statements = new List<Statement>();
 
             while
@@ -619,43 +683,24 @@ namespace Cottle.Parsers
                 _lexer.Current.Type != LexemType.EndOfFile
             )
             {
-                // Parse next statement or exit loop
                 switch (_lexer.Current.Type)
                 {
                     case LexemType.BlockBegin:
                         _lexer.NextBlock();
 
-                        var parser = InferKeywordParser();
-
-                        // Use delegate defined above to parse recognized command
-                        if (!parser(this, state, out var blockStatement))
+                        if (!TryParseCommand(state, out var command))
                         {
                             statement = Statement.NoOp;
 
                             return false;
                         }
 
-                        if (_lexer.Current.Type != LexemType.BlockEnd)
-                        {
-                            state.AddReport(CreateReportExpected("end of block"));
-
-                            statement = Statement.NoOp;
-
-                            return false;
-                        }
-
-                        // Ignore empty statements
-                        if (blockStatement is not null)
-                            statements.Add(blockStatement);
-
-                        _lexer.NextRaw();
+                        statements.Add(command);
 
                         break;
 
                     case LexemType.Text:
                         statements.Add(Statement.CreateLiteral(_trimmer(_lexer.Current.Value)));
-
-                        _lexer.NextRaw();
 
                         break;
 
@@ -666,21 +711,17 @@ namespace Cottle.Parsers
 
                         return false;
                 }
+
+                _lexer.NextRaw();
             }
 
-            if (statements.Count < 1)
-                statement = Statement.NoOp;
-            else if (statements.Count == 1)
-                statement = statements[0];
-            else
-            {
-                var composite = statements[statements.Count - 1];
+            // Fold multiple statements into a composite(a, composite(b, ...)) one
+            var composite = Statement.NoOp;
 
-                for (var i = statements.Count - 2; i >= 0; --i)
-                    composite = Statement.CreateComposite(statements[i], composite);
+            for (var i = statements.Count - 1; i >= 0; --i)
+                composite = Statement.CreateComposite(statements[i], composite);
 
-                statement = composite;
-            }
+            statement = composite;
 
             return true;
         }

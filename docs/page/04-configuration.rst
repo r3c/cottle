@@ -70,6 +70,8 @@ TrimEnclosingWhitespaces
 TrimFirstAndLastBlankLines
 --------------------------
 
+*Added in version 2.0.2*
+
 :prop:`DocumentConfiguration.TrimFirstAndLastBlankLines` removes end of line followed by blank characters at beginning and end of plain text blocks. You may have to introduce two line breaks instead of one when interleaving plain text and code blocks so one of them is preserved, or use ``{" "}`` to force some whitespaces at the beginning or end of plain text blocks.
 
 .. code-block:: plain

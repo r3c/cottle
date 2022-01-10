@@ -22,6 +22,12 @@ namespace Cottle
 
         public static Statement CreateComposite(Statement body, Statement next)
         {
+            if (body.Type == StatementType.None)
+                return next;
+
+            if (next.Type == StatementType.None)
+                return body;
+
             return new Statement(StatementType.Composite, default, body, default, default, next, default, default);
         }
 

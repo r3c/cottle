@@ -336,6 +336,8 @@ To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object
 Spying values
 =============
 
+*Added in version 2.0.5*
+
 If you're working with many templates you may lose track of what variables are used and how. This is where the spying feature can come handy: it allows gathering information on each variable referenced in a template and their associated values. To use this feature, start by wrapping a context within a spying context using the :meth:`Context.CreateSpy` method and use it for rendering your documents:
 
 .. code-block:: csharp

@@ -273,6 +273,9 @@ namespace Cottle.Test
         [Test]
         [TestCase("A{x}B", "AB")]
         [TestCase("A{x}B{y}C", "ABC")]
+        [TestCase("{1|2}", "12")]
+        [TestCase("{set x to 1|x}", "1")]
+        [TestCase("{set x to 3|while x > 0:{x|set x to x - 1}}", "321")]
         public void Render_StatementComposite(string expression, string expected)
         {
             AssertOutput(expression, expected);
