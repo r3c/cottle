@@ -567,14 +567,14 @@ Multiple commands can be chained using to the ``|`` (*block continue*) delimiter
                 if n % 2 = 0:{
                     set x to x * x |
                     set n to n / 2
-                } |
+                }|
                 else:{
                     set m to m * x |
                     set n to n - 1
                 }
-            } |
+            }|
             return m * x
-        } |
+        }|
         power(2, 5)
     }
 

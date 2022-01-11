@@ -77,29 +77,29 @@ Functions can return a value that can be used in any expression or stored in a v
 .. code-block:: plain
     :caption: Cottle template
 
-    {set factorial(n) to:
-        {if n > 1:
-            {return n * factorial(n - 1)}
-        |else:
-            {return 1}
-        }
+    {set factorial(n) to:{
+        if n > 1:{
+            return n * factorial(n - 1)
+        }|
+        else:{
+            return 1
+        }}
     }
 
     Factorial 1 = {factorial(1)}
     Factorial 3 = {factorial(3)}
     Factorial 8 = {factorial(8)}
 
-    {set hanoi_recursive(n, from, by, to) to:
-        {if n > 0:
+    {set hanoi_recursive(n, from, by, to) to:{
+        if n > 0:
             {hanoi_recursive(n - 1, from, to, by)}
             Move one disk from {from} to {to}
             {hanoi_recursive(n - 1, by, from, to)}
-        }
-    }
+    }}
 
-    {set hanoi(n) to:
-        {hanoi_recursive(n, "A", "B", "C")}
-    }
+    {set hanoi(n) to:{
+        hanoi_recursive(n, "A", "B", "C")
+    }}
 
     {hanoi(3)}
 
@@ -134,16 +134,16 @@ When writing complex templates using nested or recursive functions, you may have
 .. code-block:: plain
     :caption: Cottle template
 
-    {set depth(item) to:
-        {set res to 0}
+    {set depth(item) to:{
+        set res to 0 |
 
-        {for child in item:
-            {set res_child to depth(child) + 1}
-            {set res to max(res, res_child)}
-        }
+        for child in item:{
+            set res_child to depth(child) + 1 |
+            set res to max(res, res_child)
+        }|
 
-        {return res}
-    }
+        return res
+    }}
 
     {depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}
 
@@ -157,17 +157,17 @@ To solve this issue, the ``res`` variable needs to be local to function ``depth`
     :caption: Cottle template
     :emphasize-lines: 2
 
-    {set depth(item) to:
-        {declare res}
-        {set res to 0}
+    {set depth(item) to:{
+        declare res |
+        set res to 0 |
 
-        {for child in item:
-            {set res_child to depth(child) + 1}
-            {set res to max(res, res_child)}
-        }
+        for child in item:{
+            set res_child to depth(child) + 1 |
+            set res to max(res, res_child)
+        }|
 
-        {return res}
-    }
+        return res
+    }}
 
     {depth([["1.1", "1.2", ["1.3.1", "1.3.2"]], "2", "3", ["4.1", "4.2"]])}
 
@@ -183,9 +183,9 @@ The same command can also be used to declare functions:
 .. code-block:: plain
     :caption: Cottle template
 
-    {declare square(n) as:
-        {return n * n}
-    }
+    {declare square(n) as:{
+        return n * n
+    }}
 
 Note that the ``set`` command can also be used without argument, and assigns variable an undefined value (which is equivalent to reset it to an undefined state).
 
@@ -299,11 +299,10 @@ To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object
 
     Your image has a size of {image.Width}x{image.Height} pixels.
 
-    {for key, value in image:
-        {if value:
+    {for key, value in image:{
+        if value:
             {key} = {value}
-        }
-    }
+    }}
 
 .. code-block:: csharp
     :caption: C# source
