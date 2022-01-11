@@ -552,7 +552,7 @@ You can use the ``_`` (underscore) command to add comments to your template. Thi
 Chaining
 --------
 
-*Added in version 2.0.6*
+*Added in version 2.0.7*
 
 Multiple commands can be chained using to the ``|`` (*block continue*) delimiter. This delimiter can replace the ``}`` (*end of command*) delimiter of any command to issue multiple commands without having to close and open new code blocks. In other words this allow writing ``{set x to 5 | echo x}`` instead of ``{set x to 5}{echo x}``, which helps keeping your code easier to read by letting you indent it as you like without producing unwanted whitespace characters in output result (since whitespaces inside a code block are ignored).
 
