@@ -6,7 +6,7 @@ namespace Cottle.SpyRecords.Evaluable
     {
         public IEnumerable<Value> Keys => _records.Keys;
 
-        private readonly Dictionary<Value, EvaluableSpyRecord> _records;
+        private readonly IDictionary<Value, EvaluableSpyRecord> _records;
 
         public SpyLookup()
         {

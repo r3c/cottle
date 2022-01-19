@@ -9,14 +9,14 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
     {
         public bool IsPure => false;
 
-        private readonly string[] _arguments;
+        private readonly IReadOnlyList<string> _arguments;
 
         private readonly INode _body;
 
         public FunctionAssignNode(string name, IEnumerable<string> arguments, INode body, StoreMode mode) :
             base(name, mode)
         {
-            _arguments = arguments.ToArray();
+            _arguments = arguments.ToList();
             _body = body;
         }
 
@@ -53,7 +53,7 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
 
             store.Enter();
 
-            for (var i = 0; i < _arguments.Length; ++i)
+            for (var i = 0; i < _arguments.Count; ++i)
                 store.Set(_arguments[i], i < arguments.Count ? arguments[i] : Value.Undefined, StoreMode.Local);
 
             _body.Render(store, output, out var result);

@@ -9,7 +9,7 @@ namespace Cottle.Parsers
 {
     internal class ForwardParser : IParser
     {
-        private static readonly Dictionary<string, Keyword> Keywords = new Dictionary<string, Keyword>
+        private static readonly IReadOnlyDictionary<string, Keyword> Keywords = new Dictionary<string, Keyword>
         {
             ["_"] = new Keyword((ForwardParser p, ParserState s, out Statement c) =>
                 p.TryCreateComment(out c), false),

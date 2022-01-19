@@ -7,27 +7,25 @@ namespace Cottle.Evaluables
 {
     internal static class ReflectionEvaluable
     {
-        private static readonly Dictionary<Type, Func<object, Value>> Converters =
-            new Dictionary<Type, Func<object, Value>>
-            {
-                { typeof(bool), s => (bool)s },
-                { typeof(byte), s => (byte)s },
-                { typeof(char), s => (char)s },
-                { typeof(double), s => (double)s },
-                { typeof(decimal), s => (decimal)s },
-                { typeof(float), s => (float)s },
-                { typeof(int), s => (int)s },
-                { typeof(long), s => (long)s },
-                { typeof(sbyte), s => (sbyte)s },
-                { typeof(short), s => (short)s },
-                { typeof(string), s => (string)s },
-                { typeof(uint), s => (uint)s },
-                { typeof(ulong), s => (long)(ulong)s },
-                { typeof(ushort), s => (ushort)s }
-            };
+        private static readonly IReadOnlyDictionary<Type, Func<object, Value>> Converters = new Dictionary<Type, Func<object, Value>>
+        {
+            { typeof(bool), s => (bool)s },
+            { typeof(byte), s => (byte)s },
+            { typeof(char), s => (char)s },
+            { typeof(double), s => (double)s },
+            { typeof(decimal), s => (decimal)s },
+            { typeof(float), s => (float)s },
+            { typeof(int), s => (int)s },
+            { typeof(long), s => (long)s },
+            { typeof(sbyte), s => (sbyte)s },
+            { typeof(short), s => (short)s },
+            { typeof(string), s => (string)s },
+            { typeof(uint), s => (uint)s },
+            { typeof(ulong), s => (long)(ulong)s },
+            { typeof(ushort), s => (ushort)s }
+        };
 
-        private static readonly Dictionary<Type, IReadOnlyList<MemberReader>> Readers =
-            new Dictionary<Type, IReadOnlyList<MemberReader>>();
+        private static readonly IDictionary<Type, IReadOnlyList<MemberReader>> Readers = new Dictionary<Type, IReadOnlyList<MemberReader>>();
 
         public static Value CreateValue(object? source, BindingFlags bindingFlags)
         {

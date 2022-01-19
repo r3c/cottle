@@ -5,7 +5,7 @@ namespace Cottle.Parsers.Forward
 {
     internal class LexerNode
     {
-        public Dictionary<char, LexerNode>? Children;
+        public IDictionary<char, LexerNode>? Children;
 
         public string? FallbackDrop;
 

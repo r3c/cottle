@@ -7,7 +7,7 @@ namespace Cottle.Stores
     public sealed class SimpleStore : AbstractStore
     {
         private readonly Stack<HashSet<Value>> _frames;
-        private readonly Dictionary<Value, Stack<Value>> _stacks;
+        private readonly IDictionary<Value, Stack<Value>> _stacks;
         private int _depth;
 
         public SimpleStore()

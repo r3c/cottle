@@ -6,21 +6,22 @@ namespace Cottle.Documents.Simple.Nodes
 {
     internal class IfNode : INode
     {
-        public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode? fallback)
-        {
-            _branches = branches.ToArray();
-            _fallback = fallback;
-        }
-
-        private readonly KeyValuePair<IEvaluator, INode>[] _branches;
+        private readonly IReadOnlyList<KeyValuePair<IEvaluator, INode>> _branches;
 
         private readonly INode? _fallback;
+
+        public IfNode(IEnumerable<KeyValuePair<IEvaluator, INode>> branches, INode? fallback)
+        {
+            _branches = branches.ToList();
+            _fallback = fallback;
+        }
 
         public bool Render(IStore store, TextWriter output, out Value result)
         {
             bool halt;
 
             foreach (var branch in _branches)
+            {
                 if (branch.Key.Evaluate(store, output).AsBoolean)
                 {
                     store.Enter();
@@ -31,6 +32,7 @@ namespace Cottle.Documents.Simple.Nodes
 
                     return halt;
                 }
+            }
 
             if (_fallback is not null)
             {

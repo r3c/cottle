@@ -6,17 +6,20 @@ namespace Cottle.Maps
     {
         public override int Count => _array.Count;
 
-        private readonly List<KeyValuePair<Value, Value>> _array;
+        private readonly IReadOnlyList<KeyValuePair<Value, Value>> _array;
 
-        private readonly Dictionary<Value, Value> _hash;
+        private readonly IReadOnlyDictionary<Value, Value> _hash;
 
         public MixMap(IEnumerable<KeyValuePair<Value, Value>> pairs)
         {
-            _array = new List<KeyValuePair<Value, Value>>(pairs);
-            _hash = new Dictionary<Value, Value>();
+            var array = new List<KeyValuePair<Value, Value>>(pairs);
+            var hash = new Dictionary<Value, Value>();
 
-            foreach (var pair in _array)
-                _hash[pair.Key] = pair.Value;
+            foreach (var pair in array)
+                hash[pair.Key] = pair.Value;
+
+            _array = array;
+            _hash = hash;
         }
 
         public override bool Contains(Value key)
