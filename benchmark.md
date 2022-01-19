@@ -43,12 +43,12 @@ as the `products` variable. Full benchmark source code can be found
 Template engines
 ---
 
-- Cottle v2.0.1 (see discussion [about Cottle](#about-cottle))
-- Fluid v1.0.0-beta-9722
-- DotLiquid v2.0.366
+- Cottle v2.0.7 (see discussion [about Cottle](#about-cottle))
+- DotLiquid v2.2.508
+- Fluid v2.2.0
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
 - RazorLight v2.0.0-beta9
-- Scriban v3.2.2
+- Scriban v5.0.0
 
 
 Result
@@ -58,11 +58,11 @@ Benchmark configuration
 ---
 
 ```
-BenchmarkDotNet=v0.12.0, OS=Windows 10.0.18362
+BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19042.1466 (20H2/October2020Update)
 Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
-.NET Core SDK=3.1.101
-  [Host]     : .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), X64 RyuJIT
-  DefaultJob : .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), X64 RyuJIT
+.NET SDK=5.0.402
+  [Host]     : .NET 5.0.11 (5.0.1121.47308), X64 RyuJIT
+  DefaultJob : .NET 5.0.11 (5.0.1121.47308), X64 RyuJIT
 ```
 
 
@@ -77,7 +77,7 @@ Benchmark scores
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":13324,"render":5492},"DotLiquid":{"create":31409,"render":146547},"Fluid":{"create":15629,"render":7762},"Mustachio":{"create":8687,"render":10217},"RazorLight":{"create":63032,"render":87509},"Scriban":{"create":13222,"render":22523}};
+        var benchmarks = {"Cottle":{"create":10612,"render":4431},"DotLiquid":{"create":20153,"render":80617},"Fluid":{"create":13055,"render":6225},"Mustachio":{"create":20702,"render":15664},"RazorLight":{"create":60454,"render":840993},"Scriban":{"create":18955,"render":705018}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
