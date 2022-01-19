@@ -324,7 +324,7 @@ namespace Cottle.Parsers.Forward
                     Read();
                 }
 
-                // Not an escape sequence, move all cursors
+                // Not an escape sequence, move cursor
                 else
                 {
                     node = node.MoveTo(current, buffer);

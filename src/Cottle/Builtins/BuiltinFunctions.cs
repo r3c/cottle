@@ -646,7 +646,7 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly Dictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
+        private static readonly IReadOnlyDictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
         {
             { "abs", BuiltinFunctions.Absolute },
             { "add", BuiltinOperators.OperatorAdd },

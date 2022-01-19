@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cottle.Maps
 {
     internal class EmptyMap : AbstractMap
     {
-        private static readonly IList<KeyValuePair<Value, Value>> Pairs = new KeyValuePair<Value, Value>[0];
+        private static readonly IReadOnlyList<KeyValuePair<Value, Value>> Pairs = Array.Empty<KeyValuePair<Value, Value>>();
 
         public override int Count => 0;
 

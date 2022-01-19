@@ -8,7 +8,7 @@ namespace Cottle.Parsers.Optimize
 {
     internal static class Modifier
     {
-        public static readonly Func<Expression, Expression>[] ExpressionModifiers = new Func<Expression, Expression>[]
+        public static readonly IReadOnlyList<Func<Expression, Expression>> ExpressionModifiers = new Func<Expression, Expression>[]
         {
             // Fold constant access expressions into constant expressions
             expression =>
@@ -108,7 +108,7 @@ namespace Cottle.Parsers.Optimize
             },
         };
 
-        public static readonly Func<Statement, Statement>[] StatementModifiers = new Func<Statement, Statement>[]
+        public static readonly IReadOnlyList<Func<Statement, Statement>> StatementModifiers = new Func<Statement, Statement>[]
         {
             // Simplify "if" statement with constant conditions
             statement =>

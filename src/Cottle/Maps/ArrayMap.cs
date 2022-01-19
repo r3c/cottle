@@ -5,7 +5,7 @@ namespace Cottle.Maps
 {
     internal class ArrayMap : AbstractMap
     {
-        private readonly List<Value> _array;
+        private readonly IReadOnlyList<Value> _array;
 
         public ArrayMap(IEnumerable<Value> array)
         {

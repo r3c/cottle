@@ -7,15 +7,15 @@ namespace Cottle.Documents.Simple.Evaluators
 {
     internal class InvokeEvaluator : IEvaluator
     {
-        public InvokeEvaluator(IEvaluator caller, IEnumerable<IEvaluator> arguments)
-        {
-            _arguments = arguments.ToArray();
-            _caller = caller;
-        }
-
-        private readonly IEvaluator[] _arguments;
+        private readonly IReadOnlyList<IEvaluator> _arguments;
 
         private readonly IEvaluator _caller;
+
+        public InvokeEvaluator(IEvaluator caller, IEnumerable<IEvaluator> arguments)
+        {
+            _arguments = arguments.ToList();
+            _caller = caller;
+        }
 
         public Value Evaluate(IStore store, TextWriter output)
         {
@@ -24,9 +24,9 @@ namespace Cottle.Documents.Simple.Evaluators
 
             if (function is not null)
             {
-                var values = new Value[_arguments.Length];
+                var values = new Value[_arguments.Count];
 
-                for (var i = 0; i < _arguments.Length; ++i)
+                for (var i = 0; i < _arguments.Count; ++i)
                     values[i] = _arguments[i].Evaluate(store, output);
 
                 return function.Invoke(store, values, output);
