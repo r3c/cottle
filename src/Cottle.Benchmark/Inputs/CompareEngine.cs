@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DotLiquid;
 using Fluid;
 using Fluid.Values;
+using RazorEngineCore;
 using RazorLight;
 using RazorLight.Razor;
 using Scriban;
@@ -227,6 +228,30 @@ namespace Cottle.Benchmark.Inputs
                 };
             });
 
+            // Render template with RazorEngineCore
+            yield return new Input<Func<Func<Func<string>>>>(nameof(RazorEngineCore), () =>
+            {
+                const string content = @"
+<ul id='products'>
+  @foreach (var product in Model.Products)
+  {
+    <li>
+      <h2>@product.Name</h2>
+      <p>@product.Description.Substring(0, System.Math.Min(product.Description.Length, 15)) - Only @product.Price.ToString(""f1"", System.Globalization.CultureInfo.CreateSpecificCulture(""en-US""))$</p>
+    </li>
+  }
+</ul>";
+
+                var context = new { Products = CompareEngine.Products };
+
+                return () =>
+                {
+                    var engine = new RazorEngine();
+                    var template = engine.Compile(content);
+                    return () => template.Run(context);
+                };
+            });
+
             // Render template with Scriban
             yield return new Input<Func<Func<Func<string>>>>(nameof(Scriban), () =>
             {
@@ -265,7 +290,7 @@ namespace Cottle.Benchmark.Inputs
         { Description = "Description " + new string('#', i + 1), Name = $"Product {i}", Price = i * 0.3f })
             .ToList();
 
-        public struct Product
+        public class Product
         {
             public string Description;
             public float Price;
