@@ -1,6 +1,7 @@
 name: validate
 
 on:
+  - pull_request
   - push
 
 env:
