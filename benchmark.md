@@ -58,33 +58,36 @@ Benchmark configuration
 ---
 
 ```
-BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19042.1466 (20H2/October2020Update)
+BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19044
 Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
-.NET SDK=5.0.402
-  [Host]     : .NET Core 3.1.20 (CoreCLR 4.700.21.47003, CoreFX 4.700.21.47101), X64 RyuJIT
-  DefaultJob : .NET Core 3.1.20 (CoreCLR 4.700.21.47003, CoreFX 4.700.21.47101), X64 RyuJIT
+.NET SDK=6.0.200
+  [Host]     : .NET 6.0.2 (6.0.222.6406), X64 RyuJIT
+  DefaultJob : .NET 6.0.2 (6.0.222.6406), X64 RyuJIT
 ```
 
 
 Benchmark scores
 ---
 
+Parsing and rendering benchmark, scores are expressed in microseconds per
+operation.
+
 <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly;">
     <canvas id="create" width="400" height="480"></canvas>
     <canvas id="render" width="400" height="480"></canvas>
 </div>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js" async></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js" async></script>
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":14029,"render":5724},"DotLiquid":{"create":32324,"render":151675},"Fluid":{"create":15760,"render":8906},"Mustachio":{"create":9198,"render":10228},"RazorLight":{"create":64443,"render":87752},"Scriban":{"create":13243,"render":22860}};
+        var benchmarks = {"Cottle":{"create":10874,"render":4244},"DotLiquid":{"create":20363,"render":77921},"Fluid":{"create":12897,"render":5576},"Mustachio":{"create":20840,"render":15713},"RazorLight":{"create":55668,"render":915580},"Scriban":{"create":17274,"render":762998}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
-            let colors = [];
-            let step = Math.trunc(360 / amount);
+            var colors = [];
+            var step = Math.trunc(360 / amount);
 
-            for (let i = 0; i < amount; i++) {
+            for (var i = 0; i < amount; i++) {
                 colors.push(`hsla(${(i * step + shift * 360) % 360},${saturation}%,${lightness}%,${alpha})`);
             }
 
@@ -111,20 +114,23 @@ Benchmark scores
                 datasets: [{
                     label: chart.label,
                     data: Object.values(benchmarks).map(chart.extract),
-                    backgroundColor: generateHslaColors(50, 50, 1.0, Object.keys(benchmarks).length, chart.shift),
-                    borderColor: generateHslaColors(25, 50, 1.0, Object.keys(benchmarks).length, chart.shift),
+                    backgroundColor: generateHslaColors(50, 75, 1.0, Object.keys(benchmarks).length, chart.shift),
+                    borderColor: generateHslaColors(25, 75, 1.0, Object.keys(benchmarks).length, chart.shift),
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: false,
                 scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            callback: v => v + ' µs'
-                        }
-                    }]
+                    y: {
+						beginAtZero: true,
+						ticks: {
+							callback: function (v) {
+								return v + ' µs';
+							}
+						},
+						type: 'logarithmic'
+                    }
                 }
             }
         }));
