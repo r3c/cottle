@@ -62,6 +62,7 @@ jobs:
   publish:
     name: Publish NuGet package
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
       DOTNET_NOLOGO: true
