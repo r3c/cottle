@@ -80,7 +80,7 @@ operation.
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":10874,"render":4244},"DotLiquid":{"create":20363,"render":77921},"Fluid":{"create":12897,"render":5576},"Mustachio":{"create":20840,"render":15713},"RazorLight":{"create":55668,"render":915580},"Scriban":{"create":17274,"render":762998}};
+        var benchmarks = {"Cottle":{"create":10415,"render":4310},"DotLiquid":{"create":20469,"render":77017},"Fluid":{"create":12865,"render":5583},"Mustachio":{"create":20396,"render":14972},"RazorLight":{"create":53143,"render":812461},"Scriban":{"create":17469,"render":730231}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
