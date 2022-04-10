@@ -1,11 +1,15 @@
 name: validate
 
 on:
-  - pull_request
-  - push
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
 
 env:
-  DOTNET_VERSION: 5.0.x
+  DOTNET_VERSION: 6.0.x
 
 jobs:
   check:
@@ -23,7 +27,7 @@ jobs:
       - run: dotnet-format --check src/Cottle.sln
 
   build:
-    name: Build and test on .NET v${{ matrix.dotnet.version }}
+    name: Build for ${{ matrix.dotnet.framework }}
     runs-on: ubuntu-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -31,21 +35,29 @@ jobs:
     strategy:
       matrix:
         dotnet: # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
-          - version: 3.1.x
-            framework_app: netcoreapp3.1
-            framework_dll: netstandard2.0
-          - version: 5.0.x
-            framework_app: net5.0
-            framework_dll: net5.0
+          - framework: net5.0
+          - framework: net6.0
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet.version }}
-      - run: dotnet build src/Cottle -f ${{ matrix.dotnet.framework_dll }}
-      - run: dotnet build src/Cottle.Benchmark -f ${{ matrix.dotnet.framework_app }}
-      - run: dotnet build src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
-      - run: dotnet test src/Cottle.Test -f ${{ matrix.dotnet.framework_app }}
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - run: dotnet build src/Cottle --framework ${{ matrix.dotnet.framework }}
+      - run: dotnet build src/Cottle.Benchmark --framework ${{ matrix.dotnet.framework }}
+      - run: dotnet build src/Cottle.Test --framework ${{ matrix.dotnet.framework }}
+
+  test:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - run: dotnet test src/Cottle.Test -f net6.0
 
   publish:
     name: Publish NuGet package
@@ -58,7 +70,6 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - uses: rohith/publish-nuget@v2
-        with:
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          PROJECT_FILE_PATH: src/Cottle/Cottle.csproj
+      - run: dotnet pack src/Cottle --configuration Release --output pack
+      - run: dotnet nuget push ./pack/*.nupkg --no-symbols --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
+ 

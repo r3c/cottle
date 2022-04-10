@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1;net472</TargetFrameworks>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
     <AssemblyName>Cottle.Test</AssemblyName>
-    <PackageId>Cottle.Test</PackageId>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <PackageId>Cottle.Test</PackageId>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;net472</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
