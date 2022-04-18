@@ -137,6 +137,11 @@ operation.
     });
 </script>
 
+Other libraries were considered in this benchmark but not included as their
+performance results are too far away and would impact graph scale too much:
+
+- RazorEngineCore v2022.1.2 (render time is over 6000% of Cottle, see #149)
+
 
 Discussion
 ==========
