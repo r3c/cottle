@@ -11,37 +11,37 @@ namespace Cottle.Documents.Emitted
     internal class Emitter
     {
         private static readonly MethodInfo ArgumentsIndex =
-            Reflection.GetMethod<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
+            Dynamic.GetMethod<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
 
         private static readonly MethodInfo FiniteFunctionInvoke0 =
-            Reflection.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke1 =
-            Reflection.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke2 =
-            Reflection.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke3 =
-            Reflection.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
 
         private static readonly FieldInfo FrameArguments =
-            Reflection.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
+            Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
 
         private static readonly MethodInfo FrameEcho =
-            Reflection.GetMethod<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
+            Dynamic.GetMethod<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
 
-        private static readonly FieldInfo FrameGlobals = Reflection.GetField<Func<Frame, Value[]>>(f => f.Globals);
+        private static readonly FieldInfo FrameGlobals = Dynamic.GetField<Func<Frame, Value[]>>(f => f.Globals);
 
-        private static readonly MethodInfo FrameUnwrap = Reflection.GetMethod<Func<Frame, IFunction>>(f => f.Unwrap());
+        private static readonly MethodInfo FrameUnwrap = Dynamic.GetMethod<Func<Frame, IFunction>>(f => f.Unwrap());
 
-        private static readonly MethodInfo FrameWrap = Reflection.GetMethod<Action<Frame>>(f => f.Wrap(Function.Empty));
+        private static readonly MethodInfo FrameWrap = Dynamic.GetMethod<Action<Frame>>(f => f.Wrap(Function.Empty));
 
         private static readonly MethodInfo FunctionInvoke =
-            Reflection.GetMethod<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
+            Dynamic.GetMethod<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
 
         private static readonly ConstructorInfo KeyValueConstructor =
-            Reflection.GetConstructor<Func<KeyValuePair<Value, Value>>>(() =>
+            Dynamic.GetConstructor<Func<KeyValuePair<Value, Value>>>(() =>
                 new KeyValuePair<Value, Value>(default, default));
 
         private static readonly IReadOnlyList<OpCode> LoadIntegers = new[]
@@ -51,60 +51,60 @@ namespace Cottle.Documents.Emitted
         };
 
         private static readonly MethodInfo MapCount =
-            Reflection.GetProperty<Func<IMap, int>>(m => m.Count).GetMethod!;
+            Dynamic.GetProperty<Func<IMap, int>>(m => m.Count).GetMethod!;
 
-        private static readonly MethodInfo MapEnumeratorCurrent = Reflection
+        private static readonly MethodInfo MapEnumeratorCurrent = Dynamic
             .GetProperty<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e => e.Current)
             .GetMethod!;
 
         private static readonly MethodInfo MapEnumeratorMoveNext =
-            Reflection.GetMethod<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext());
+            Dynamic.GetMethod<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext());
 
         private static readonly MethodInfo MapGetEnumerator =
-            Reflection.GetMethod<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator());
+            Dynamic.GetMethod<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator());
 
         private static readonly MethodInfo MapTryGet =
-            Reflection.GetMethod<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
+            Dynamic.GetMethod<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
 
-        private static readonly MethodInfo ObjectToString = Reflection.GetMethod<Func<object, string?>>(o => o.ToString());
+        private static readonly MethodInfo ObjectToString = Dynamic.GetMethod<Func<object, string?>>(o => o.ToString());
 
         private static readonly MethodInfo PairKey =
-            Reflection.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetMethod!;
+            Dynamic.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetMethod!;
 
         private static readonly MethodInfo PairValue =
-            Reflection.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetMethod!;
+            Dynamic.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetMethod!;
 
         private static readonly MethodInfo ReadOnlyListCount =
-            Reflection.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
+            Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
         private static readonly ConstructorInfo StringWriterConstructor =
-            Reflection.GetConstructor<Func<StringWriter>>(() => new StringWriter());
+            Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
 
         private static readonly MethodInfo StringWriterToString =
-            Reflection.GetMethod<Func<StringWriter, string>>(w => w.ToString());
+            Dynamic.GetMethod<Func<StringWriter, string>>(w => w.ToString());
 
         private static readonly MethodInfo TextWriterWriteObject =
-            Reflection.GetMethod<Action<TextWriter>>(w => w.Write(default(object)));
+            Dynamic.GetMethod<Action<TextWriter>>(w => w.Write(default(object)));
 
         private static readonly MethodInfo TextWriterWriteString =
-            Reflection.GetMethod<Action<TextWriter>>(w => w.Write(default(string)));
+            Dynamic.GetMethod<Action<TextWriter>>(w => w.Write(default(string)));
 
         private static readonly MethodInfo ValueAsBooleanGet =
-            Reflection.GetProperty<Func<Value, bool>>(v => v.AsBoolean).GetMethod!;
+            Dynamic.GetProperty<Func<Value, bool>>(v => v.AsBoolean).GetMethod!;
 
         private static readonly MethodInfo ValueAsFunctionGet =
-            Reflection.GetProperty<Func<Value, IFunction>>(v => v.AsFunction).GetMethod!;
+            Dynamic.GetProperty<Func<Value, IFunction>>(v => v.AsFunction).GetMethod!;
 
         private static readonly MethodInfo ValueFieldsGet =
-            Reflection.GetProperty<Func<Value, IMap>>(v => v.Fields).GetMethod!;
+            Dynamic.GetProperty<Func<Value, IMap>>(v => v.Fields).GetMethod!;
 
         private static readonly MethodInfo ValueFromDictionary =
-            Reflection.GetMethod<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
+            Dynamic.GetMethod<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
 
         private static readonly MethodInfo ValueFromString =
-            Reflection.GetMethod<Func<Value>>(() => Value.FromString(string.Empty));
+            Dynamic.GetMethod<Func<Value>>(() => Value.FromString(string.Empty));
 
-        private static readonly FieldInfo ValueUndefined = Reflection.GetField<Func<Value>>(() => Value.Undefined);
+        private static readonly FieldInfo ValueUndefined = Dynamic.GetField<Func<Value>>(() => Value.Undefined);
 
         private static Value _value;
 

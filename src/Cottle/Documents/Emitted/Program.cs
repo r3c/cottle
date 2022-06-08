@@ -1,30 +1,17 @@
-//#define COTTLE_IL_SAVE
+// #define COTTLE_IL_SAVE
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Emitted
 {
     internal readonly struct Program
     {
-        private static readonly MethodInfo ExecutableInvoke =
-            Reflection.GetMethod<Func<Execute, bool>>(e => e.Invoke(Array.Empty<Value>(), new Frame(Array.Empty<Value>(), Array.Empty<Value>(), default), TextWriter.Null, out Program._unused));
-
-        private static readonly Type[] ExecutableInvokeArguments =
-            Program.ExecutableInvoke.GetParameters().Select(p => p.ParameterType).ToArray();
-
-        private static Value _unused;
-
         public static Program Create(IStatementGenerator generator, IReadOnlyList<Symbol> arguments)
         {
-            var dynamicMethod = new DynamicMethod(string.Empty, Program.ExecutableInvoke.ReturnType,
-                Program.ExecutableInvokeArguments, typeof(EmittedDocument));
-            var emitter = new Emitter(dynamicMethod.GetILGenerator());
+            var creator = Dynamic.DefineMethod<Execute>();
+            var emitter = new Emitter(creator.Generator);
 
             Program.Emit(emitter, generator, arguments);
 
@@ -34,7 +21,7 @@ namespace Cottle.Documents.Emitted
             Program.Save(generator, Path.Combine(directory, "Cottle.GeneratedIL.dll"));
 #endif
 
-            var executable = (Execute)dynamicMethod.CreateDelegate(typeof(Execute));
+            var executable = creator.Create();
 
             return new Program(executable, emitter.CreateConstants());
         }
@@ -65,22 +52,22 @@ namespace Cottle.Documents.Emitted
 #if COTTLE_IL_SAVE && NET472
         private static void Save(IStatementGenerator generator, string filePath)
         {
-            var assemblyName = new AssemblyName("Test");
+            var assemblyName = new System.Reflection.AssemblyName("Test");
             var fileName = Path.GetFileName(filePath);
 
-            var saveAssembly = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+            var saveAssembly = System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(assemblyName, System.Reflection.Emit.AssemblyBuilderAccess.RunAndSave);
             var saveModule = saveAssembly.DefineDynamicModule(assemblyName.Name, fileName);
-            var saveProgram = saveModule.DefineType("Program", TypeAttributes.Public);
-            var saveMethod = saveProgram.DefineMethod("Main", MethodAttributes.Public | MethodAttributes.Static,
-                CallingConventions.Any, Program.ExecutableInvoke.ReturnType, Program.ExecutableInvokeArguments);
+            var saveProgram = saveModule.DefineType("Program", System.Reflection.TypeAttributes.Public);
+            var saveMethod = saveProgram.DefineMethod("Main", System.Reflection.MethodAttributes.Public | System.Reflection.MethodAttributes.Static,
+                System.Reflection.CallingConventions.Any, typeof(bool), new[] { typeof(IReadOnlyList<Value>), typeof(Frame), typeof(TextWriter), typeof(Value).MakeByRefType() });
             var saveEmitter = new Emitter(saveMethod.GetILGenerator());
 
-            Program.Emit(saveEmitter, generator, Array.Empty<Symbol>());
+            Program.Emit(saveEmitter, generator, System.Array.Empty<Symbol>());
 
             saveProgram.CreateType();
             saveAssembly.Save(fileName);
 
-            var saveSource = Path.Combine(Environment.CurrentDirectory, fileName);
+            var saveSource = Path.Combine(System.Environment.CurrentDirectory, fileName);
 
             File.Copy(saveSource, filePath, true);
         }

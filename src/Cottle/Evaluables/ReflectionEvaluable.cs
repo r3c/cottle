@@ -30,43 +30,43 @@ namespace Cottle.Evaluables
 
         private static Dictionary<(BindingFlags, Type), object> CustomConverters = new();
 
-        private static readonly ConstructorInfo DictionaryValueValue = Reflection
+        private static readonly ConstructorInfo DictionaryValueValue = Dynamic
             .GetConstructor<Func<Dictionary<Value, Value>>>(() => new Dictionary<Value, Value>());
 
-        private static readonly MethodInfo DictionaryValueValueAdd = Reflection
+        private static readonly MethodInfo DictionaryValueValueAdd = Dynamic
             .GetMethod<Action<Dictionary<Value, Value>, Value, Value>>((d, k, v) => d.Add(k, v));
 
-        private static readonly MethodInfo EnumeratorCurrentGet = Reflection
+        private static readonly MethodInfo EnumeratorCurrentGet = Dynamic
             .GetProperty<Func<IEnumerator<object>, object>>(e => e.Current)
             .GetMethod!;
 
-        private static readonly MethodInfo EnumerableGetEnumerator = Reflection
+        private static readonly MethodInfo EnumerableGetEnumerator = Dynamic
             .GetMethod<Func<IEnumerable<object>, IEnumerator<object>>>(e => e.GetEnumerator());
 
-        private static readonly MethodInfo EnumeratorMoveNext = Reflection
+        private static readonly MethodInfo EnumeratorMoveNext = Dynamic
             .GetMethod<Func<IEnumerator, bool>>(e => e.MoveNext());
 
-        private static readonly MethodInfo Func2Invoke = Reflection
+        private static readonly MethodInfo Func2Invoke = Dynamic
             .GetMethod<Func<Func<object, object>, object, object>>((c, o) => c.Invoke(o));
 
-        private static readonly MethodInfo KeyValuePairKeyGet = Reflection
+        private static readonly MethodInfo KeyValuePairKeyGet = Dynamic
             .GetProperty<Func<KeyValuePair<object, object>, object>>(p => p.Key)
             .GetMethod!;
 
-        private static readonly MethodInfo KeyValuePairValueGet = Reflection
+        private static readonly MethodInfo KeyValuePairValueGet = Dynamic
             .GetProperty<Func<KeyValuePair<object, object>, object>>(p => p.Value)
             .GetMethod!;
 
-        private static readonly ConstructorInfo ListValue = Reflection
+        private static readonly ConstructorInfo ListValue = Dynamic
             .GetConstructor<Func<List<Value>>>(() => new List<Value>());
 
-        private static readonly MethodInfo ListValueAdd = Reflection
+        private static readonly MethodInfo ListValueAdd = Dynamic
             .GetMethod<Action<List<Value>, Value>>((l, v) => l.Add(v));
 
-        private static readonly MethodInfo ReadOnlyListGetItem = Reflection
+        private static readonly MethodInfo ReadOnlyListGetItem = Dynamic
             .GetMethod<Func<IReadOnlyList<object>, int, object>>((l, i) => l[i]);
 
-        private static readonly MethodInfo ReflectionEvaluableGetOrCreateConverter = Reflection
+        private static readonly MethodInfo ReflectionEvaluableGetOrCreateConverter = Dynamic
             .GetMethod<Func<BindingFlags, Func<object, Value>>>((b) => ReflectionEvaluable.GetOrCreateConverter<object>(b))
             .GetGenericMethodDefinition();
 
@@ -110,13 +110,6 @@ namespace Cottle.Evaluables
             var converterType = typeof(object);
             var pairType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
             var sourceType = typeof(TSource);
-            var dynamicMethod = new DynamicMethod(string.Empty, typeof(IReadOnlyDictionary<Value, Value>), new[] { converterType, converterType, sourceType }, typeof(ReflectionEvaluable).Module, true);
-            var generator = dynamicMethod.GetILGenerator();
-            var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(pairType));
-            var pair = generator.DeclareLocal(pairType);
-            var result = generator.DeclareLocal(typeof(Dictionary<Value, Value>));
-            var exit = generator.DefineLabel();
-            var loop = generator.DefineLabel();
 
             var keyConverter = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(keyType)
@@ -126,9 +119,17 @@ namespace Cottle.Evaluables
                 .MakeGenericMethod(valueType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
+            var creator = Dynamic.DefineMethod<Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>>();
+            var generator = creator.Generator;
+            var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(pairType));
+            var pair = generator.DeclareLocal(pairType);
+            var result = generator.DeclareLocal(typeof(Dictionary<Value, Value>));
+            var exit = generator.DefineLabel();
+            var loop = generator.DefineLabel();
+
             // enumerator = enumerator.GetEnumerator()
             generator.Emit(OpCodes.Ldarg_2);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumerableGetEnumerator, pairType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumerableGetEnumerator, pairType));
             generator.Emit(OpCodes.Stloc, enumerator);
 
             // result = new Dictionary<Value, Value>()
@@ -145,20 +146,20 @@ namespace Cottle.Evaluables
             // key = keyConverter(enumerator.Current.Key)
             generator.Emit(OpCodes.Ldarg_0);
             generator.Emit(OpCodes.Ldloc, enumerator);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
             generator.Emit(OpCodes.Stloc, pair);
             generator.Emit(OpCodes.Ldloca, pair);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(KeyValuePairKeyGet, keyType, valueType));
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, keyType, typeof(Value)));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(KeyValuePairKeyGet, keyType, valueType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, keyType, typeof(Value)));
 
             // value = valueConverter(enumerator.Current.Value)
             generator.Emit(OpCodes.Ldarg_1);
             generator.Emit(OpCodes.Ldloc, enumerator);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
             generator.Emit(OpCodes.Stloc, pair);
             generator.Emit(OpCodes.Ldloca, pair);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(KeyValuePairValueGet, keyType, valueType));
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, valueType, typeof(Value)));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(KeyValuePairValueGet, keyType, valueType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, valueType, typeof(Value)));
 
             // result.Add(key, value)
             generator.Emit(OpCodes.Callvirt, DictionaryValueValueAdd);
@@ -171,7 +172,7 @@ namespace Cottle.Evaluables
             generator.Emit(OpCodes.Ldloc, result);
             generator.Emit(OpCodes.Ret);
 
-            var method = (Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>)dynamicMethod.CreateDelegate(typeof(Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>));
+            var method = creator.Create();
 
             return source =>
             {
@@ -188,20 +189,21 @@ namespace Cottle.Evaluables
         {
             var converterType = typeof(object);
             var sourceType = typeof(TSource);
-            var dynamicMethod = new DynamicMethod(string.Empty, typeof(IEnumerable<Value>), new[] { converterType, sourceType }, typeof(ReflectionEvaluable).Module, true);
-            var generator = dynamicMethod.GetILGenerator();
-            var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(elementType));
-            var result = generator.DeclareLocal(typeof(List<Value>));
-            var exit = generator.DefineLabel();
-            var loop = generator.DefineLabel();
 
             var elementConverter = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
+            var creator = Dynamic.DefineMethod<Func<object, TSource, IEnumerable<Value>>>();
+            var generator = creator.Generator;
+            var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(elementType));
+            var result = generator.DeclareLocal(typeof(List<Value>));
+            var exit = generator.DefineLabel();
+            var loop = generator.DefineLabel();
+
             // enumerator = enumerator.GetEnumerator()
             generator.Emit(OpCodes.Ldarg_1);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumerableGetEnumerator, elementType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumerableGetEnumerator, elementType));
             generator.Emit(OpCodes.Stloc, enumerator);
 
             // result = new List<Value>()
@@ -218,8 +220,8 @@ namespace Cottle.Evaluables
             // element = elementConverter(enumerator.Current)
             generator.Emit(OpCodes.Ldarg_0);
             generator.Emit(OpCodes.Ldloc, enumerator);
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, elementType));
-            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, elementType, typeof(Value)));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, elementType));
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, elementType, typeof(Value)));
 
             // result.Add(element)
             generator.Emit(OpCodes.Callvirt, ListValueAdd);
@@ -232,7 +234,7 @@ namespace Cottle.Evaluables
             generator.Emit(OpCodes.Ldloc, result);
             generator.Emit(OpCodes.Ret);
 
-            var method = (Func<object, TSource, IEnumerable<Value>>)dynamicMethod.CreateDelegate(typeof(Func<object, TSource, IEnumerable<Value>>));
+            var method = creator.Create();
 
             return source =>
             {
@@ -258,20 +260,18 @@ namespace Cottle.Evaluables
                     .MakeGenericMethod(field.FieldType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
-                var dynamicMethod = new DynamicMethod(string.Empty, typeof(Value), new[] { convertersType, sourceType }, typeof(ReflectionEvaluable).Module, true);
-                var generator = dynamicMethod.GetILGenerator();
+                var creator = Dynamic.DefineMethod<Func<IReadOnlyList<object>, TSource, Value>>();
+                var generator = creator.Generator;
 
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldc_I4, converters.Count);
                 generator.Emit(OpCodes.Callvirt, ReadOnlyListGetItem);
                 generator.Emit(OpCodes.Ldarg_1);
                 generator.Emit(OpCodes.Ldfld, field);
-                generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, field.FieldType, typeof(Value)));
+                generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, field.FieldType, typeof(Value)));
                 generator.Emit(OpCodes.Ret);
 
-                var fieldReader = (Func<IReadOnlyList<object>, TSource, Value>)dynamicMethod.CreateDelegate(typeof(Func<IReadOnlyList<object>, TSource, Value>));
-
-                readers[field.Name] = fieldReader;
+                readers[field.Name] = creator.Create();
 
                 converters.Add(fieldConverter);
             }
@@ -285,8 +285,8 @@ namespace Cottle.Evaluables
                     .MakeGenericMethod(property.PropertyType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
-                var dynamicMethod = new DynamicMethod(string.Empty, typeof(Value), new[] { convertersType, sourceType }, typeof(ReflectionEvaluable).Module, true);
-                var generator = dynamicMethod.GetILGenerator();
+                var creator = Dynamic.DefineMethod<Func<IReadOnlyList<object>, TSource, Value>>();
+                var generator = creator.Generator;
 
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldc_I4, converters.Count);
@@ -298,12 +298,10 @@ namespace Cottle.Evaluables
                     generator.Emit(OpCodes.Ldarg_1);
 
                 generator.Emit(OpCodes.Callvirt, property.GetMethod);
-                generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, property.PropertyType, typeof(Value)));
+                generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, property.PropertyType, typeof(Value)));
                 generator.Emit(OpCodes.Ret);
 
-                var propertyReader = (Func<IReadOnlyList<object>, TSource, Value>)dynamicMethod.CreateDelegate(typeof(Func<IReadOnlyList<object>, TSource, Value>));
-
-                readers[property.Name] = propertyReader;
+                readers[property.Name] = creator.Create();
 
                 converters.Add(propertyConverter);
             }
