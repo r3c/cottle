@@ -13,7 +13,7 @@ namespace Cottle.Documents.Emitted
     internal readonly struct Program
     {
         private static readonly MethodInfo ExecutableInvoke =
-            Resolver.Method<Func<Execute, bool>>(e => e.Invoke(Array.Empty<Value>(), new Frame(Array.Empty<Value>(), Array.Empty<Value>(), default), TextWriter.Null, out Program._unused));
+            Reflection.GetMethod<Func<Execute, bool>>(e => e.Invoke(Array.Empty<Value>(), new Frame(Array.Empty<Value>(), Array.Empty<Value>(), default), TextWriter.Null, out Program._unused));
 
         private static readonly Type[] ExecutableInvokeArguments =
             Program.ExecutableInvoke.GetParameters().Select(p => p.ParameterType).ToArray();
