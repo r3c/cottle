@@ -30,6 +30,12 @@ namespace Cottle.Evaluables
 
         private static Dictionary<(BindingFlags, Type), object> CustomConverters = new();
 
+        private static readonly ConstructorInfo DictionaryValueValue = Reflection
+            .GetConstructor<Func<Dictionary<Value, Value>>>(() => new Dictionary<Value, Value>());
+
+        private static readonly MethodInfo DictionaryValueValueAdd = Reflection
+            .GetMethod<Action<Dictionary<Value, Value>, Value, Value>>((d, k, v) => d.Add(k, v));
+
         private static readonly MethodInfo EnumeratorCurrentGet = Reflection
             .GetProperty<Func<IEnumerator<object>, object>>(e => e.Current)
             .GetMethod!;
@@ -42,6 +48,14 @@ namespace Cottle.Evaluables
 
         private static readonly MethodInfo Func2Invoke = Reflection
             .GetMethod<Func<Func<object, object>, object, object>>((c, o) => c.Invoke(o));
+
+        private static readonly MethodInfo KeyValuePairKeyGet = Reflection
+            .GetProperty<Func<KeyValuePair<object, object>, object>>(p => p.Key)
+            .GetMethod!;
+
+        private static readonly MethodInfo KeyValuePairValueGet = Reflection
+            .GetProperty<Func<KeyValuePair<object, object>, object>>(p => p.Value)
+            .GetMethod!;
 
         private static readonly ConstructorInfo ListValue = Reflection
             .GetConstructor<Func<List<Value>>>(() => new List<Value>());
@@ -66,6 +80,17 @@ namespace Cottle.Evaluables
             var type = typeof(TSource);
             var interfaces = type.GetInterfaces();
 
+            // Convert dictionary to dictionary-like map value
+            var dictionary = interfaces.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>));
+
+            if (dictionary is not null)
+            {
+                var keyType = dictionary.GetGenericArguments()[0];
+                var valueType = dictionary.GetGenericArguments()[1];
+
+                return CreateConverterFromDictionary<TSource>(bindingFlags, keyType, valueType);
+            }
+
             // Convert enumerable to array-like map value
             var enumerable = interfaces.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
@@ -78,6 +103,85 @@ namespace Cottle.Evaluables
 
             // Otherwise browse object fields and properties
             return CreateConverterFromObject<TSource>(bindingFlags);
+        }
+
+        private static Func<TSource, Value> CreateConverterFromDictionary<TSource>(BindingFlags bindingFlags, Type keyType, Type valueType)
+        {
+            var converterType = typeof(object);
+            var pairType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
+            var sourceType = typeof(TSource);
+            var dynamicMethod = new DynamicMethod(string.Empty, typeof(IReadOnlyDictionary<Value, Value>), new[] { converterType, converterType, sourceType }, typeof(ReflectionEvaluable).Module, true);
+            var generator = dynamicMethod.GetILGenerator();
+            var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(pairType));
+            var pair = generator.DeclareLocal(pairType);
+            var result = generator.DeclareLocal(typeof(Dictionary<Value, Value>));
+            var exit = generator.DefineLabel();
+            var loop = generator.DefineLabel();
+
+            var keyConverter = ReflectionEvaluableGetOrCreateConverter
+                .MakeGenericMethod(keyType)
+                .Invoke(null, new object[] { bindingFlags })!;
+
+            var valueConverter = ReflectionEvaluableGetOrCreateConverter
+                .MakeGenericMethod(valueType)
+                .Invoke(null, new object[] { bindingFlags })!;
+
+            // enumerator = enumerator.GetEnumerator()
+            generator.Emit(OpCodes.Ldarg_2);
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumerableGetEnumerator, pairType));
+            generator.Emit(OpCodes.Stloc, enumerator);
+
+            // result = new Dictionary<Value, Value>()
+            generator.Emit(OpCodes.Newobj, DictionaryValueValue);
+            generator.Emit(OpCodes.Stloc, result);
+
+            // while (enumerator.MoveNext()) {
+            generator.MarkLabel(loop);
+            generator.Emit(OpCodes.Ldloc, enumerator);
+            generator.Emit(OpCodes.Callvirt, EnumeratorMoveNext);
+            generator.Emit(OpCodes.Brfalse, exit);
+            generator.Emit(OpCodes.Ldloc, result);
+
+            // key = keyConverter(enumerator.Current.Key)
+            generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(OpCodes.Ldloc, enumerator);
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
+            generator.Emit(OpCodes.Stloc, pair);
+            generator.Emit(OpCodes.Ldloca, pair);
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(KeyValuePairKeyGet, keyType, valueType));
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, keyType, typeof(Value)));
+
+            // value = valueConverter(enumerator.Current.Value)
+            generator.Emit(OpCodes.Ldarg_1);
+            generator.Emit(OpCodes.Ldloc, enumerator);
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
+            generator.Emit(OpCodes.Stloc, pair);
+            generator.Emit(OpCodes.Ldloca, pair);
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(KeyValuePairValueGet, keyType, valueType));
+            generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, valueType, typeof(Value)));
+
+            // result.Add(key, value)
+            generator.Emit(OpCodes.Callvirt, DictionaryValueValueAdd);
+
+            // }
+            generator.Emit(OpCodes.Br, loop);
+
+            // return result
+            generator.MarkLabel(exit);
+            generator.Emit(OpCodes.Ldloc, result);
+            generator.Emit(OpCodes.Ret);
+
+            var method = (Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>)dynamicMethod.CreateDelegate(typeof(Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>));
+
+            return source =>
+            {
+                if (source is null)
+                    return Value.Undefined;
+
+                var dictionary = method(keyConverter, valueConverter, source);
+
+                return Value.FromDictionary(dictionary);
+            };
         }
 
         private static Func<TSource, Value> CreateConverterFromEnumerable<TSource>(BindingFlags bindingFlags, Type elementType)
@@ -95,22 +199,35 @@ namespace Cottle.Evaluables
                 .MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
+            // enumerator = enumerator.GetEnumerator()
             generator.Emit(OpCodes.Ldarg_1);
             generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumerableGetEnumerator, elementType));
             generator.Emit(OpCodes.Stloc, enumerator);
+
+            // result = new List<Value>()
             generator.Emit(OpCodes.Newobj, ListValue);
             generator.Emit(OpCodes.Stloc, result);
+
+            // while (enumerator.MoveNext()) {
             generator.MarkLabel(loop);
             generator.Emit(OpCodes.Ldloc, enumerator);
             generator.Emit(OpCodes.Callvirt, EnumeratorMoveNext);
             generator.Emit(OpCodes.Brfalse, exit);
             generator.Emit(OpCodes.Ldloc, result);
+
+            // element = elementConverter(enumerator.Current)
             generator.Emit(OpCodes.Ldarg_0);
             generator.Emit(OpCodes.Ldloc, enumerator);
             generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(EnumeratorCurrentGet, elementType));
             generator.Emit(OpCodes.Callvirt, Reflection.ChangeGenericDeclaringType(Func2Invoke, elementType, typeof(Value)));
+
+            // result.Add(element)
             generator.Emit(OpCodes.Callvirt, ListValueAdd);
+
+            // }
             generator.Emit(OpCodes.Br, loop);
+
+            // return result
             generator.MarkLabel(exit);
             generator.Emit(OpCodes.Ldloc, result);
             generator.Emit(OpCodes.Ret);
