@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Cottle
 {
-    internal static class Reflection
+    internal static class Dynamic
     {
         public static MethodInfo ChangeGenericDeclaringType(MethodInfo method, params Type[] types)
         {
@@ -14,6 +14,11 @@ namespace Cottle
             var result = newMethod as MethodInfo ?? throw new InvalidOperationException("invalid method after changing declaring type");
 
             return result;
+        }
+
+        public static DynamicMethodCreator<TDelegate> DefineMethod<TDelegate>() where TDelegate : Delegate
+        {
+            return new DynamicMethodCreator<TDelegate>();
         }
 
         public static ConstructorInfo GetConstructor<T>(Expression<T> lambda)
