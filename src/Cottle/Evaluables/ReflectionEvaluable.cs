@@ -28,7 +28,11 @@ namespace Cottle.Evaluables
             { typeof(ushort), new Func<ushort, Value>(s => s) }
         };
 
-        private static Dictionary<(BindingFlags, Type), object> CustomConverters = new();
+        private static Dictionary<(BindingFlags, Type), object> CustomReferences = new();
+
+        private static readonly MethodInfo ConverterReferenceConverterGet = Dynamic
+            .GetProperty<Func<ConverterReference<object>, Func<object, Value>>>(r => r.Converter)
+            .GetMethod!;
 
         private static readonly ConstructorInfo DictionaryValueValue = Dynamic
             .GetConstructor<Func<Dictionary<Value, Value>>>(() => new Dictionary<Value, Value>());
@@ -67,7 +71,7 @@ namespace Cottle.Evaluables
             .GetMethod<Func<IReadOnlyList<object>, int, object>>((l, i) => l[i]);
 
         private static readonly MethodInfo ReflectionEvaluableGetOrCreateConverter = Dynamic
-            .GetMethod<Func<BindingFlags, Func<object, Value>>>((b) => ReflectionEvaluable.GetOrCreateConverter<object>(b))
+            .GetMethod<Func<BindingFlags, ConverterReference<object>>>((b) => ReflectionEvaluable.GetOrCreateConverter<object>(b))
             .GetGenericMethodDefinition();
 
         public static Value CreateValue<TSource>(TSource source, BindingFlags bindingFlags)
@@ -111,11 +115,11 @@ namespace Cottle.Evaluables
             var pairType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
             var sourceType = typeof(TSource);
 
-            var keyConverter = ReflectionEvaluableGetOrCreateConverter
+            var keyConverterReference = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(keyType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
-            var valueConverter = ReflectionEvaluableGetOrCreateConverter
+            var valueConverterReference = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(valueType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
@@ -143,8 +147,9 @@ namespace Cottle.Evaluables
             generator.Emit(OpCodes.Brfalse, exit);
             generator.Emit(OpCodes.Ldloc, result);
 
-            // key = keyConverter(enumerator.Current.Key)
+            // key = keyConverterReference.Converter(enumerator.Current.Key)
             generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, keyType));
             generator.Emit(OpCodes.Ldloc, enumerator);
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
             generator.Emit(OpCodes.Stloc, pair);
@@ -152,8 +157,9 @@ namespace Cottle.Evaluables
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(KeyValuePairKeyGet, keyType, valueType));
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, keyType, typeof(Value)));
 
-            // value = valueConverter(enumerator.Current.Value)
+            // value = valueConverterReference.Converter(enumerator.Current.Value)
             generator.Emit(OpCodes.Ldarg_1);
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, valueType));
             generator.Emit(OpCodes.Ldloc, enumerator);
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, pairType));
             generator.Emit(OpCodes.Stloc, pair);
@@ -179,7 +185,7 @@ namespace Cottle.Evaluables
                 if (source is null)
                     return Value.Undefined;
 
-                var dictionary = method(keyConverter, valueConverter, source);
+                var dictionary = method(keyConverterReference, valueConverterReference, source);
 
                 return Value.FromDictionary(dictionary);
             };
@@ -190,7 +196,7 @@ namespace Cottle.Evaluables
             var converterType = typeof(object);
             var sourceType = typeof(TSource);
 
-            var elementConverter = ReflectionEvaluableGetOrCreateConverter
+            var elementConverterReference = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
@@ -217,8 +223,9 @@ namespace Cottle.Evaluables
             generator.Emit(OpCodes.Brfalse, exit);
             generator.Emit(OpCodes.Ldloc, result);
 
-            // element = elementConverter(enumerator.Current)
+            // element = elementConverterReference.Converter(enumerator.Current)
             generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, elementType));
             generator.Emit(OpCodes.Ldloc, enumerator);
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(EnumeratorCurrentGet, elementType));
             generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, elementType, typeof(Value)));
@@ -241,7 +248,7 @@ namespace Cottle.Evaluables
                 if (source is null)
                     return Value.Undefined;
 
-                var enumerable = method(elementConverter, source);
+                var enumerable = method(elementConverterReference, source);
 
                 return Value.FromEnumerable(enumerable);
             };
@@ -256,7 +263,7 @@ namespace Cottle.Evaluables
 
             foreach (var field in sourceType.GetFields(bindingFlags))
             {
-                var fieldConverter = ReflectionEvaluableGetOrCreateConverter
+                var fieldConverterReference = ReflectionEvaluableGetOrCreateConverter
                     .MakeGenericMethod(field.FieldType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
@@ -266,6 +273,7 @@ namespace Cottle.Evaluables
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldc_I4, converters.Count);
                 generator.Emit(OpCodes.Callvirt, ReadOnlyListGetItem);
+                generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, field.FieldType));
                 generator.Emit(OpCodes.Ldarg_1);
                 generator.Emit(OpCodes.Ldfld, field);
                 generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, field.FieldType, typeof(Value)));
@@ -273,7 +281,7 @@ namespace Cottle.Evaluables
 
                 readers[field.Name] = creator.Create();
 
-                converters.Add(fieldConverter);
+                converters.Add(fieldConverterReference);
             }
 
             foreach (var property in sourceType.GetProperties(bindingFlags))
@@ -281,7 +289,7 @@ namespace Cottle.Evaluables
                 if (property.GetMethod is null)
                     continue;
 
-                var propertyConverter = ReflectionEvaluableGetOrCreateConverter
+                var propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
                     .MakeGenericMethod(property.PropertyType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
@@ -291,6 +299,7 @@ namespace Cottle.Evaluables
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldc_I4, converters.Count);
                 generator.Emit(OpCodes.Callvirt, ReadOnlyListGetItem);
+                generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, property.PropertyType));
 
                 if (sourceType.IsValueType)
                     generator.Emit(OpCodes.Ldarga, 1);
@@ -303,45 +312,54 @@ namespace Cottle.Evaluables
 
                 readers[property.Name] = creator.Create();
 
-                converters.Add(propertyConverter);
+                converters.Add(propertyConverterReference);
             }
 
             return source => source is not null
-                ? Value.FromEnumerable(readers.ToDictionary(pair => Value.FromString(pair.Key), pair => pair.Value(converters, source)))
+                ? Value.FromEnumerable(readers.ToDictionary(pair => Value.FromString(pair.Key), pair => Value.FromLazy(() => pair.Value(converters, source))))
                 : Value.Undefined;
         }
 
-        private static Func<TSource, Value> GetOrCreateConverter<TSource>(BindingFlags bindingFlags)
+        private static ConverterReference<TSource> GetOrCreateConverter<TSource>(BindingFlags bindingFlags)
         {
             var type = typeof(TSource);
 
             // Use converter for known builtin type
             if (ReflectionEvaluable.BuiltinConverters.TryGetValue(type, out var builtinConverter))
-                return (Func<TSource, Value>)builtinConverter;
+                return new ConverterReference<TSource> { Converter = (Func<TSource, Value>)builtinConverter };
 
             // Return undefined value for other primitive types
             if (type.IsPrimitive)
-                return _ => Value.Undefined;
+                return new ConverterReference<TSource>();
 
             // Use converter for previously built custom type
-            if (ReflectionEvaluable.CustomConverters.TryGetValue((bindingFlags, type), out var customConverter))
-                return (Func<TSource, Value>)customConverter;
+            if (ReflectionEvaluable.CustomReferences.TryGetValue((bindingFlags, type), out var customReference))
+                return (ConverterReference<TSource>)customReference;
 
-            var customConverters = new Dictionary<(BindingFlags, Type), object>(ReflectionEvaluable.CustomConverters);
-            var typeConverter = CreateConverter<TSource>(bindingFlags);
+            // Otherwise prepare a new converter reference, register it, then build it
+            var customReferences = new Dictionary<(BindingFlags, Type), object>(ReflectionEvaluable.CustomReferences);
+            var newReference = new ConverterReference<TSource>();
 
-            customConverters[(bindingFlags, type)] = typeConverter;
+            customReferences[(bindingFlags, type)] = newReference;
 
-            Interlocked.Exchange(ref ReflectionEvaluable.CustomConverters, customConverters);
+            Interlocked.Exchange(ref ReflectionEvaluable.CustomReferences, customReferences);
 
-            return typeConverter;
+            // Converter reference is built after being registered to accomodate for recursive types
+            newReference.Converter = CreateConverter<TSource>(bindingFlags);
+
+            return newReference;
         }
 
         private static Value Resolve<TSource>(TSource source, BindingFlags bindingFlags)
         {
-            var converter = GetOrCreateConverter<TSource>(bindingFlags);
+            var reference = GetOrCreateConverter<TSource>(bindingFlags);
 
-            return converter(source);
+            return reference.Converter(source);
+        }
+
+        private class ConverterReference<TSource>
+        {
+            public Func<TSource, Value> Converter { get; set; } = _ => Value.Undefined;
         }
     }
 }

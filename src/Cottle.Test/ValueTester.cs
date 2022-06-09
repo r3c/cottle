@@ -293,16 +293,33 @@ namespace Cottle.Test
             new TestCaseData(new [] { 1, 3, 5 }, Value.FromEnumerable(new Value[] { 1, 3, 5 })),
             new TestCaseData(new [] { "a", "b", "c" }, Value.FromEnumerable(new Value[] { "a", "b", "c" })),
             new TestCaseData(new Dictionary<int, string> { [1] = "one", [2] = "two", [3] = "three" }, Value.FromDictionary(new Dictionary<Value, Value> { [1] = "one", [2] = "two", [3] = "three" })),
-            new TestCaseData(new Dictionary<string, int> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["one"] = 1, ["two"] = 2, ["three"] = 3 })),
+            new TestCaseData(new Dictionary<string, int> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }))
         };
 
         [Test]
         [TestCaseSource(nameof(FromReflection_Input))]
-        public static void FromReflection<T>(T reference, Value expected)
+        public static void FromReflection_ShouldBrowseSchema<T>(T reference, Value expected)
         {
             var value = Value.FromReflection(reference, BindingFlags.Instance | BindingFlags.Public);
 
             Assert.That(value, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public static void FromReflection_ShouldBeLazy()
+        {
+            var loop = new RecursiveContainer();
+
+            loop.Child = loop;
+
+            var value = Value.FromReflection(loop, BindingFlags.Instance | BindingFlags.Public);
+
+            for (var depth = 0; depth < 10; ++depth)
+            {
+                Assert.That(value.Type, Is.EqualTo(ValueContent.Map));
+
+                value = value.Fields["Child"];
+            }
         }
 
         [Test]
@@ -352,16 +369,15 @@ namespace Cottle.Test
             Assert.That(Value.Zero.AsNumber, Is.EqualTo(0));
         }
 
+        private class RecursiveContainer
+        {
+            public RecursiveContainer? Child;
+        }
+
         private class ReferenceFieldContainer<T>
         {
             // ReSharper disable once NotAccessedField.Local
             public T Field = default!;
-        }
-
-        private struct ValueFieldContainer<T>
-        {
-            // ReSharper disable once NotAccessedField.Local
-            public T Field;
         }
 
         private class ReferencePropertyContainer<T>
@@ -374,6 +390,12 @@ namespace Cottle.Test
         {
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public T Property { get; set; }
+        }
+
+        private struct ValueFieldContainer<T>
+        {
+            // ReSharper disable once NotAccessedField.Local
+            public T Field;
         }
 
         private static readonly IReadOnlyList<TestCaseData> Values = new[]
