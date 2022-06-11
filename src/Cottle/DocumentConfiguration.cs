@@ -20,30 +20,30 @@ namespace Cottle
             new Regex(@"\s{2,}", RegexOptions.Compiled);
 
         public static readonly Func<string, string> TrimEnclosingWhitespaces =
-            s => DocumentConfiguration.TrimEnclosingWhitespacesRegex.Replace(s, m => m.Groups[1].Value);
+            s => TrimEnclosingWhitespacesRegex.Replace(s, m => m.Groups[1].Value);
 
         public static readonly Func<string, string> TrimFirstAndLastBlankLines =
-            s => DocumentConfiguration.TrimFirstAndLastBlankLinesRegex.Replace(s, string.Empty);
+            s => TrimFirstAndLastBlankLinesRegex.Replace(s, string.Empty);
 
         [Obsolete("Please use `TrimFirstAndLastBlankLines` which is equivalent without a misleading name")]
-        public static readonly Func<string, string> TrimIndentCharacters =
-            DocumentConfiguration.TrimFirstAndLastBlankLines;
+        public static readonly Func<string, string> TrimIndentCharacters = TrimFirstAndLastBlankLines;
 
         public static readonly Func<string, string> TrimNothing = s => s;
 
-        public static readonly Func<string, string> TrimRepeatedWhitespaces =
-            s => DocumentConfiguration.TrimRepeatedWhitespacesRegex.Replace(s, " ");
+        public static readonly Func<string, string> TrimRepeatedWhitespaces = s => TrimRepeatedWhitespacesRegex.Replace(s, " ");
 
-        public string BlockBegin;
+        public static readonly Func<string, string> DefaultTrimmer = TrimFirstAndLastBlankLines;
 
-        public string BlockContinue;
+        public string? BlockBegin;
 
-        public string BlockEnd;
+        public string? BlockContinue;
+
+        public string? BlockEnd;
 
         public char? Escape;
 
         public bool NoOptimize;
 
-        public Func<string, string> Trimmer;
+        public Func<string, string>? Trimmer;
     }
 }
