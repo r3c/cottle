@@ -11,10 +11,10 @@ namespace Cottle
         public const char DefaultEscape = '\\';
 
         private static readonly Regex TrimEnclosingWhitespacesRegex =
-            new Regex(@"^\s*(.*(?<!\s))\s*$", RegexOptions.Compiled | RegexOptions.Singleline);
+            new Regex(@"^\s*(.*(?<!\s))\s*\z", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private static readonly Regex TrimFirstAndLastBlankLinesRegex =
-            new Regex(@"^(?:\n|\r(?!\n)|\r\n)[\t ]*|(?:\n|\r(?!\n)|\r\n)[\t ]*$", RegexOptions.Compiled);
+            new Regex(@"^(?:\n|\r(?!\n)|\r\n)[\t ]*|(?:\n|\r(?!\n)|\r\n)[\t ]*\z", RegexOptions.Compiled);
 
         private static readonly Regex TrimRepeatedWhitespacesRegex =
             new Regex(@"\s{2,}", RegexOptions.Compiled);
