@@ -191,8 +191,23 @@ namespace Cottle.Test
             Assert.That(value.Fields[5], Is.EqualTo(Value.Undefined));
         }
 
+        private static readonly IReadOnlyList<TestCaseData> FromLazy_ShouldCompare_Input = new[]
+        {
+            new TestCaseData(Value.EmptyMap),
+            new TestCaseData(Value.EmptyString),
+            new TestCaseData(Value.False),
+            new TestCaseData(Value.True),
+            new TestCaseData(Value.Undefined),
+            new TestCaseData(Value.Zero),
+            new TestCaseData(Value.FromCharacter('a')),
+            new TestCaseData(Value.FromDictionary(new Dictionary<Value, Value> { ["A"] = 1, ["B"] = 2 })),
+            new TestCaseData(Value.FromEnumerable(new Value[] {1, "A", true})),
+            new TestCaseData(Value.FromNumber(42)),
+            new TestCaseData(Value.FromString("abc"))
+        };
+
         [Test]
-        [TestCaseSource(nameof(Values))]
+        [TestCaseSource(nameof(FromLazy_ShouldCompare_Input))]
         public static void FromLazy_ShouldCompare(Value resolved)
         {
             Assert.That(Value.FromLazy(() => resolved), Is.EqualTo(resolved));
@@ -258,7 +273,7 @@ namespace Cottle.Test
             Assert.That(value.AsNumber, Is.EqualTo(expected));
         }
 
-        private static readonly IReadOnlyList<TestCaseData> FromReflection_Input = new[]
+        private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldBrowseSchema_Input = new[]
         {
             new TestCaseData(new ReferenceFieldContainer<bool> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
             new TestCaseData(new ReferenceFieldContainer<byte> { Field = 4 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 4 })),
@@ -297,7 +312,7 @@ namespace Cottle.Test
         };
 
         [Test]
-        [TestCaseSource(nameof(FromReflection_Input))]
+        [TestCaseSource(nameof(FromReflection_ShouldBrowseSchema_Input))]
         public static void FromReflection_ShouldBrowseSchema<T>(T reference, Value expected)
         {
             var value = Value.FromReflection(reference, BindingFlags.Instance | BindingFlags.Public);
@@ -320,6 +335,26 @@ namespace Cottle.Test
 
                 value = value.Fields["Child"];
             }
+        }
+
+        private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldFollowBinding_Input = new[]
+        {
+            new TestCaseData(default(BindingFlags), string.Empty),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.NonPublic, "ABCEF"),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.Public, "HK"),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, "ABCEFHIJK"),
+            new TestCaseData(BindingFlags.Static | BindingFlags.NonPublic, "DG"),
+            new TestCaseData(BindingFlags.Static | BindingFlags.Public, "LM")
+        };
+
+        [Test]
+        [TestCaseSource(nameof(FromReflection_ShouldFollowBinding_Input))]
+        public static void FromReflection_ShouldFollowBinding(BindingFlags bindingFlags, string expected)
+        {
+            var value = Value.FromReflection(new BindingContainer(), bindingFlags);
+            var code = string.Join(string.Empty, value.Fields.Select(field => field.Value.AsString).OrderBy(v => v));
+
+            Assert.That(code, Is.EqualTo(expected));
         }
 
         [Test]
@@ -398,19 +433,30 @@ namespace Cottle.Test
             public T Field;
         }
 
-        private static readonly IReadOnlyList<TestCaseData> Values = new[]
+        private class BindingContainer
         {
-            new TestCaseData(Value.EmptyMap),
-            new TestCaseData(Value.EmptyString),
-            new TestCaseData(Value.False),
-            new TestCaseData(Value.True),
-            new TestCaseData(Value.Undefined),
-            new TestCaseData(Value.Zero),
-            new TestCaseData(Value.FromCharacter('a')),
-            new TestCaseData(Value.FromDictionary(new Dictionary<Value, Value> { ["A"] = 1, ["B"] = 2 })),
-            new TestCaseData(Value.FromEnumerable(new Value[] {1, "A", true})),
-            new TestCaseData(Value.FromNumber(42)),
-            new TestCaseData(Value.FromString("abc"))
-        };
+#pragma warning disable CS0414
+            public int this[int index] => index;
+
+            internal string InternalInstanceField = "A";
+            internal string InternalInstancePropertyWithPrivateGet { private get; set; } = "B";
+            internal string InternalInstancePropertyWithPublicGet { get; } = "C";
+
+            internal static string InternalStaticField = "D";
+
+            private string PrivateInstanceField = "E";
+            private string PrivateInstancePropertyWithPrivateGet { get; } = "F";
+
+            private static string PrivateStaticProperty { get; } = "G";
+
+            public string PublicInstanceField = "H";
+            public string PublicInstancePropertyWithInternalGet { internal get; set; } = "I";
+            public string PublicInstancePropertyWithPrivateGet { private get; set; } = "J";
+            public string PublicInstancePropertyWithPublicGet { get; } = "K";
+
+            public static string PublicStaticField = "L";
+            public static string PublicStaticProperty { get; } = "M";
+#pragma warning restore CS0414
+        }
     }
 }

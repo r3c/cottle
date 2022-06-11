@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace Cottle.Evaluables
@@ -85,7 +86,7 @@ namespace Cottle.Evaluables
             var interfaces = type.GetInterfaces();
 
             // Convert dictionary to dictionary-like map value
-            var dictionary = interfaces.FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>));
+            var dictionary = interfaces.FirstOrDefault(i => i.IsGenericType && (i.GetGenericTypeDefinition() == typeof(IDictionary<,>) || i.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)));
 
             if (dictionary is not null)
             {
@@ -263,6 +264,9 @@ namespace Cottle.Evaluables
 
             foreach (var field in sourceType.GetFields(bindingFlags))
             {
+                if (field.IsDefined(typeof(CompilerGeneratedAttribute), false))
+                    continue;
+
                 var fieldConverterReference = ReflectionEvaluableGetOrCreateConverter
                     .MakeGenericMethod(field.FieldType)
                     .Invoke(null, new object[] { bindingFlags })!;
@@ -274,8 +278,15 @@ namespace Cottle.Evaluables
                 generator.Emit(OpCodes.Ldc_I4, converters.Count);
                 generator.Emit(OpCodes.Callvirt, ReadOnlyListGetItem);
                 generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, field.FieldType));
-                generator.Emit(OpCodes.Ldarg_1);
-                generator.Emit(OpCodes.Ldfld, field);
+
+                if (field.IsStatic)
+                    generator.Emit(OpCodes.Ldsfld, field);
+                else
+                {
+                    generator.Emit(OpCodes.Ldarg_1);
+                    generator.Emit(OpCodes.Ldfld, field);
+                }
+
                 generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, field.FieldType, typeof(Value)));
                 generator.Emit(OpCodes.Ret);
 
@@ -286,7 +297,12 @@ namespace Cottle.Evaluables
 
             foreach (var property in sourceType.GetProperties(bindingFlags))
             {
-                if (property.GetMethod is null)
+                if (property.IsDefined(typeof(CompilerGeneratedAttribute), false) || property.GetMethod is null || property.GetMethod.GetParameters().Length > 0)
+                    continue;
+
+                var method = property.GetMethod;
+
+                if (!method.IsPublic && !bindingFlags.HasFlag(BindingFlags.NonPublic))
                     continue;
 
                 var propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
@@ -301,12 +317,18 @@ namespace Cottle.Evaluables
                 generator.Emit(OpCodes.Callvirt, ReadOnlyListGetItem);
                 generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(ConverterReferenceConverterGet, property.PropertyType));
 
-                if (sourceType.IsValueType)
-                    generator.Emit(OpCodes.Ldarga, 1);
+                if (method.IsStatic)
+                    generator.Emit(OpCodes.Call, method);
                 else
-                    generator.Emit(OpCodes.Ldarg_1);
+                {
+                    if (sourceType.IsValueType)
+                        generator.Emit(OpCodes.Ldarga, 1);
+                    else
+                        generator.Emit(OpCodes.Ldarg_1);
 
-                generator.Emit(OpCodes.Callvirt, property.GetMethod);
+                    generator.Emit(OpCodes.Callvirt, method);
+                }
+
                 generator.Emit(OpCodes.Callvirt, Dynamic.ChangeGenericDeclaringType(Func2Invoke, property.PropertyType, typeof(Value)));
                 generator.Emit(OpCodes.Ret);
 
