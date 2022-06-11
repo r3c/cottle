@@ -41,9 +41,9 @@ namespace Cottle.Demo.Serialization
 
                 var configuration = new DocumentConfiguration
                 {
-                    BlockBegin = blockBegin,
-                    BlockContinue = blockContinue,
-                    BlockEnd = blockEnd,
+                    BlockBegin = string.IsNullOrEmpty(blockBegin) ? null : blockBegin,
+                    BlockContinue = string.IsNullOrEmpty(blockContinue) ? null : blockContinue,
+                    BlockEnd = string.IsNullOrEmpty(blockEnd) ? null : blockEnd,
                     Trimmer = TrimmerSerializer.GetFunction(trimmerIndex)
                 };
 
@@ -64,10 +64,10 @@ namespace Cottle.Demo.Serialization
                 if (!ValueSerializer.TryWrite(writer, state.Values))
                     return false;
 
-                writer.Write(state.Configuration.BlockBegin);
-                writer.Write(state.Configuration.BlockContinue);
-                writer.Write(state.Configuration.BlockEnd);
-                writer.Write(TrimmerSerializer.GetIndex(state.Configuration.Trimmer));
+                writer.Write(state.Configuration.BlockBegin ?? string.Empty);
+                writer.Write(state.Configuration.BlockContinue ?? string.Empty);
+                writer.Write(state.Configuration.BlockEnd ?? string.Empty);
+                writer.Write(TrimmerSerializer.GetIndex(state.Configuration.Trimmer ?? DocumentConfiguration.DefaultTrimmer));
                 writer.Write(state.Template);
             }
 
