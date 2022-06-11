@@ -9,4 +9,4 @@ if [ -z "$version" ]; then
 	echo >&2 "warning: current HEAD doesn't point to a tag"
 fi
 
-dotnet pack -c Release "$base"/Cottle
+dotnet pack --include-symbols -c Release "$base"/Cottle

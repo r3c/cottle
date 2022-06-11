@@ -72,5 +72,5 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet pack src/Cottle --configuration Release --output pack
-      - run: dotnet nuget push ./pack/*.nupkg --no-symbols --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
+      - run: dotnet nuget push ./pack/*.nupkg --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
  
