@@ -28,6 +28,7 @@ namespace Cottle.Test
                     yield return new TestCaseData($"{eol}{ws}A{eol}{ws}B", $"A{eol}{ws}B");
                     yield return new TestCaseData($"{eol}{ws}A{eol}{ws}B{eol}{ws}", $"A{eol}{ws}B");
                     yield return new TestCaseData($"{eol}{eol}{ws}A", $"{eol}{ws}A");
+                    yield return new TestCaseData($"{eol}{eol}{eol}", $"{eol}");
                 }
             }
         }
