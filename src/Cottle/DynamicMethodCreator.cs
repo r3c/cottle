@@ -55,7 +55,7 @@ namespace Cottle
 
             _generator = method.GetILGenerator();
 #else
-            var method = new DynamicMethod(string.Empty, returnType, parameterTypes, typeof(Dynamic).Module, true);
+            var method = new DynamicMethod(string.Empty, returnType, parameterTypes, GetType().Module, true);
 
             _constructor = () => (TDelegate)method.CreateDelegate(DelegateType);
             _generator = method.GetILGenerator();
