@@ -8,7 +8,7 @@ namespace Cottle.Documents.Emitted
     {
         public static Program Create(IStatementGenerator generator, IReadOnlyList<Symbol> arguments)
         {
-            var creator = Dynamic.DefineMethod<Execute>();
+            var creator = Dynamic.DeclareMethod<Execute>();
             var emitter = new Emitter(creator.Generator);
 
             Program.Emit(emitter, generator, arguments);

@@ -124,7 +124,7 @@ namespace Cottle.Evaluables
                 .MakeGenericMethod(valueType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
-            var creator = Dynamic.DefineMethod<Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>>();
+            var creator = Dynamic.DeclareMethod<Func<object, object, TSource, IReadOnlyDictionary<Value, Value>>>();
             var generator = creator.Generator;
             var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(pairType));
             var pair = generator.DeclareLocal(pairType);
@@ -201,7 +201,7 @@ namespace Cottle.Evaluables
                 .MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { bindingFlags })!;
 
-            var creator = Dynamic.DefineMethod<Func<object, TSource, IEnumerable<Value>>>();
+            var creator = Dynamic.DeclareMethod<Func<object, TSource, IEnumerable<Value>>>();
             var generator = creator.Generator;
             var enumerator = generator.DeclareLocal(typeof(IEnumerator<>).MakeGenericType(elementType));
             var result = generator.DeclareLocal(typeof(List<Value>));
@@ -271,7 +271,7 @@ namespace Cottle.Evaluables
                     .MakeGenericMethod(field.FieldType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
-                var creator = Dynamic.DefineMethod<Func<IReadOnlyList<object>, TSource, Value>>();
+                var creator = Dynamic.DeclareMethod<Func<IReadOnlyList<object>, TSource, Value>>();
                 var generator = creator.Generator;
 
                 generator.Emit(OpCodes.Ldarg_0);
@@ -309,7 +309,7 @@ namespace Cottle.Evaluables
                     .MakeGenericMethod(property.PropertyType)
                     .Invoke(null, new object[] { bindingFlags })!;
 
-                var creator = Dynamic.DefineMethod<Func<IReadOnlyList<object>, TSource, Value>>();
+                var creator = Dynamic.DeclareMethod<Func<IReadOnlyList<object>, TSource, Value>>();
                 var generator = creator.Generator;
 
                 generator.Emit(OpCodes.Ldarg_0);

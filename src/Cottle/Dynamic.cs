@@ -16,7 +16,7 @@ namespace Cottle
             return result;
         }
 
-        public static DynamicMethodCreator<TDelegate> DefineMethod<TDelegate>() where TDelegate : Delegate
+        public static DynamicMethodCreator<TDelegate> DeclareMethod<TDelegate>() where TDelegate : Delegate
         {
             return new DynamicMethodCreator<TDelegate>();
         }
