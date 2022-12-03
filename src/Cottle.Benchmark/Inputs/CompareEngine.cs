@@ -278,10 +278,10 @@ namespace Cottle.Benchmark.Inputs
             })
             .ToList();
 
-        public struct Product
+        public class Product
         {
-            public string Description;
-            public string Name;
+            public string Description = string.Empty;
+            public string Name = string.Empty;
             public float Price;
         }
 
