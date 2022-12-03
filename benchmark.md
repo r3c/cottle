@@ -43,12 +43,12 @@ as the `products` variable. Full benchmark source code can be found
 Template engines
 ---
 
-- Cottle v2.0.7 (see discussion [about Cottle](#about-cottle))
+- Cottle v2.0.8 (see discussion [about Cottle](#about-cottle))
 - DotLiquid v2.2.508
-- Fluid v2.2.0
+- Fluid v2.3.0
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
-- RazorLight v2.0.0-beta9
-- Scriban v5.0.0
+- RazorLight v2.3.0
+- Scriban v5.5.0
 
 
 Result
@@ -80,7 +80,7 @@ operation.
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":10415,"render":4310},"DotLiquid":{"create":20469,"render":77017},"Fluid":{"create":12865,"render":5583},"Mustachio":{"create":20396,"render":14972},"RazorLight":{"create":53143,"render":812461},"Scriban":{"create":17469,"render":730231}};
+        var benchmarks = {"Cottle":{"create":10201,"render":4204},"DotLiquid":{"create":19989,"render":76081},"Fluid":{"create":20736,"render":5166},"Mustachio":{"create":20950,"render":15463},"RazorLight":{"create":55666,"render":804351},"Scriban":{"create":17530,"render":793475}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
