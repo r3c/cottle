@@ -26,7 +26,21 @@ namespace Cottle.Evaluables
             { typeof(string), new Func<string, Value>(s => s) },
             { typeof(uint), new Func<uint, Value>(s => s) },
             { typeof(ulong), new Func<ulong, Value>(s => (long)s) },
-            { typeof(ushort), new Func<ushort, Value>(s => s) }
+            { typeof(ushort), new Func<ushort, Value>(s => s) },
+
+            { typeof(bool?), new Func<bool?, Value>(s => s ?? Value.Undefined) },
+            { typeof(byte?), new Func<byte?, Value>(s => s ?? Value.Undefined) },
+            { typeof(char?), new Func<char?, Value>(s => s ?? Value.Undefined) },
+            { typeof(double?), new Func<double?, Value>(s => s ?? Value.Undefined) },
+            { typeof(decimal?), new Func<decimal?, Value>(s => s ?? Value.Undefined) },
+            { typeof(float?), new Func<float?, Value>(s => s ?? Value.Undefined) },
+            { typeof(int?), new Func<int?, Value>(s => s ?? Value.Undefined) },
+            { typeof(long?), new Func<long?, Value>(s => s ?? Value.Undefined) },
+            { typeof(sbyte?), new Func<sbyte?, Value>(s => s ?? Value.Undefined) },
+            { typeof(short?), new Func<short?, Value>(s => s ?? Value.Undefined) },
+            { typeof(uint?), new Func<uint?, Value>(s => s ?? Value.Undefined) },
+            { typeof(ulong?), new Func<ulong?, Value>(s => s.HasValue ? (long)s.Value : Value.Undefined) },
+            { typeof(ushort?), new Func<ushort?, Value>(s => s ?? Value.Undefined) },
         };
 
         private static Dictionary<(BindingFlags, Type), object> CustomReferences = new();
