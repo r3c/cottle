@@ -15,7 +15,7 @@ namespace Cottle.Demo.Forms
             foreach (var name in TrimmerSerializer.TrimmerNames)
                 comboBoxTrimmer.Items.Add(name);
 
-            comboBoxTrimmer.SelectedIndex = TrimmerSerializer.GetIndex(configuration.Trimmer);
+            comboBoxTrimmer.SelectedIndex = TrimmerSerializer.GetIndex(configuration.Trimmer ?? DocumentConfiguration.DefaultTrimmer);
             textBoxBlockBegin.Text = configuration.BlockBegin;
             textBoxBlockContinue.Text = configuration.BlockContinue;
             textBoxBlockEnd.Text = configuration.BlockEnd;

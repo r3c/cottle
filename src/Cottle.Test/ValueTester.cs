@@ -191,8 +191,23 @@ namespace Cottle.Test
             Assert.That(value.Fields[5], Is.EqualTo(Value.Undefined));
         }
 
+        private static readonly IReadOnlyList<TestCaseData> FromLazy_ShouldCompare_Input = new[]
+        {
+            new TestCaseData(Value.EmptyMap),
+            new TestCaseData(Value.EmptyString),
+            new TestCaseData(Value.False),
+            new TestCaseData(Value.True),
+            new TestCaseData(Value.Undefined),
+            new TestCaseData(Value.Zero),
+            new TestCaseData(Value.FromCharacter('a')),
+            new TestCaseData(Value.FromDictionary(new Dictionary<Value, Value> { ["A"] = 1, ["B"] = 2 })),
+            new TestCaseData(Value.FromEnumerable(new Value[] {1, "A", true})),
+            new TestCaseData(Value.FromNumber(42)),
+            new TestCaseData(Value.FromString("abc"))
+        };
+
         [Test]
-        [TestCaseSource(nameof(Values))]
+        [TestCaseSource(nameof(FromLazy_ShouldCompare_Input))]
         public static void FromLazy_ShouldCompare(Value resolved)
         {
             Assert.That(Value.FromLazy(() => resolved), Is.EqualTo(resolved));
@@ -258,44 +273,90 @@ namespace Cottle.Test
             Assert.That(value.AsNumber, Is.EqualTo(expected));
         }
 
-        private static readonly IReadOnlyList<TestCaseData> FromReflection_Input = new[]
+        private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldBrowseSchema_Input = new[]
         {
-            new TestCaseData(true, Value.True),
-            new TestCaseData((byte)4, Value.FromNumber(4)),
-            new TestCaseData((sbyte)-5, Value.FromNumber(-5)),
-            new TestCaseData((short)-9, Value.FromNumber(-9)),
-            new TestCaseData((ushort)8, Value.FromNumber(8)),
-            new TestCaseData(42, Value.FromNumber(42)),
-            new TestCaseData(42u, Value.FromNumber(42u)),
-            new TestCaseData(17L, Value.FromNumber(17L)),
-            new TestCaseData(24LU, Value.FromNumber(24L)),
-            new TestCaseData(1f, Value.FromNumber(1f)),
-            new TestCaseData(3d, Value.FromNumber(3d)),
-            new TestCaseData('x', Value.FromString("x")),
-            new TestCaseData("abc", Value.FromString("abc"))
+            new TestCaseData(new ReferenceFieldContainer<bool> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
+            new TestCaseData(new ReferenceFieldContainer<bool?> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
+            new TestCaseData(new ReferenceFieldContainer<bool?> { Field = null }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = Value.Undefined })),
+            new TestCaseData(new ReferenceFieldContainer<byte> { Field = 4 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 4 })),
+            new TestCaseData(new ReferenceFieldContainer<byte?> { Field = 4 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 4 })),
+            new TestCaseData(new ReferenceFieldContainer<sbyte> { Field = -5 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = -5 })),
+            new TestCaseData(new ReferenceFieldContainer<sbyte?> { Field = -5 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = -5 })),
+            new TestCaseData(new ReferenceFieldContainer<short> { Field = -9 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = -9 })),
+            new TestCaseData(new ReferenceFieldContainer<short?> { Field = -9 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = -9 })),
+            new TestCaseData(new ReferenceFieldContainer<ushort> { Field = 8 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 8 })),
+            new TestCaseData(new ReferenceFieldContainer<ushort?> { Field = 8 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 8 })),
+            new TestCaseData(new ReferenceFieldContainer<int> { Field = 42 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 42 })),
+            new TestCaseData(new ReferenceFieldContainer<int?> { Field = 42 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 42 })),
+            new TestCaseData(new ReferenceFieldContainer<uint> { Field = 42 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 42U })),
+            new TestCaseData(new ReferenceFieldContainer<uint?> { Field = 42 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 42U })),
+            new TestCaseData(new ReferenceFieldContainer<long> { Field = 17 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 17L })),
+            new TestCaseData(new ReferenceFieldContainer<long?> { Field = 17 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 17L })),
+            new TestCaseData(new ReferenceFieldContainer<ulong> { Field = 24 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 24L })),
+            new TestCaseData(new ReferenceFieldContainer<ulong?> { Field = 24 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 24L })),
+            new TestCaseData(new ReferenceFieldContainer<float> { Field = 1 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 1f })),
+            new TestCaseData(new ReferenceFieldContainer<float?> { Field = 1 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 1f })),
+            new TestCaseData(new ReferenceFieldContainer<double> { Field = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 3d })),
+            new TestCaseData(new ReferenceFieldContainer<double?> { Field = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 3d })),
+            new TestCaseData(new ReferenceFieldContainer<char> { Field = 'x' }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 'x' })),
+            new TestCaseData(new ReferenceFieldContainer<char?> { Field = 'x' }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = 'x' })),
+            new TestCaseData(new ReferenceFieldContainer<string> { Field = "abc" }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = "abc" })),
+            new TestCaseData(new ReferencePropertyContainer<bool> { Property = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Property"] = true })),
+            new TestCaseData(new ReferencePropertyContainer<string> { Property = "abc" }, Value.FromDictionary(new Dictionary<Value, Value> { ["Property"] = "abc" })),
+            new TestCaseData(new ValueFieldContainer<bool> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
+            new TestCaseData(new ValueFieldContainer<string> { Field = "abc" }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = "abc" })),
+            new TestCaseData(new ValuePropertyContainer<bool> { Property = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Property"] = true })),
+            new TestCaseData(new ValuePropertyContainer<string> { Property = "abc" }, Value.FromDictionary(new Dictionary<Value, Value> { ["Property"] = "abc" })),
+            new TestCaseData(new [] { 1, 3, 5 }, Value.FromEnumerable(new Value[] { 1, 3, 5 })),
+            new TestCaseData(new [] { "a", "b", "c" }, Value.FromEnumerable(new Value[] { "a", "b", "c" })),
+            new TestCaseData(new Dictionary<int, string> { [1] = "one", [2] = "two", [3] = "three" }, Value.FromDictionary(new Dictionary<Value, Value> { [1] = "one", [2] = "two", [3] = "three" })),
+            new TestCaseData(new Dictionary<string, int> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }))
         };
 
         [Test]
-        [TestCaseSource(nameof(FromReflection_Input))]
-        public static void FromReflection<T>(T reference, Value expected)
+        [TestCaseSource(nameof(FromReflection_ShouldBrowseSchema_Input))]
+        public static void FromReflection_ShouldBrowseSchema<T>(T reference, Value expected)
         {
-            // Read from field member
-            var fieldContainer = new FieldContainer<T>();
-            var fieldValue = Value.FromReflection(fieldContainer, BindingFlags.Instance | BindingFlags.Public);
+            var value = Value.FromReflection(reference, BindingFlags.Instance | BindingFlags.Public);
 
-            fieldContainer.Field = reference;
+            Assert.That(value, Is.EqualTo(expected));
+        }
 
-            Assert.That(fieldValue.Fields.TryGet("Field", out var result), Is.True, "value has no 'Field' key");
-            Assert.That(result, Is.EqualTo(expected), "value should be able to read field of type {0}", typeof(T));
+        [Test]
+        public static void FromReflection_ShouldBeLazy()
+        {
+            var loop = new RecursiveContainer();
 
-            // Read from property member
-            var propertyContainer = new PropertyContainer<T>();
-            var propertyValue = Value.FromReflection(propertyContainer, BindingFlags.Instance | BindingFlags.Public);
+            loop.Child = loop;
 
-            propertyContainer.Property = reference;
+            var value = Value.FromReflection(loop, BindingFlags.Instance | BindingFlags.Public);
 
-            Assert.That(propertyValue.Fields.TryGet("Property", out result), Is.True, "value has no 'Property' key");
-            Assert.That(result, Is.EqualTo(expected), "value should be able to read property of type {0}", typeof(T));
+            for (var depth = 0; depth < 10; ++depth)
+            {
+                Assert.That(value.Type, Is.EqualTo(ValueContent.Map));
+
+                value = value.Fields["Child"];
+            }
+        }
+
+        private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldFollowBinding_Input = new[]
+        {
+            new TestCaseData(default(BindingFlags), string.Empty),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.NonPublic, "ABCEF"),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.Public, "HK"),
+            new TestCaseData(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, "ABCEFHIJK"),
+            new TestCaseData(BindingFlags.Static | BindingFlags.NonPublic, "DG"),
+            new TestCaseData(BindingFlags.Static | BindingFlags.Public, "LM")
+        };
+
+        [Test]
+        [TestCaseSource(nameof(FromReflection_ShouldFollowBinding_Input))]
+        public static void FromReflection_ShouldFollowBinding(BindingFlags bindingFlags, string expected)
+        {
+            var value = Value.FromReflection(new BindingContainer(), bindingFlags);
+            var code = string.Join(string.Empty, value.Fields.Select(field => field.Value.AsString).OrderBy(v => v));
+
+            Assert.That(code, Is.EqualTo(expected));
         }
 
         [Test]
@@ -345,31 +406,59 @@ namespace Cottle.Test
             Assert.That(Value.Zero.AsNumber, Is.EqualTo(0));
         }
 
-        private class FieldContainer<T>
+        private class RecursiveContainer
+        {
+            public RecursiveContainer? Child;
+        }
+
+        private class ReferenceFieldContainer<T>
         {
             // ReSharper disable once NotAccessedField.Local
             public T Field = default!;
         }
 
-        private class PropertyContainer<T>
+        private class ReferencePropertyContainer<T>
         {
             // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public T Property { get; set; } = default!;
         }
 
-        private static readonly IReadOnlyList<TestCaseData> Values = new[]
+        private struct ValuePropertyContainer<T>
         {
-            new TestCaseData(Value.EmptyMap),
-            new TestCaseData(Value.EmptyString),
-            new TestCaseData(Value.False),
-            new TestCaseData(Value.True),
-            new TestCaseData(Value.Undefined),
-            new TestCaseData(Value.Zero),
-            new TestCaseData(Value.FromCharacter('a')),
-            new TestCaseData(Value.FromDictionary(new Dictionary<Value, Value> { ["A"] = 1, ["B"] = 2 })),
-            new TestCaseData(Value.FromEnumerable(new Value[] {1, "A", true})),
-            new TestCaseData(Value.FromNumber(42)),
-            new TestCaseData(Value.FromString("abc"))
-        };
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
+            public T Property { get; set; }
+        }
+
+        private struct ValueFieldContainer<T>
+        {
+            // ReSharper disable once NotAccessedField.Local
+            public T Field;
+        }
+
+        private class BindingContainer
+        {
+#pragma warning disable CS0414
+            public int this[int index] => index;
+
+            internal string InternalInstanceField = "A";
+            internal string InternalInstancePropertyWithPrivateGet { private get; set; } = "B";
+            internal string InternalInstancePropertyWithPublicGet { get; } = "C";
+
+            internal static string InternalStaticField = "D";
+
+            private string PrivateInstanceField = "E";
+            private string PrivateInstancePropertyWithPrivateGet { get; } = "F";
+
+            private static string PrivateStaticProperty { get; } = "G";
+
+            public string PublicInstanceField = "H";
+            public string PublicInstancePropertyWithInternalGet { internal get; set; } = "I";
+            public string PublicInstancePropertyWithPrivateGet { private get; set; } = "J";
+            public string PublicInstancePropertyWithPublicGet { get; } = "K";
+
+            public static string PublicStaticField = "L";
+            public static string PublicStaticProperty { get; } = "M";
+#pragma warning restore CS0414
+        }
     }
 }

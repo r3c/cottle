@@ -4,9 +4,9 @@
     <AssemblyName>Cottle</AssemblyName>
     <AssemblyTitle>Cottle: High performance template engine</AssemblyTitle>
     <Description>High performance, light &amp; extensible template engine library for .NET 4.7.2 and above.</Description>
-    <Version>2.0.7</Version>
+    <Version>2.0.9</Version>
     <Authors>Remi Caput</Authors>
-    <TargetFrameworks>net5.0;netstandard2.0;net472</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;net5.0;netstandard2.0;net472</TargetFrameworks>
     <Title>Cottle: High performance template engine</Title>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -33,12 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- From: https://stackoverflow.com/questions/42810705/visual-studio-2017-new-csproj-internalsvisibleto -->
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).Test</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
-    </AssemblyAttribute>
+    <InternalsVisibleTo Include="$(MSBuildProjectName).Test" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 </Project>

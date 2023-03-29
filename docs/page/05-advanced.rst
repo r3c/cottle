@@ -290,19 +290,20 @@ In this example, method ``log.BuildComplexLogValue`` won't be called unless ``is
 Reflection values
 =================
 
-Instead of converting complex object hierarchies to Cottle values, you can have the library do it for you by using .NET reflection. Keep in mind that reflection is significantly slower than creating Cottle values manually, but as it's a lazy mechanism it may be a good choice if you have complex objects and don't know in advance which fields might be used in your templates.
+Instead of converting complex object hierarchies to Cottle values, you can have the library do it for you by using .NET reflection. This approach is somehow slower than creating Cottle values manually but as it's a lazy mechanism it may be a good choice if you have complex objects and don't know in advance which fields might be used in your templates.
 
-To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object instance and specify binding flags to indicate which members should be made visible to Cottle. Fields and properties resolved on the object will be accessible like if it were a Cottle map:
+To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object instance and specify binding flags to indicate which members should be made visible to Cottle. Fields and properties resolved on the object will be accessible like if it were a Cottle map. Instances of types that implement ``IDictionary<TKey, TValue>``, ``IReadOnyDictionary<TKey, TValue>`` or ``IEnumerable<TElement>`` will have their key/value or index/element pairs transformed into Cottle maps.
 
 .. code-block:: plain
     :caption: Cottle template
 
-    Your image has a size of {image.Width}x{image.Height} pixels.
+    Current culture is {culture.DisplayName} with keyboard layout ID {culture.KeyboardLayoutId}.
 
-    {for key, value in image:{
-        if value:
+    {for key, value in culture:
+        {if cast(value, 's'):
             {key} = {value}
-    }}
+        }
+    }
 
 .. code-block:: csharp
     :caption: C# source
@@ -310,23 +311,27 @@ To use reflection, invoke :meth:`Value.FromReflection` method on any .NET object
 
     var context = Context.CreateBuiltin(new Dictionary<Value, Value>
     {
-        ["image"] = Value.FromReflection(new Bitmap(50, 50), BindingFlags.Instance | BindingFlags.Public)
+        ["culture"] = Value.FromReflection(CultureInfo.InvariantCulture, BindingFlags.Instance | BindingFlags.Public)
     });
 
 .. code-block:: plain
     :caption: Rendering output
 
-    Your image has a size of 50x50 pixels.
+    Current culture is Invariant Language (Invariant Country) with keyboard layout ID 127.
 
-    Width = 50
-    Height = 50
-    HorizontalResolution = 96
-    VerticalResolution = 96
-    Flags = 2
+    LCID = 127
+    KeyboardLayoutId = 127
+    DisplayName = Invariant Language (Invariant Country)
+    NativeName = Invariant Language (Invariant Country)
+    EnglishName = Invariant Language (Invariant Country)
+    TwoLetterISOLanguageName = iv
+    ThreeLetterISOLanguageName = ivl
+    ThreeLetterWindowsLanguageName = IVL
+    IsReadOnly = true
 
 .. warning::
 
-    Relying on reflection has a significant impact on execution performance. Use this feature only if performance is not important for your application, or you don't have other option like explicitly converting fields and properties to a Cottle value.
+    Using reflection values has a negative impact on execution performance compared to regular values. Prefer explicit conversions to :type:`Value` instances unless performance is not relevant for your application.
 
 
 

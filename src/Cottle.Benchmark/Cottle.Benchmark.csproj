@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <PreserveCompilationContext>True</PreserveCompilationContext>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;net5.0;netcoreapp3.1</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -15,11 +15,11 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.0" />
     <PackageReference Include="DotLiquid" Version="2.2.508" />
-    <PackageReference Include="Fluid.Core" Version="2.2.0" />
+    <PackageReference Include="Fluid.Core" Version="2.4.0" />
     <PackageReference Include="Mustachio" Version="2.1.0" />
+    <PackageReference Include="RazorLight" Version="2.3.0" />
     <PackageReference Include="RazorEngineCore" Version="2022.1.2" />
-    <PackageReference Include="RazorLight" Version="2.0.0-beta9" />
-    <PackageReference Include="Scriban" Version="5.4.0" />
+    <PackageReference Include="Scriban" Version="5.7.0" />
   </ItemGroup>
 
 </Project>

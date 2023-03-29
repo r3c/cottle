@@ -1,7 +1,7 @@
 Cottle: Compact Object to Text Transform Language
 =================================================
 
-[![Build Status](https://img.shields.io/github/workflow/status/r3c/cottle/validate/master)](https://github.com/r3c/cottle/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/r3c/cottle/validate.yml?branch=master)](https://github.com/r3c/cottle/actions)
 [![NuGet](https://img.shields.io/nuget/v/Cottle.svg)](https://www.nuget.org/packages/Cottle/)
 [![license](https://img.shields.io/github/license/r3c/cottle.svg)](https://opensource.org/licenses/MIT)
 

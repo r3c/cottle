@@ -11,37 +11,37 @@ namespace Cottle.Documents.Emitted
     internal class Emitter
     {
         private static readonly MethodInfo ArgumentsIndex =
-            Resolver.Method<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
+            Dynamic.GetMethod<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
 
         private static readonly MethodInfo FiniteFunctionInvoke0 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke1 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke2 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke3 =
-            Resolver.Method<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
 
         private static readonly FieldInfo FrameArguments =
-            Resolver.Field<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
+            Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
 
         private static readonly MethodInfo FrameEcho =
-            Resolver.Method<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
+            Dynamic.GetMethod<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
 
-        private static readonly FieldInfo FrameGlobals = Resolver.Field<Func<Frame, Value[]>>(f => f.Globals);
+        private static readonly FieldInfo FrameGlobals = Dynamic.GetField<Func<Frame, Value[]>>(f => f.Globals);
 
-        private static readonly MethodInfo FrameUnwrap = Resolver.Method<Func<Frame, IFunction>>(f => f.Unwrap());
+        private static readonly MethodInfo FrameUnwrap = Dynamic.GetMethod<Func<Frame, IFunction>>(f => f.Unwrap());
 
-        private static readonly MethodInfo FrameWrap = Resolver.Method<Action<Frame>>(f => f.Wrap(Function.Empty));
+        private static readonly MethodInfo FrameWrap = Dynamic.GetMethod<Action<Frame>>(f => f.Wrap(Function.Empty));
 
         private static readonly MethodInfo FunctionInvoke =
-            Resolver.Method<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
+            Dynamic.GetMethod<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
 
         private static readonly ConstructorInfo KeyValueConstructor =
-            Resolver.Constructor<Func<KeyValuePair<Value, Value>>>(() =>
+            Dynamic.GetConstructor<Func<KeyValuePair<Value, Value>>>(() =>
                 new KeyValuePair<Value, Value>(default, default));
 
         private static readonly IReadOnlyList<OpCode> LoadIntegers = new[]
@@ -51,60 +51,60 @@ namespace Cottle.Documents.Emitted
         };
 
         private static readonly MethodInfo MapCount =
-            Resolver.Property<Func<IMap, int>>(m => m.Count).GetMethod!;
+            Dynamic.GetProperty<Func<IMap, int>>(m => m.Count).GetMethod!;
 
-        private static readonly MethodInfo MapEnumeratorCurrent = Resolver
-            .Property<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e => e.Current)
+        private static readonly MethodInfo MapEnumeratorCurrent = Dynamic
+            .GetProperty<Func<IEnumerator<KeyValuePair<Value, Value>>, KeyValuePair<Value, Value>>>(e => e.Current)
             .GetMethod!;
 
         private static readonly MethodInfo MapEnumeratorMoveNext =
-            Resolver.Method<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext());
+            Dynamic.GetMethod<Func<IEnumerator<KeyValuePair<Value, Value>>, bool>>(e => e.MoveNext());
 
         private static readonly MethodInfo MapGetEnumerator =
-            Resolver.Method<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator());
+            Dynamic.GetMethod<Func<IMap, IEnumerator<KeyValuePair<Value, Value>>>>(m => m.GetEnumerator());
 
         private static readonly MethodInfo MapTryGet =
-            Resolver.Method<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
+            Dynamic.GetMethod<Func<IMap, bool>>(m => m.TryGet(default, out Emitter._value));
 
-        private static readonly MethodInfo ObjectToString = Resolver.Method<Func<object, string?>>(o => o.ToString());
+        private static readonly MethodInfo ObjectToString = Dynamic.GetMethod<Func<object, string?>>(o => o.ToString());
 
         private static readonly MethodInfo PairKey =
-            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetMethod!;
+            Dynamic.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Key).GetMethod!;
 
         private static readonly MethodInfo PairValue =
-            Resolver.Property<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetMethod!;
+            Dynamic.GetProperty<Func<KeyValuePair<Value, Value>, Value>>(p => p.Value).GetMethod!;
 
         private static readonly MethodInfo ReadOnlyListCount =
-            Resolver.Property<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
+            Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
         private static readonly ConstructorInfo StringWriterConstructor =
-            Resolver.Constructor<Func<StringWriter>>(() => new StringWriter());
+            Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
 
         private static readonly MethodInfo StringWriterToString =
-            Resolver.Method<Func<StringWriter, string>>(w => w.ToString());
+            Dynamic.GetMethod<Func<StringWriter, string>>(w => w.ToString());
 
         private static readonly MethodInfo TextWriterWriteObject =
-            Resolver.Method<Action<TextWriter>>(w => w.Write(default(object)));
+            Dynamic.GetMethod<Action<TextWriter>>(w => w.Write(default(object)));
 
         private static readonly MethodInfo TextWriterWriteString =
-            Resolver.Method<Action<TextWriter>>(w => w.Write(default(string)));
+            Dynamic.GetMethod<Action<TextWriter>>(w => w.Write(default(string)));
 
         private static readonly MethodInfo ValueAsBooleanGet =
-            Resolver.Property<Func<Value, bool>>(v => v.AsBoolean).GetMethod!;
+            Dynamic.GetProperty<Func<Value, bool>>(v => v.AsBoolean).GetMethod!;
 
         private static readonly MethodInfo ValueAsFunctionGet =
-            Resolver.Property<Func<Value, IFunction>>(v => v.AsFunction).GetMethod!;
+            Dynamic.GetProperty<Func<Value, IFunction>>(v => v.AsFunction).GetMethod!;
 
         private static readonly MethodInfo ValueFieldsGet =
-            Resolver.Property<Func<Value, IMap>>(v => v.Fields).GetMethod!;
+            Dynamic.GetProperty<Func<Value, IMap>>(v => v.Fields).GetMethod!;
 
         private static readonly MethodInfo ValueFromDictionary =
-            Resolver.Method<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
+            Dynamic.GetMethod<Func<IEnumerable<KeyValuePair<Value, Value>>, Value>>(f => Value.FromEnumerable(f));
 
         private static readonly MethodInfo ValueFromString =
-            Resolver.Method<Func<Value>>(() => Value.FromString(string.Empty));
+            Dynamic.GetMethod<Func<Value>>(() => Value.FromString(string.Empty));
 
-        private static readonly FieldInfo ValueUndefined = Resolver.Field<Func<Value>>(() => Value.Undefined);
+        private static readonly FieldInfo ValueUndefined = Dynamic.GetField<Func<Value>>(() => Value.Undefined);
 
         private static Value _value;
 

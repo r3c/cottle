@@ -17,13 +17,13 @@ namespace Cottle.Test.Documents
 
         protected override DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration)
         {
-            var trimmer = configuration.Trimmer ?? (s => s);
+            var trimmer = configuration.Trimmer ?? DocumentConfiguration.DefaultTrimmer;
 
             var settings = new CustomSetting
             {
-                BlockBegin = configuration.BlockBegin,
-                BlockContinue = configuration.BlockContinue,
-                BlockEnd = configuration.BlockEnd,
+                BlockBegin = configuration.BlockBegin ?? DefaultSetting.Instance.BlockBegin,
+                BlockContinue = configuration.BlockContinue ?? DefaultSetting.Instance.BlockContinue,
+                BlockEnd = configuration.BlockEnd ?? DefaultSetting.Instance.BlockEnd,
                 Escape = configuration.Escape.GetValueOrDefault('\\'),
                 Optimize = !configuration.NoOptimize,
                 Trimmer = s => trimmer(s)
