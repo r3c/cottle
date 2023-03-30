@@ -18,7 +18,6 @@
     <PackageReference Include="Fluid.Core" Version="2.4.0" />
     <PackageReference Include="Mustachio" Version="2.1.0" />
     <PackageReference Include="RazorLight" Version="2.3.0" />
-    <PackageReference Include="RazorEngineCore" Version="2022.1.2" />
     <PackageReference Include="Scriban" Version="5.7.0" />
   </ItemGroup>
 
