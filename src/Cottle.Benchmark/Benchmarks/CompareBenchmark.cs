@@ -51,7 +51,7 @@ namespace Cottle.Benchmark.Benchmarks
             var rendererString = whitespaces.Replace(_renderer(), string.Empty);
 
             if (referenceString != rendererString)
-                throw new InvalidOperationException("Invalid output: " + rendererString);
+                throw new InvalidOperationException($"Invalid output: '{rendererString}' expected '{referenceString}'");
         }
     }
 }

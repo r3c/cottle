@@ -127,8 +127,8 @@ namespace Cottle.Benchmark.Inputs
 <ul id='products'>
   {% for product in products %}
     <li>
-      <h2>{{ product.Name }}</h2>
-      <p>{{ product.Description | safeslice: 0, 15 }} - Only {{ product.Price | tostring: ""f1"", ""en-US"" }}$</p>
+      <h2>{{ product.name }}</h2>
+      <p>{{ product.description | safeslice: 0, 15 }} - Only {{ product.price | tostring: ""f1"", ""en-US"" }}$</p>
     </li>
   {% endfor %}
 </ul>";
@@ -157,15 +157,21 @@ namespace Cottle.Benchmark.Inputs
                     return new StringValue(input.ToNumberValue().ToString(format, culture));
                 });
 
-                options.MemberAccessStrategy.Register<Product>(nameof(Product.Description), nameof(Product.Name), nameof(Product.Price));
+                var model = CompareEngine.Products
+                            .Select(p => new Dictionary<string, object>
+                            {
+                                ["description"] = p.Description,
+                                ["name"] = p.Name,
+                                ["price"] = p.Price
+                            })
+                            .ToArray();
 
-                var context = new Fluid.TemplateContext(options);
-
-                context.SetValue("products", CompareEngine.Products);
+                var parser = new FluidParser();
 
                 return () =>
                 {
-                    var parser = new FluidParser();
+                    var context = new Fluid.TemplateContext(options);
+                    context.SetValue("products", model);
 
                     if (!parser.TryParse(source, out var template, out var error))
                         throw new ArgumentOutOfRangeException(nameof(source), error);
