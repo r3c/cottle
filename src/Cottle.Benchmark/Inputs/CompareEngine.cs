@@ -48,10 +48,10 @@ namespace Cottle.Benchmark.Inputs
     </li>
 </ul>";
 
-        public static IEnumerable<Input<Func<Func<Func<string>>>>> GetInputs()
+        public static IEnumerable<Input<Func<CompareCallback>>> GetInputs()
         {
             // Render template with Cottle
-            yield return new Input<Func<Func<Func<string>>>>(nameof(Cottle), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(Cottle), () =>
             {
                 const string template = @"
 <ul id='products'>
@@ -75,16 +75,17 @@ namespace Cottle.Benchmark.Inputs
                         .ToArray()
                 });
 
-                return () =>
-                {
-                    var document = Document.CreateDefault(template).DocumentOrThrow;
+                var configuration = new DocumentConfiguration { NoOptimize = true };
+                var document = Document.CreateNative(template).DocumentOrThrow;
 
-                    return () => document.Render(context);
-                };
+                return new CompareCallback(
+                    () => Document.CreateDefault(template, configuration),
+                    () => document.Render(context)
+                );
             });
 
             // Render template with DotLiquid
-            yield return new Input<Func<Func<Func<string>>>>(nameof(DotLiquid), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(DotLiquid), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -112,16 +113,16 @@ namespace Cottle.Benchmark.Inputs
                     })
                 };
 
-                return () =>
-                {
-                    var template = DotLiquid.Template.Parse(source);
+                var template = DotLiquid.Template.Parse(source);
 
-                    return () => template.Render(renderParameters);
-                };
+                return new CompareCallback(
+                    () => DotLiquid.Template.Parse(source),
+                    () => template.Render(renderParameters)
+                );
             });
 
             // Render template with Fluid
-            yield return new Input<Func<Func<Func<string>>>>(nameof(Fluid), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(Fluid), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -158,30 +159,30 @@ namespace Cottle.Benchmark.Inputs
                 });
 
                 var model = CompareEngine.Products
-                            .Select(p => new Dictionary<string, object>
-                            {
-                                ["description"] = p.Description,
-                                ["name"] = p.Name,
-                                ["price"] = p.Price
-                            })
-                            .ToArray();
+                    .Select(p => new Dictionary<string, object>
+                    {
+                        ["description"] = p.Description,
+                        ["name"] = p.Name,
+                        ["price"] = p.Price
+                    })
+                    .ToArray();
 
                 var parser = new FluidParser();
 
-                return () =>
-                {
-                    var context = new Fluid.TemplateContext(options);
-                    context.SetValue("products", model);
+                if (!parser.TryParse(source, out var template, out var error))
+                    throw new ArgumentOutOfRangeException(nameof(source), error);
 
-                    if (!parser.TryParse(source, out var template, out var error))
-                        throw new ArgumentOutOfRangeException(nameof(source), error);
+                var context = new Fluid.TemplateContext(options);
 
-                    return () => template.Render(context);
-                };
+                context.SetValue("products", model);
+
+                return new CompareCallback(
+                    () => parser.TryParse(source, out _, out _),
+                    () => template.Render(context));
             });
 
             // Render template with Mustachio
-            yield return new Input<Func<Func<Func<string>>>>(nameof(Mustachio), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(Mustachio), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -207,16 +208,15 @@ namespace Cottle.Benchmark.Inputs
                         .ToArray()
                 };
 
-                return () =>
-                {
-                    var template = Mustachio.Parser.Parse(source);
+                var template = Mustachio.Parser.Parse(source);
 
-                    return () => template(context);
-                };
+                return new CompareCallback(
+                    () => Mustachio.Parser.Parse(source),
+                    () => template(context));
             });
 
             // Render template with RazorLight
-            yield return new Input<Func<Func<Func<string>>>>(nameof(RazorLight), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(RazorLight), () =>
             {
                 const string content = @"
 <ul id='products'>
@@ -230,17 +230,16 @@ namespace Cottle.Benchmark.Inputs
 </ul>";
 
                 var context = new { CompareEngine.Products };
+                var engine = new RazorLightEngineBuilder().UseProject(new StringRazorLightProject(content)).Build();
 
-                return () =>
-                {
-                    var engine = new RazorLightEngineBuilder().UseProject(new StringRazorLightProject(content)).Build();
-
-                    return () => engine.CompileRenderAsync(string.Empty, context).Result;
-                };
+                return new CompareCallback(
+                    () => new RazorLightEngineBuilder().UseProject(new StringRazorLightProject(content)).Build(),
+                    () => engine.CompileRenderAsync(string.Empty, context).Result
+                );
             });
 
             // Render template with Scriban
-            yield return new Input<Func<Func<Func<string>>>>(nameof(Scriban), () =>
+            yield return new Input<Func<CompareCallback>>(nameof(Scriban), () =>
             {
                 const string source = @"
 <ul id='products'>
@@ -266,12 +265,12 @@ namespace Cottle.Benchmark.Inputs
                     }
                 });
 
-                return () =>
-                {
-                    var template = Scriban.Template.Parse(source);
+                var template = Scriban.Template.Parse(source);
 
-                    return () => template.Render(context);
-                };
+                return new CompareCallback(
+                    () => Scriban.Template.Parse(source),
+                    () => template.Render(context)
+                );
             });
         }
 

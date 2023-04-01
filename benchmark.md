@@ -3,11 +3,9 @@ layout: default
 title: Cottle - Benchmark
 ---
 
-Methodology
-===========
+# Methodology
 
-Benchmark contents
----
+## Benchmark contents
 
 This page contains parsing and rendering benchmark of Cottle compared to other
 template engines, using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
@@ -39,35 +37,28 @@ Template is then rendered with an input context built with an array of 5 items
 as the `products` variable. Full benchmark source code can be found
 [here](https://github.com/r3c/cottle/blob/master/src/Cottle.Benchmark/Inputs/CompareEngine.cs).
 
+## Template engines
 
-Template engines
----
-
-- Cottle v2.0.8 (see discussion [about Cottle](#about-cottle))
-- DotLiquid v2.2.508
-- Fluid v2.3.0
+- Cottle v2.0.9 (see discussion [about Cottle](#about-cottle))
+- DotLiquid v2.2.692
+- Fluid v2.4.0
 - Mustachio v2.1.0 (see discussion [about Mustachio](#about-mustachio))
-- RazorLight v2.3.0
-- Scriban v5.5.0
+- RazorLight v2.3.1
+- Scriban v5.7.0
 
+# Result
 
-Result
-======
-
-Benchmark configuration
----
+## Benchmark configuration
 
 ```
-BenchmarkDotNet=v0.13.0, OS=Windows 10.0.19044
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19044.2728/21H2/November2021Update)
 Intel Core i7-7700K CPU 4.20GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
-.NET SDK=6.0.200
-  [Host]     : .NET 6.0.2 (6.0.222.6406), X64 RyuJIT
-  DefaultJob : .NET 6.0.2 (6.0.222.6406), X64 RyuJIT
+.NET SDK=7.0.102
+  [Host]     : .NET 7.0.2 (7.0.222.60605), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.2 (7.0.222.60605), X64 RyuJIT AVX2
 ```
 
-
-Benchmark scores
----
+## Benchmark scores
 
 Parsing and rendering benchmark, scores are expressed in microseconds per
 operation.
@@ -80,7 +71,7 @@ operation.
 <script type="text/javascript">
     window.addEventListener('load', function () {
         // Paste last line of `./benchmark.sh` output below
-        var benchmarks = {"Cottle":{"create":10201,"render":4204},"DotLiquid":{"create":19989,"render":76081},"Fluid":{"create":20736,"render":5166},"Mustachio":{"create":20950,"render":15463},"RazorLight":{"create":55666,"render":804351},"Scriban":{"create":17530,"render":793475}};
+        var benchmarks = {"Cottle":{"create":7589,"render":2932},"DotLiquid":{"create":13724,"render":67900},"Fluid":{"create":5540,"render":3605},"Mustachio":{"create":20315,"render":15576},"RazorLight":{"create":53162,"render":809517},"Scriban":{"create":25454,"render":724053}};
 
         // https://mika-s.github.io/javascript/colors/hsl/2017/12/05/generating-random-colors-in-javascript.html
         var generateHslaColors = (saturation, lightness, alpha, amount, shift) => {
@@ -123,18 +114,19 @@ operation.
                 responsive: false,
                 scales: {
                     y: {
-						beginAtZero: true,
-						ticks: {
-							callback: function (v) {
-								return v + ' µs';
-							}
-						},
-						type: 'logarithmic'
+    					beginAtZero: true,
+    					ticks: {
+    						callback: function (v) {
+    							return v + ' µs';
+    						}
+    					},
+    					type: 'logarithmic'
                     }
                 }
             }
         }));
     });
+
 </script>
 
 Other libraries were considered in this benchmark but not included as their
@@ -142,25 +134,19 @@ performance results are too far away and would impact graph scale too much:
 
 - RazorEngineCore v2022.1.2 (render time is over 6000% of Cottle, see #149)
 
+# Discussion
 
-Discussion
-==========
+## About Cottle
 
-About Cottle
----
-
-Cottle performance was measured using default document compiler (method
-`Document.CreateDefault`). Rendering performance can be boosted by switching to
+Cottle results were measured using default document compiler (method
+`Document.CreateDefault`) &
+[no optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
+for compilation benchmark, and
 [native](https://cottle.readthedocs.io/en/stable/page/05-advanced.html#native-documents)
-document compiler (method `Document.CreateNative`) instead, while compilation
-time can be significantly reduced by
-[disabling code optimizer](https://cottle.readthedocs.io/en/stable/page/04-configuration.html#optimizer-deactivation)
-at the cost of a higher rendering time. Both these alternative configurations
-were not included in the benchmark to avoid multiplying comparison points.
+document compiler (method `Document.CreateNative`) for rendering benchmark to
+maximize performances.
 
-
-About Mustachio
----
+## About Mustachio
 
 Function calls could not be adapted to Mustachio benchmark due to the
 logic-less approach of the library. These functions were however required for

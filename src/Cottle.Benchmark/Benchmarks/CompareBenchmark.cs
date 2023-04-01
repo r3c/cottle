@@ -13,30 +13,28 @@ namespace Cottle.Benchmark.Benchmarks
     public class CompareBenchmark
     {
         [ParamsSource(nameof(CompareBenchmark.Engines))]
-        public Input<Func<Func<Func<string>>>> Engine;
+        public Input<Func<CompareCallback>> Engine;
 
-        public static IEnumerable<Input<Func<Func<Func<string>>>>> Engines => CompareEngine.GetInputs();
+        public static IEnumerable<Input<Func<CompareCallback>>> Engines => CompareEngine.GetInputs();
 
-        private Func<Func<string>>? _constructor;
-        private Func<string>? _renderer;
+        private CompareCallback? _callback;
 
         [GlobalCleanup]
         public void Cleanup()
         {
-            _constructor = null;
-            _renderer = null;
+            _callback = null;
         }
 
         [Benchmark]
-        public object? Create()
+        public void Create()
         {
-            return _constructor is not null ? _constructor() : null;
+            _callback?.Create();
         }
 
         [Benchmark]
-        public object? Render()
+        public void Render()
         {
-            return _renderer is not null ? _renderer() : null;
+            _callback?.Render();
         }
 
         [GlobalSetup]
@@ -44,11 +42,10 @@ namespace Cottle.Benchmark.Benchmarks
         {
             var whitespaces = new Regex("\\s+");
 
-            _constructor = Engine.Value();
-            _renderer = _constructor();
+            _callback = Engine.Value();
 
             var referenceString = whitespaces.Replace(CompareEngine.Reference, string.Empty);
-            var rendererString = whitespaces.Replace(_renderer(), string.Empty);
+            var rendererString = whitespaces.Replace(_callback.Render(), string.Empty);
 
             if (referenceString != rendererString)
                 throw new InvalidOperationException($"Invalid output: '{rendererString}' expected '{referenceString}'");
