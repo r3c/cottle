@@ -11,7 +11,7 @@ for binary in dotnet jq; do
 done
 
 # Run benchmark
-dotnet run --configuration Release --framework net6.0 --project "$base"/Cottle.Benchmark -- --disableLogFile --exporters JSON --filter 'Cottle.Benchmark.Benchmarks.CompareBenchmark.*'
+dotnet run --configuration Release --framework net7.0 --project "$base"/Cottle.Benchmark -- --disableLogFile --exporters JSON --filter 'Cottle.Benchmark.Benchmarks.CompareBenchmark.*'
 
 # Locate benchmark results in file
 benchmark="$base/../benchmark.md"
