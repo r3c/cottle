@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <StartupObject />
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateResourceUsePreserializedResources>True</GenerateResourceUsePreserializedResources>
