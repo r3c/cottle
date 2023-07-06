@@ -34,7 +34,6 @@ jobs:
     strategy:
       matrix:
         dotnet: # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
-          - framework: net5.0
           - framework: net6.0
           - framework: net7.0
 
