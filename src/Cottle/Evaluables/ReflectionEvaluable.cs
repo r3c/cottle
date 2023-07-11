@@ -321,12 +321,14 @@ namespace Cottle.Evaluables
                     continue;
 
                 object propertyConverterReference;
-                try {
+                try
+                {
                     propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
                         .MakeGenericMethod(property.PropertyType)
                         .Invoke(null, new object[] { bindingFlags })!;
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     throw new UnconvertiblePropertyException(property, e);
                 }
 
