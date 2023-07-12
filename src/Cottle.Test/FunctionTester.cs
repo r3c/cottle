@@ -54,7 +54,7 @@ namespace Cottle.Test
         [Test]
         public void Create0()
         {
-            var function = Function.Create0((state, output) => FunctionTester.Return);
+            var function = Function.Create0((_, _) => FunctionTester.Return);
 
             FunctionTester.AssertImpure(function, Array.Empty<Value>(), string.Empty);
             FunctionTester.AssertImpureFailure(function, new Value[] { 1 });
@@ -64,7 +64,7 @@ namespace Cottle.Test
         public void Create1()
         {
             var argument = (Value)17;
-            var function = Function.Create1((state, a0, output) =>
+            var function = Function.Create1((_, a0, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument));
 
@@ -80,7 +80,7 @@ namespace Cottle.Test
         {
             var argument0 = (Value)17;
             var argument1 = (Value)23;
-            var function = Function.Create2((state, a0, a1, output) =>
+            var function = Function.Create2((_, a0, a1, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));
@@ -98,7 +98,7 @@ namespace Cottle.Test
             var argument0 = (Value)17;
             var argument1 = (Value)23;
             var argument2 = (Value)42;
-            var function = Function.Create3((state, a0, a1, a2, output) =>
+            var function = Function.Create3((_, a0, a1, a2, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));
@@ -154,7 +154,7 @@ namespace Cottle.Test
         [Test]
         public void CreatePure0()
         {
-            var function = Function.CreatePure0((state) => FunctionTester.Return);
+            var function = Function.CreatePure0((_) => FunctionTester.Return);
 
             FunctionTester.AssertPure(function, Array.Empty<Value>());
             FunctionTester.AssertPureFailure(function, new Value[] { 1 });
@@ -164,7 +164,7 @@ namespace Cottle.Test
         public void CreatePure1()
         {
             var argument = (Value)17;
-            var function = Function.CreatePure1((state, a0) =>
+            var function = Function.CreatePure1((_, a0) =>
             {
                 Assert.That(a0, Is.EqualTo(argument));
 
@@ -180,7 +180,7 @@ namespace Cottle.Test
         {
             var argument0 = (Value)17;
             var argument1 = (Value)23;
-            var function = Function.CreatePure2((state, a0, a1) =>
+            var function = Function.CreatePure2((_, a0, a1) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));
@@ -198,7 +198,7 @@ namespace Cottle.Test
             var argument0 = (Value)17;
             var argument1 = (Value)23;
             var argument2 = (Value)42;
-            var function = Function.CreatePure3((state, a0, a1, a2) =>
+            var function = Function.CreatePure3((_, a0, a1, a2) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));

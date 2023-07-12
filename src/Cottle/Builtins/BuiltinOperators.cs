@@ -5,9 +5,9 @@ namespace Cottle.Builtins
     internal static class BuiltinOperators
     {
         public static readonly IFunction OperatorAdd =
-            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber + rhs.AsNumber);
+            Function.CreatePure2((_, lhs, rhs) => lhs.AsNumber + rhs.AsNumber);
 
-        public static readonly IFunction OperatorAnd = Function.CreatePure((state, arguments) =>
+        public static readonly IFunction OperatorAnd = Function.CreatePure((_, arguments) =>
         {
             foreach (var argument in arguments)
             {
@@ -18,7 +18,7 @@ namespace Cottle.Builtins
             return true;
         });
 
-        public static readonly IFunction OperatorDiv = Function.CreatePure2((state, lhs, rhs) =>
+        public static readonly IFunction OperatorDiv = Function.CreatePure2((_, lhs, rhs) =>
         {
             var denominator = rhs.AsNumber;
 
@@ -28,7 +28,7 @@ namespace Cottle.Builtins
             return lhs.AsNumber / denominator;
         });
 
-        public static readonly IFunction OperatorEqual = Function.CreatePure((state, arguments) =>
+        public static readonly IFunction OperatorEqual = Function.CreatePure((_, arguments) =>
         {
             var first = arguments[0];
 
@@ -42,18 +42,18 @@ namespace Cottle.Builtins
         }, 1, int.MaxValue);
 
         public static readonly IFunction OperatorGreaterEqual =
-            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) >= 0);
+            Function.CreatePure2((_, lhs, rhs) => lhs.CompareTo(rhs) >= 0);
 
         public static readonly IFunction OperatorGreaterThan =
-            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) > 0);
+            Function.CreatePure2((_, lhs, rhs) => lhs.CompareTo(rhs) > 0);
 
         public static readonly IFunction OperatorLowerEqual =
-            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) <= 0);
+            Function.CreatePure2((_, lhs, rhs) => lhs.CompareTo(rhs) <= 0);
 
         public static readonly IFunction OperatorLowerThan =
-            Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs) < 0);
+            Function.CreatePure2((_, lhs, rhs) => lhs.CompareTo(rhs) < 0);
 
-        public static readonly IFunction OperatorMod = Function.CreatePure2((state, lhs, rhs) =>
+        public static readonly IFunction OperatorMod = Function.CreatePure2((_, lhs, rhs) =>
         {
             var denominator = rhs.AsNumber;
 
@@ -64,11 +64,11 @@ namespace Cottle.Builtins
         });
 
         public static readonly IFunction OperatorMul =
-            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber * rhs.AsNumber);
+            Function.CreatePure2((_, lhs, rhs) => lhs.AsNumber * rhs.AsNumber);
 
-        public static readonly IFunction OperatorNot = Function.CreatePure1((state, value) => !value.AsBoolean);
+        public static readonly IFunction OperatorNot = Function.CreatePure1((_, value) => !value.AsBoolean);
 
-        public static readonly IFunction OperatorNotEqual = Function.CreatePure((state, arguments) =>
+        public static readonly IFunction OperatorNotEqual = Function.CreatePure((_, arguments) =>
         {
             var first = arguments[0];
 
@@ -81,7 +81,7 @@ namespace Cottle.Builtins
             return true;
         }, 1, int.MaxValue);
 
-        public static readonly IFunction OperatorOr = Function.CreatePure((state, arguments) =>
+        public static readonly IFunction OperatorOr = Function.CreatePure((_, arguments) =>
         {
             foreach (var argument in arguments)
             {
@@ -93,6 +93,6 @@ namespace Cottle.Builtins
         });
 
         public static readonly IFunction OperatorSub =
-            Function.CreatePure2((state, lhs, rhs) => lhs.AsNumber - rhs.AsNumber);
+            Function.CreatePure2((_, lhs, rhs) => lhs.AsNumber - rhs.AsNumber);
     }
 }

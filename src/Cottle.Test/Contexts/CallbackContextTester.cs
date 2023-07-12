@@ -23,7 +23,7 @@ namespace Cottle.Test.Contexts
         [Test]
         public void GetNull()
         {
-            var context = Context.CreateCustom(symbol => default);
+            var context = Context.CreateCustom(_ => default);
 
             Assert.That(context["something"], Is.EqualTo(Value.Undefined));
         }
