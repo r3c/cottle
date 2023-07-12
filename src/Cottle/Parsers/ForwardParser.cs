@@ -11,7 +11,7 @@ namespace Cottle.Parsers
     {
         private static readonly IReadOnlyDictionary<string, Keyword> Keywords = new Dictionary<string, Keyword>
         {
-            ["_"] = new Keyword((ForwardParser p, ParserState s, out Statement c) =>
+            ["_"] = new Keyword((ForwardParser p, ParserState _, out Statement c) =>
                 p.TryCreateComment(out c), false),
             ["declare"] = new Keyword((ForwardParser p, ParserState s, out Statement c) =>
                 p.TryCreateDeclare(s, out c), true),

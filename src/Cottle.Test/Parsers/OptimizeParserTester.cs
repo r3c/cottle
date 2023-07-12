@@ -13,10 +13,10 @@ namespace Cottle.Test.Parsers
     {
         private static readonly Expression ImpureFunction =
             Expression.CreateConstant(
-                Value.FromFunction(Function.Create((state, arguments, output) => Value.Undefined)));
+                Value.FromFunction(Function.Create((_, _, _) => Value.Undefined)));
 
         private static readonly Expression PureFunction =
-            Expression.CreateConstant(Value.FromFunction(Function.CreatePure((s, a) => 0)));
+            Expression.CreateConstant(Value.FromFunction(Function.CreatePure((_, _) => 0)));
 
         [Test]
         public void Parse_ExpressionAccess_FindWhenPresentInConstantIndices()
@@ -166,7 +166,7 @@ namespace Cottle.Test.Parsers
         {
             // Expression: pure(1, 2)
             // Result: 3
-            var function = Function.CreatePure2((state, a, b) => 3);
+            var function = Function.CreatePure2((_, _, _) => 3);
             var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(
                 Expression.CreateConstant(Value.FromFunction(function)),
                 new[] { Expression.CreateConstant(1), Expression.CreateConstant(2) }));

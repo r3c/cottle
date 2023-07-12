@@ -82,7 +82,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure0(state => "test"))
+                ["f"] = Value.FromFunction(Function.CreatePure0(_ => "test"))
             });
 
             AssertOutput("{f()}", default, context, "test");
@@ -95,7 +95,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure1((state, a) => a.AsString.ToUpperInvariant()))
+                ["f"] = Value.FromFunction(Function.CreatePure1((_, a) => a.AsString.ToUpperInvariant()))
             });
 
             AssertOutput($"{{f({v})}}", default, context, expected);
@@ -108,7 +108,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure2((state, a1, a2) =>
+                ["f"] = Value.FromFunction(Function.CreatePure2((_, a1, a2) =>
                     a1.AsString.Substring(0, (int)a2.AsNumber)))
             });
 
@@ -122,7 +122,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure3((state, a1, a2, a3) =>
+                ["f"] = Value.FromFunction(Function.CreatePure3((_, a1, a2, a3) =>
                     a1.AsString.Insert((int)a2.AsNumber, a3.AsString)))
             });
 
@@ -136,7 +136,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure((state, args) =>
+                ["f"] = Value.FromFunction(Function.CreatePure((_, args) =>
                     string.Concat(args[0].AsString, args[1].AsString, args[2].AsString, args[3].AsString)))
             });
 

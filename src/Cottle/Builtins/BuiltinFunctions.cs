@@ -32,7 +32,7 @@ namespace Cottle.Builtins
 
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private static readonly IFunction Absolute = Function.CreatePure1((state, value) => Math.Abs(value.AsNumber));
+        private static readonly IFunction Absolute = Function.CreatePure1((_, value) => Math.Abs(value.AsNumber));
 
         private static readonly IFunction Call = Function.CreatePure2((state, caller, arguments) =>
         {
@@ -49,7 +49,7 @@ namespace Cottle.Builtins
             return function.Invoke(state, fields, TextWriter.Null);
         });
 
-        private static readonly IFunction Cast = Function.CreatePure2((state, value, type) =>
+        private static readonly IFunction Cast = Function.CreatePure2((_, value, type) =>
         {
             switch (type.AsString)
             {
@@ -70,7 +70,7 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly IFunction Cat = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Cat = Function.CreatePure((_, arguments) =>
         {
             switch (arguments[0].Type)
             {
@@ -103,9 +103,9 @@ namespace Cottle.Builtins
         }, 1, int.MaxValue);
 
         private static readonly IFunction Ceiling =
-            Function.CreatePure1((state, value) => Math.Ceiling(value.AsNumber));
+            Function.CreatePure1((_, value) => Math.Ceiling(value.AsNumber));
 
-        private static readonly IFunction Char = Function.CreatePure1((state, value) =>
+        private static readonly IFunction Char = Function.CreatePure1((_, value) =>
         {
             try
             {
@@ -117,11 +117,11 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly IFunction Compare = Function.CreatePure2((state, lhs, rhs) => lhs.CompareTo(rhs));
+        private static readonly IFunction Compare = Function.CreatePure2((_, lhs, rhs) => lhs.CompareTo(rhs));
 
-        private static readonly IFunction Cosine = Function.CreatePure1((state, value) => Math.Cos(value.AsNumber));
+        private static readonly IFunction Cosine = Function.CreatePure1((_, value) => Math.Cos(value.AsNumber));
 
-        private static readonly IFunction Cross = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Cross = Function.CreatePure((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -147,12 +147,12 @@ namespace Cottle.Builtins
         }, 1, int.MaxValue);
 
         private static readonly IFunction Default =
-            Function.CreatePure2((state, value, fallback) => value.AsBoolean ? value : fallback);
+            Function.CreatePure2((_, value, fallback) => value.AsBoolean ? value : fallback);
 
         private static readonly IFunction Defined =
-            Function.CreatePure1((state, value) => value != Value.Undefined);
+            Function.CreatePure1((_, value) => value != Value.Undefined);
 
-        private static readonly IFunction Except = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Except = Function.CreatePure((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -217,10 +217,10 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Find = new FiniteFunction(true, null, null,
-            (s, a0, a1, _) => BuiltinFunctions.FindCallback(a0, a1, 0),
-            (s, a0, a1, a2, _) => BuiltinFunctions.FindCallback(a0, a1, (int)a2.AsNumber));
+            (_, a0, a1, _) => BuiltinFunctions.FindCallback(a0, a1, 0),
+            (_, a0, a1, a2, _) => BuiltinFunctions.FindCallback(a0, a1, (int)a2.AsNumber));
 
-        private static readonly IFunction Flip = Function.CreatePure1((state, value) =>
+        private static readonly IFunction Flip = Function.CreatePure1((_, value) =>
         {
             var flip = new KeyValuePair<Value, Value>[value.Fields.Count];
             var i = 0;
@@ -231,7 +231,7 @@ namespace Cottle.Builtins
             return flip;
         });
 
-        private static readonly IFunction Floor = Function.CreatePure1((state, value) => Math.Floor(value.AsNumber));
+        private static readonly IFunction Floor = Function.CreatePure1((_, value) => Math.Floor(value.AsNumber));
 
         private static Value FormatCallback(Value subject, string format, IFormatProvider formatProvider)
         {
@@ -311,8 +311,8 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Format = new FiniteFunction(true, null, null,
-            (s, a0, a1, _) => BuiltinFunctions.FormatCallback(a0, a1.AsString, CultureInfo.CurrentCulture),
-            (s, a0, a1, a2, _) =>
+            (_, a0, a1, _) => BuiltinFunctions.FormatCallback(a0, a1.AsString, CultureInfo.CurrentCulture),
+            (_, a0, a1, a2, _) =>
             {
                 CultureInfo cultureInfo;
 
@@ -328,7 +328,7 @@ namespace Cottle.Builtins
                 return BuiltinFunctions.FormatCallback(a0, a1.AsString, cultureInfo);
             });
 
-        private static readonly IFunction Has = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Has = Function.CreatePure((_, arguments) =>
         {
             var source = arguments[0];
 
@@ -360,10 +360,10 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Join = new FiniteFunction(true, null,
-            (s, a0, _) => BuiltinFunctions.JoinCallback(a0, string.Empty),
-            (s, a0, a1, _) => BuiltinFunctions.JoinCallback(a0, a1.AsString), null);
+            (_, a0, _) => BuiltinFunctions.JoinCallback(a0, string.Empty),
+            (_, a0, a1, _) => BuiltinFunctions.JoinCallback(a0, a1.AsString), null);
 
-        private static readonly IFunction Length = Function.CreatePure1((state, value) =>
+        private static readonly IFunction Length = Function.CreatePure1((_, value) =>
         {
             if (value.Type == ValueContent.Map)
                 return value.Fields.Count;
@@ -372,7 +372,7 @@ namespace Cottle.Builtins
         });
 
         private static readonly IFunction LowerCase =
-            Function.CreatePure1((state, value) => value.AsString.ToLowerInvariant());
+            Function.CreatePure1((_, value) => value.AsString.ToLowerInvariant());
 
         private static readonly IFunction Map = Function.CreatePure((state, arguments) =>
         {
@@ -399,7 +399,7 @@ namespace Cottle.Builtins
             return result;
         }, 2, int.MaxValue);
 
-        private static readonly IFunction Match = Function.CreatePure2((state, subject, pattern) =>
+        private static readonly IFunction Match = Function.CreatePure2((_, subject, pattern) =>
         {
             var match = Regex.Match(subject.AsString, pattern.AsString);
 
@@ -414,7 +414,7 @@ namespace Cottle.Builtins
             return groups;
         });
 
-        private static readonly IFunction Maximum = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Maximum = Function.CreatePure((_, arguments) =>
         {
             var max = arguments[0].AsNumber;
 
@@ -424,7 +424,7 @@ namespace Cottle.Builtins
             return max;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Minimum = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Minimum = Function.CreatePure((_, arguments) =>
         {
             var min = arguments[0].AsNumber;
 
@@ -434,7 +434,7 @@ namespace Cottle.Builtins
             return min;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Ordinal = Function.CreatePure1((state, value) =>
+        private static readonly IFunction Ordinal = Function.CreatePure1((_, value) =>
         {
             var str = value.AsString;
 
@@ -442,21 +442,21 @@ namespace Cottle.Builtins
         });
 
         private static readonly IFunction Power =
-            Function.CreatePure2((state, x, y) => Math.Pow(x.AsNumber, y.AsNumber));
+            Function.CreatePure2((_, x, y) => Math.Pow(x.AsNumber, y.AsNumber));
 
-        private static readonly IFunction Random = new FiniteFunction(true, (s, _) =>
+        private static readonly IFunction Random = new FiniteFunction(true, (_, _) =>
         {
             lock (BuiltinFunctions.RandomGenerator)
             {
                 return BuiltinFunctions.RandomGenerator.Next();
             }
-        }, (s, maxValue, _) =>
+        }, (_, maxValue, _) =>
         {
             lock (BuiltinFunctions.RandomGenerator)
             {
                 return BuiltinFunctions.RandomGenerator.Next((int)maxValue.AsNumber);
             }
-        }, (s, minValue, maxValue, _) =>
+        }, (_, minValue, maxValue, _) =>
         {
             lock (BuiltinFunctions.RandomGenerator)
             {
@@ -490,15 +490,15 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Range = new FiniteFunction(true, null,
-            (s, a0, _) => BuiltinFunctions.RangeCallback(0, (int)a0.AsNumber, 1),
-            (s, a0, a1, _) => BuiltinFunctions.RangeCallback((int)a0.AsNumber, (int)a1.AsNumber, 1),
-            (s, a0, a1, a2, _) => BuiltinFunctions.RangeCallback((int)a0.AsNumber, (int)a1.AsNumber, (int)a2.AsNumber));
+            (_, a0, _) => BuiltinFunctions.RangeCallback(0, (int)a0.AsNumber, 1),
+            (_, a0, a1, _) => BuiltinFunctions.RangeCallback((int)a0.AsNumber, (int)a1.AsNumber, 1),
+            (_, a0, a1, a2, _) => BuiltinFunctions.RangeCallback((int)a0.AsNumber, (int)a1.AsNumber, (int)a2.AsNumber));
 
         private static readonly IFunction Round = new FiniteFunction(true, null,
-            (s, a0, _) => Math.Round(a0.AsNumber),
-            (s, a0, a1, _) => Math.Round(a0.AsNumber, (int)a1.AsNumber), null);
+            (_, a0, _) => Math.Round(a0.AsNumber),
+            (_, a0, a1, _) => Math.Round(a0.AsNumber, (int)a1.AsNumber), null);
 
-        private static readonly IFunction Sine = Function.CreatePure1((state, angle) => Math.Sin(angle.AsNumber));
+        private static readonly IFunction Sine = Function.CreatePure1((_, angle) => Math.Sin(angle.AsNumber));
 
         private static Value SliceCallback(Value source, int unsafeIndex, int unsafeCount)
         {
@@ -524,8 +524,8 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Slice = new FiniteFunction(true, null, null,
-            (s, a0, a1, _) => BuiltinFunctions.SliceCallback(a0, (int)a1.AsNumber, int.MaxValue),
-            (s, a0, a1, a2, _) => BuiltinFunctions.SliceCallback(a0, (int)a1.AsNumber, (int)a2.AsNumber));
+            (_, a0, a1, _) => BuiltinFunctions.SliceCallback(a0, (int)a1.AsNumber, int.MaxValue),
+            (_, a0, a1, a2, _) => BuiltinFunctions.SliceCallback(a0, (int)a1.AsNumber, (int)a2.AsNumber));
 
         private static List<KeyValuePair<Value, Value>> SortCallback(IMap map,
             Comparison<KeyValuePair<Value, Value>> comparison)
@@ -538,7 +538,7 @@ namespace Cottle.Builtins
         }
 
         private static readonly IFunction Sort = new FiniteFunction(true, null,
-            (s, a0, _) => BuiltinFunctions.SortCallback(a0.Fields, (a, b) => a.Value.CompareTo(b.Value)),
+            (_, a0, _) => BuiltinFunctions.SortCallback(a0.Fields, (a, b) => a.Value.CompareTo(b.Value)),
             (s, a0, a1, _) =>
             {
                 if (a1.Type != ValueContent.Function)
@@ -550,11 +550,11 @@ namespace Cottle.Builtins
                     (int)comparison.Invoke(s, new[] { a.Value, b.Value }, TextWriter.Null).AsNumber);
             }, null);
 
-        private static readonly IFunction Split = Function.CreatePure2((state, source, separator) =>
+        private static readonly IFunction Split = Function.CreatePure2((_, source, separator) =>
             Value.FromEnumerable(source.AsString.Split(new[] { separator.AsString }, StringSplitOptions.None)
                 .Select(Value.FromString)));
 
-        private static readonly IFunction Token = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Token = Function.CreatePure((_, arguments) =>
         {
             var search = arguments[1].AsString;
             var source = arguments[0].AsString;
@@ -591,9 +591,9 @@ namespace Cottle.Builtins
         }, 3, 4);
 
         private static readonly IFunction Type =
-            Function.CreatePure1((state, value) => value.Type.ToString().ToLowerInvariant());
+            Function.CreatePure1((_, value) => value.Type.ToString().ToLowerInvariant());
 
-        private static readonly IFunction Union = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Union = Function.CreatePure((_, arguments) =>
         {
             var result = new Dictionary<Value, Value>();
 
@@ -607,13 +607,13 @@ namespace Cottle.Builtins
         }, 0, int.MaxValue);
 
         private static readonly IFunction UpperCase =
-            Function.CreatePure1((state, value) => value.AsString.ToUpperInvariant());
+            Function.CreatePure1((_, value) => value.AsString.ToUpperInvariant());
 
         private static readonly IFunction When = new FiniteFunction(true, null, null,
-            (s, condition, truthy, _) => condition.AsBoolean ? truthy : Value.Undefined,
-            (s, condition, truthy, falsy, _) => condition.AsBoolean ? truthy : falsy);
+            (_, condition, truthy, _) => condition.AsBoolean ? truthy : Value.Undefined,
+            (_, condition, truthy, falsy, _) => condition.AsBoolean ? truthy : falsy);
 
-        private static readonly IFunction Xor = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Xor = Function.CreatePure((_, arguments) =>
         {
             var count = 0;
 
@@ -626,7 +626,7 @@ namespace Cottle.Builtins
             return count == 1;
         });
 
-        private static readonly IFunction Zip = Function.CreatePure2((state, first, second) =>
+        private static readonly IFunction Zip = Function.CreatePure2((_, first, second) =>
         {
             var firstMap = first.Fields;
             var secondMap = second.Fields;

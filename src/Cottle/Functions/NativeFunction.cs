@@ -48,42 +48,42 @@ namespace Cottle.Functions
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback, int min, int max) :
-            this((v, s, o) => callback(v, s), min, max, false)
+            this((v, s, _) => callback(v, s), min, max, false)
         {
         }
 
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback, int exact) :
-            this((v, s, o) => callback(v, s), exact, exact, false)
+            this((v, s, _) => callback(v, s), exact, exact, false)
         {
         }
 
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, IStore, Value> callback) :
-            this((v, s, o) => callback(v, s), 0, -1, false)
+            this((v, s, _) => callback(v, s), 0, -1, false)
         {
         }
 
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback, int min, int max) :
-            this((v, s, o) => callback(v), min, max, true)
+            this((v, _, _) => callback(v), min, max, true)
         {
         }
 
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback, int exact) :
-            this((v, s, o) => callback(v), exact, exact, true)
+            this((v, _, _) => callback(v), exact, exact, true)
         {
         }
 
         [Obsolete(
             "Instances of NativeFunction are incompatible with some document types (e.g. from `Document.CreateDefault`), please use one of `Function.CreatePureFirstOrder*` or `Function.CreatePureHigherOrder*` static methods instead")]
         public NativeFunction(Func<IReadOnlyList<Value>, Value> callback) :
-            this((v, s, o) => callback(v), 0, -1, true)
+            this((v, _, _) => callback(v), 0, -1, true)
         {
         }
 

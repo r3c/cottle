@@ -17,10 +17,10 @@ namespace Cottle.Functions
     {
         public bool IsPure { get; }
 
-        private static readonly Callback0 NoCallback0 = (o, w) => Value.Undefined;
-        private static readonly Callback1 NoCallback1 = (o, a0, w) => Value.Undefined;
-        private static readonly Callback2 NoCallback2 = (o, a0, a1, w) => Value.Undefined;
-        private static readonly Callback3 NoCallback3 = (o, a0, a1, a2, w) => Value.Undefined;
+        private static readonly Callback0 NoCallback0 = (_, _) => Value.Undefined;
+        private static readonly Callback1 NoCallback1 = (_, _, _) => Value.Undefined;
+        private static readonly Callback2 NoCallback2 = (_, _, _, _) => Value.Undefined;
+        private static readonly Callback3 NoCallback3 = (_, _, _, _, _) => Value.Undefined;
 
         private readonly Callback0 _callback0;
         private readonly Callback1 _callback1;
@@ -39,7 +39,7 @@ namespace Cottle.Functions
 
         public int CompareTo(IFunction? other)
         {
-            return object.ReferenceEquals(this, other) ? 0 : 1;
+            return ReferenceEquals(this, other) ? 0 : 1;
         }
 
         public bool Equals(IFunction? other)
