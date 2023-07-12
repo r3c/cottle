@@ -315,15 +315,16 @@ namespace Cottle.Evaluables
                     continue;
 
                 object propertyConverterReference;
+
                 try
                 {
                     propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
                         .MakeGenericMethod(property.PropertyType)
                         .Invoke(null, new object[] { bindingFlags })!;
                 }
-                catch (Exception e)
+                catch (Exception exception)
                 {
-                    throw new UnconvertiblePropertyException(property, e);
+                    throw new UnconvertiblePropertyException(property, exception);
                 }
 
                 var creator = Dynamic.DeclareMethod<Func<IReadOnlyList<object>, TSource, Value>>();

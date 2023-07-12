@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using Cottle.Exceptions;
 using Cottle.Maps;
 using Moq;
 using NUnit.Framework;
@@ -358,6 +360,17 @@ namespace Cottle.Test
 
             Assert.That(code, Is.EqualTo(expected));
         }
+
+#if NET7_0_OR_GREATER
+        [Test]
+        public static void FromReflection_ShouldThrowException()
+        {
+            var value = Value.FromReflection(Encoding.UTF8, BindingFlags.Instance | BindingFlags.Public);
+            var exception = Assert.Throws<UnconvertiblePropertyException>(() => value.Fields.TryGet("Preamble", out _));
+
+            Assert.That(exception!.PropertyInfo.Name, Is.EqualTo("Preamble"));
+        }
+#endif
 
         [Test]
         [TestCase("")]
