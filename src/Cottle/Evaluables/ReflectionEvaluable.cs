@@ -43,7 +43,7 @@ namespace Cottle.Evaluables
             { typeof(ushort?), new Func<ushort?, Value>(s => s ?? Value.Undefined) },
         };
 
-        private static Dictionary<(BindingFlags, Type), object> CustomReferences = new();
+        private static Dictionary<(BindingFlags, Type), object> _customReferences = new();
 
         private static readonly MethodInfo ConverterReferenceConverterGet = Dynamic
             .GetProperty<Func<ConverterReference<object>, Func<object, Value>>>(r => r.Converter)
@@ -126,9 +126,7 @@ namespace Cottle.Evaluables
 
         private static Func<TSource, Value> CreateConverterFromDictionary<TSource>(BindingFlags bindingFlags, Type keyType, Type valueType)
         {
-            var converterType = typeof(object);
             var pairType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
-            var sourceType = typeof(TSource);
 
             var keyConverterReference = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(keyType)
@@ -208,9 +206,6 @@ namespace Cottle.Evaluables
 
         private static Func<TSource, Value> CreateConverterFromEnumerable<TSource>(BindingFlags bindingFlags, Type elementType)
         {
-            var converterType = typeof(object);
-            var sourceType = typeof(TSource);
-
             var elementConverterReference = ReflectionEvaluableGetOrCreateConverter
                 .MakeGenericMethod(elementType)
                 .Invoke(null, new object[] { bindingFlags })!;
@@ -272,7 +267,6 @@ namespace Cottle.Evaluables
         private static Func<TSource, Value> CreateConverterFromObject<TSource>(BindingFlags bindingFlags)
         {
             var converters = new List<object>();
-            var convertersType = typeof(IReadOnlyList<object>);
             var readers = new Dictionary<string, Func<IReadOnlyList<object>, TSource, Value>>();
             var sourceType = typeof(TSource);
 
@@ -369,16 +363,16 @@ namespace Cottle.Evaluables
                 return new ConverterReference<TSource>();
 
             // Use converter for previously built custom type
-            if (ReflectionEvaluable.CustomReferences.TryGetValue((bindingFlags, type), out var customReference))
+            if (_customReferences.TryGetValue((bindingFlags, type), out var customReference))
                 return (ConverterReference<TSource>)customReference;
 
             // Otherwise prepare a new converter reference, register it, then build it
-            var customReferences = new Dictionary<(BindingFlags, Type), object>(ReflectionEvaluable.CustomReferences);
+            var customReferences = new Dictionary<(BindingFlags, Type), object>(_customReferences);
             var newReference = new ConverterReference<TSource>();
 
             customReferences[(bindingFlags, type)] = newReference;
 
-            Interlocked.Exchange(ref ReflectionEvaluable.CustomReferences, customReferences);
+            Interlocked.Exchange(ref _customReferences, customReferences);
 
             // Converter reference is built after being registered to accomodate for recursive types
             newReference.Converter = CreateConverter<TSource>(bindingFlags);
