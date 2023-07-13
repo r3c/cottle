@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Cottle.Exceptions;
 
 namespace Cottle.Evaluables
 {
@@ -313,9 +314,17 @@ namespace Cottle.Evaluables
                 if (!method.IsPublic && !bindingFlags.HasFlag(BindingFlags.NonPublic))
                     continue;
 
-                var propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
-                    .MakeGenericMethod(property.PropertyType)
-                    .Invoke(null, new object[] { bindingFlags })!;
+                object propertyConverterReference;
+                try
+                {
+                    propertyConverterReference = ReflectionEvaluableGetOrCreateConverter
+                        .MakeGenericMethod(property.PropertyType)
+                        .Invoke(null, new object[] { bindingFlags })!;
+                }
+                catch (Exception e)
+                {
+                    throw new UnconvertiblePropertyException(property, e);
+                }
 
                 var creator = Dynamic.DeclareMethod<Func<IReadOnlyList<object>, TSource, Value>>();
                 var generator = creator.Generator;
