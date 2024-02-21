@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet format --no-restore --verify-no-changes src/Cottle.sln
@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet build src/Cottle --framework ${{ matrix.dotnet.framework }}
@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet test src/Cottle.Test --framework net7.0
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
       - run: dotnet pack src/Cottle --configuration Release --output pack
