@@ -1,4 +1,4 @@
-name: Build, test & publish
+name: Verify
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ env:
 
 jobs:
   check:
-    name: Check code style
+    name: Check style
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
       - run: dotnet build src/Cottle.Test --framework ${{ matrix.dotnet.framework }}
 
   test:
-    name: Run tests
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
