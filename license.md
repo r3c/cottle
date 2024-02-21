@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2011 Remi Caput, https://remi.caput.fr/
+Copyright (c) 2024 Remi Caput, https://remi.caput.fr/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
