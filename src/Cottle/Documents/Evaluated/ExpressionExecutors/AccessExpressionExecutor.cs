@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.ExpressionExecutors
 {
@@ -15,10 +14,10 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 
         private readonly IExpressionExecutor _subscript;
 
-        public Value Execute(Frame frame, TextWriter output)
+        public Value Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            var source = _source.Execute(frame, output);
-            var subscript = _subscript.Execute(frame, output);
+            var source = _source.Execute(runtime, frame, output);
+            var subscript = _subscript.Execute(runtime, frame, output);
 
             return source.Fields[subscript];
         }

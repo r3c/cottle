@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -15,11 +14,11 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
         private readonly IExpressionExecutor _condition;
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            while (_condition.Execute(frame, output).AsBoolean)
+            while (_condition.Execute(runtime, frame, output).AsBoolean)
             {
-                var result = _body.Execute(frame, output);
+                var result = _body.Execute(runtime, frame, output);
 
                 if (result.HasValue)
                     return result.Value;

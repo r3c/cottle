@@ -24,9 +24,9 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             _value = value;
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            var fields = _from.Execute(frame, output).Fields;
+            var fields = _from.Execute(runtime, frame, output).Fields;
 
             if (fields.Count > 0)
             {
@@ -37,7 +37,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
                     frame.Locals[_value.Index] = pair.Value;
 
-                    var result = _body.Execute(frame, output);
+                    var result = _body.Execute(runtime, frame, output);
 
                     if (result.HasValue)
                         return result.Value;
@@ -45,7 +45,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             }
             else if (_empty is not null)
             {
-                var result = _empty.Execute(frame, output);
+                var result = _empty.Execute(runtime, frame, output);
 
                 if (result.HasValue)
                     return result.Value;

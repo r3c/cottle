@@ -10,11 +10,12 @@ namespace Cottle.Documents
         {
         }
 
-        protected override Value Execute(IStatementExecutor executable, Value[] globals, int locals, TextWriter writer)
+        protected override Value Execute(IStatementExecutor executable, Runtime runtime, int locals,
+            TextWriter writer)
         {
-            var frame = new Frame(globals, locals, null);
+            var frame = new Frame(locals, null);
 
-            return executable.Execute(frame, writer).GetValueOrDefault(Value.Undefined);
+            return executable.Execute(runtime, frame, writer).GetValueOrDefault(Value.Undefined);
         }
     }
 }

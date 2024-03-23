@@ -6,7 +6,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 {
     internal abstract class AssignStatementExecutor : IStatementExecutor
     {
-        private readonly Action<Frame, Value> _setter;
+        private readonly Action<Runtime, Frame, Value> _setter;
 
         protected AssignStatementExecutor(Symbol symbol, StoreMode mode)
         {
@@ -14,19 +14,19 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
             _setter = mode switch
             {
-                StoreMode.Global => (frame, value) => frame.Globals[index] = value,
-                StoreMode.Local => (frame, value) => frame.Locals[index] = value,
+                StoreMode.Global => (state, _, value) => state.Globals[index] = value,
+                StoreMode.Local => (_, frame, value) => frame.Locals[index] = value,
                 _ => throw new ArgumentOutOfRangeException(nameof(symbol)),
             };
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            _setter(frame, EvaluateOperand(frame, output));
+            _setter(runtime, frame, EvaluateOperand(runtime, frame, output));
 
             return null;
         }
 
-        protected abstract Value EvaluateOperand(Frame frame, TextWriter output);
+        protected abstract Value EvaluateOperand(Runtime runtime, Frame frame, TextWriter output);
     }
 }

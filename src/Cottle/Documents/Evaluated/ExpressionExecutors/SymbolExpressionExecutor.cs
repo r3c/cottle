@@ -6,7 +6,7 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 {
     internal class SymbolExpressionExecutor : IExpressionExecutor
     {
-        private readonly Func<Frame, Value> _getter;
+        private readonly Func<Runtime, Frame, Value> _getter;
 
         public SymbolExpressionExecutor(Symbol symbol, StoreMode mode)
         {
@@ -14,15 +14,15 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 
             _getter = mode switch
             {
-                StoreMode.Global => frame => frame.Globals[index],
-                StoreMode.Local => frame => frame.Locals[index],
+                StoreMode.Global => (state, _) => state.Globals[index],
+                StoreMode.Local => (_, frame) => frame.Locals[index],
                 _ => throw new ArgumentOutOfRangeException(nameof(symbol))
             };
         }
 
-        public Value Execute(Frame frame, TextWriter output)
+        public Value Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            return _getter(frame);
+            return _getter(runtime, frame);
         }
     }
 }

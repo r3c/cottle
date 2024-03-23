@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -13,11 +12,11 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             _nodes = nodes;
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             foreach (var node in _nodes)
             {
-                var result = node.Execute(frame, output);
+                var result = node.Execute(runtime, frame, output);
 
                 if (result.HasValue)
                     return result.Value;

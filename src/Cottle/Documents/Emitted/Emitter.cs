@@ -25,10 +25,11 @@ namespace Cottle.Documents.Emitted
         private static readonly FieldInfo FrameArguments =
             Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
 
-        private static readonly MethodInfo FrameEcho =
-            Dynamic.GetMethod<Func<Frame, string>>(f => f.Echo(default, TextWriter.Null));
+        private static readonly FieldInfo FrameConstants =
+            Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Constants);
 
-        private static readonly FieldInfo FrameGlobals = Dynamic.GetField<Func<Frame, Value[]>>(f => f.Globals);
+        private static readonly MethodInfo FrameEcho =
+            Dynamic.GetMethod<Func<Frame, string>>(f => f.Echo(default, default, TextWriter.Null));
 
         private static readonly MethodInfo FrameUnwrap = Dynamic.GetMethod<Func<Frame, IFunction>>(f => f.Unwrap());
 
@@ -73,6 +74,12 @@ namespace Cottle.Documents.Emitted
 
         private static readonly MethodInfo ReadOnlyListCount =
             Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
+
+        private static readonly FieldInfo RuntimeGlobals = Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
+
+        private static readonly ConstructorInfo StateConstructor =
+            Dynamic.GetConstructor<Func<Runtime, Frame, Tuple<Runtime, Frame>>>((r, f) =>
+                new Tuple<Runtime, Frame>(r, f));
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
@@ -322,7 +329,9 @@ namespace Cottle.Documents.Emitted
                 _constants[constant] = index;
             }
 
-            _generator.Emit(OpCodes.Ldarg_0);
+            EmitLoadFrame();
+
+            _generator.Emit(OpCodes.Ldfld, Emitter.FrameConstants);
 
             EmitLoadElementValueAtIndex<Value>(index);
         }
@@ -353,7 +362,8 @@ namespace Cottle.Documents.Emitted
 
         public void EmitLoadFrameArgument(int index)
         {
-            _generator.Emit(OpCodes.Ldarg_1);
+            EmitLoadFrame();
+
             _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
 
             EmitLoadElementValueAtIndex<Value>(index);
@@ -361,15 +371,10 @@ namespace Cottle.Documents.Emitted
 
         public void EmitLoadFrameArgumentLength()
         {
-            _generator.Emit(OpCodes.Ldarg_1);
+            EmitLoadFrame();
+
             _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
             _generator.Emit(OpCodes.Callvirt, Emitter.ReadOnlyListCount);
-        }
-
-        public void EmitLoadFrameGlobal()
-        {
-            _generator.Emit(OpCodes.Ldarg_1);
-            _generator.Emit(OpCodes.Ldfld, Emitter.FrameGlobals);
         }
 
         public void EmitLoadInteger(int value)
@@ -415,14 +420,24 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldarg_3);
         }
 
-        public void EmitLoadState()
-        {
-            EmitLoadFrame();
-        }
-
         public void EmitLoadString(string value)
         {
             _generator.Emit(OpCodes.Ldstr, value);
+        }
+
+        public void EmitLoadRuntimeGlobals()
+        {
+            EmitLoadRuntime();
+
+            _generator.Emit(OpCodes.Ldfld, Emitter.RuntimeGlobals);
+        }
+
+        public void EmitLoadState()
+        {
+            EmitLoadRuntime();
+            EmitLoadFrame();
+
+            _generator.Emit(OpCodes.Newobj, Emitter.StateConstructor);
         }
 
         public void EmitLoadUndefined()
@@ -510,6 +525,11 @@ namespace Cottle.Documents.Emitted
             }
 
             stack.Push(local.Builder);
+        }
+
+        private void EmitLoadRuntime()
+        {
+            _generator.Emit(OpCodes.Ldarg_0);
         }
     }
 }

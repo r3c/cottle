@@ -5,6 +5,6 @@ namespace Cottle.Documents.Evaluated
 {
     internal interface IStatementExecutor
     {
-        Value? Execute(Frame frame, TextWriter output);
+        Value? Execute(Runtime runtime, Frame frame, TextWriter output);
     }
 }

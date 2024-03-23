@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -12,9 +11,9 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             _expression = expression;
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            return _expression.Execute(frame, output);
+            return _expression.Execute(runtime, frame, output);
         }
     }
 }

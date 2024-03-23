@@ -50,11 +50,11 @@ namespace Cottle.Documents.Emitted
             _execute = execute;
         }
 
-        public Value Execute(Frame frame, TextWriter output)
+        public Value Execute(Runtime runtime, Frame frame, IReadOnlyList<Value> arguments, TextWriter output)
         {
-            return _execute(_constants, frame, output, out var result)
-                ? result
-                : Value.Undefined;
+            var functionFrame = frame.CreateForFunction(_constants, arguments);
+
+            return _execute(runtime, functionFrame, output, out var result) ? result : Value.Undefined;
         }
     }
 }

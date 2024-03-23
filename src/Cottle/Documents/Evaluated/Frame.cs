@@ -7,25 +7,23 @@ namespace Cottle.Documents.Evaluated
 {
     internal class Frame
     {
-        public readonly Value[] Globals;
         public readonly Value[] Locals;
 
         private Stack<IFunction>? _modifiers;
 
-        public Frame(Value[] globals, int localCount, Stack<IFunction>? modifiers)
+        public Frame(int localCount, Stack<IFunction>? modifiers)
         {
             _modifiers = modifiers;
 
-            Globals = globals;
             Locals = localCount > 0 ? new Value[localCount] : Array.Empty<Value>();
         }
 
         public Frame CreateForFunction(int localCount)
         {
-            return new Frame(Globals, localCount, _modifiers);
+            return new Frame(localCount, _modifiers);
         }
 
-        public string Echo(Value value, TextWriter output)
+        public string Echo(Tuple<Runtime, Frame> state, Value value, TextWriter output)
         {
             if (_modifiers is null)
                 return value.AsString;
@@ -33,9 +31,9 @@ namespace Cottle.Documents.Evaluated
             foreach (var modifier in _modifiers)
             {
                 if (modifier is FiniteFunction finiteModifier)
-                    value = finiteModifier.Invoke1(this, value, output);
+                    value = finiteModifier.Invoke1(state, value, output);
                 else
-                    value = modifier.Invoke(this, new[] { value }, output);
+                    value = modifier.Invoke(state, new[] { value }, output);
             }
 
             return value.AsString;

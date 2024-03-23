@@ -31,7 +31,9 @@ namespace Cottle.Documents
             for (var i = 0; i < _globals.Count; ++i)
                 globals[i] = context[_globals[i]];
 
-            return Execute(_executable, globals, _locals, writer);
+            var runtime = new Runtime(globals);
+
+            return Execute(_executable, runtime, _locals, writer);
         }
 
         public string Render(IContext context)
@@ -43,6 +45,6 @@ namespace Cottle.Documents
             return writer.ToString();
         }
 
-        protected abstract Value Execute(TExecutable executable, Value[] globals, int locals, TextWriter writer);
+        protected abstract Value Execute(TExecutable executable, Runtime runtime, int locals, TextWriter writer);
     }
 }

@@ -16,18 +16,18 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             _fallback = fallback;
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             foreach (var branch in _branches)
             {
-                if (!branch.Key.Execute(frame, output).AsBoolean)
+                if (!branch.Key.Execute(runtime, frame, output).AsBoolean)
                     continue;
 
-                return branch.Value.Execute(frame, output);
+                return branch.Value.Execute(runtime, frame, output);
             }
 
             if (_fallback is not null)
-                return _fallback.Execute(frame, output);
+                return _fallback.Execute(runtime, frame, output);
 
             return null;
         }

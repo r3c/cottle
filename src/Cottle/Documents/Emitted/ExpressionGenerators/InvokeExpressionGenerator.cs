@@ -111,7 +111,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
                 emitter.EmitStoreElementAtIndex<Value>();
             }
 
-            // Invoke function with frame, arguments and output
+            // Invoke function with state, arguments and output
             emitter.EmitLoadLocalValueAndRelease(function);
             emitter.EmitLoadState();
             emitter.EmitLoadLocalValueAndRelease(argumentArray);
