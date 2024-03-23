@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Cottle.Builtins;
+using Cottle.Exceptions;
 using NUnit.Framework;
 
 namespace Cottle.Test
@@ -13,6 +15,21 @@ namespace Cottle.Test
         protected DocumentTester(DocumentConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        [Test]
+        [TestCase("{define var}{+}", typeof(ParseException), "expected expression, found unexpected character")]
+        [TestCase("{+}{define var}", typeof(ParseException), "expected expression, found unexpected character")]
+        public void DocumentOrThrow_PickMostSignificantReport(string source, Type expectedType, string expectedMessage)
+        {
+            Assert.That(() =>
+            {
+                using var template = new StringReader(source);
+
+                var document = CreateDocument(template, default);
+
+                document.DocumentOrThrow.Render(Context.Empty);
+            }, Throws.TypeOf(expectedType).With.Message.EqualTo(expectedMessage));
         }
 
         [Test]
@@ -481,15 +498,14 @@ namespace Cottle.Test
         protected DocumentResult AssertOutput(string source, DocumentConfiguration configuration, IContext context,
             string expected)
         {
-            using (var template = new StringReader(source))
-            {
-                var result = CreateDocument(template, configuration);
-                var output = result.DocumentOrThrow.Render(context);
+            using var template = new StringReader(source);
 
-                Assert.That(output, Is.EqualTo(expected), "Invalid rendered output");
+            var result = CreateDocument(template, configuration);
+            var output = result.DocumentOrThrow.Render(context);
 
-                return result;
-            }
+            Assert.That(output, Is.EqualTo(expected), "Invalid rendered output");
+
+            return result;
         }
 
         protected DocumentResult AssertOutput(string source, string expected)
@@ -500,13 +516,12 @@ namespace Cottle.Test
         private void AssertReturn(string source, DocumentConfiguration configuration, IContext context,
             string expected)
         {
-            using (var template = new StringReader(source))
-            {
-                var result = CreateDocument(template, configuration);
-                var value = result.DocumentOrThrow.Render(context, new StringWriter());
+            using var template = new StringReader(source);
 
-                Assert.That(value.ToString(), Is.EqualTo(expected), "Invalid return value");
-            }
+            var result = CreateDocument(template, configuration);
+            var value = result.DocumentOrThrow.Render(context, new StringWriter());
+
+            Assert.That(value.ToString(), Is.EqualTo(expected), "Invalid return value");
         }
 
         private void AssertReturn(string source, string expected)

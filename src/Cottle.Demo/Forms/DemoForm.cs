@@ -183,7 +183,7 @@ namespace Cottle.Demo.Forms
 
         private void DisplayResult(DocumentResult result)
         {
-            var messages = result.Reports.Select(r => $"{r.Message} ({r.Severity})");
+            var messages = result.Reports.Select(r => $"{r.Message} ({r.Type} {r.Level})");
 
             textBoxOutput.BackColor = Color.DarkSalmon;
             textBoxOutput.Text = string.Join(Environment.NewLine, messages);
