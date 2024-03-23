@@ -8,11 +8,26 @@ namespace Cottle
 {
     public readonly struct DocumentResult
     {
-        public IDocument DocumentOrThrow => Success
-            ? Document
-            : throw (Reports.Count > 0
-                ? new ParseException(Reports[0].Offset, Reports[0].Length, Reports[0].Message)
-                : new ParseException(0, 0, "unknown error"));
+        public IDocument DocumentOrThrow
+        {
+            get
+            {
+                if (Success)
+                    return Document;
+
+                if (Reports.Count < 1)
+                    throw new ParseException(0, 0, "unknown error");
+
+                var report = Reports.OrderBy(report => report.Level).First();
+
+                throw report.Type switch
+                {
+                    DocumentReportType.Language => new ParseException(report.Offset, report.Length, report.Message),
+                    _ => new InvalidOperationException(
+                        "internal error, please file a report at https://github.com/r3c/cottle/issues")
+                };
+            }
+        }
 
         public readonly IDocument Document;
         public readonly IReadOnlyList<DocumentReport> Reports;

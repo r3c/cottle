@@ -36,7 +36,7 @@ namespace Cottle.Documents
 
         internal static ParseException CreateException(IEnumerable<DocumentReport> reports)
         {
-            var firstError = reports.FirstOrDefault(r => r.Severity == DocumentSeverity.Error);
+            var firstError = reports.FirstOrDefault(r => r.Level == DocumentReportLevel.Error);
 
             throw new ParseException(firstError.Offset, firstError.Length, firstError.Message ?? "unknown error");
         }
