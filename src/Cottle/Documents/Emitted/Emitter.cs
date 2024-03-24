@@ -10,9 +10,6 @@ namespace Cottle.Documents.Emitted
 {
     internal class Emitter
     {
-        private static readonly MethodInfo ArgumentsIndex =
-            Dynamic.GetMethod<Func<IReadOnlyList<Value>, Value>>(c => c[default]);
-
         private static readonly MethodInfo FiniteFunctionInvoke0 =
             Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
 
@@ -205,11 +202,16 @@ namespace Cottle.Documents.Emitted
 
         public void EmitCallFrameUnwrap()
         {
+            EmitLoadFrame();
+
             _generator.Emit(OpCodes.Call, Emitter.FrameUnwrap);
         }
 
-        public void EmitCallFrameWrap()
+        public void EmitCallFrameWrap<TValue>(Local<TValue> modifier)
         {
+            EmitLoadFrame();
+            EmitLoadLocalValueAndRelease(modifier);
+
             _generator.Emit(OpCodes.Call, Emitter.FrameWrap);
         }
 
@@ -322,9 +324,7 @@ namespace Cottle.Documents.Emitted
 
             _generator.Emit(OpCodes.Ldarg_0);
 
-            EmitLoadInteger(index);
-
-            _generator.Emit(OpCodes.Callvirt, Emitter.ArgumentsIndex);
+            EmitLoadElementValueAtIndex<Value>(index);
         }
 
         public void EmitLoadDuplicate()
@@ -332,13 +332,17 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Dup);
         }
 
-        public void EmitLoadElementAddressAtIndex<TElement>()
+        public void EmitLoadElementAddressAtIndex<TElement>(int index)
         {
+            EmitLoadInteger(index);
+
             _generator.Emit(OpCodes.Ldelema, typeof(TElement));
         }
 
-        public void EmitLoadElementValueAtIndex<TElement>()
+        public void EmitLoadElementValueAtIndex<TElement>(int index)
         {
+            EmitLoadInteger(index);
+
             _generator.Emit(OpCodes.Ldelem, typeof(TElement));
         }
 
@@ -352,9 +356,7 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldarg_1);
             _generator.Emit(OpCodes.Ldfld, Emitter.FrameArguments);
 
-            EmitLoadInteger(index);
-
-            _generator.Emit(OpCodes.Ldelem, typeof(Value));
+            EmitLoadElementValueAtIndex<Value>(index);
         }
 
         public void EmitLoadFrameArgumentLength()
@@ -411,6 +413,11 @@ namespace Cottle.Documents.Emitted
         public void EmitLoadResult()
         {
             _generator.Emit(OpCodes.Ldarg_3);
+        }
+
+        public void EmitLoadState()
+        {
+            EmitLoadFrame();
         }
 
         public void EmitLoadString(string value)

@@ -12,7 +12,6 @@ namespace Cottle.Documents.Emitted.StatementGenerators
         public bool Generate(Emitter emitter)
         {
             // Unwrap and backup tail modifier
-            emitter.EmitLoadFrame();
             emitter.EmitCallFrameUnwrap();
 
             var modifier = emitter.EmitDeclareLocalAndStore<IFunction>();
@@ -22,9 +21,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var mayReturnCode = mayReturn ? emitter.EmitDeclareLocalAndStore<bool>() : default;
 
             // Wrap with modifier backup
-            emitter.EmitLoadFrame();
-            emitter.EmitLoadLocalValueAndRelease(modifier);
-            emitter.EmitCallFrameWrap();
+            emitter.EmitCallFrameWrap(modifier);
 
             // Forward return code to caller
             if (!mayReturn)
