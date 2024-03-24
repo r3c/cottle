@@ -80,7 +80,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             if (_finiteFunctionInvoke is not null)
             {
                 emitter.EmitLoadLocalValueAndRelease(finiteFunction);
-                emitter.EmitLoadFrame();
+                emitter.EmitLoadState();
 
                 for (var i = 0; i < _arguments.Count; ++i)
                     emitter.EmitLoadLocalValue(argumentsLocals[i]);
@@ -113,7 +113,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
             // Invoke function with frame, arguments and output
             emitter.EmitLoadLocalValueAndRelease(function);
-            emitter.EmitLoadFrame();
+            emitter.EmitLoadState();
             emitter.EmitLoadLocalValueAndRelease(argumentArray);
             emitter.EmitLoadOutput();
             emitter.EmitCallFunctionInvoke();

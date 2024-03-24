@@ -20,8 +20,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
             {
                 case StoreMode.Global:
                     emitter.EmitLoadFrameGlobal();
-                    emitter.EmitLoadInteger(_symbol.Index);
-                    emitter.EmitLoadElementValueAtIndex<Value>();
+                    emitter.EmitLoadElementValueAtIndex<Value>(_symbol.Index);
 
                     break;
 
