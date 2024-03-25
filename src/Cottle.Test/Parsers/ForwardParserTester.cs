@@ -178,7 +178,7 @@ namespace Cottle.Test.Parsers
 
                 Assert.That(parser.Parse(reader, state, out _), Is.False);
 
-                var firstError = state.Reports.FirstOrDefault(r => r.Level == DocumentReportLevel.Error);
+                var firstError = state.Reports.FirstOrDefault(r => r.Severity == DocumentSeverity.Error);
 
                 Assert.That(firstError.Length, Is.EqualTo(expectedLength));
                 Assert.That(firstError.Message, Does.Contain(expectedMessage));

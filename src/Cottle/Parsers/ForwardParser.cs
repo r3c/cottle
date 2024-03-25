@@ -989,8 +989,7 @@ namespace Cottle.Parsers
             var current = _lexer.Current;
             var message = $"expected {expected}, found {current.Value}";
 
-            return new DocumentReport(DocumentReportType.Language, DocumentReportLevel.Error, current.Offset,
-                current.Length, message);
+            return new DocumentReport(DocumentSeverity.Error, current.Offset, current.Length, message);
         }
 
         private DocumentReport CreateReportObsolete(string obsolete, string replacement)
@@ -998,8 +997,7 @@ namespace Cottle.Parsers
             var current = _lexer.Current;
             var message = $"{obsolete} is obsolete, please replace with {replacement}";
 
-            return new DocumentReport(DocumentReportType.Language, DocumentReportLevel.Notice, current.Offset,
-                current.Length, message);
+            return new DocumentReport(DocumentSeverity.Notice, current.Offset, current.Length, message);
         }
     }
 }
