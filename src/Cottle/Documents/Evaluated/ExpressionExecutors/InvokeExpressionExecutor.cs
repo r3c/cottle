@@ -15,33 +15,14 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 
         public InvokeExpressionExecutor(IExpressionExecutor caller, IReadOnlyList<IExpressionExecutor> arguments)
         {
-            switch (arguments.Count)
+            _evaluateFinite = arguments.Count switch
             {
-                case 0:
-                    _evaluateFinite = InvokeExpressionExecutor.EvaluateFinite0;
-
-                    break;
-
-                case 1:
-                    _evaluateFinite = InvokeExpressionExecutor.EvaluateFinite1;
-
-                    break;
-
-                case 2:
-                    _evaluateFinite = InvokeExpressionExecutor.EvaluateFinite2;
-
-                    break;
-
-                case 3:
-                    _evaluateFinite = InvokeExpressionExecutor.EvaluateFinite3;
-
-                    break;
-
-                default:
-                    _evaluateFinite = InvokeExpressionExecutor.EvaluateNothing;
-
-                    break;
-            }
+                0 => InvokeExpressionExecutor.EvaluateFinite0,
+                1 => InvokeExpressionExecutor.EvaluateFinite1,
+                2 => InvokeExpressionExecutor.EvaluateFinite2,
+                3 => InvokeExpressionExecutor.EvaluateFinite3,
+                _ => InvokeExpressionExecutor.EvaluateNothing
+            };
 
             _arguments = arguments;
             _caller = caller;
@@ -49,6 +30,8 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 
         public Value Execute(Runtime runtime, Frame frame, TextWriter output)
         {
+            runtime.CancellationToken.ThrowIfCancellationRequested();
+
             var function = _caller.Execute(runtime, frame, output).AsFunction;
 
             // Try handling function call with known number of arguments

@@ -1,18 +1,23 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Cottle.Functions;
 
 namespace Cottle
 {
     internal class Runtime
     {
+        public readonly CancellationToken CancellationToken;
+
         public readonly Value[] Globals;
 
         private readonly Stack<IFunction> _modifiers;
 
-        public Runtime(Value[] globals)
+        public Runtime(Value[] globals, CancellationToken cancellationToken)
         {
+            CancellationToken = cancellationToken;
             Globals = globals;
+
             _modifiers = new Stack<IFunction>();
         }
 

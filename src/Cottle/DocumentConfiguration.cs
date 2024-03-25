@@ -44,6 +44,8 @@ namespace Cottle
 
         public bool NoOptimize;
 
+        public TimeSpan? Timeout;
+
         public Func<string, string>? Trimmer;
     }
 }

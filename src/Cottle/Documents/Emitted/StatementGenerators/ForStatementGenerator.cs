@@ -56,6 +56,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             emitter.EmitBranchWhenFalse(exitRegular);
 
             // Fetch current key/value pair and store as local
+            emitter.EmitThrowIfCancellationRequested();
             emitter.EmitLoadLocalValueAndRelease(enumerator);
             emitter.EmitCallMapEnumeratorCurrent();
 
