@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Cottle.Functions;
@@ -6,25 +7,30 @@ namespace Cottle.Documents.Emitted
 {
     internal class Frame
     {
+        public static Frame CreateRoot()
+        {
+            return new Frame(Array.Empty<Value>(), Array.Empty<Value>(), null);
+        }
+
         public readonly IReadOnlyList<Value> Arguments;
-        public readonly Value[] Globals;
+        public readonly IReadOnlyList<Value> Constants;
 
         private Stack<IFunction>? _modifiers;
 
-        public Frame(Value[] globals, IReadOnlyList<Value> arguments, Stack<IFunction>? modifiers)
+        private Frame(IReadOnlyList<Value> constants, IReadOnlyList<Value> arguments, Stack<IFunction>? modifiers)
         {
             Arguments = arguments;
-            Globals = globals;
+            Constants = constants;
 
             _modifiers = modifiers;
         }
 
-        public Frame CreateForFunction(IReadOnlyList<Value> arguments)
+        public Frame CreateForFunction(IReadOnlyList<Value> constants, IReadOnlyList<Value> arguments)
         {
-            return new Frame(Globals, arguments, _modifiers);
+            return new Frame(constants, arguments, _modifiers);
         }
 
-        public string Echo(Value value, TextWriter output)
+        public string Echo(Tuple<Runtime, Frame> state, Value value, TextWriter output)
         {
             if (_modifiers is null)
                 return value.AsString;
@@ -32,9 +38,9 @@ namespace Cottle.Documents.Emitted
             foreach (var modifier in _modifiers)
             {
                 if (modifier is FiniteFunction finiteModifier)
-                    value = finiteModifier.Invoke1(this, value, output);
+                    value = finiteModifier.Invoke1(state, value, output);
                 else
-                    value = modifier.Invoke(this, new[] { value }, output);
+                    value = modifier.Invoke(state, new[] { value }, output);
             }
 
             return value.AsString;

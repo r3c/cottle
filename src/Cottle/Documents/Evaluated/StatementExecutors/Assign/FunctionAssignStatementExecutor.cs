@@ -16,7 +16,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
             _function = Value.FromFunction(new Function(localCount, slots, body));
         }
 
-        protected override Value EvaluateOperand(Frame frame, TextWriter output)
+        protected override Value EvaluateOperand(Runtime runtime, Frame frame, TextWriter output)
         {
             return _function;
         }
@@ -60,7 +60,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (state is not Frame parentFrame)
+                if (state is not (Runtime runtime, Frame parentFrame))
                     throw new InvalidOperationException(
                         $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
@@ -73,7 +73,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
                 for (var i = arguments.Count; i < _slots.Count; ++i)
                     functionFrame.Locals[_slots[i].Index] = Value.Undefined;
 
-                return _body.Execute(functionFrame, output).GetValueOrDefault(Value.Undefined);
+                return _body.Execute(runtime, functionFrame, output).GetValueOrDefault(Value.Undefined);
             }
         }
     }

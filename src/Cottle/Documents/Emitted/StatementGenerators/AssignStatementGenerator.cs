@@ -23,7 +23,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             switch (_mode)
             {
                 case StoreMode.Global:
-                    emitter.EmitLoadFrameGlobal();
+                    emitter.EmitLoadRuntimeGlobals();
                     emitter.EmitLoadInteger(_symbol.Index);
                     emitter.EmitLoadLocalValueAndRelease(result);
                     emitter.EmitStoreElementAtIndex<Value>();

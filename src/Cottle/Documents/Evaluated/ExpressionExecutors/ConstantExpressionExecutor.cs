@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.ExpressionExecutors
 {
@@ -12,7 +11,7 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             _value = value;
         }
 
-        public Value Execute(Frame frame, TextWriter output)
+        public Value Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             return _value;
         }

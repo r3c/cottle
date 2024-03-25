@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.ExpressionExecutors
 {
@@ -14,12 +13,12 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
             _elements = elements;
         }
 
-        public Value Execute(Frame frame, TextWriter writer)
+        public Value Execute(Runtime runtime, Frame frame, TextWriter writer)
         {
             return Value.FromEnumerable(_elements.Select(element =>
             {
-                var key = element.Key.Execute(frame, writer);
-                var value = element.Value.Execute(frame, writer);
+                var key = element.Key.Execute(runtime, frame, writer);
+                var value = element.Value.Execute(runtime, frame, writer);
 
                 return new KeyValuePair<Value, Value>(key, value);
             }));

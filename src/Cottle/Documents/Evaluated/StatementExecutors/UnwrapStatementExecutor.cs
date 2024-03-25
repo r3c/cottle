@@ -1,5 +1,4 @@
 using System.IO;
-using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -12,10 +11,10 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             _body = body;
         }
 
-        public Value? Execute(Frame frame, TextWriter output)
+        public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             var modifier = frame.Unwrap();
-            var result = _body.Execute(frame, output);
+            var result = _body.Execute(runtime, frame, output);
 
             frame.Wrap(modifier);
 

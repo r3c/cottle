@@ -12,11 +12,9 @@ namespace Cottle.Documents
         {
         }
 
-        protected override Value Execute(Program program, Value[] globals, int locals, TextWriter writer)
+        protected override Value Execute(Program program, Runtime runtime, int locals, TextWriter writer)
         {
-            var frame = new Frame(globals, Array.Empty<Value>(), null);
-
-            return program.Execute(frame, writer);
+            return program.Execute(runtime, Frame.CreateRoot(), Array.Empty<Value>(), writer);
         }
     }
 }

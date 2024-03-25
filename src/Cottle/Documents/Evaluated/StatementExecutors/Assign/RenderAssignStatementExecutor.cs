@@ -13,14 +13,13 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
             _body = body;
         }
 
-        protected override Value EvaluateOperand(Frame frame, TextWriter output)
+        protected override Value EvaluateOperand(Runtime runtime, Frame frame, TextWriter output)
         {
-            using (var buffer = new StringWriter())
-            {
-                _body.Execute(frame, buffer);
+            using var buffer = new StringWriter();
 
-                return buffer.ToString();
-            }
+            _body.Execute(runtime, frame, buffer);
+
+            return buffer.ToString();
         }
     }
 }

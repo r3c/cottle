@@ -13,9 +13,9 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
             _expression = expression;
         }
 
-        protected override Value EvaluateOperand(Frame frame, TextWriter output)
+        protected override Value EvaluateOperand(Runtime runtime, Frame frame, TextWriter output)
         {
-            return _expression.Execute(frame, output);
+            return _expression.Execute(runtime, frame, output);
         }
     }
 }
