@@ -28,12 +28,14 @@ namespace Cottle.Documents.Emitted
         private static readonly FieldInfo FrameConstants =
             Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Constants);
 
-        private static readonly MethodInfo FrameEcho =
-            Dynamic.GetMethod<Func<Frame, string>>(f => f.Echo(default, default, TextWriter.Null));
+        private static readonly MethodInfo RuntimeEcho =
+            Dynamic.GetMethod<Func<Runtime, string>>(r => r.Echo(default!, default, TextWriter.Null));
 
-        private static readonly MethodInfo FrameUnwrap = Dynamic.GetMethod<Func<Frame, IFunction>>(f => f.Unwrap());
+        private static readonly MethodInfo RuntimeUnwrap =
+            Dynamic.GetMethod<Func<Runtime, IFunction>>(r => r.Unwrap());
 
-        private static readonly MethodInfo FrameWrap = Dynamic.GetMethod<Action<Frame>>(f => f.Wrap(Function.Empty));
+        private static readonly MethodInfo RuntimeWrap =
+            Dynamic.GetMethod<Action<Runtime>>(r => r.Wrap(Function.Empty));
 
         private static readonly MethodInfo FunctionInvoke =
             Dynamic.GetMethod<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
@@ -76,10 +78,6 @@ namespace Cottle.Documents.Emitted
             Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
         private static readonly FieldInfo RuntimeGlobals = Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
-
-        private static readonly ConstructorInfo StateConstructor =
-            Dynamic.GetConstructor<Func<Runtime, Frame, Tuple<Runtime, Frame>>>((r, f) =>
-                new Tuple<Runtime, Frame>(r, f));
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
@@ -202,26 +200,6 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Callvirt, Emitter.FiniteFunctionInvoke3);
         }
 
-        public void EmitCallFrameEcho()
-        {
-            _generator.Emit(OpCodes.Call, Emitter.FrameEcho);
-        }
-
-        public void EmitCallFrameUnwrap()
-        {
-            EmitLoadFrame();
-
-            _generator.Emit(OpCodes.Call, Emitter.FrameUnwrap);
-        }
-
-        public void EmitCallFrameWrap<TValue>(Local<TValue> modifier)
-        {
-            EmitLoadFrame();
-            EmitLoadLocalValueAndRelease(modifier);
-
-            _generator.Emit(OpCodes.Call, Emitter.FrameWrap);
-        }
-
         public void EmitCallFunctionInvoke()
         {
             _generator.Emit(OpCodes.Callvirt, Emitter.FunctionInvoke);
@@ -266,6 +244,31 @@ namespace Cottle.Documents.Emitted
         public void EmitCallPairValue()
         {
             _generator.Emit(OpCodes.Call, Emitter.PairValue);
+        }
+
+        public void EmitCallRuntimeEcho(Local<Value> value)
+        {
+            EmitLoadRuntime();
+            EmitLoadState();
+            EmitLoadLocalValueAndRelease(value);
+            EmitLoadOutput();
+
+            _generator.Emit(OpCodes.Call, Emitter.RuntimeEcho);
+        }
+
+        public void EmitCallRuntimeUnwrap()
+        {
+            EmitLoadRuntime();
+
+            _generator.Emit(OpCodes.Call, Emitter.RuntimeUnwrap);
+        }
+
+        public void EmitCallRuntimeWrap<TValue>(Local<TValue> modifier)
+        {
+            EmitLoadRuntime();
+            EmitLoadLocalValueAndRelease(modifier);
+
+            _generator.Emit(OpCodes.Call, Emitter.RuntimeWrap);
         }
 
         public void EmitCallStringWriterToString()
@@ -355,11 +358,6 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ldelem, typeof(TElement));
         }
 
-        public void EmitLoadFrame()
-        {
-            _generator.Emit(OpCodes.Ldarg_1);
-        }
-
         public void EmitLoadFrameArgument(int index)
         {
             EmitLoadFrame();
@@ -381,7 +379,7 @@ namespace Cottle.Documents.Emitted
         {
             if (value < Emitter.LoadIntegers.Count)
                 _generator.Emit(Emitter.LoadIntegers[value]);
-            else if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
+            else if (value is >= sbyte.MinValue and <= sbyte.MaxValue)
                 _generator.Emit(OpCodes.Ldc_I4_S, value);
             else
                 _generator.Emit(OpCodes.Ldc_I4, value);
@@ -435,9 +433,6 @@ namespace Cottle.Documents.Emitted
         public void EmitLoadState()
         {
             EmitLoadRuntime();
-            EmitLoadFrame();
-
-            _generator.Emit(OpCodes.Newobj, Emitter.StateConstructor);
         }
 
         public void EmitLoadUndefined()
@@ -511,6 +506,11 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(opCode, local);
 
             return new Local<TValue>(local);
+        }
+
+        private void EmitLoadFrame()
+        {
+            _generator.Emit(OpCodes.Ldarg_1);
         }
 
         private void EmitLoadLocalAndRelease<TValue>(OpCode opCode, Local<TValue> local)

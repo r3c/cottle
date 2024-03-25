@@ -13,10 +13,10 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
         public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            var modifier = frame.Unwrap();
+            var modifier = runtime.Unwrap();
             var result = _body.Execute(runtime, frame, output);
 
-            frame.Wrap(modifier);
+            runtime.Wrap(modifier);
 
             return result;
         }

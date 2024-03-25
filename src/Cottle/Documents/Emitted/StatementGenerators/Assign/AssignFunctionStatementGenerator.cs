@@ -62,11 +62,11 @@ namespace Cottle.Documents.Emitted.StatementGenerators.Assign
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (state is not (Runtime runtime, Frame parentFrame))
+                if (state is not Runtime runtime)
                     throw new InvalidOperationException(
                         $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EmittedDocument)} from another type of document.");
 
-                return _program.Execute(runtime, parentFrame, arguments, output);
+                return _program.Execute(runtime, arguments, output);
             }
         }
     }

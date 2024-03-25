@@ -24,13 +24,13 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             var modifier = emitter.EmitDeclareLocalAndStore<IFunction>();
 
             // Wrap with modifier
-            emitter.EmitCallFrameWrap(modifier);
+            emitter.EmitCallRuntimeWrap(modifier);
 
             var mayReturn = _body.Generate(emitter);
             var mayReturnCode = mayReturn ? emitter.EmitDeclareLocalAndStore<bool>() : default;
 
             // Unwrap by removing tail modifier
-            emitter.EmitCallFrameUnwrap();
+            emitter.EmitCallRuntimeUnwrap();
             emitter.EmitDiscard();
 
             // Forward return code to caller

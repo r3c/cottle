@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Cottle.Documents.Evaluated.StatementExecutors
 {
@@ -15,7 +14,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
         public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             var subject = _expression.Execute(runtime, frame, output);
-            var value = frame.Echo(Tuple.Create(runtime, frame), subject, output);
+            var value = runtime.Echo(runtime, subject, output);
 
             output.Write(value);
 

@@ -14,7 +14,7 @@ namespace Cottle.Documents
 
         protected override Value Execute(Program program, Runtime runtime, int locals, TextWriter writer)
         {
-            return program.Execute(runtime, Frame.CreateRoot(), Array.Empty<Value>(), writer);
+            return program.Execute(runtime, Array.Empty<Value>(), writer);
         }
     }
 }
