@@ -18,14 +18,9 @@ namespace Cottle
                 if (Reports.Count < 1)
                     throw new ParseException(0, 0, "unknown error");
 
-                var report = Reports.OrderBy(report => report.Level).First();
+                var report = Reports.OrderBy(report => report.Severity).First();
 
-                throw report.Type switch
-                {
-                    DocumentReportType.Language => new ParseException(report.Offset, report.Length, report.Message),
-                    _ => new InvalidOperationException(
-                        "internal error, please file a report at https://github.com/r3c/cottle/issues")
-                };
+                throw new ParseException(report.Offset, report.Length, report.Message);
             }
         }
 
