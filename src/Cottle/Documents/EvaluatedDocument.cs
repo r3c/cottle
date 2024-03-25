@@ -13,9 +13,7 @@ namespace Cottle.Documents
         protected override Value Execute(IStatementExecutor executable, Runtime runtime, int locals,
             TextWriter writer)
         {
-            var frame = new Frame(locals, null);
-
-            return executable.Execute(runtime, frame, writer).GetValueOrDefault(Value.Undefined);
+            return executable.Execute(runtime, new Frame(locals), writer).GetValueOrDefault(Value.Undefined);
         }
     }
 }

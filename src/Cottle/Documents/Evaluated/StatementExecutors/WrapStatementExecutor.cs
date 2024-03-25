@@ -17,11 +17,11 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
         {
             var modifier = _modifier.Execute(runtime, frame, output);
 
-            frame.Wrap(modifier.AsFunction);
+            runtime.Wrap(modifier.AsFunction);
 
             var result = _body.Execute(runtime, frame, output);
 
-            frame.Unwrap();
+            runtime.Unwrap();
 
             return result;
         }

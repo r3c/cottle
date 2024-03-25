@@ -60,12 +60,12 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
 
             public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
             {
-                if (state is not (Runtime runtime, Frame parentFrame))
+                if (state is not Runtime runtime)
                     throw new InvalidOperationException(
                         $"Invalid function invoke, you seem to have injected a function declared in a {nameof(EvaluatedDocument)} from another type of document.");
 
                 var functionArguments = Math.Min(_slots.Count, arguments.Count);
-                var functionFrame = parentFrame.CreateForFunction(_localCount);
+                var functionFrame = new Frame(_localCount);
 
                 for (var i = 0; i < functionArguments; ++i)
                     functionFrame.Locals[_slots[i].Index] = arguments[i];

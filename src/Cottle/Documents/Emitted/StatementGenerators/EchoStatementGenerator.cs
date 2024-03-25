@@ -16,11 +16,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
 
             var value = emitter.EmitDeclareLocalAndStore<Value>();
 
-            emitter.EmitLoadFrame();
-            emitter.EmitLoadState();
-            emitter.EmitLoadLocalValueAndRelease(value);
-            emitter.EmitLoadOutput();
-            emitter.EmitCallFrameEcho();
+            emitter.EmitCallRuntimeEcho(value);
 
             var text = emitter.EmitDeclareLocalAndStore<string>();
 
