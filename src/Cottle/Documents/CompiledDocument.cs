@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Threading;
 using Cottle.Documents.Compiled;
 
 namespace Cottle.Documents
@@ -32,11 +31,7 @@ namespace Cottle.Documents
             for (var i = 0; i < _globals.Count; ++i)
                 globals[i] = context[_globals[i]];
 
-            var cancellationToken = _configuration.Timeout.HasValue
-                ? new CancellationTokenSource(_configuration.Timeout.Value).Token
-                : CancellationToken.None;
-
-            var runtime = new Runtime(globals, cancellationToken);
+            var runtime = new Runtime(globals, _configuration.NbCycleMax);
 
             return Execute(_executable, runtime, _locals, writer);
         }

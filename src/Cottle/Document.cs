@@ -76,7 +76,7 @@ namespace Cottle
             if (!parser.Parse(template, state, out var statement))
                 return DocumentResult.CreateFailure(state.Reports);
 
-            var renderConfiguration = new RenderConfiguration(parserConfiguration.Timeout);
+            var renderConfiguration = new RenderConfiguration(parserConfiguration.NbCycleMax);
 
             return DocumentResult.CreateSuccess(constructor(renderConfiguration, statement), state.Reports);
         }

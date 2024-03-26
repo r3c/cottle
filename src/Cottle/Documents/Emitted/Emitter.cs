@@ -11,9 +11,6 @@ namespace Cottle.Documents.Emitted
 {
     internal class Emitter
     {
-        private static readonly MethodInfo CancellationTokenThrowIfCancellationRequested =
-            Dynamic.GetMethod<Action<CancellationToken>>(c => c.ThrowIfCancellationRequested());
-
         private static readonly MethodInfo FiniteFunctionInvoke0 =
             Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
 
@@ -81,11 +78,11 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo ReadOnlyListCount =
             Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
-        private static readonly FieldInfo RuntimeCancellationToken =
-            Dynamic.GetField<Func<Runtime, CancellationToken>>(r => r.CancellationToken);
-
         private static readonly FieldInfo RuntimeGlobals =
             Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
+
+        private static readonly MethodInfo RuntimeTick =
+            Dynamic.GetMethod<Action<Runtime>>(r => r.Tick());
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
@@ -463,6 +460,13 @@ namespace Cottle.Documents.Emitted
             _generator.Emit(OpCodes.Ret);
         }
 
+        public void EmitRuntimeTick()
+        {
+            EmitLoadRuntime();
+
+            _generator.Emit(OpCodes.Call, Emitter.RuntimeTick);
+        }
+
         public void EmitStoreElementAtIndex<TElement>()
         {
             _generator.Emit(OpCodes.Stelem, typeof(TElement));
@@ -476,14 +480,6 @@ namespace Cottle.Documents.Emitted
         public void EmitStoreValueAtAddress<TValue>() where TValue : struct
         {
             _generator.Emit(OpCodes.Stobj, typeof(TValue));
-        }
-
-        public void EmitThrowIfCancellationRequested()
-        {
-            EmitLoadRuntime();
-
-            _generator.Emit(OpCodes.Ldflda, Emitter.RuntimeCancellationToken);
-            _generator.Emit(OpCodes.Call, Emitter.CancellationTokenThrowIfCancellationRequested);
         }
 
         public Local<Value> GetOrDeclareLocal(Symbol symbol)

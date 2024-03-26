@@ -29,7 +29,7 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             emitter.EmitBranchWhenFalse(exitRegular);
 
             // Execute loop statement
-            emitter.EmitThrowIfCancellationRequested();
+            emitter.EmitRuntimeTick();
 
             var mayReturn = _body.Generate(emitter);
 

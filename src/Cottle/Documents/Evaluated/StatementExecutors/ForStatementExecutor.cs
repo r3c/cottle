@@ -32,7 +32,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
             {
                 foreach (var pair in fields)
                 {
-                    runtime.CancellationToken.ThrowIfCancellationRequested();
+                    runtime.Tick();
 
                     if (_key.HasValue)
                         frame.Locals[_key.Value.Index] = pair.Key;

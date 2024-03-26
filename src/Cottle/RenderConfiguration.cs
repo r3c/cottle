@@ -4,11 +4,11 @@ namespace Cottle
 {
     internal readonly struct RenderConfiguration
     {
-        public readonly TimeSpan? Timeout;
+        public readonly int? NbCycleMax;
 
-        public RenderConfiguration(TimeSpan? timeout)
+        public RenderConfiguration(int? nbCycleMax)
         {
-            Timeout = timeout;
+            NbCycleMax = nbCycleMax;
         }
     }
 }

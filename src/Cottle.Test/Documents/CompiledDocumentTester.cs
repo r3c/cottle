@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Threading;
 using Cottle.Builtins;
+using Cottle.Exceptions;
 using NUnit.Framework;
 
 namespace Cottle.Test.Documents
@@ -14,27 +13,20 @@ namespace Cottle.Test.Documents
         }
 
         [Test]
-        [TestCase("{for i in range(999999999):}")]
-        [TestCase("{while 1:}")]
-        [TestCase("{set call() to:{wait()}{call()}}{call()}")]
-        public void Configuration_Timeout(string source)
+        [TestCase(3, "{for i in range(3):}", false)]
+        [TestCase(4, "{for i in range(3):}", true)]
+        [TestCase(9, "{set i to 0}{while i < 3:{set i to i + 1}}", false)]
+        [TestCase(10, "{set i to 0}{while i < 3:{set i to i + 1}}", true)]
+        [TestCase(2, "{call()}{call()}{call()}", false)]
+        [TestCase(3, "{call()}{call()}{call()}", true)]
+        public void Configuration_NbCycleMax(int nbCycleMax, string source, bool expectSuccess)
         {
-            var configuration = new DocumentConfiguration { Timeout = TimeSpan.FromMilliseconds(5) };
-            var symbols = new Dictionary<Value, Value>();
+            var configuration = new DocumentConfiguration { NbCycleMax = nbCycleMax };
+            var context = DocumentTester.CreateContextWithBuiltins("range");
 
-            if (BuiltinFunctions.TryGet("range", out var function))
-                symbols["range"] = Value.FromFunction(function);
-
-            // Insert some "sleep" function to avoid instantly running into stack overflow exception
-            symbols["wait"] = Value.FromFunction(Function.CreatePure0(_ =>
-            {
-                Thread.Sleep(TimeSpan.FromMilliseconds(1));
-
-                return Value.Undefined;
-            }));
-
-            Assert.That(() => AssertOutput(source, configuration, Context.CreateCustom(symbols), string.Empty),
-                Throws.TypeOf<OperationCanceledException>());
+            Assert.That(() => AssertOutput(source, configuration, context, string.Empty), expectSuccess
+                ? Throws.Nothing
+                : Throws.TypeOf<NbCycleExceededException>().With.Property("NbCycleMax").EqualTo(nbCycleMax));
         }
 
         [Test]

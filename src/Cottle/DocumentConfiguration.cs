@@ -42,9 +42,9 @@ namespace Cottle
 
         public char? Escape;
 
-        public bool NoOptimize;
+        public int? NbCycleMax;
 
-        public TimeSpan? Timeout;
+        public bool NoOptimize;
 
         public Func<string, string>? Trimmer;
     }

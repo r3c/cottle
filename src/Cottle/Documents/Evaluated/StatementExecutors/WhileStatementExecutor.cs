@@ -18,7 +18,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
         {
             while (_condition.Execute(runtime, frame, output).AsBoolean)
             {
-                runtime.CancellationToken.ThrowIfCancellationRequested();
+                runtime.Tick();
 
                 var result = _body.Execute(runtime, frame, output);
 

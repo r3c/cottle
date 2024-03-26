@@ -30,7 +30,7 @@ namespace Cottle.Documents.Evaluated.ExpressionExecutors
 
         public Value Execute(Runtime runtime, Frame frame, TextWriter output)
         {
-            runtime.CancellationToken.ThrowIfCancellationRequested();
+            runtime.Tick();
 
             var function = _caller.Execute(runtime, frame, output).AsFunction;
 

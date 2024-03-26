@@ -51,7 +51,7 @@ namespace Cottle.Documents.Emitted.ExpressionGenerators
 
             var caller = emitter.EmitDeclareLocalAndStore<Value>();
 
-            emitter.EmitThrowIfCancellationRequested();
+            emitter.EmitRuntimeTick();
             emitter.EmitLoadLocalAddressAndRelease(caller);
             emitter.EmitCallValueAsFunction();
 
