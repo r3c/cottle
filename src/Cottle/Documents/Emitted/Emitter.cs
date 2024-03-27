@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
 using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
@@ -77,7 +78,11 @@ namespace Cottle.Documents.Emitted
         private static readonly MethodInfo ReadOnlyListCount =
             Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
-        private static readonly FieldInfo RuntimeGlobals = Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
+        private static readonly FieldInfo RuntimeGlobals =
+            Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
+
+        private static readonly MethodInfo RuntimeTick =
+            Dynamic.GetMethod<Action<Runtime>>(r => r.Tick());
 
         private static readonly ConstructorInfo StringWriterConstructor =
             Dynamic.GetConstructor<Func<StringWriter>>(() => new StringWriter());
@@ -453,6 +458,13 @@ namespace Cottle.Documents.Emitted
         public void EmitReturn()
         {
             _generator.Emit(OpCodes.Ret);
+        }
+
+        public void EmitRuntimeTick()
+        {
+            EmitLoadRuntime();
+
+            _generator.Emit(OpCodes.Call, Emitter.RuntimeTick);
         }
 
         public void EmitStoreElementAtIndex<TElement>()

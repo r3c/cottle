@@ -7,8 +7,9 @@ namespace Cottle.Documents
 {
     internal class EmittedDocument : CompiledDocument<IStatementGenerator, Program>
     {
-        public EmittedDocument(Statement statement) :
-            base(new Assembler(), generator => Program.Create(generator, Array.Empty<Symbol>()), statement)
+        public EmittedDocument(RenderConfiguration configuration, Statement statement) :
+            base(new Assembler(), generator => Program.Create(generator, Array.Empty<Symbol>()), configuration,
+                statement)
         {
         }
 

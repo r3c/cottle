@@ -42,6 +42,8 @@ namespace Cottle
 
         public char? Escape;
 
+        public int? NbCycleMax;
+
         public bool NoOptimize;
 
         public Func<string, string>? Trimmer;

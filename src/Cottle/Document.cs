@@ -20,7 +20,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateDefault(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, statement => new EvaluatedDocument(statement));
+            return Document.Create(template, configuration, (c, s) => new EvaluatedDocument(c, s));
         }
 
         /// <summary>
@@ -32,10 +32,9 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateDefault(string template, DocumentConfiguration configuration = default)
         {
-            using (var reader = new StringReader(template))
-            {
-                return Document.CreateDefault(reader, configuration);
-            }
+            using var reader = new StringReader(template);
+
+            return Document.CreateDefault(reader, configuration);
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateNative(TextReader template, DocumentConfiguration configuration = default)
         {
-            return Document.Create(template, configuration, statement => new EmittedDocument(statement));
+            return Document.Create(template, configuration, (c, s) => new EmittedDocument(c, s));
         }
 
         /// <summary>
@@ -63,21 +62,23 @@ namespace Cottle
         /// <returns>Document or error details</returns>
         public static DocumentResult CreateNative(string template, DocumentConfiguration configuration = default)
         {
-            using (var reader = new StringReader(template))
-            {
-                return Document.CreateNative(reader, configuration);
-            }
+            using var reader = new StringReader(template);
+
+            return Document.CreateNative(reader, configuration);
         }
 
-        private static DocumentResult Create(TextReader template, DocumentConfiguration configuration,
-            Func<Statement, IDocument> constructor)
+        private static DocumentResult Create(TextReader template, DocumentConfiguration parserConfiguration,
+            Func<RenderConfiguration, Statement, IDocument> constructor)
         {
-            var parser = Parser.Create(configuration);
+            var parser = Parser.Create(parserConfiguration);
             var state = new ParserState();
 
-            return parser.Parse(template, state, out var statement)
-                ? DocumentResult.CreateSuccess(constructor(statement), state.Reports)
-                : DocumentResult.CreateFailure(state.Reports);
+            if (!parser.Parse(template, state, out var statement))
+                return DocumentResult.CreateFailure(state.Reports);
+
+            var renderConfiguration = new RenderConfiguration(parserConfiguration.NbCycleMax);
+
+            return DocumentResult.CreateSuccess(constructor(renderConfiguration, statement), state.Reports);
         }
     }
 }

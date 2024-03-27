@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Cottle.Exceptions;
 using Cottle.Functions;
 
 namespace Cottle
@@ -9,11 +10,17 @@ namespace Cottle
         public readonly Value[] Globals;
 
         private readonly Stack<IFunction> _modifiers;
+        private readonly int? _nbCycleMax;
 
-        public Runtime(Value[] globals)
+        private int _nbCycle;
+
+        public Runtime(Value[] globals, int? nbCycleMax)
         {
             Globals = globals;
+
             _modifiers = new Stack<IFunction>();
+            _nbCycleMax = nbCycleMax;
+            _nbCycle = 0;
         }
 
         public string Echo(object state, Value value, TextWriter output)
@@ -30,6 +37,12 @@ namespace Cottle
             }
 
             return value.AsString;
+        }
+
+        public void Tick()
+        {
+            if (_nbCycleMax.HasValue && ++_nbCycle > _nbCycleMax.Value)
+                throw new NbCycleExceededException(_nbCycleMax.Value);
         }
 
         public IFunction Unwrap()

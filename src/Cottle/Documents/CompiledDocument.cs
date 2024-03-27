@@ -8,17 +8,17 @@ namespace Cottle.Documents
 {
     internal abstract class CompiledDocument<TAssembly, TExecutable> : IDocument
     {
+        private readonly RenderConfiguration _configuration;
         private readonly TExecutable _executable;
-
         private readonly IReadOnlyList<Value> _globals;
-
         private readonly int _locals;
 
         protected CompiledDocument(IAssembler<TAssembly> assembler, Func<TAssembly, TExecutable> compile,
-            Statement statement)
+            RenderConfiguration configuration, Statement statement)
         {
             var (assembly, globals, locals) = assembler.Assemble(statement);
 
+            _configuration = configuration;
             _executable = compile(assembly);
             _globals = globals;
             _locals = locals;
@@ -31,7 +31,7 @@ namespace Cottle.Documents
             for (var i = 0; i < _globals.Count; ++i)
                 globals[i] = context[_globals[i]];
 
-            var runtime = new Runtime(globals);
+            var runtime = new Runtime(globals, _configuration.NbCycleMax);
 
             return Execute(_executable, runtime, _locals, writer);
         }

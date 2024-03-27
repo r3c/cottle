@@ -29,6 +29,8 @@ namespace Cottle.Documents.Emitted.StatementGenerators
             emitter.EmitBranchWhenFalse(exitRegular);
 
             // Execute loop statement
+            emitter.EmitRuntimeTick();
+
             var mayReturn = _body.Generate(emitter);
 
             // Exit loop following return statement from body

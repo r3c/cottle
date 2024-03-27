@@ -12,16 +12,6 @@ namespace Cottle.Test.Documents
         {
         }
 
-        [Test]
-        public void Render_StatementDefine()
-        {
-            var result = AssertOutput("{define var}", string.Empty);
-
-            Assert.That(result.Reports,
-                Has.One.Matches<DocumentReport>(r =>
-                    r.Severity == DocumentSeverity.Notice && r.Message.Contains("define")));
-        }
-
         protected override DocumentResult CreateDocument(TextReader template, DocumentConfiguration configuration)
         {
             return Document.CreateDefault(template, configuration);

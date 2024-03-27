@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Cottle.Builtins;
+using Cottle.Exceptions;
 using NUnit.Framework;
 
 namespace Cottle.Test.Documents
@@ -7,6 +10,33 @@ namespace Cottle.Test.Documents
         protected CompiledDocumentTester(DocumentConfiguration configuration) :
             base(configuration)
         {
+        }
+
+        [Test]
+        [TestCase(3, "{for i in range(3):}", false)]
+        [TestCase(4, "{for i in range(3):}", true)]
+        [TestCase(9, "{set i to 0}{while i < 3:{set i to i + 1}}", false)]
+        [TestCase(10, "{set i to 0}{while i < 3:{set i to i + 1}}", true)]
+        [TestCase(2, "{call()}{call()}{call()}", false)]
+        [TestCase(3, "{call()}{call()}{call()}", true)]
+        public void Configuration_NbCycleMax(int nbCycleMax, string source, bool expectSuccess)
+        {
+            var configuration = new DocumentConfiguration { NbCycleMax = nbCycleMax };
+            var context = DocumentTester.CreateContextWithBuiltins("range");
+
+            Assert.That(() => AssertOutput(source, configuration, context, string.Empty), expectSuccess
+                ? Throws.Nothing
+                : Throws.TypeOf<NbCycleExceededException>().With.Property("NbCycleMax").EqualTo(nbCycleMax));
+        }
+
+        [Test]
+        public void Render_StatementDefine()
+        {
+            var result = AssertOutput("{define var}", string.Empty);
+
+            Assert.That(result.Reports,
+                Has.One.Matches<DocumentReport>(r =>
+                    r.Severity == DocumentSeverity.Notice && r.Message.Contains("define")));
         }
 
         [Test]
