@@ -96,6 +96,10 @@ Compiled documents
 
         Delimiter for *escape*, see section :ref:`delimiter_customization` for details. Default escape character is **\\** when this property is null.
 
+    .. property:: int? NbCycleMax { get; set; }
+
+        When set to a non-null value, a :type:`NbCycleExceededException` exception is thrown if template rendering requires more cycles than allowed, see :ref:`render_nb_cycle_max` for details.
+
     .. property:: bool NoOptimize { get; set; }
 
         Disable code optimizations after compiling a document, see :ref:`optimizer_deactivation` for details.

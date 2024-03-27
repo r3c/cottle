@@ -270,3 +270,22 @@ To create native documents, simply invoke :meth:`Document.CreateNative` instead 
     :caption: C# source
 
     var document = Document.CreateNative(template).DocumentOrThrow;
+
+
+
+.. _`render_nb_cycle_max`:
+
+Render cycle limit
+==================
+
+*Added in version 2.0.12*
+
+In case you don't have full control over the templates you instanciate and want to prevent them from running into an infinite loop, specify a maximum allowed number of cycles. Each loop iteration or function call increases the internal cycle counter by one and a :type:`NbCycleExceededException` exception is raised if this counter exceeds the allowed maximum:
+
+.. code-block:: csharp
+    :caption: C# source
+
+    var configuration = new DocumentConfiguration
+    {
+        NbCycleMax = 100000
+    };
