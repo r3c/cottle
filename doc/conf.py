@@ -9,12 +9,9 @@ https://sublime-and-sphinx-guide.readthedocs.io/en/latest/code_blocks.html
 https://docutils.sourceforge.net/docs/user/rst/quickref.html
 """
 
-import sys
-import os
-
 extensions = [
-  'sphinx_csharp.csharp',
-  'sphinx_rtd_theme'
+    'sphinx_csharp.csharp',
+    'sphinx_rtd_theme'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -46,7 +43,7 @@ pygments_style = 'default'
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ['_themes']
 html_theme_options = {
-  'style_external_links': True
+    'style_external_links': True
 }
 
 html_logo = '../res/icon.png'
@@ -63,22 +60,22 @@ htmlhelp_basename = 'CottleDocumentation'
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'Cottle.tex', u'Cottle Documentation',
-   u'Cottle', 'manual'),
+    ('index', 'Cottle.tex', u'Cottle Documentation',
+     u'Cottle', 'manual'),
 ]
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-  ('index', 'cottle', u'Cottle Documentation',
-  [u'Cottle'], 1)
+    ('index', 'cottle', u'Cottle Documentation',
+     [u'Cottle'], 1)
 ]
 
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Cottle', u'Cottle Documentation',
-  u'Cottle', 'Cottle', 'Cottle Documentation.',
-  'Miscellaneous'),
+    ('index', 'Cottle', u'Cottle Documentation',
+     u'Cottle', 'Cottle', 'Cottle Documentation.',
+     'Miscellaneous'),
 ]
