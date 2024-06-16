@@ -14,7 +14,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
         public Value? Execute(Runtime runtime, Frame frame, TextWriter output)
         {
             var subject = _expression.Execute(runtime, frame, output);
-            var value = runtime.Echo(runtime, subject, output);
+            var value = runtime.Echo(subject, output);
 
             output.Write(value);
 
