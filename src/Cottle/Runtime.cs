@@ -23,7 +23,7 @@ namespace Cottle
             _nbCycle = 0;
         }
 
-        public string Echo(object state, Value value, TextWriter output)
+        public string Echo(Value value, TextWriter output)
         {
             if (_modifiers.Count < 1)
                 return value.AsString;
@@ -31,9 +31,9 @@ namespace Cottle
             foreach (var modifier in _modifiers)
             {
                 if (modifier is FiniteFunction finiteModifier)
-                    value = finiteModifier.Invoke1(state, value, output);
+                    value = finiteModifier.Invoke1(this, value, output);
                 else
-                    value = modifier.Invoke(state, new[] { value }, output);
+                    value = modifier.Invoke(this, new[] { value }, output);
             }
 
             return value.AsString;

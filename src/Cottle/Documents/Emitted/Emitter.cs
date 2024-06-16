@@ -30,7 +30,7 @@ namespace Cottle.Documents.Emitted
             Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Constants);
 
         private static readonly MethodInfo RuntimeEcho =
-            Dynamic.GetMethod<Func<Runtime, string>>(r => r.Echo(default!, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<Runtime, string>>(r => r.Echo(default, TextWriter.Null));
 
         private static readonly MethodInfo RuntimeUnwrap =
             Dynamic.GetMethod<Func<Runtime, IFunction>>(r => r.Unwrap());
@@ -254,7 +254,6 @@ namespace Cottle.Documents.Emitted
         public void EmitCallRuntimeEcho(Local<Value> value)
         {
             EmitLoadRuntime();
-            EmitLoadState();
             EmitLoadLocalValueAndRelease(value);
             EmitLoadOutput();
 
