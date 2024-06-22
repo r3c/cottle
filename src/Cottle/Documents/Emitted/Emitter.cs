@@ -79,7 +79,7 @@ namespace Cottle.Documents.Emitted
             Dynamic.GetProperty<Func<IReadOnlyList<object>, int>>(l => l.Count).GetMethod!;
 
         private static readonly FieldInfo RuntimeGlobals =
-            Dynamic.GetField<Func<Runtime, Value[]>>(r => r.Globals);
+            Dynamic.GetField<Func<Runtime, Value[]>>(r => r.GlobalValues);
 
         private static readonly MethodInfo RuntimeTick =
             Dynamic.GetMethod<Action<Runtime>>(r => r.Tick());

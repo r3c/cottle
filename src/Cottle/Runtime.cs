@@ -1,23 +1,30 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Cottle.Exceptions;
 using Cottle.Functions;
+using Cottle.Maps;
 
 namespace Cottle
 {
     internal class Runtime : IRuntime
     {
-        public readonly Value[] Globals;
+        public IMap Globals => new MixMap(
+            _globalKeys.Zip(GlobalValues, (key, value) => new KeyValuePair<Value, Value>(key, value)));
 
+        public readonly Value[] GlobalValues;
+
+        private readonly IReadOnlyList<Value> _globalKeys;
         private readonly Stack<IFunction> _modifiers;
         private readonly int? _nbCycleMax;
 
         private int _nbCycle;
 
-        public Runtime(Value[] globals, int? nbCycleMax)
+        public Runtime(IReadOnlyList<Value> globalKeys, Value[] globalValues, int? nbCycleMax)
         {
-            Globals = globals;
+            GlobalValues = globalValues;
 
+            _globalKeys = globalKeys;
             _modifiers = new Stack<IFunction>();
             _nbCycleMax = nbCycleMax;
             _nbCycle = 0;

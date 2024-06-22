@@ -14,7 +14,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors
 
             _setter = mode switch
             {
-                StoreMode.Global => (state, _, value) => state.Globals[index] = value,
+                StoreMode.Global => (state, _, value) => state.GlobalValues[index] = value,
                 StoreMode.Local => (_, frame, value) => frame.Locals[index] = value,
                 _ => throw new ArgumentOutOfRangeException(nameof(symbol)),
             };
