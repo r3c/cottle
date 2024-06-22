@@ -9,78 +9,38 @@ namespace Cottle.Test
     {
         private static readonly Value Return = 42;
         private const string Output = "abc";
-        private const string State = "test";
+        private const object? Runtime = null;
 
         [Test]
-        public void Create_Arbitrary()
+        public void CreateNative0()
         {
-            foreach (var arguments in new[] { new Value[] { 1 }, new Value[] { 1, 2 }, new Value[] { 1, 2, 3 } })
-            {
-                var function = Function.Create(FunctionTester.CreateImpureCallback(arguments));
+            var function = Function.CreateNative0((_, _) => FunctionTester.Return);
 
-                FunctionTester.AssertImpure(function, arguments, FunctionTester.Output);
-            }
+            FunctionTester.AssertNative(function, Array.Empty<Value>(), string.Empty);
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1 });
         }
 
         [Test]
-        public void Create_Exact()
-        {
-            var arguments = new Value[] { 1, 2, 3 };
-            var function = Function.Create(FunctionTester.CreateImpureCallback(arguments), 3);
-
-            FunctionTester.AssertImpure(function, arguments, FunctionTester.Output);
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1, 2 });
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1, 2, 3, 4 });
-        }
-
-        [Test]
-        public void Create_Range()
-        {
-            var arguments2 = new Value[] { 1, 2 };
-            var function2 = Function.Create(FunctionTester.CreateImpureCallback(arguments2), 2, 3);
-
-            FunctionTester.AssertImpure(function2, arguments2, FunctionTester.Output);
-            FunctionTester.AssertImpureFailure(function2, new Value[] { 1 });
-            FunctionTester.AssertImpureFailure(function2, new Value[] { 1, 2, 3, 4 });
-
-            var arguments3 = new Value[] { 1, 2, 3 };
-            var function3 = Function.Create(FunctionTester.CreateImpureCallback(arguments3), 2, 3);
-
-            FunctionTester.AssertImpure(function3, arguments3, FunctionTester.Output);
-            FunctionTester.AssertImpureFailure(function3, new Value[] { 1 });
-            FunctionTester.AssertImpureFailure(function3, new Value[] { 1, 2, 3, 4 });
-        }
-
-        [Test]
-        public void Create0()
-        {
-            var function = Function.Create0((_, _) => FunctionTester.Return);
-
-            FunctionTester.AssertImpure(function, Array.Empty<Value>(), string.Empty);
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1 });
-        }
-
-        [Test]
-        public void Create1()
+        public void CreateNative1()
         {
             var argument = (Value)17;
-            var function = Function.Create1((_, a0, _) =>
+            var function = Function.CreateNative1((_, a0, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument));
 
                 return FunctionTester.Return;
             });
 
-            FunctionTester.AssertImpure(function, new[] { argument }, string.Empty);
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1, 2 });
+            FunctionTester.AssertNative(function, new[] { argument }, string.Empty);
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1, 2 });
         }
 
         [Test]
-        public void Create2()
+        public void CreateNative2()
         {
             var argument0 = (Value)17;
             var argument1 = (Value)23;
-            var function = Function.Create2((_, a0, a1, _) =>
+            var function = Function.CreateNative2((_, a0, a1, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));
@@ -88,8 +48,8 @@ namespace Cottle.Test
                 return FunctionTester.Return;
             });
 
-            FunctionTester.AssertImpure(function, new[] { argument0, argument1 }, string.Empty);
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1 });
+            FunctionTester.AssertNative(function, new[] { argument0, argument1 }, string.Empty);
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1 });
         }
 
         [Test]
@@ -98,7 +58,7 @@ namespace Cottle.Test
             var argument0 = (Value)17;
             var argument1 = (Value)23;
             var argument2 = (Value)42;
-            var function = Function.Create3((_, a0, a1, a2, _) =>
+            var function = Function.CreateNative3((_, a0, a1, a2, _) =>
             {
                 Assert.That(a0, Is.EqualTo(argument0));
                 Assert.That(a1, Is.EqualTo(argument1));
@@ -107,48 +67,48 @@ namespace Cottle.Test
                 return FunctionTester.Return;
             });
 
-            FunctionTester.AssertImpure(function, new[] { argument0, argument1, argument2 }, string.Empty);
-            FunctionTester.AssertImpureFailure(function, new Value[] { 1, 2 });
+            FunctionTester.AssertNative(function, new[] { argument0, argument1, argument2 }, string.Empty);
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1, 2 });
         }
 
         [Test]
-        public void CreatePure_Arbitrary()
+        public void CreateNativeExact()
+        {
+            var arguments = new Value[] { 1, 2, 3 };
+            var function = Function.CreateNativeExact(FunctionTester.CreateNativeCallback(arguments), 3);
+
+            FunctionTester.AssertNative(function, arguments, FunctionTester.Output);
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1, 2 });
+            FunctionTester.AssertNativeFailure(function, new Value[] { 1, 2, 3, 4 });
+        }
+
+        [Test]
+        public void CreateNativeMinMax()
+        {
+            var arguments2 = new Value[] { 1, 2 };
+            var function2 = Function.CreateNativeMinMax(FunctionTester.CreateNativeCallback(arguments2), 2, 3);
+
+            FunctionTester.AssertNative(function2, arguments2, FunctionTester.Output);
+            FunctionTester.AssertNativeFailure(function2, new Value[] { 1 });
+            FunctionTester.AssertNativeFailure(function2, new Value[] { 1, 2, 3, 4 });
+
+            var arguments3 = new Value[] { 1, 2, 3 };
+            var function3 = Function.CreateNativeMinMax(FunctionTester.CreateNativeCallback(arguments3), 2, 3);
+
+            FunctionTester.AssertNative(function3, arguments3, FunctionTester.Output);
+            FunctionTester.AssertNativeFailure(function3, new Value[] { 1 });
+            FunctionTester.AssertNativeFailure(function3, new Value[] { 1, 2, 3, 4 });
+        }
+
+        [Test]
+        public void CreateNativeVariadic()
         {
             foreach (var arguments in new[] { new Value[] { 1 }, new Value[] { 1, 2 }, new Value[] { 1, 2, 3 } })
             {
-                var function = Function.CreatePure(FunctionTester.CreatePureCallback(arguments));
+                var function = Function.CreateNativeVariadic(FunctionTester.CreateNativeCallback(arguments));
 
-                FunctionTester.AssertPure(function, arguments);
+                FunctionTester.AssertNative(function, arguments, FunctionTester.Output);
             }
-        }
-
-        [Test]
-        public void CreatePure_Exact()
-        {
-            var arguments = new Value[] { 1, 2, 3 };
-            var function = Function.CreatePure(FunctionTester.CreatePureCallback(arguments), 3);
-
-            FunctionTester.AssertPure(function, arguments);
-            FunctionTester.AssertPureFailure(function, new Value[] { 1, 2 });
-            FunctionTester.AssertPureFailure(function, new Value[] { 1, 2, 3, 4 });
-        }
-
-        [Test]
-        public void CreatePure_Range()
-        {
-            var arguments2 = new Value[] { 1, 2 };
-            var function2 = Function.CreatePure(FunctionTester.CreatePureCallback(arguments2), 2, 3);
-
-            FunctionTester.AssertPure(function2, arguments2);
-            FunctionTester.AssertPureFailure(function2, new Value[] { 1 });
-            FunctionTester.AssertPureFailure(function2, new Value[] { 1, 2, 3, 4 });
-
-            var arguments3 = new Value[] { 1, 2, 3 };
-            var function3 = Function.CreatePure(FunctionTester.CreatePureCallback(arguments3), 2, 3);
-
-            FunctionTester.AssertPure(function3, arguments3);
-            FunctionTester.AssertPureFailure(function3, new Value[] { 1 });
-            FunctionTester.AssertPureFailure(function3, new Value[] { 1, 2, 3, 4 });
         }
 
         [Test]
@@ -211,60 +171,96 @@ namespace Cottle.Test
             FunctionTester.AssertPureFailure(function, new Value[] { 1, 2 });
         }
 
-        private static void AssertImpure(IFunction function, IReadOnlyList<Value> arguments, string output)
+        [Test]
+        public void CreatePureExact()
         {
-            using (var writer = new StringWriter())
-            {
-                var result = function.Invoke(FunctionTester.State, arguments, writer);
+            var arguments = new Value[] { 1, 2, 3 };
+            var function = Function.CreatePureExact(FunctionTester.CreatePureCallback(arguments), 3);
 
-                Assert.That(function.IsPure, Is.False);
-                Assert.That(result, Is.EqualTo(FunctionTester.Return));
-                Assert.That(writer.ToString(), Is.EqualTo(output));
+            FunctionTester.AssertPure(function, arguments);
+            FunctionTester.AssertPureFailure(function, new Value[] { 1, 2 });
+            FunctionTester.AssertPureFailure(function, new Value[] { 1, 2, 3, 4 });
+        }
+
+        [Test]
+        public void CreatePureMinMax()
+        {
+            var arguments2 = new Value[] { 1, 2 };
+            var function2 = Function.CreatePureMinMax(FunctionTester.CreatePureCallback(arguments2), 2, 3);
+
+            FunctionTester.AssertPure(function2, arguments2);
+            FunctionTester.AssertPureFailure(function2, new Value[] { 1 });
+            FunctionTester.AssertPureFailure(function2, new Value[] { 1, 2, 3, 4 });
+
+            var arguments3 = new Value[] { 1, 2, 3 };
+            var function3 = Function.CreatePureMinMax(FunctionTester.CreatePureCallback(arguments3), 2, 3);
+
+            FunctionTester.AssertPure(function3, arguments3);
+            FunctionTester.AssertPureFailure(function3, new Value[] { 1 });
+            FunctionTester.AssertPureFailure(function3, new Value[] { 1, 2, 3, 4 });
+        }
+
+        [Test]
+        public void CreatePureVariadic()
+        {
+            foreach (var arguments in new[] { new Value[] { 1 }, new Value[] { 1, 2 }, new Value[] { 1, 2, 3 } })
+            {
+                var function = Function.CreatePureVariadic(FunctionTester.CreatePureCallback(arguments));
+
+                FunctionTester.AssertPure(function, arguments);
             }
         }
 
-        private static void AssertImpureFailure(IFunction function, IReadOnlyList<Value> arguments)
+        private static void AssertNative(IFunction function, IReadOnlyList<Value> arguments, string output)
         {
-            using (var writer = new StringWriter())
-            {
-                var result = function.Invoke(FunctionTester.State, arguments, writer);
+            using var writer = new StringWriter();
 
-                Assert.That(function.IsPure, Is.False);
-                Assert.That(result, Is.EqualTo(Value.Undefined));
-                Assert.That(writer.ToString(), Is.Empty);
-            }
+            var result = function.Invoke(FunctionTester.Runtime, arguments, writer);
+
+            Assert.That(function.IsPure, Is.False);
+            Assert.That(result, Is.EqualTo(FunctionTester.Return));
+            Assert.That(writer.ToString(), Is.EqualTo(output));
+        }
+
+        private static void AssertNativeFailure(IFunction function, IReadOnlyList<Value> arguments)
+        {
+            using var writer = new StringWriter();
+
+            var result = function.Invoke(FunctionTester.Runtime, arguments, writer);
+
+            Assert.That(function.IsPure, Is.False);
+            Assert.That(result, Is.EqualTo(Value.Undefined));
+            Assert.That(writer.ToString(), Is.Empty);
         }
 
         private static void AssertPure(IFunction function, IReadOnlyList<Value> arguments)
         {
-            using (var writer = new StringWriter())
-            {
-                var result = function.Invoke(FunctionTester.State, arguments, writer);
+            using var writer = new StringWriter();
 
-                Assert.That(function.IsPure, Is.True);
-                Assert.That(result, Is.EqualTo(FunctionTester.Return));
-                Assert.That(writer.ToString(), Is.Empty);
-            }
+            var result = function.Invoke(FunctionTester.Runtime, arguments, writer);
+
+            Assert.That(function.IsPure, Is.True);
+            Assert.That(result, Is.EqualTo(FunctionTester.Return));
+            Assert.That(writer.ToString(), Is.Empty);
         }
 
         private static void AssertPureFailure(IFunction function, IReadOnlyList<Value> arguments)
         {
-            using (var writer = new StringWriter())
-            {
-                var result = function.Invoke(FunctionTester.State, arguments, writer);
+            using var writer = new StringWriter();
 
-                Assert.That(function.IsPure, Is.True);
-                Assert.That(result, Is.EqualTo(Value.Undefined));
-                Assert.That(writer.ToString(), Is.Empty);
-            }
+            var result = function.Invoke(FunctionTester.Runtime, arguments, writer);
+
+            Assert.That(function.IsPure, Is.True);
+            Assert.That(result, Is.EqualTo(Value.Undefined));
+            Assert.That(writer.ToString(), Is.Empty);
         }
 
-        private static Func<object, IReadOnlyList<Value>, TextWriter, Value> CreateImpureCallback(Value[] expected)
+        private static Func<object, IReadOnlyList<Value>, TextWriter, Value> CreateNativeCallback(Value[] expected)
         {
             return (state, arguments, output) =>
             {
                 Assert.That(arguments, Is.EqualTo(expected));
-                Assert.That(state, Is.EqualTo(FunctionTester.State));
+                Assert.That(state, Is.EqualTo(FunctionTester.Runtime));
 
                 output.Write(new[] { 'a', 'b', 'c' });
 
@@ -272,12 +268,12 @@ namespace Cottle.Test
             };
         }
 
-        private static Func<object, IReadOnlyList<Value>, Value> CreatePureCallback(Value[] expected)
+        private static Func<object?, IReadOnlyList<Value>, Value> CreatePureCallback(Value[] expected)
         {
             return (state, arguments) =>
             {
                 Assert.That(arguments, Is.EqualTo(expected));
-                Assert.That(state, Is.EqualTo(FunctionTester.State));
+                Assert.That(state, Is.EqualTo(FunctionTester.Runtime));
 
                 return FunctionTester.Return;
             };

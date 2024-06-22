@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Cottle.Functions
 {
-    using Callback = Func<object, IReadOnlyList<Value>, TextWriter, Value>;
+    using Callback = Func<IRuntime, IReadOnlyList<Value>, TextWriter, Value>;
 
     /// <summary>
     /// Function implementation with support for arbitrary number of arguments.
@@ -40,12 +40,12 @@ namespace Cottle.Functions
             return obj is IFunction other && Equals(other);
         }
 
-        public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+        public Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output)
         {
             if (arguments.Count < _min || arguments.Count > _max)
                 return Value.Undefined;
 
-            return _callback(state, arguments, output);
+            return _callback((IRuntime)state!, arguments, output);
         }
 
         public override int GetHashCode()

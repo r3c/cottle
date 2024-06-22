@@ -1,6 +1,6 @@
 namespace Cottle.Stores
 {
-    internal class ContextStore : IStore
+    internal class ContextStore : IRuntime, IStore
     {
         private readonly IContext _context;
 
