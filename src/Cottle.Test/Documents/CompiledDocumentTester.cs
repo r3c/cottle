@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cottle.Builtins;
 using Cottle.Exceptions;
 using NUnit.Framework;
 
@@ -27,6 +26,34 @@ namespace Cottle.Test.Documents
             Assert.That(() => AssertOutput(source, configuration, context, string.Empty), expectSuccess
                 ? Throws.Nothing
                 : Throws.TypeOf<NbCycleExceededException>().With.Property("NbCycleMax").EqualTo(nbCycleMax));
+        }
+
+        [Test]
+        public void Render_ExpressionFunction_Globals()
+        {
+            var context = Context.CreateCustom(new Dictionary<Value, Value>
+            {
+                ["function"] = Value.FromFunction(Function.CreateNative0((runtime, output) =>
+                {
+                    var globals = runtime.Globals;
+
+                    output.Write(globals.Count);
+                    output.Write(":");
+                    output.Write(globals["a"].AsString);
+                    output.Write(":");
+                    output.Write(globals["b"].AsString);
+                    output.Write(":");
+                    output.Write(globals["c"].AsString);
+
+                    return Value.Undefined;
+                })),
+                // "a" is set as global only
+                ["b"] = 0, // Declared in context and set as global
+                ["c"] = 3, // Declared in context only and referenced
+                ["d"] = 4 // Declared in context only and not referenced
+            });
+
+            AssertOutput("{set a to 1|set b to c - 1|function()}", new DocumentConfiguration(), context, "4:1:2:3");
         }
 
         [Test]

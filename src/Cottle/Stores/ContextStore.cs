@@ -1,7 +1,11 @@
+using Cottle.Maps;
+
 namespace Cottle.Stores
 {
     internal class ContextStore : IRuntime, IStore
     {
+        public IMap Globals => EmptyMap.Instance;
+
         private readonly IContext _context;
 
         private readonly IStore _store;
