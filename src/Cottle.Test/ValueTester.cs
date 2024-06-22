@@ -144,10 +144,10 @@ namespace Cottle.Test
             Assert.That(value.AsNumber, Is.EqualTo(17d));
 
             evaluable.Setup(e => e.Type).Returns(ValueContent.Function);
-            evaluable.Setup(e => e.AsFunction).Returns(Function.CreatePure((_, _) => 42));
+            evaluable.Setup(e => e.AsFunction).Returns(Function.CreatePureVariadic((_, _) => 42));
 
             Assert.That(value.Type, Is.EqualTo(ValueContent.Function));
-            Assert.That(value.AsFunction.Invoke(new(), Array.Empty<Value>(), TextWriter.Null),
+            Assert.That(value.AsFunction.Invoke(null, Array.Empty<Value>(), TextWriter.Null),
                 Is.EqualTo(Value.FromNumber(42)));
 
             evaluable.Setup(e => e.Type).Returns(ValueContent.String);
@@ -174,11 +174,11 @@ namespace Cottle.Test
         public static void FromFunction()
         {
             var expected = Value.FromNumber(59);
-            var value = Value.FromFunction(Function.CreatePure((_, _) => expected));
+            var value = Value.FromFunction(Function.CreatePureVariadic((_, _) => expected));
 
             Assert.That(value.Type, Is.EqualTo(ValueContent.Function));
             Assert.That(value.AsFunction.IsPure, Is.True);
-            Assert.That(value.AsFunction.Invoke(new(), Array.Empty<Value>(), TextWriter.Null), Is.EqualTo(expected));
+            Assert.That(value.AsFunction.Invoke(null, Array.Empty<Value>(), TextWriter.Null), Is.EqualTo(expected));
         }
 
         [Test]

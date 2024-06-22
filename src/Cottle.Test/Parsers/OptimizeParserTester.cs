@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Cottle.Maps;
 using Cottle.Parsers;
 using Moq;
@@ -11,12 +10,11 @@ namespace Cottle.Test.Parsers
 {
     public class OptimizeParserTester
     {
-        private static readonly Expression ImpureFunction =
-            Expression.CreateConstant(
-                Value.FromFunction(Function.Create((_, _, _) => Value.Undefined)));
+        private static readonly Expression NativeFunction =
+            Expression.CreateConstant(Value.FromFunction(Function.CreateNativeVariadic((_, _, _) => Value.Undefined)));
 
         private static readonly Expression PureFunction =
-            Expression.CreateConstant(Value.FromFunction(Function.CreatePure((_, _) => 0)));
+            Expression.CreateConstant(Value.FromFunction(Function.CreatePureVariadic((_, _) => 0)));
 
         [Test]
         public void Parse_ExpressionAccess_FindWhenPresentInConstantIndices()
@@ -192,7 +190,7 @@ namespace Cottle.Test.Parsers
         public void Parse_ExpressionInvoke_SkipImpureFunction()
         {
             // Expression: impure(1, 2)
-            var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.ImpureFunction,
+            var expression = OptimizeParserTester.Optimize(Expression.CreateInvoke(OptimizeParserTester.NativeFunction,
                 new[]
                 {
                     Expression.CreateConstant(1),

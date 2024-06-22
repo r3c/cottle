@@ -102,11 +102,13 @@ namespace Cottle.Functions
             return obj is IFunction other && Equals(other);
         }
 
-        public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+        public Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output)
         {
-            if (!(state is IStore store))
+            if (state is not IStore store)
+            {
                 throw new InvalidOperationException(
                     "You're calling an instance of `NativeFunction` from an incompatible document type. Please replace all usages of `NativeFunction` by calls to `Function.Create*` static methods.");
+            }
 
             if (_min > arguments.Count || _max >= 0 && _max < arguments.Count)
                 return Value.Undefined;

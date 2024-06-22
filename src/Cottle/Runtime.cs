@@ -5,7 +5,7 @@ using Cottle.Functions;
 
 namespace Cottle
 {
-    internal class Runtime
+    internal class Runtime : IRuntime
     {
         public readonly Value[] Globals;
 
@@ -30,10 +30,9 @@ namespace Cottle
 
             foreach (var modifier in _modifiers)
             {
-                if (modifier is FiniteFunction finiteModifier)
-                    value = finiteModifier.Invoke1(this, value, output);
-                else
-                    value = modifier.Invoke(this, new[] { value }, output);
+                value = modifier is FiniteFunction finiteModifier
+                    ? finiteModifier.Invoke1(this, value, output)
+                    : modifier.Invoke(this, new[] { value }, output);
             }
 
             return value.AsString;

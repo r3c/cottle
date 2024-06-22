@@ -40,9 +40,6 @@ namespace Cottle.Builtins
             var function = caller.AsFunction;
             var i = 0;
 
-            if (function is null)
-                return Value.Undefined;
-
             foreach (var pair in arguments.Fields)
                 fields[i++] = pair.Value;
 
@@ -70,7 +67,7 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly IFunction Cat = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Cat = Function.CreatePureMinMax((_, arguments) =>
         {
             switch (arguments[0].Type)
             {
@@ -121,7 +118,7 @@ namespace Cottle.Builtins
 
         private static readonly IFunction Cosine = Function.CreatePure1((_, value) => Math.Cos(value.AsNumber));
 
-        private static readonly IFunction Cross = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Cross = Function.CreatePureMinMax((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -152,7 +149,7 @@ namespace Cottle.Builtins
         private static readonly IFunction Defined =
             Function.CreatePure1((_, value) => value != Value.Undefined);
 
-        private static readonly IFunction Except = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Except = Function.CreatePureMinMax((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -177,14 +174,11 @@ namespace Cottle.Builtins
             return pairs;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Filter = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Filter = Function.CreatePureMinMax((state, arguments) =>
         {
             var forwards = new Value[arguments.Count - 1];
             var function = arguments[1].AsFunction;
             var result = new List<KeyValuePair<Value, Value>>(arguments[0].Fields.Count);
-
-            if (function is null)
-                return Value.Undefined;
 
             foreach (var pair in arguments[0].Fields)
             {
@@ -328,7 +322,7 @@ namespace Cottle.Builtins
                 return BuiltinFunctions.FormatCallback(a0, a1.AsString, cultureInfo);
             });
 
-        private static readonly IFunction Has = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Has = Function.CreatePureMinMax((_, arguments) =>
         {
             var source = arguments[0];
 
@@ -364,24 +358,16 @@ namespace Cottle.Builtins
             (_, a0, a1, _) => BuiltinFunctions.JoinCallback(a0, a1.AsString), null);
 
         private static readonly IFunction Length = Function.CreatePure1((_, value) =>
-        {
-            if (value.Type == ValueContent.Map)
-                return value.Fields.Count;
-
-            return value.AsString.Length;
-        });
+            value.Type == ValueContent.Map ? value.Fields.Count : value.AsString.Length);
 
         private static readonly IFunction LowerCase =
             Function.CreatePure1((_, value) => value.AsString.ToLowerInvariant());
 
-        private static readonly IFunction Map = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Map = Function.CreatePureMinMax((state, arguments) =>
         {
             var forwards = new Value[arguments.Count - 1];
             var function = arguments[1].AsFunction;
             var result = new KeyValuePair<Value, Value>[arguments[0].Fields.Count];
-
-            if (function is null)
-                return Value.Undefined;
 
             var i = 0;
 
@@ -392,8 +378,9 @@ namespace Cottle.Builtins
                 for (var j = 2; j < arguments.Count; ++j)
                     forwards[j - 1] = arguments[j];
 
-                result[i++] =
-                    new KeyValuePair<Value, Value>(pair.Key, function.Invoke(state, forwards, TextWriter.Null));
+                var mapped = function.Invoke(state, forwards, TextWriter.Null);
+
+                result[i++] = new KeyValuePair<Value, Value>(pair.Key, mapped);
             }
 
             return result;
@@ -414,7 +401,7 @@ namespace Cottle.Builtins
             return groups;
         });
 
-        private static readonly IFunction Maximum = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Maximum = Function.CreatePureMinMax((_, arguments) =>
         {
             var max = arguments[0].AsNumber;
 
@@ -424,7 +411,7 @@ namespace Cottle.Builtins
             return max;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Minimum = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Minimum = Function.CreatePureMinMax((_, arguments) =>
         {
             var min = arguments[0].AsNumber;
 
@@ -554,7 +541,7 @@ namespace Cottle.Builtins
             Value.FromEnumerable(source.AsString.Split(new[] { separator.AsString }, StringSplitOptions.None)
                 .Select(Value.FromString)));
 
-        private static readonly IFunction Token = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Token = Function.CreatePureMinMax((_, arguments) =>
         {
             var search = arguments[1].AsString;
             var source = arguments[0].AsString;
@@ -593,7 +580,7 @@ namespace Cottle.Builtins
         private static readonly IFunction Type =
             Function.CreatePure1((_, value) => value.Type.ToString().ToLowerInvariant());
 
-        private static readonly IFunction Union = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Union = Function.CreatePureMinMax((_, arguments) =>
         {
             var result = new Dictionary<Value, Value>();
 
@@ -613,7 +600,7 @@ namespace Cottle.Builtins
             (_, condition, truthy, _) => condition.AsBoolean ? truthy : Value.Undefined,
             (_, condition, truthy, falsy, _) => condition.AsBoolean ? truthy : falsy);
 
-        private static readonly IFunction Xor = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Xor = Function.CreatePureVariadic((_, arguments) =>
         {
             var count = 0;
 
@@ -646,7 +633,7 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly IReadOnlyDictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
+        private static readonly Dictionary<string, IFunction> InstanceDictionary = new()
         {
             { "abs", BuiltinFunctions.Absolute },
             { "add", BuiltinOperators.OperatorAdd },

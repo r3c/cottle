@@ -22,6 +22,6 @@ namespace Cottle
         /// <param name="arguments">Function argument values</param>
         /// <param name="output">Document output text writer</param>
         /// <returns>Function execution result</returns>
-        Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output);
+        Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output);
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading;
 using Cottle.Documents.Compiled;
 using Cottle.Functions;
 
@@ -12,16 +11,17 @@ namespace Cottle.Documents.Emitted
     internal class Emitter
     {
         private static readonly MethodInfo FiniteFunctionInvoke0 =
-            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(new(), TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke0(default!, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke1 =
-            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke1(new(), default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke1(default!, default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke2 =
-            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke2(new(), default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke2(default!, default, default, TextWriter.Null));
 
         private static readonly MethodInfo FiniteFunctionInvoke3 =
-            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke3(new(), default, default, default, TextWriter.Null));
+            Dynamic.GetMethod<Func<FiniteFunction, Value>>(f => f.Invoke3(default!, default, default, default,
+                TextWriter.Null));
 
         private static readonly FieldInfo FrameArguments =
             Dynamic.GetField<Func<Frame, IReadOnlyList<Value>>>(f => f.Arguments);
@@ -39,7 +39,7 @@ namespace Cottle.Documents.Emitted
             Dynamic.GetMethod<Action<Runtime>>(r => r.Wrap(Function.Empty));
 
         private static readonly MethodInfo FunctionInvoke =
-            Dynamic.GetMethod<Func<IFunction, Value>>(f => f.Invoke(new(), Array.Empty<Value>(), TextWriter.Null));
+            Dynamic.GetMethod<Func<IFunction, Value>>(f => f.Invoke(default, Array.Empty<Value>(), TextWriter.Null));
 
         private static readonly ConstructorInfo KeyValueConstructor =
             Dynamic.GetConstructor<Func<KeyValuePair<Value, Value>>>(() =>
