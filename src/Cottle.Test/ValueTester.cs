@@ -311,6 +311,7 @@ namespace Cottle.Test
             new TestCaseData(new ValuePropertyContainer<string> { Property = "abc" }, Value.FromDictionary(new Dictionary<Value, Value> { ["Property"] = "abc" })),
             new TestCaseData(new [] { 1, 3, 5 }, Value.FromEnumerable(new Value[] { 1, 3, 5 })),
             new TestCaseData(new [] { "a", "b", "c" }, Value.FromEnumerable(new Value[] { "a", "b", "c" })),
+            new TestCaseData(new List<bool> { true, true, false, false }, Value.FromEnumerable(new Value[] { true, true, false, false })),
             new TestCaseData(new Dictionary<int, string> { [1] = "one", [2] = "two", [3] = "three" }, Value.FromDictionary(new Dictionary<Value, Value> { [1] = "one", [2] = "two", [3] = "three" })),
             new TestCaseData(new Dictionary<string, int> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }, Value.FromDictionary(new Dictionary<Value, Value> { ["one"] = 1, ["two"] = 2, ["three"] = 3 }))
         };
