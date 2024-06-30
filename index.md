@@ -5,7 +5,7 @@ title: Cottle - High performance & lightweight template library for .NET
 
 <div style="text-align: center;">
     <a href="https://github.com/r3c/cottle/actions">
-        <img alt="Build Status" src="https://img.shields.io/github/workflow/status/r3c/cottle/build/master" />
+        <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/r3c/cottle/verify.yml?branch=master" />
     </a>
     <a href="https://www.nuget.org/packages/Cottle/">
         <img alt="NuGet" src="https://img.shields.io/nuget/v/Cottle.svg" />
