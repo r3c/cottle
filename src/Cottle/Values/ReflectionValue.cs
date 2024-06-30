@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Cottle.Evaluables;
 
 namespace Cottle.Values
 {
@@ -24,7 +23,7 @@ namespace Cottle.Values
 
         protected override Value Resolve()
         {
-            return ReflectionEvaluable.CreateValue(_source, _bindingFlags);
+            return Value.FromReflection(_source, _bindingFlags);
         }
     }
 }
