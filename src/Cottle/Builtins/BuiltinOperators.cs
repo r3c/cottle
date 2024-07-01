@@ -7,7 +7,7 @@ namespace Cottle.Builtins
         public static readonly IFunction OperatorAdd =
             Function.CreatePure2((_, lhs, rhs) => lhs.AsNumber + rhs.AsNumber);
 
-        public static readonly IFunction OperatorAnd = Function.CreatePure((_, arguments) =>
+        public static readonly IFunction OperatorAnd = Function.CreatePureVariadic((_, arguments) =>
         {
             foreach (var argument in arguments)
             {
@@ -28,7 +28,7 @@ namespace Cottle.Builtins
             return lhs.AsNumber / denominator;
         });
 
-        public static readonly IFunction OperatorEqual = Function.CreatePure((_, arguments) =>
+        public static readonly IFunction OperatorEqual = Function.CreatePureMinMax((_, arguments) =>
         {
             var first = arguments[0];
 
@@ -68,7 +68,7 @@ namespace Cottle.Builtins
 
         public static readonly IFunction OperatorNot = Function.CreatePure1((_, value) => !value.AsBoolean);
 
-        public static readonly IFunction OperatorNotEqual = Function.CreatePure((_, arguments) =>
+        public static readonly IFunction OperatorNotEqual = Function.CreatePureMinMax((_, arguments) =>
         {
             var first = arguments[0];
 
@@ -81,7 +81,7 @@ namespace Cottle.Builtins
             return true;
         }, 1, int.MaxValue);
 
-        public static readonly IFunction OperatorOr = Function.CreatePure((_, arguments) =>
+        public static readonly IFunction OperatorOr = Function.CreatePureVariadic((_, arguments) =>
         {
             foreach (var argument in arguments)
             {

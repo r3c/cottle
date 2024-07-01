@@ -58,7 +58,7 @@ namespace Cottle.Documents.Evaluated.StatementExecutors.Assign
                 return RuntimeHelpers.GetHashCode(this);
             }
 
-            public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+            public Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output)
             {
                 if (state is not Runtime runtime)
                     throw new InvalidOperationException(

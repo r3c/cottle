@@ -58,7 +58,7 @@ namespace Cottle.Parsers.Optimize
                     return expression;
 
                 var arguments = expression.Arguments.Select(a => a.Value).ToList();
-                var result = source.AsFunction.Invoke(null!, arguments, TextWriter.Null);
+                var result = source.AsFunction.Invoke(null, arguments, TextWriter.Null);
 
                 return Expression.CreateConstant(result);
             },

@@ -21,18 +21,12 @@ namespace Cottle.Documents.Simple.Evaluators
         {
             var source = _caller.Evaluate(store, output);
             var function = source.AsFunction;
+            var values = new Value[_arguments.Count];
 
-            if (function is not null)
-            {
-                var values = new Value[_arguments.Count];
+            for (var i = 0; i < _arguments.Count; ++i)
+                values[i] = _arguments[i].Evaluate(store, output);
 
-                for (var i = 0; i < _arguments.Count; ++i)
-                    values[i] = _arguments[i].Evaluate(store, output);
-
-                return function.Invoke(store, values, output);
-            }
-
-            return Value.Undefined;
+            return function.Invoke(store, values, output);
         }
 
         public override string ToString()

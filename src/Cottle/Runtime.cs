@@ -1,23 +1,30 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Cottle.Exceptions;
 using Cottle.Functions;
+using Cottle.Maps;
 
 namespace Cottle
 {
-    internal class Runtime
+    internal class Runtime : IRuntime
     {
-        public readonly Value[] Globals;
+        public IMap Globals => new MixMap(
+            _globalKeys.Zip(GlobalValues, (key, value) => new KeyValuePair<Value, Value>(key, value)));
 
+        public readonly Value[] GlobalValues;
+
+        private readonly IReadOnlyList<Value> _globalKeys;
         private readonly Stack<IFunction> _modifiers;
         private readonly int? _nbCycleMax;
 
         private int _nbCycle;
 
-        public Runtime(Value[] globals, int? nbCycleMax)
+        public Runtime(IReadOnlyList<Value> globalKeys, Value[] globalValues, int? nbCycleMax)
         {
-            Globals = globals;
+            GlobalValues = globalValues;
 
+            _globalKeys = globalKeys;
             _modifiers = new Stack<IFunction>();
             _nbCycleMax = nbCycleMax;
             _nbCycle = 0;
@@ -30,10 +37,9 @@ namespace Cottle
 
             foreach (var modifier in _modifiers)
             {
-                if (modifier is FiniteFunction finiteModifier)
-                    value = finiteModifier.Invoke1(this, value, output);
-                else
-                    value = modifier.Invoke(this, new[] { value }, output);
+                value = modifier is FiniteFunction finiteModifier
+                    ? finiteModifier.Invoke1(this, value, output)
+                    : modifier.Invoke(this, new[] { value }, output);
             }
 
             return value.AsString;

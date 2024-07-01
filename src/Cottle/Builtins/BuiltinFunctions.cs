@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -34,19 +33,16 @@ namespace Cottle.Builtins
 
         private static readonly IFunction Absolute = Function.CreatePure1((_, value) => Math.Abs(value.AsNumber));
 
-        private static readonly IFunction Call = Function.CreatePure2((state, caller, arguments) =>
+        private static readonly IFunction Call = Function.CreateNative2((runtime, caller, arguments, output) =>
         {
             var fields = new Value[arguments.Fields.Count];
             var function = caller.AsFunction;
             var i = 0;
 
-            if (function is null)
-                return Value.Undefined;
-
             foreach (var pair in arguments.Fields)
                 fields[i++] = pair.Value;
 
-            return function.Invoke(state, fields, TextWriter.Null);
+            return function.Invoke(runtime, fields, output);
         });
 
         private static readonly IFunction Cast = Function.CreatePure2((_, value, type) =>
@@ -70,7 +66,7 @@ namespace Cottle.Builtins
             }
         });
 
-        private static readonly IFunction Cat = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Cat = Function.CreatePureMinMax((_, arguments) =>
         {
             switch (arguments[0].Type)
             {
@@ -121,7 +117,7 @@ namespace Cottle.Builtins
 
         private static readonly IFunction Cosine = Function.CreatePure1((_, value) => Math.Cos(value.AsNumber));
 
-        private static readonly IFunction Cross = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Cross = Function.CreatePureMinMax((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -152,7 +148,7 @@ namespace Cottle.Builtins
         private static readonly IFunction Defined =
             Function.CreatePure1((_, value) => value != Value.Undefined);
 
-        private static readonly IFunction Except = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Except = Function.CreatePureMinMax((_, arguments) =>
         {
             var pairs = new List<KeyValuePair<Value, Value>>();
 
@@ -177,14 +173,11 @@ namespace Cottle.Builtins
             return pairs;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Filter = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Filter = Function.CreateNativeMinMax((runtime, arguments, output) =>
         {
             var forwards = new Value[arguments.Count - 1];
             var function = arguments[1].AsFunction;
             var result = new List<KeyValuePair<Value, Value>>(arguments[0].Fields.Count);
-
-            if (function is null)
-                return Value.Undefined;
 
             foreach (var pair in arguments[0].Fields)
             {
@@ -193,7 +186,7 @@ namespace Cottle.Builtins
                 for (var i = 2; i < arguments.Count; ++i)
                     forwards[i - 1] = arguments[i];
 
-                if (function.Invoke(state, forwards, TextWriter.Null).AsBoolean)
+                if (function.Invoke(runtime, forwards, output).AsBoolean)
                     result.Add(new KeyValuePair<Value, Value>(pair.Key, pair.Value));
             }
 
@@ -328,7 +321,7 @@ namespace Cottle.Builtins
                 return BuiltinFunctions.FormatCallback(a0, a1.AsString, cultureInfo);
             });
 
-        private static readonly IFunction Has = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Has = Function.CreatePureMinMax((_, arguments) =>
         {
             var source = arguments[0];
 
@@ -364,24 +357,16 @@ namespace Cottle.Builtins
             (_, a0, a1, _) => BuiltinFunctions.JoinCallback(a0, a1.AsString), null);
 
         private static readonly IFunction Length = Function.CreatePure1((_, value) =>
-        {
-            if (value.Type == ValueContent.Map)
-                return value.Fields.Count;
-
-            return value.AsString.Length;
-        });
+            value.Type == ValueContent.Map ? value.Fields.Count : value.AsString.Length);
 
         private static readonly IFunction LowerCase =
             Function.CreatePure1((_, value) => value.AsString.ToLowerInvariant());
 
-        private static readonly IFunction Map = Function.CreatePure((state, arguments) =>
+        private static readonly IFunction Map = Function.CreateNativeMinMax((runtime, arguments, output) =>
         {
             var forwards = new Value[arguments.Count - 1];
             var function = arguments[1].AsFunction;
             var result = new KeyValuePair<Value, Value>[arguments[0].Fields.Count];
-
-            if (function is null)
-                return Value.Undefined;
 
             var i = 0;
 
@@ -392,8 +377,9 @@ namespace Cottle.Builtins
                 for (var j = 2; j < arguments.Count; ++j)
                     forwards[j - 1] = arguments[j];
 
-                result[i++] =
-                    new KeyValuePair<Value, Value>(pair.Key, function.Invoke(state, forwards, TextWriter.Null));
+                var mapped = function.Invoke(runtime, forwards, output);
+
+                result[i++] = new KeyValuePair<Value, Value>(pair.Key, mapped);
             }
 
             return result;
@@ -414,7 +400,7 @@ namespace Cottle.Builtins
             return groups;
         });
 
-        private static readonly IFunction Maximum = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Maximum = Function.CreatePureMinMax((_, arguments) =>
         {
             var max = arguments[0].AsNumber;
 
@@ -424,7 +410,7 @@ namespace Cottle.Builtins
             return max;
         }, 1, int.MaxValue);
 
-        private static readonly IFunction Minimum = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Minimum = Function.CreatePureMinMax((_, arguments) =>
         {
             var min = arguments[0].AsNumber;
 
@@ -511,14 +497,13 @@ namespace Cottle.Builtins
 
             var target = new List<Value>(count);
 
-            using (var enumerator = source.Fields.GetEnumerator())
-            {
-                while (index > 0 && enumerator.MoveNext())
-                    --index;
+            using var enumerator = source.Fields.GetEnumerator();
 
-                while (count-- > 0 && enumerator.MoveNext())
-                    target.Add(enumerator.Current.Value);
-            }
+            while (index > 0 && enumerator.MoveNext())
+                --index;
+
+            while (count-- > 0 && enumerator.MoveNext())
+                target.Add(enumerator.Current.Value);
 
             return target;
         }
@@ -537,9 +522,11 @@ namespace Cottle.Builtins
             return sorted;
         }
 
-        private static readonly IFunction Sort = new FiniteFunction(true, null,
+        private static readonly IFunction Sort = new FiniteFunction(
+            false,
+            null,
             (_, a0, _) => BuiltinFunctions.SortCallback(a0.Fields, (a, b) => a.Value.CompareTo(b.Value)),
-            (s, a0, a1, _) =>
+            (runtime, a0, a1, output) =>
             {
                 if (a1.Type != ValueContent.Function)
                     return Value.Undefined;
@@ -547,14 +534,15 @@ namespace Cottle.Builtins
                 var comparison = a1.AsFunction;
 
                 return BuiltinFunctions.SortCallback(a0.Fields, (a, b) =>
-                    (int)comparison.Invoke(s, new[] { a.Value, b.Value }, TextWriter.Null).AsNumber);
-            }, null);
+                    (int)comparison.Invoke(runtime, new[] { a.Value, b.Value }, output).AsNumber);
+            },
+            null);
 
         private static readonly IFunction Split = Function.CreatePure2((_, source, separator) =>
             Value.FromEnumerable(source.AsString.Split(new[] { separator.AsString }, StringSplitOptions.None)
                 .Select(Value.FromString)));
 
-        private static readonly IFunction Token = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Token = Function.CreatePureMinMax((_, arguments) =>
         {
             var search = arguments[1].AsString;
             var source = arguments[0].AsString;
@@ -578,22 +566,26 @@ namespace Cottle.Builtins
             {
                 if (start < 0)
                     return string.Empty;
+
                 if (stop < 0)
                     return source.Substring(start);
+
                 return source.Substring(start, stop - start);
             }
 
             if (start < 0)
                 return source + search + arguments[3].AsString;
+
             if (stop < 0)
                 return source.Substring(0, start) + arguments[3].AsString;
+
             return source.Substring(0, start) + arguments[3].AsString + source.Substring(stop);
         }, 3, 4);
 
         private static readonly IFunction Type =
             Function.CreatePure1((_, value) => value.Type.ToString().ToLowerInvariant());
 
-        private static readonly IFunction Union = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Union = Function.CreatePureMinMax((_, arguments) =>
         {
             var result = new Dictionary<Value, Value>();
 
@@ -613,17 +605,22 @@ namespace Cottle.Builtins
             (_, condition, truthy, _) => condition.AsBoolean ? truthy : Value.Undefined,
             (_, condition, truthy, falsy, _) => condition.AsBoolean ? truthy : falsy);
 
-        private static readonly IFunction Xor = Function.CreatePure((_, arguments) =>
+        private static readonly IFunction Xor = Function.CreatePureVariadic((_, arguments) =>
         {
-            var count = 0;
+            var result = false;
 
             foreach (var value in arguments)
             {
-                if (value.AsBoolean)
-                    ++count;
+                if (!value.AsBoolean)
+                    continue;
+
+                if (result)
+                    return false;
+
+                result = true;
             }
 
-            return count == 1;
+            return result;
         });
 
         private static readonly IFunction Zip = Function.CreatePure2((_, first, second) =>
@@ -631,22 +628,18 @@ namespace Cottle.Builtins
             var firstMap = first.Fields;
             var secondMap = second.Fields;
 
-            using (var enumerator1 = firstMap.GetEnumerator())
-            {
-                using (var enumerator2 = secondMap.GetEnumerator())
-                {
-                    var result = new List<KeyValuePair<Value, Value>>(Math.Min(firstMap.Count, secondMap.Count));
+            using var enumerator1 = firstMap.GetEnumerator();
+            using var enumerator2 = secondMap.GetEnumerator();
 
-                    while (enumerator1.MoveNext() && enumerator2.MoveNext())
-                        result.Add(new KeyValuePair<Value, Value>(enumerator1.Current.Value,
-                            enumerator2.Current.Value));
+            var result = new List<KeyValuePair<Value, Value>>(Math.Min(firstMap.Count, secondMap.Count));
 
-                    return result;
-                }
-            }
+            while (enumerator1.MoveNext() && enumerator2.MoveNext())
+                result.Add(new KeyValuePair<Value, Value>(enumerator1.Current.Value, enumerator2.Current.Value));
+
+            return result;
         });
 
-        private static readonly IReadOnlyDictionary<string, IFunction> InstanceDictionary = new Dictionary<string, IFunction>
+        private static readonly Dictionary<string, IFunction> InstanceDictionary = new()
         {
             { "abs", BuiltinFunctions.Absolute },
             { "add", BuiltinOperators.OperatorAdd },

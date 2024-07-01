@@ -10,8 +10,8 @@ namespace Cottle.Documents
     {
         private readonly RenderConfiguration _configuration;
         private readonly TExecutable _executable;
-        private readonly IReadOnlyList<Value> _globals;
-        private readonly int _locals;
+        private readonly IReadOnlyList<Value> _globalKeys;
+        private readonly int _localCount;
 
         protected CompiledDocument(IAssembler<TAssembly> assembler, Func<TAssembly, TExecutable> compile,
             RenderConfiguration configuration, Statement statement)
@@ -20,20 +20,20 @@ namespace Cottle.Documents
 
             _configuration = configuration;
             _executable = compile(assembly);
-            _globals = globals;
-            _locals = locals;
+            _globalKeys = globals;
+            _localCount = locals;
         }
 
         public Value Render(IContext context, TextWriter writer)
         {
-            var globals = new Value[_globals.Count];
+            var globalValues = new Value[_globalKeys.Count];
 
-            for (var i = 0; i < _globals.Count; ++i)
-                globals[i] = context[_globals[i]];
+            for (var i = 0; i < _globalKeys.Count; ++i)
+                globalValues[i] = context[_globalKeys[i]];
 
-            var runtime = new Runtime(globals, _configuration.NbCycleMax);
+            var runtime = new Runtime(_globalKeys, globalValues, _configuration.NbCycleMax);
 
-            return Execute(_executable, runtime, _locals, writer);
+            return Execute(_executable, runtime, _localCount, writer);
         }
 
         public string Render(IContext context)

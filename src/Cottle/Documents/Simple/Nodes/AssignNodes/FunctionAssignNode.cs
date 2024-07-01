@@ -45,11 +45,13 @@ namespace Cottle.Documents.Simple.Nodes.AssignNodes
             }
         }
 
-        public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+        public Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output)
         {
-            if (!(state is IStore store))
+            if (state is not IStore store)
+            {
                 throw new InvalidOperationException(
                     $"Invalid function invoke, you seem to have injected a function declared in a {nameof(SimpleDocument)} from another type of document.");
+            }
 
             store.Enter();
 

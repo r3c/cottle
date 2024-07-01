@@ -133,5 +133,25 @@ namespace Cottle.Test.Builtins
         {
             BuiltinFunctionsTester.AssertPrint(template, expected);
         }
+
+        [Test]
+        [TestCase("xor(0)", "")]
+        [TestCase("xor(1)", "true")]
+        [TestCase("xor(0, 0)", "")]
+        [TestCase("xor(0, 1)", "true")]
+        [TestCase("xor(1, 0)", "true")]
+        [TestCase("xor(1, 1)", "")]
+        [TestCase("xor(0, 0, 0)", "")]
+        [TestCase("xor(0, 0, 1)", "true")]
+        [TestCase("xor(0, 1, 0)", "true")]
+        [TestCase("xor(0, 1, 1)", "")]
+        [TestCase("xor(1, 0, 0)", "true")]
+        [TestCase("xor(1, 0, 1)", "")]
+        [TestCase("xor(1, 1, 0)", "")]
+        [TestCase("xor(1, 1, 1)", "")]
+        public void FunctionXor(string template, string expected)
+        {
+            BuiltinFunctionsTester.AssertPrint(template, expected);
+        }
     }
 }

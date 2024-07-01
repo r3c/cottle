@@ -4,10 +4,10 @@ using System.IO;
 
 namespace Cottle.Functions
 {
-    using Callback0 = Func<object, TextWriter, Value>;
-    using Callback1 = Func<object, Value, TextWriter, Value>;
-    using Callback2 = Func<object, Value, Value, TextWriter, Value>;
-    using Callback3 = Func<object, Value, Value, Value, TextWriter, Value>;
+    using Callback0 = Func<IRuntime, TextWriter, Value>;
+    using Callback1 = Func<IRuntime, Value, TextWriter, Value>;
+    using Callback2 = Func<IRuntime, Value, Value, TextWriter, Value>;
+    using Callback3 = Func<IRuntime, Value, Value, Value, TextWriter, Value>;
 
     /// <summary>
     /// Function implementation with support for fixed number of arguments (from 0 to 3). This implementation allows
@@ -52,45 +52,38 @@ namespace Cottle.Functions
             return obj is IFunction other && Equals(other);
         }
 
-        public Value Invoke(object state, IReadOnlyList<Value> arguments, TextWriter output)
+        public Value Invoke(object? state, IReadOnlyList<Value> arguments, TextWriter output)
         {
-            switch (arguments.Count)
+            var runtime = (IRuntime)state!;
+
+            return arguments.Count switch
             {
-                case 0:
-                    return Invoke0(state, output);
-
-                case 1:
-                    return Invoke1(state, arguments[0], output);
-
-                case 2:
-                    return Invoke2(state, arguments[0], arguments[1], output);
-
-                case 3:
-                    return Invoke3(state, arguments[0], arguments[1], arguments[2], output);
-
-                default:
-                    return Value.Undefined;
-            }
+                0 => Invoke0(runtime, output),
+                1 => Invoke1(runtime, arguments[0], output),
+                2 => Invoke2(runtime, arguments[0], arguments[1], output),
+                3 => Invoke3(runtime, arguments[0], arguments[1], arguments[2], output),
+                _ => Value.Undefined
+            };
         }
 
-        public Value Invoke0(object state, TextWriter output)
+        public Value Invoke0(IRuntime runtime, TextWriter output)
         {
-            return _callback0.Invoke(state, output);
+            return _callback0.Invoke(runtime, output);
         }
 
-        public Value Invoke1(object state, Value argument0, TextWriter output)
+        public Value Invoke1(IRuntime runtime, Value argument0, TextWriter output)
         {
-            return _callback1.Invoke(state, argument0, output);
+            return _callback1.Invoke(runtime, argument0, output);
         }
 
-        public Value Invoke2(object state, Value argument0, Value argument1, TextWriter output)
+        public Value Invoke2(IRuntime runtime, Value argument0, Value argument1, TextWriter output)
         {
-            return _callback2.Invoke(state, argument0, argument1, output);
+            return _callback2.Invoke(runtime, argument0, argument1, output);
         }
 
-        public Value Invoke3(object state, Value argument0, Value argument1, Value argument2, TextWriter output)
+        public Value Invoke3(IRuntime runtime, Value argument0, Value argument1, Value argument2, TextWriter output)
         {
-            return _callback3.Invoke(state, argument0, argument1, argument2, output);
+            return _callback3.Invoke(runtime, argument0, argument1, argument2, output);
         }
 
         public override int GetHashCode()

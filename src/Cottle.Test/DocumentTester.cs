@@ -153,7 +153,7 @@ namespace Cottle.Test
         {
             var context = Context.CreateCustom(new Dictionary<Value, Value>
             {
-                ["f"] = Value.FromFunction(Function.CreatePure((_, args) =>
+                ["f"] = Value.FromFunction(Function.CreatePureVariadic((_, args) =>
                     string.Concat(args[0].AsString, args[1].AsString, args[2].AsString, args[3].AsString)))
             });
 
