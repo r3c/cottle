@@ -87,36 +87,27 @@ namespace Cottle.Evaluables
 
         private static Func<TSource, Value> CreateConverter<TSource>(BindingFlags bindingFlags)
         {
-            var type = typeof(TSource);
-            var interfaces = type.GetInterfaces();
+            var enumerable = typeof(TSource)
+                .GetInterfaces()
+                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
-            // Convert dictionary to dictionary-like map value
-            // TODO: support `IEnumerable<KeyValuePair<,>>`
-            var dictionary = interfaces.FirstOrDefault(
-                i => i.IsGenericType && (i.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
-                                         i.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)));
+            // Convert object fields and properties if not enumerable
+            if (enumerable is null)
+                return CreateConverterFromObject<TSource>(bindingFlags);
 
-            if (dictionary is not null)
+            var elementType = enumerable.GetGenericArguments()[0];
+
+            // Convert dictionary-like map value if element type is KeyValuePair<TKey, TValue>
+            if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
             {
-                var keyType = dictionary.GetGenericArguments()[0];
-                var valueType = dictionary.GetGenericArguments()[1];
+                var keyType = elementType.GetGenericArguments()[0];
+                var valueType = elementType.GetGenericArguments()[1];
 
                 return CreateConverterFromDictionary<TSource>(bindingFlags, keyType, valueType);
             }
 
-            // Convert enumerable to array-like map value
-            var enumerable = interfaces.FirstOrDefault(
-                i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-
-            if (enumerable is not null)
-            {
-                var elementType = enumerable.GetGenericArguments()[0];
-
-                return CreateConverterFromEnumerable<TSource>(bindingFlags, elementType);
-            }
-
-            // Otherwise browse object fields and properties
-            return CreateConverterFromObject<TSource>(bindingFlags);
+            // Otherwise convert to array-like map value
+            return CreateConverterFromEnumerable<TSource>(bindingFlags, elementType);
         }
 
         private static Func<TSource, Value> CreateConverterFromDictionary<TSource>(BindingFlags bindingFlags,
