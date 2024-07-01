@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Cottle.Exceptions;
 using Cottle.Maps;
 using Moq;
@@ -277,6 +276,8 @@ namespace Cottle.Test
 
         private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldBrowseSchema_Input = new[]
         {
+            new TestCaseData(17, Value.FromNumber(17)),
+            new TestCaseData("abc", Value.FromString("abc")),
             new TestCaseData(new ReferenceFieldContainer<bool> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
             new TestCaseData(new ReferenceFieldContainer<bool?> { Field = true }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = true })),
             new TestCaseData(new ReferenceFieldContainer<bool?> { Field = null }, Value.FromDictionary(new Dictionary<Value, Value> { ["Field"] = Value.Undefined })),
@@ -325,23 +326,6 @@ namespace Cottle.Test
             Assert.That(value, Is.EqualTo(expected));
         }
 
-        [Test]
-        public static void FromReflection_ShouldBeLazy()
-        {
-            var loop = new RecursiveContainer();
-
-            loop.Child = loop;
-
-            var value = Value.FromReflection(loop, BindingFlags.Instance | BindingFlags.Public);
-
-            for (var depth = 0; depth < 10; ++depth)
-            {
-                Assert.That(value.Type, Is.EqualTo(ValueContent.Map));
-
-                value = value.Fields["Child"];
-            }
-        }
-
         private static readonly IReadOnlyList<TestCaseData> FromReflection_ShouldFollowBinding_Input = new[]
         {
             new TestCaseData(default(BindingFlags), string.Empty),
@@ -362,14 +346,46 @@ namespace Cottle.Test
             Assert.That(code, Is.EqualTo(expected));
         }
 
+        [Test]
+        public static void FromReflection_ShouldLazilyResolve()
+        {
+            var loop = new RecursiveContainer();
+
+            loop.Child = loop;
+
+            var value = Value.FromReflection(loop, BindingFlags.Instance | BindingFlags.Public);
+
+            for (var depth = 0; depth < 10; ++depth)
+            {
+                Assert.That(value.Type, Is.EqualTo(ValueContent.Map));
+
+                value = value.Fields["Child"];
+            }
+        }
+
 #if NET7_0_OR_GREATER
+        [Test]
+        public static void FromReflection_ShouldLazilyScan()
+        {
+            var source = new ReferenceFieldContainer<ReadOnlySpanContainer1>();
+            var value = Value.FromReflection(source, BindingFlags.Instance | BindingFlags.Public);
+
+            Assert.DoesNotThrow(() => value.Fields.TryGet("Field", out _));
+
+            var field = value.Fields["Field"];
+            var exception = Assert.Throws<UnconvertiblePropertyException>(() => field.Fields.TryGet("Field", out _));
+
+            Assert.That(exception!.PropertyInfo.Name, Is.EqualTo("Field"));
+        }
+
         [Test]
         public static void FromReflection_ShouldThrowException()
         {
-            var value = Value.FromReflection(Encoding.UTF8, BindingFlags.Instance | BindingFlags.Public);
-            var exception = Assert.Throws<UnconvertiblePropertyException>(() => value.Fields.TryGet("Preamble", out _));
+            var source = new ReadOnlySpanContainer2();
+            var value = Value.FromReflection(source, BindingFlags.Instance | BindingFlags.Public);
+            var exception = Assert.Throws<UnconvertiblePropertyException>(() => value.Fields.TryGet("Field", out _));
 
-            Assert.That(exception!.PropertyInfo.Name, Is.EqualTo("Preamble"));
+            Assert.That(exception!.PropertyInfo.Name, Is.EqualTo("Field"));
         }
 #endif
 
@@ -419,6 +435,20 @@ namespace Cottle.Test
             Assert.That(Value.Zero.Type, Is.EqualTo(ValueContent.Number));
             Assert.That(Value.Zero.AsNumber, Is.EqualTo(0));
         }
+
+#if NET7_0_OR_GREATER
+        private class ReadOnlySpanContainer1
+        {
+            // ReSharper disable once UnusedMember.Local
+            public ReadOnlySpan<byte> Field => Array.Empty<byte>();
+        }
+
+        private class ReadOnlySpanContainer2
+        {
+            // ReSharper disable once UnusedMember.Local
+            public ReadOnlySpan<byte> Field => Array.Empty<byte>();
+        }
+#endif
 
         private class RecursiveContainer
         {

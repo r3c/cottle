@@ -3,12 +3,12 @@ using System.Reflection;
 
 namespace Cottle.Exceptions
 {
-    public sealed class UnconvertiblePropertyException : Exception
+    public sealed class UnconvertiblePropertyException : ReflectionTypeException
     {
         public PropertyInfo PropertyInfo { get; }
 
         public UnconvertiblePropertyException(PropertyInfo propertyInfo, Exception innerException)
-            : base($"Unable to create converter for property '{propertyInfo}'", innerException)
+            : base(propertyInfo.PropertyType, innerException)
         {
             PropertyInfo = propertyInfo;
         }

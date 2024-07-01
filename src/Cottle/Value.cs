@@ -264,7 +264,7 @@ namespace Cottle
 
         public static Value FromReflection<TSource>(TSource source, BindingFlags bindingFlags)
         {
-            return ReflectionEvaluable.CreateValue(source, bindingFlags);
+            return new Value(ReflectionEvaluable.CreateEvaluable(source, bindingFlags));
         }
 
         public static Value FromString(string? value)
