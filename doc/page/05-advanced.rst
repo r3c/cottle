@@ -198,7 +198,7 @@ Native .NET functions
 
 If you need new features or improved performance, you can assign your own .NET methods to template variables so they're available as Cottle functions. That's actually what Cottle does when you use :meth:`Context.CreateBuiltin` method: a set of Cottle methods is added to your context, and you can have a look at the source code to see how these methods work.
 
-To pass a function in a context, use one of the methods from :type:`Function` class, then pass it to :meth:`Value.FromFunction` method to wrap it into a value you can add to a context:
+To pass a function in a context, use one of the creation methods from :type:`Function` class, then pass it to :meth:`Value.FromFunction` method to wrap it into a value you can add to a context:
 
 .. code-block:: plain
     :caption: Cottle template
@@ -237,19 +237,19 @@ To pass a function in a context, use one of the methods from :type:`Function` cl
 Static class :type:`Function` supports multiple methods to create Cottle functions. Each method expects a .NET callback that contains the code to be executed when the method is invoked, and some of them also ask for the accepted number of parameters for the function being defined. Methods from :type:`Function` are defined across a combination of 2 criteria:
 
 * Whether they're having side effects or not:
-    * Methods :meth:`Function.CreatePure`, :meth:`Function.CreatePure1` and :meth:`Function.CreatePure2` must be pure functions having no side effect and not relying on anything but their arguments. This assumption is used by Cottle to perform optimizations in your templates. For this reason their callbacks don't receive a ``TextWriter`` argument as pure methods are not allowed to write anything to output.
-    * Methods :meth:`Function.Create`, :meth:`Function.Create1` and :meth:`Function.Create2` are allowed to perform side effects but will be excluded from most optimizations. Their callbacks receive a ``TextWriter`` argument so they can write any text contents to it.
+    * Methods ``Function.CreateNative*`` (e.g. :meth:`Function.CreateNativeExact`) are allowed to perform side effects but will be excluded from most optimizations. Their callbacks receive a :type:`IRuntime` instance to access runtime information such as global variables, and a :type:`System.IO.TextWriter` instance so they can write any text contents to it.
+    * Methods ``Function.CreatePure*`` (e.g. :meth:`Function.CreatePureVariadic`) must be pure functions having no side effect and not relying on anything but their arguments. This assumption is used by Cottle to perform optimizations in your templates.
 * How many arguments they accept:
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with no integer argument accept any number of arguments, it is the responsibility of provided callback to validate this number.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with a ``count`` integer accept exactly this number of arguments or return an undefined value otherwise.
-    * Methods :meth:`Function.Create` and :meth:`Function.CreatePure` with two ``min`` and ``max`` integers accept a number of arguments contained between these two values or return an undefined value otherwise.
-    * Methods :meth:`Function.CreateN` and :meth:`Function.CreatePureN` only accept exactly ``N`` arguments or return an undefined value otherwise.
+    * Methods ``Function.Create*Exact`` (e.g. :meth:`Function.CreateNativeExact`) expect a fixed number of arguments when invoked or return an undefined value otherwise.
+    * Methods ``Function.Create*MinMax`` (e.g. :meth:`Function.CreatePureMinMax`) accept between ``min`` and ``max`` arguments or return an undefined value otherwise.
+    * Methods ``Function.Create*N`` (e.g. :meth:`Function.CreateNativeN`) only accept exactly ``N`` arguments or return an undefined value otherwise.
+    * Methods ``Function.Create*Variadic`` (e.g. :meth:`Function.CreatePureVariadic`) accept any number of arguments, it is the responsibility of provided callback to validate this number.
 
-The callback you'll pass to :type:`Function` takes multiple arguments:
+Here are the arguments received by the callback you'll pass to these methods:
 
-* First argument is always an internal state that must be forwarded to any nested function call ;
+* First argument is either a :type:`IRuntime` instance (for non-pure functions) or an opaque state (for pure ones) that must be forwarded to any nested function call ;
 * Next arguments are either a list of values (for functions accepting variable number of arguments) or separate scalar values (for functions accepting a fixed number of arguments) received as arguments when invoking the function ;
-* Last argument, for non-pure functions only, is a ``TextWriter`` instance open to current document output.
+* Last argument, for non-pure functions only, is a :type:`System.IO.TextWriter` instance open to current document output.
 
 
 

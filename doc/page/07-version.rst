@@ -23,6 +23,14 @@ The main difference between this approach and SemVer is the distinction made bet
 Migration guide
 ===============
 
+From 2.0.\* to 2.1.\*
+---------------------
+
+* Non-pure functions should be created with ``Function.CreateNative*`` instead of ``Function.Create*``, and the first argument of the callback they receive is now :type:`IRuntime`.
+* Overloads of method ``Function.Create`` are replaced by methods with unique name: :meth:`Function.CreateNativeExact`, :meth:`Function.CreateNativeMinMax` & :meth:`Function.CreateNativeVariadic`.
+* Overloads of method ``Function.CreatePure`` are replaced by methods with unique name: :meth:`Function.CreatePureExact`, :meth:`Function.CreatePureMinMax` & :meth:`Function.CreatePureVariadic`.
+
+
 From 1.6.\* to 2.0.\*
 ---------------------
 

@@ -242,43 +242,43 @@ Function declaration
 
     Methods from this static class must be used to create instances of :type:`IFunction`.
 
-    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int min, int max)
-
-        Create a non-pure function accepting between ``min`` and ``max`` arguments (included).
-
-    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int count)
+    .. method:: IFunction CreateNativeExact(System.Func<IRuntime,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int count)
 
         Create a non-pure function accepting exactly ``count`` arguments.
 
-    .. method:: IFunction Create(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback)
+    .. method:: IFunction CreateNativeMinMax(System.Func<IRuntime,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback, int min, int max)
+
+        Create a non-pure function accepting between ``min`` and ``max`` arguments (included).
+
+    .. method:: IFunction CreateNativeVariadic(System.Func<IRuntime,System.Collections.Generic.IReadOnlyList<Value>,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting any number of arguments.
 
-    .. method:: IFunction Create0(System.Func<System.Object,System.IO.TextWriter,Value> callback)
+    .. method:: IFunction CreateNative0(System.Func<IRuntime,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting zero argument.
 
-    .. method:: IFunction Create1(System.Func<System.Object,Value,System.IO.TextWriter,Value> callback)
+    .. method:: IFunction CreateNative1(System.Func<IRuntime,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting one argument.
 
-    .. method:: IFunction Create2(System.Func<System.Object,Value,Value,System.IO.TextWriter,Value> callback)
+    .. method:: IFunction CreateNative2(System.Func<IRuntime,Value,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting two arguments.
 
-    .. method:: IFunction Create3(System.Func<System.Object,Value,Value,Value,System.IO.TextWriter,Value> callback)
+    .. method:: IFunction CreateNative3(System.Func<IRuntime,Value,Value,Value,System.IO.TextWriter,Value> callback)
 
         Create a non-pure function accepting three arguments.
 
-    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int min, int max)
-
-        Create a pure function accepting between ``min`` and ``max`` arguments (included).
-
-    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int count)
+    .. method:: IFunction CreatePureExact(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int count)
 
         Create a pure function accepting exactly ``count`` arguments.
 
-    .. method:: IFunction CreatePure(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback)
+    .. method:: IFunction CreatePureMinMax(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback, int min, int max)
+
+        Create a pure function accepting between ``min`` and ``max`` arguments (included).
+
+    .. method:: IFunction CreatePureVariadic(System.Func<System.Object,System.Collections.Generic.IReadOnlyList<Value>,Value> callback)
 
         Create a pure function accepting any number of arguments.
 
@@ -297,6 +297,16 @@ Function declaration
     .. method:: IFunction CreatePure3(System.Func<System.Object,Value,Value,Value,Value> callback)
 
         Create a pure function accepting three arguments.
+
+
+.. namespace:: Cottle
+.. class:: IRuntime
+
+    Access to runtime execution data.
+
+    .. property:: IMap Globals { get; }
+
+        Global variables defined in template being rendered currently.
 
 
 
