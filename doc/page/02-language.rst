@@ -188,7 +188,7 @@ You can also use ``(`` and ``)`` to group sub-expressions and change natural pre
 
 .. note::
 
-    Logical operators can compare any type of operand and uses the same comparison algorithm than built-in function :ref:`builtin_cmp`.
+    Logical operators can compare any type of operand and uses the same comparison algorithm than built-in function :ref:`builtin_cmp`. Also note they're not lazy, meaning both operands will always be evaluated.
 
 
 Calling functions
