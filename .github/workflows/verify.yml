@@ -28,13 +28,12 @@ jobs:
       - run: dotnet format --no-restore --verify-no-changes src/Cottle.sln
 
   build:
-    name: Build for ${{ matrix.dotnet.framework }}
+    name: Build
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         dotnet: # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
-          - framework: net6.0
           - framework: net7.0
           - framework: net8.0
 
@@ -51,12 +50,17 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        dotnet:
+          - framework: net8.0
+
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-      - run: dotnet test src/Cottle.Test --framework net8.0
+      - run: dotnet test src/Cottle.Test --framework ${{ matrix.dotnet.framework }}
 
   publish:
     name: Publish NuGet package
