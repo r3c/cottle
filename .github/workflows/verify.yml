@@ -75,3 +75,13 @@ jobs:
       - run: dotnet pack src/Cottle --configuration Release --output pack
       - run: dotnet nuget push ./pack/*.nupkg --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
  
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - check
+      - test
+
+    steps:
+      - run: true
