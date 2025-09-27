@@ -76,7 +76,7 @@ jobs:
       - run: dotnet nuget push ./pack/*.nupkg --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
  
   validate:
-    name: Validate requirements
+    name: Validate
     runs-on: ubuntu-latest
     needs:
       - build
