@@ -13,7 +13,7 @@ on:
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   DOTNET_NOLOGO: true
-  DOTNET_VERSION: 8.0.x 
+  DOTNET_VERSION: 10.0.x
 
 jobs:
   check:
@@ -34,8 +34,9 @@ jobs:
     strategy:
       matrix:
         dotnet: # https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
-          - framework: net7.0
           - framework: net8.0
+          - framework: net9.0
+          - framework: net10.0
 
     steps:
       - uses: actions/checkout@v5
@@ -53,7 +54,7 @@ jobs:
     strategy:
       matrix:
         dotnet:
-          - framework: net8.0
+          - framework: net10.0
 
     steps:
       - uses: actions/checkout@v5
