@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
       - run: dotnet format --no-restore --verify-no-changes src/Cottle.sln
 
@@ -36,7 +36,7 @@ jobs:
           - framework: net10.0
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
       - run: dotnet build src/Cottle --framework ${{ matrix.dotnet.framework }}
       - run: dotnet build src/Cottle.Benchmark --framework ${{ matrix.dotnet.framework }}
@@ -52,7 +52,7 @@ jobs:
           - framework: net10.0
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
       - run: dotnet test src/Cottle.Test --framework ${{ matrix.dotnet.framework }}
 
@@ -62,7 +62,7 @@ jobs:
     if: ${{ github.event_name == 'push' }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
       - run: dotnet pack src/Cottle --configuration Release --output pack
       - run: dotnet nuget push ./pack/*.nupkg --skip-duplicate --api-key "${{ secrets.NUGET_API_KEY }}" --source "https://api.nuget.org/v3/index.json"
