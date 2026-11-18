@@ -74,6 +74,11 @@ jobs:
       - build
       - check
       - test
+    if: ${{ always() }}
 
     steps:
-      - run: true
+      - name: Check validation results
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          printf '%s' "$NEEDS" | jq -e 'all(.result == "success")'
