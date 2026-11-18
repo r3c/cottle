@@ -134,29 +134,30 @@ namespace Cottle.Benchmark.Inputs
   {% endfor %}
 </ul>";
 
-                var options = new TemplateOptions();
+                var options = new TemplateOptionsBuilder()
+                    // Copy of "slice" filter with added missing safety check on length and no support for negative start
+                    .AddFilter("safeslice", (input, arguments, context) =>
+                    {
+                        var inputString = input.ToStringValue(context);
+                        var rawStart = Convert.ToInt32(arguments.At(0).ToNumberValue(context));
+                        var rawLength = Convert.ToInt32(arguments.At(1).ToNumberValue(context));
 
-                // Copy of "slice" filter with added missing safety check on length and no support for negative start
-                options.Filters.AddFilter("safeslice", (input, arguments, _) =>
-                {
-                    var inputString = input.ToStringValue();
-                    var rawStart = Convert.ToInt32(arguments.At(0).ToNumberValue());
-                    var rawLength = Convert.ToInt32(arguments.At(1).ToNumberValue());
+                        var safeStart = Math.Min(rawStart, inputString.Length);
+                        var safeLength = Math.Min(rawLength, inputString.Length - safeStart);
 
-                    var safeStart = Math.Min(rawStart, inputString.Length);
-                    var safeLength = Math.Min(rawLength, inputString.Length - safeStart);
+                        return StringValue.Create(inputString.Substring(safeStart, safeLength));
+                    })
 
-                    return new StringValue(inputString.Substring(safeStart, safeLength));
-                });
+                    // Formatting filter from floating point value to string
+                    .AddFilter("tostring", (input, arguments, context) =>
+                    {
+                        var format = arguments.At(0).ToStringValue(context);
+                        var culture = CultureInfo.GetCultureInfo(arguments.At(1).ToStringValue(context));
 
-                // Formatting filter from floating point value to string
-                options.Filters.AddFilter("tostring", (input, arguments, _) =>
-                {
-                    var format = arguments.At(0).ToStringValue();
-                    var culture = CultureInfo.GetCultureInfo(arguments.At(1).ToStringValue());
+                        return StringValue.Create(input.ToNumberValue(context).ToString(format, culture));
+                    })
 
-                    return new StringValue(input.ToNumberValue().ToString(format, culture));
-                });
+                    .Build();
 
                 var model = CompareEngine.Products
                     .Select(p => new Dictionary<string, object>
